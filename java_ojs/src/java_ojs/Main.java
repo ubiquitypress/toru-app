@@ -18,48 +18,281 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.JOptionPane;
 
 public class Main {
-	JFrame f, g;
-	private JTextField api_url;
-	private JTextField access_key;
+	JFrame login,api,issues,articles,settings;
+	private JTextField username,access_key,api_url;
 	private JTable table;
-
+	private int delay = 500; // milliseconds
+	private String source_api="";
+	private String source_access_key="";
+	private JPasswordField passwordField;
 	/*
 	 * Initial setup test
 	 */
-	public Main() {
-		g = new JFrame();
-		g.setSize(640, 480);
-		g.getContentPane().setBackground(new Color(128, 128, 128));
-		g.setVisible(false);
+	public void login(){
+		login = new JFrame();
+		login.getContentPane().setBackground(new Color(128, 128, 128));
+
+		login.setSize(400, 500);// 400 width and 500 height
+		login.getContentPane().setLayout(null);// using no layout managers
+		username = new JTextField();
+		username.setBounds(80, 195, 239, 26);
+		login.getContentPane().add(username);
+		username.setColumns(10);
+		JLabel lblUsername = new JLabel("Username");
+		lblUsername.setForeground(new Color(245, 255, 250));
+		lblUsername.setHorizontalAlignment(SwingConstants.CENTER);
+		lblUsername.setBounds(80, 179, 239, 16);
+		login.getContentPane().add(lblUsername);
+		JPanel title_background = new JPanel();
+		title_background.setBackground(new Color(0, 0, 0));
+		title_background.setBounds(-17, 0, 433, 54);
+		login.getContentPane().add(title_background);
+		JLabel lblNewLabel = new JLabel("TORU");
+		title_background.add(lblNewLabel);
+		lblNewLabel.setForeground(new Color(255, 250, 250));
+		lblNewLabel.setBackground(new Color(230, 230, 250));
+		lblNewLabel.setFont(new Font("Trattatello", Font.BOLD, 24));
+		lblNewLabel.setToolTipText("Welcome\n");
+		JLabel lblPassword = new JLabel("Password");
+		lblPassword.setHorizontalAlignment(SwingConstants.CENTER);
+		lblPassword.setForeground(new Color(245, 255, 250));
+		lblPassword.setBounds(80, 233, 239, 16);
+		login.getContentPane().add(lblPassword);
+		passwordField = new JPasswordField();
+		passwordField.setBounds(80, 248, 239, 26);
+		login.getContentPane().add(passwordField);
+		JButton btnLogin = new JButton("Login");
+		Action actionSubmit = new AbstractAction()
+		{
+		    @Override
+		    public void actionPerformed(ActionEvent e)
+		    {
+		    	String user = username.getText();
+				String pass = passwordField.getText();
+				if (pass.compareTo("root") == 0 && user.compareTo("user") == 0) {
+					login.setVisible(false);
+					api();
+				} else {
+					JOptionPane.showMessageDialog(null,
+							"Wrong username or password");
+				}
+		    }
+		};
+		username.addActionListener(actionSubmit);
+		passwordField.addActionListener(actionSubmit);
+		btnLogin.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				String user = username.getText();
+				String pass = passwordField.getText();
+				if (pass.compareTo("root") == 0 && user.compareTo("user") == 0) {
+					login.setVisible(false);
+					if (source_api.compareTo("")==0 && source_access_key.compareTo("")==0){
+						api();
+					}else{
+						issues();
+					}
+					
+				} else {
+					JOptionPane.showMessageDialog(null,
+							"Wrong username or password");
+				}
+
+			}
+		});
+
+		btnLogin.setBackground(UIManager.getColor("Button.darkShadow"));
+		btnLogin.setBounds(139, 300, 117, 29);
+		login.getContentPane().add(btnLogin);
+
+		final Button internet1 = new Button("ONLINE");
+		internet1.setForeground(Color.WHITE);
+		internet1.setFont(new Font("Arial", Font.BOLD, 12));
+
+		internet1.setBounds(311, 60, 70, 25);
+		internet1.setBackground(Color.GREEN);
+		login.getContentPane().add(internet1);
+
+		final JButton btnSync1 = new JButton("Sync");
+		btnSync1.setBounds(235, 60, 70, 25);
+		login.getContentPane().add(btnSync1);
+		
+		JLabel lblLogIn = new JLabel("Log in");
+		lblLogIn.setForeground(new Color(224, 255, 255));
+		lblLogIn.setFont(new Font("URW Gothic L", Font.BOLD, 24));
+		lblLogIn.setHorizontalAlignment(SwingConstants.CENTER);
+		lblLogIn.setBounds(160, 128, 80, 30);
+		login.getContentPane().add(lblLogIn);
+		
+		
+		ActionListener taskPerformer1 = new ActionListener() {
+			public void actionPerformed(ActionEvent evt) {
+				try {
+					Socket sock = new Socket();
+					InetSocketAddress addr = new InetSocketAddress(
+							"www.google.com", 80);
+					sock.setSoTimeout(500);
+					sock.connect(addr, 3000);
+
+					internet1.setBackground(Color.GREEN);
+					internet1.setLabel("ONLINE");
+					btnSync1.setEnabled(true);
+
+				} catch (Exception e) {
+					internet1.setBackground(Color.RED);
+					internet1.setLabel("OFFLINE");
+					btnSync1.setEnabled(false);
+				}
+			}
+		};
+		new Timer(delay, taskPerformer1).start();
+		login.setVisible(true);// making the frame visible
+	}
+	public void api(){
+		api = new JFrame();
+		api.getContentPane().setBackground(new Color(128, 128, 128));
+
+		api.setSize(400, 500);// 400 width and 500 height
+		api.getContentPane().setLayout(null);// using no layout managers
+		api_url = new JTextField();
+		api_url.setBounds(80, 195, 239, 26);
+		api.getContentPane().add(api_url);
+		api_url.setColumns(10);
+		
+		JLabel lblApi = new JLabel("API");
+		lblApi.setForeground(new Color(245, 255, 250));
+		lblApi.setHorizontalAlignment(SwingConstants.CENTER);
+		lblApi.setBounds(80, 179, 239, 16);
+		api.getContentPane().add(lblApi);
+		JPanel title_background = new JPanel();
+		title_background.setBackground(new Color(0, 0, 0));
+		title_background.setBounds(-17, 0, 433, 54);
+		api.getContentPane().add(title_background);
+		JLabel lblNewLabel = new JLabel("TORU");
+		title_background.add(lblNewLabel);
+		lblNewLabel.setForeground(new Color(255, 250, 250));
+		lblNewLabel.setBackground(new Color(230, 230, 250));
+		lblNewLabel.setFont(new Font("Trattatello", Font.BOLD, 24));
+		lblNewLabel.setToolTipText("Welcome\n");
+		access_key = new JTextField();
+		access_key.setColumns(10);
+		access_key.setBounds(80, 248, 239, 26);
+		api.getContentPane().add(access_key);
+		JLabel lblAccessKey = new JLabel("Access Key");
+		lblAccessKey.setHorizontalAlignment(SwingConstants.CENTER);
+		lblAccessKey.setForeground(new Color(245, 255, 250));
+		lblAccessKey.setBounds(80, 233, 239, 16);
+		api.getContentPane().add(lblAccessKey);
+
+		JButton btnSubmit = new JButton("Submit");
+		Action actionSubmit = new AbstractAction()
+		{
+		    @Override
+		    public void actionPerformed(ActionEvent e)
+		    {
+		    	String url = api_url.getText();
+				String key = access_key.getText();
+				if (key.compareTo("enter") == 0 && url.compareTo("api") == 0) {
+					api.setVisible(false);
+					source_api=url;
+					source_access_key=key;
+					issues();
+				} else {
+					JOptionPane.showMessageDialog(null,
+							"Wrong access key or API url");
+				}
+		    }
+		};
+		access_key.addActionListener(actionSubmit);
+		api_url.addActionListener(actionSubmit);
+		btnSubmit.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				String url = api_url.getText();
+				String key = access_key.getText();
+				if (key.compareTo("enter") == 0 && url.compareTo("api") == 0) {
+					api.setVisible(false);
+					issues();
+					source_api=url;
+					source_access_key=key;
+				} else {
+					JOptionPane.showMessageDialog(null,
+							"Wrong access key or API url");
+				}
+
+			}
+		});
+
+		btnSubmit.setBackground(new Color(255, 255, 255));
+		btnSubmit.setBounds(139, 300, 117, 29);
+		api.getContentPane().add(btnSubmit);
+
+		final Button internet1 = new Button("ONLINE");
+		internet1.setForeground(Color.WHITE);
+		internet1.setFont(new Font("Arial", Font.BOLD, 12));
+
+		internet1.setBounds(311, 60, 70, 25);
+		internet1.setBackground(Color.GREEN);
+		api.getContentPane().add(internet1);
+
+		final JButton btnSync1 = new JButton("Sync");
+		btnSync1.setBounds(235, 60, 70, 25);
+		api.getContentPane().add(btnSync1);
+		ActionListener taskPerformer1 = new ActionListener() {
+			public void actionPerformed(ActionEvent evt) {
+				try {
+					Socket sock = new Socket();
+					InetSocketAddress addr = new InetSocketAddress(
+							"www.google.com", 80);
+					sock.setSoTimeout(500);
+					sock.connect(addr, 3000);
+
+					internet1.setBackground(Color.GREEN);
+					internet1.setLabel("ONLINE");
+					btnSync1.setEnabled(true);
+
+				} catch (Exception e) {
+					internet1.setBackground(Color.RED);
+					internet1.setLabel("OFFLINE");
+					btnSync1.setEnabled(false);
+				}
+			}
+		};
+		new Timer(delay, taskPerformer1).start();
+		api.setVisible(true);// making the frame visible
+	}
+	public void issues(){
+		issues = new JFrame();
+		issues.setSize(640, 480);
+		issues.getContentPane().setBackground(new Color(128, 128, 128));
+		issues.setVisible(true);
 		Object rowData[][] = {
 				{ "Row1-Column1", "Row1-Column2", "Row1-Column3", "View" },
 				{ "Row2-Column1", "Row2-Column2", "Row2-Column3", "View" },
 				{ "Row3-Column1", "Row3-Column2", "Row3-Column3", "View" },
 				{ "Row4-Column1", "Row4-Column2", "Row4-Column3", "View" } };
 		Object columnNames[] = { "Column One", "Column Two", "Column Three", "" };
-		g.getContentPane().setLayout(null);
+		issues.getContentPane().setLayout(null);
 		final Button internet = new Button("ONLINE");
 		internet.setForeground(Color.WHITE);
 		internet.setFont(new Font("Arial", Font.BOLD, 12));
 
 		internet.setBounds(520, 20, 70, 25);
 		internet.setBackground(Color.GREEN);
-		g.getContentPane().add(internet);
+		issues.getContentPane().add(internet);
 
 		final JButton btnSync = new JButton("Sync");
 		btnSync.setBounds(445, 20, 70, 25);
-		g.getContentPane().add(btnSync);
+		issues.getContentPane().add(btnSync);
 
 		JScrollPane scrollPane = new JScrollPane();
 		scrollPane.setBounds(120, 80, 400, 280);
-		g.getContentPane().add(scrollPane);
+		issues.getContentPane().add(scrollPane);
 		table = new JTable(rowData, columnNames);
 		scrollPane.setViewportView(table);
 		table.setColumnSelectionAllowed(true);
 		table.setBorder(new BevelBorder(BevelBorder.RAISED, null, null, null,
 				null));
 		table.setCellSelectionEnabled(true);
-		int delay = 500; // milliseconds
+		
 		ActionListener taskPerformer = new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
 				try {
@@ -93,112 +326,9 @@ public class Main {
 
 		ButtonColumn buttonColumn = new ButtonColumn(table, view, 3);
 		buttonColumn.setMnemonic(KeyEvent.VK_D);
-		f = new JFrame();
-		f.getContentPane().setBackground(new Color(128, 128, 128));
-
-		f.setSize(400, 500);// 400 width and 500 height
-		f.getContentPane().setLayout(null);// using no layout managers
-		api_url = new JTextField();
-		api_url.setBounds(80, 195, 239, 26);
-		f.getContentPane().add(api_url);
-		api_url.setColumns(10);
-		JLabel lblApi = new JLabel("API");
-		lblApi.setForeground(new Color(245, 255, 250));
-		lblApi.setHorizontalAlignment(SwingConstants.CENTER);
-		lblApi.setBounds(80, 179, 239, 16);
-		f.getContentPane().add(lblApi);
-		JPanel title_background = new JPanel();
-		title_background.setBackground(new Color(0, 0, 0));
-		title_background.setBounds(-17, 0, 433, 54);
-		f.getContentPane().add(title_background);
-		JLabel lblNewLabel = new JLabel("TORU");
-		title_background.add(lblNewLabel);
-		lblNewLabel.setForeground(new Color(255, 250, 250));
-		lblNewLabel.setBackground(new Color(230, 230, 250));
-		lblNewLabel.setFont(new Font("Trattatello", Font.BOLD, 24));
-		lblNewLabel.setToolTipText("Welcome\n");
-		access_key = new JTextField();
-		access_key.setColumns(10);
-		access_key.setBounds(80, 248, 239, 26);
-		f.getContentPane().add(access_key);
-		JLabel lblAccessKey = new JLabel("Access Key");
-		lblAccessKey.setHorizontalAlignment(SwingConstants.CENTER);
-		lblAccessKey.setForeground(new Color(245, 255, 250));
-		lblAccessKey.setBounds(80, 233, 239, 16);
-		f.getContentPane().add(lblAccessKey);
-
-		JButton btnSubmit = new JButton("Submit");
-		Action actionSubmit = new AbstractAction()
-		{
-		    @Override
-		    public void actionPerformed(ActionEvent e)
-		    {
-		    	String url = api_url.getText();
-				String key = access_key.getText();
-				if (key.compareTo("enter") == 0 && url.compareTo("api") == 0) {
-					f.setVisible(false);
-					g.setVisible(true);
-				} else {
-					JOptionPane.showMessageDialog(null,
-							"Wrong access key or API url");
-				}
-		    }
-		};
-		access_key.addActionListener(actionSubmit);
-		api_url.addActionListener(actionSubmit);
-		btnSubmit.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				String url = api_url.getText();
-				String key = access_key.getText();
-				if (key.compareTo("enter") == 0 && url.compareTo("api") == 0) {
-					f.setVisible(false);
-					g.setVisible(true);
-				} else {
-					JOptionPane.showMessageDialog(null,
-							"Wrong access key or API url");
-				}
-
-			}
-		});
-
-		btnSubmit.setBackground(new Color(255, 255, 255));
-		btnSubmit.setBounds(139, 300, 117, 29);
-		f.getContentPane().add(btnSubmit);
-
-		final Button internet1 = new Button("ONLINE");
-		internet1.setForeground(Color.WHITE);
-		internet1.setFont(new Font("Arial", Font.BOLD, 12));
-
-		internet1.setBounds(311, 60, 70, 25);
-		internet1.setBackground(Color.GREEN);
-		f.getContentPane().add(internet1);
-
-		final JButton btnSync1 = new JButton("Sync");
-		btnSync1.setBounds(235, 60, 70, 25);
-		f.getContentPane().add(btnSync1);
-		ActionListener taskPerformer1 = new ActionListener() {
-			public void actionPerformed(ActionEvent evt) {
-				try {
-					Socket sock = new Socket();
-					InetSocketAddress addr = new InetSocketAddress(
-							"www.google.com", 80);
-					sock.setSoTimeout(500);
-					sock.connect(addr, 3000);
-
-					internet1.setBackground(Color.GREEN);
-					internet1.setLabel("ONLINE");
-					btnSync1.setEnabled(true);
-
-				} catch (Exception e) {
-					internet1.setBackground(Color.RED);
-					internet1.setLabel("OFFLINE");
-					btnSync1.setEnabled(false);
-				}
-			}
-		};
-		new Timer(delay, taskPerformer1).start();
-		f.setVisible(true);// making the frame visible
-
+	}
+	public Main() {
+		login();
 	}
 
 	public static void main(String[] args) {
