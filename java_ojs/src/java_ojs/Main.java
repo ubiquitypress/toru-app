@@ -10,23 +10,68 @@ import java.awt.Color;
 import java.awt.Button;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
+import java.awt.BorderLayout;
+import javax.swing.border.SoftBevelBorder;
+import javax.swing.border.BevelBorder;
 
 public class Main {
-	JFrame f;
+	JFrame f,g;
 	private JTextField api_url;
 	private JTextField access_key;
+	private JTable table;
 
 	/*
 	 * Initial setup test
 	 */
 	public Main() {
-
+		g = new JFrame();
+		g.setSize(640,480);
+		g.setVisible(false);
+		Object rowData[][] = {{ "Row1-Column1", "Row1-Column2", "Row1-Column3" }};
+		Object columnNames[] = { "Column One", "Column Two", "Column Three" };
+		g.getContentPane().setLayout(null);
+		final Button internet = new Button("ONLINE");
+		internet.setForeground(Color.WHITE);
+		internet.setFont(new Font("Arial", Font.BOLD, 12));
+		
+		internet.setBounds(520, 20, 70, 25);
+		internet.setBackground(Color.GREEN);
+		g.getContentPane().add(internet);
+		
+		final JButton btnSync = new JButton("Sync");
+		btnSync.setBounds(445, 20, 70, 25);
+		g.getContentPane().add(btnSync);
+		
+		JScrollPane scrollPane = new JScrollPane();
+		scrollPane.setBounds(120, 80, 400, 280);
+		g.getContentPane().add(scrollPane);
+		table = new JTable(rowData, columnNames);
+		scrollPane.setViewportView(table);
+		table.setColumnSelectionAllowed(true);
+		table.setBorder(new BevelBorder(BevelBorder.RAISED, null, null, null, null));
+		table.setCellSelectionEnabled(true);
+	    int delay = 1000; //milliseconds
+	      ActionListener taskPerformer = new ActionListener() {
+	          public void actionPerformed(ActionEvent evt) {
+	      		try {
+	      			Socket sock = new Socket();
+	      			InetSocketAddress addr = new InetSocketAddress("www.google.com", 80);
+	      			
+	    			sock.connect(addr, 3000);
+	    			
+	    			internet.setBackground(Color.GREEN);
+	    			internet.setLabel("ONLINE");
+	    			btnSync.setEnabled(true);
+	    	
+	    		} catch (Exception e) {
+	    			internet.setBackground(Color.RED);
+	    			internet.setLabel("OFFLINE");
+	    			btnSync.setEnabled(false);
+	    		}
+	          }
+	      };
+	      
 		f = new JFrame();
-		f.getContentPane().addFocusListener(new FocusAdapter() {
-			@Override
-			public void focusGained(FocusEvent e) {
-			}
-		});
 		f.getContentPane().setBackground(new Color(128, 128, 128));
 
 		f.setSize(400, 500);// 400 width and 500 height
@@ -63,6 +108,8 @@ public class Main {
 		JButton btnSubmit = new JButton("Submit");
 		btnSubmit.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				f.setVisible(false);
+				g.setVisible(true);
 			}
 		});
 
@@ -70,19 +117,19 @@ public class Main {
 		btnSubmit.setBounds(139, 300, 117, 29);
 		f.getContentPane().add(btnSubmit);
 
-		final Button internet = new Button("ONLINE");
-		internet.setForeground(Color.WHITE);
-		internet.setFont(new Font("Arial", Font.BOLD, 12));
+		final Button internet1 = new Button("ONLINE");
+		internet1.setForeground(Color.WHITE);
+		internet1.setFont(new Font("Arial", Font.BOLD, 12));
 		
-		internet.setBounds(29, 79, 70, 23);
-		internet.setBackground(Color.GREEN);
-		f.getContentPane().add(internet);
+		internet1.setBounds(311, 60, 70, 25);
+		internet1.setBackground(Color.GREEN);
+		f.getContentPane().add(internet1);
 		
-		final JButton btnSync = new JButton("Sync");
-		btnSync.setBounds(105, 77, 70, 25);
-		f.getContentPane().add(btnSync);
-	    int delay = 1000; //milliseconds
-	      ActionListener taskPerformer = new ActionListener() {
+		final JButton btnSync1 = new JButton("Sync");
+		btnSync1.setBounds(235, 60, 70, 25);
+		f.getContentPane().add(btnSync1);
+	    int delay1 = 1000; //milliseconds
+	      ActionListener taskPerformer1 = new ActionListener() {
 	          public void actionPerformed(ActionEvent evt) {
 	      		try {
 	      			Socket sock = new Socket();
@@ -90,19 +137,21 @@ public class Main {
 	      			
 	    			sock.connect(addr, 3000);
 	    			
-	    			internet.setBackground(Color.GREEN);
-	    			internet.setLabel("ONLINE");
-	    			btnSync.setEnabled(true);
+	    			internet1.setBackground(Color.GREEN);
+	    			internet1.setLabel("ONLINE");
+	    			btnSync1.setEnabled(true);
 	    	
 	    		} catch (Exception e) {
-	    			internet.setBackground(Color.RED);
-	    			internet.setLabel("OFFLINE");
-	    			btnSync.setEnabled(false);
+	    			internet1.setBackground(Color.RED);
+	    			internet1.setLabel("OFFLINE");
+	    			btnSync1.setEnabled(false);
 	    		}
 	          }
 	      };
-	      new Timer(delay, taskPerformer).start();
+	      new Timer(delay, taskPerformer1).start();
 		f.setVisible(true);// making the frame visible
+		
+		
 	}
 
 	public static void main(String[] args) {
