@@ -158,7 +158,7 @@ public class Main {
 		api.getContentPane().add(api_url);
 		api_url.setColumns(10);
 		
-		JLabel lblApi = new JLabel("API");
+		JLabel lblApi = new JLabel("API URL");
 		lblApi.setForeground(new Color(245, 255, 250));
 		lblApi.setHorizontalAlignment(SwingConstants.CENTER);
 		lblApi.setBounds(80, 179, 239, 16);
@@ -236,6 +236,13 @@ public class Main {
 		final JButton btnSync1 = new JButton("Sync");
 		btnSync1.setBounds(235, 60, 70, 25);
 		api.getContentPane().add(btnSync1);
+		
+		JLabel lblApiInformation = new JLabel("API Information");
+		lblApiInformation.setHorizontalAlignment(SwingConstants.CENTER);
+		lblApiInformation.setForeground(new Color(255, 255, 255));
+		lblApiInformation.setFont(new Font("Dialog", Font.BOLD, 20));
+		lblApiInformation.setBounds(55, 110, 309, 43);
+		api.getContentPane().add(lblApiInformation);
 		ActionListener taskPerformer1 = new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
 				try {
@@ -284,7 +291,8 @@ public class Main {
 		issues.getContentPane().add(btnSync);
 
 		JScrollPane scrollPane = new JScrollPane();
-		scrollPane.setBounds(120, 80, 400, 280);
+		scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+		scrollPane.setBounds(120, 120, 400, 280);
 		issues.getContentPane().add(scrollPane);
 		table = new JTable(rowData, columnNames);
 		scrollPane.setViewportView(table);
@@ -325,6 +333,12 @@ public class Main {
 		};
 
 		ButtonColumn buttonColumn = new ButtonColumn(table, view, 3);
+		
+		JLabel lblIssues = new JLabel("Issues");
+		lblIssues.setFont(new Font("Dialog", Font.BOLD, 28));
+		lblIssues.setForeground(new Color(240, 255, 255));
+		lblIssues.setBounds(120, 78, 120, 30);
+		issues.getContentPane().add(lblIssues);
 		buttonColumn.setMnemonic(KeyEvent.VK_D);
 	}
 	public Main() {
