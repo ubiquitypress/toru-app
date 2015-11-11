@@ -18,17 +18,18 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.JOptionPane;
 
 public class Main {
-	JFrame login,api,issues,articles,settings;
-	private JTextField username,access_key,api_url;
+	JFrame login, api, issues, articles, settings;
+	private JTextField username, access_key, api_url;
 	private JTable table;
 	private int delay = 500; // milliseconds
-	private String source_api="";
-	private String source_access_key="";
+	private String source_api = "";
+	private String source_access_key = "";
 	private JPasswordField passwordField;
+
 	/*
 	 * Initial setup test
 	 */
-	public void login(){
+	public void login() {
 		login = new JFrame();
 		login.getContentPane().setBackground(new Color(128, 128, 128));
 
@@ -62,21 +63,24 @@ public class Main {
 		passwordField.setBounds(80, 248, 239, 26);
 		login.getContentPane().add(passwordField);
 		JButton btnLogin = new JButton("Login");
-		Action actionSubmit = new AbstractAction()
-		{
-		    @Override
-		    public void actionPerformed(ActionEvent e)
-		    {
-		    	String user = username.getText();
+		Action actionSubmit = new AbstractAction() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				String user = username.getText();
 				String pass = passwordField.getText();
 				if (pass.compareTo("root") == 0 && user.compareTo("user") == 0) {
 					login.setVisible(false);
-					api();
+					if (source_api.compareTo("") == 0
+							&& source_access_key.compareTo("") == 0) {
+						api();
+					} else {
+						issues();
+					}
 				} else {
 					JOptionPane.showMessageDialog(null,
 							"Wrong username or password");
 				}
-		    }
+			}
 		};
 		username.addActionListener(actionSubmit);
 		passwordField.addActionListener(actionSubmit);
@@ -86,12 +90,13 @@ public class Main {
 				String pass = passwordField.getText();
 				if (pass.compareTo("root") == 0 && user.compareTo("user") == 0) {
 					login.setVisible(false);
-					if (source_api.compareTo("")==0 && source_access_key.compareTo("")==0){
+					if (source_api.compareTo("") == 0
+							&& source_access_key.compareTo("") == 0) {
 						api();
-					}else{
+					} else {
 						issues();
 					}
-					
+
 				} else {
 					JOptionPane.showMessageDialog(null,
 							"Wrong username or password");
@@ -115,15 +120,14 @@ public class Main {
 		final JButton btnSync1 = new JButton("Sync");
 		btnSync1.setBounds(235, 60, 70, 25);
 		login.getContentPane().add(btnSync1);
-		
+
 		JLabel lblLogIn = new JLabel("Log in");
 		lblLogIn.setForeground(new Color(224, 255, 255));
 		lblLogIn.setFont(new Font("URW Gothic L", Font.BOLD, 24));
 		lblLogIn.setHorizontalAlignment(SwingConstants.CENTER);
 		lblLogIn.setBounds(160, 128, 80, 30);
 		login.getContentPane().add(lblLogIn);
-		
-		
+
 		ActionListener taskPerformer1 = new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
 				try {
@@ -147,7 +151,8 @@ public class Main {
 		new Timer(delay, taskPerformer1).start();
 		login.setVisible(true);// making the frame visible
 	}
-	public void api(){
+
+	public void api() {
 		api = new JFrame();
 		api.getContentPane().setBackground(new Color(128, 128, 128));
 
@@ -157,7 +162,7 @@ public class Main {
 		api_url.setBounds(80, 195, 239, 26);
 		api.getContentPane().add(api_url);
 		api_url.setColumns(10);
-		
+
 		JLabel lblApi = new JLabel("API URL");
 		lblApi.setForeground(new Color(245, 255, 250));
 		lblApi.setHorizontalAlignment(SwingConstants.CENTER);
@@ -184,23 +189,21 @@ public class Main {
 		api.getContentPane().add(lblAccessKey);
 
 		JButton btnSubmit = new JButton("Submit");
-		Action actionSubmit = new AbstractAction()
-		{
-		    @Override
-		    public void actionPerformed(ActionEvent e)
-		    {
-		    	String url = api_url.getText();
+		Action actionSubmit = new AbstractAction() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				String url = api_url.getText();
 				String key = access_key.getText();
 				if (key.compareTo("enter") == 0 && url.compareTo("api") == 0) {
 					api.setVisible(false);
-					source_api=url;
-					source_access_key=key;
+					source_api = url;
+					source_access_key = key;
 					issues();
 				} else {
 					JOptionPane.showMessageDialog(null,
 							"Wrong access key or API url");
 				}
-		    }
+			}
 		};
 		access_key.addActionListener(actionSubmit);
 		api_url.addActionListener(actionSubmit);
@@ -211,8 +214,8 @@ public class Main {
 				if (key.compareTo("enter") == 0 && url.compareTo("api") == 0) {
 					api.setVisible(false);
 					issues();
-					source_api=url;
-					source_access_key=key;
+					source_api = url;
+					source_access_key = key;
 				} else {
 					JOptionPane.showMessageDialog(null,
 							"Wrong access key or API url");
@@ -236,7 +239,7 @@ public class Main {
 		final JButton btnSync1 = new JButton("Sync");
 		btnSync1.setBounds(235, 60, 70, 25);
 		api.getContentPane().add(btnSync1);
-		
+
 		JLabel lblApiInformation = new JLabel("API Information");
 		lblApiInformation.setHorizontalAlignment(SwingConstants.CENTER);
 		lblApiInformation.setForeground(new Color(255, 255, 255));
@@ -266,7 +269,8 @@ public class Main {
 		new Timer(delay, taskPerformer1).start();
 		api.setVisible(true);// making the frame visible
 	}
-	public void issues(){
+
+	public void issues() {
 		issues = new JFrame();
 		issues.setSize(640, 480);
 		issues.getContentPane().setBackground(new Color(128, 128, 128));
@@ -291,7 +295,8 @@ public class Main {
 		issues.getContentPane().add(btnSync);
 
 		JScrollPane scrollPane = new JScrollPane();
-		scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+		scrollPane
+				.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
 		scrollPane.setBounds(120, 120, 400, 280);
 		issues.getContentPane().add(scrollPane);
 		table = new JTable(rowData, columnNames);
@@ -300,15 +305,15 @@ public class Main {
 		table.setBorder(new BevelBorder(BevelBorder.RAISED, null, null, null,
 				null));
 		table.setCellSelectionEnabled(true);
-		
+
 		ActionListener taskPerformer = new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
 				try {
 					Socket sock = new Socket();
-					InetSocketAddress addr = new InetSocketAddress("www.youtube.com", 80);
+					InetSocketAddress addr = new InetSocketAddress(
+							"www.youtube.com", 80);
 					sock.setSoTimeout(500);
 					sock.connect(addr, 3000);
-					
 
 					internet.setBackground(Color.GREEN);
 					internet.setLabel("ONLINE");
@@ -333,7 +338,7 @@ public class Main {
 		};
 
 		ButtonColumn buttonColumn = new ButtonColumn(table, view, 3);
-		
+
 		JLabel lblIssues = new JLabel("Issues");
 		lblIssues.setFont(new Font("Dialog", Font.BOLD, 28));
 		lblIssues.setForeground(new Color(240, 255, 255));
@@ -341,6 +346,7 @@ public class Main {
 		issues.getContentPane().add(lblIssues);
 		buttonColumn.setMnemonic(KeyEvent.VK_D);
 	}
+
 	public Main() {
 		login();
 	}
