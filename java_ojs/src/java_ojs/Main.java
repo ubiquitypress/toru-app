@@ -332,7 +332,8 @@ public class Main {
 			public void actionPerformed(ActionEvent e) {
 				JTable table = (JTable) e.getSource();
 				int modelRow = Integer.valueOf(e.getActionCommand());
-				JOptionPane.showMessageDialog(null, modelRow);
+				issues.setVisible(false);
+				articles(modelRow);
 				// / ((DefaultTableModel)table.getModel()).removeRow(modelRow);
 			}
 		};
@@ -344,6 +345,95 @@ public class Main {
 		lblIssues.setForeground(new Color(240, 255, 255));
 		lblIssues.setBounds(120, 78, 120, 30);
 		issues.getContentPane().add(lblIssues);
+		buttonColumn.setMnemonic(KeyEvent.VK_D);
+	}
+	public void articles(int issue_id) {
+		articles = new JFrame();
+		articles.setSize(640, 480);
+		articles.getContentPane().setBackground(new Color(128, 128, 128));
+		articles.setVisible(true);
+		Object rowData[][] = {
+				{ "Row1-Column1", "Row1-Column2", "View" },
+				{ "Row2-Column1", "Row2-Column2", "View" },
+				{ "Row3-Column1", "Row3-Column2", "View" },
+				{ "Row4-Column1", "Row4-Column2", "View" } };
+		Object columnNames[] = { "Column One", "Column Two", "Column Three", "" };
+		articles.getContentPane().setLayout(null);
+		final Button internet = new Button("ONLINE");
+		internet.setForeground(Color.WHITE);
+		internet.setFont(new Font("Arial", Font.BOLD, 12));
+
+		internet.setBounds(520, 20, 70, 25);
+		internet.setBackground(Color.GREEN);
+		articles.getContentPane().add(internet);
+
+		final JButton btnSync = new JButton("Sync");
+		btnSync.setBounds(445, 20, 70, 25);
+		articles.getContentPane().add(btnSync);
+
+		JScrollPane scrollPane = new JScrollPane();
+		scrollPane
+				.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+		scrollPane.setBounds(120, 120, 400, 280);
+		articles.getContentPane().add(scrollPane);
+		table = new JTable(rowData, columnNames);
+		scrollPane.setViewportView(table);
+		table.setColumnSelectionAllowed(true);
+		table.setBorder(new BevelBorder(BevelBorder.RAISED, null, null, null,
+				null));
+		table.setCellSelectionEnabled(true);
+
+		ActionListener taskPerformer = new ActionListener() {
+			public void actionPerformed(ActionEvent evt) {
+				try {
+					Socket sock = new Socket();
+					InetSocketAddress addr = new InetSocketAddress(
+							"www.youtube.com", 80);
+					sock.setSoTimeout(500);
+					sock.connect(addr, 3000);
+
+					internet.setBackground(Color.GREEN);
+					internet.setLabel("ONLINE");
+					btnSync.setEnabled(true);
+
+				} catch (Exception e) {
+					internet.setBackground(Color.RED);
+					internet.setLabel("OFFLINE");
+					btnSync.setEnabled(false);
+				}
+			}
+		};
+		new Timer(delay, taskPerformer).start();
+		DefaultTableModel model = new DefaultTableModel(rowData, columnNames);
+		Action view = new AbstractAction() {
+			public void actionPerformed(ActionEvent e) {
+				JTable table = (JTable) e.getSource();
+				int modelRow = Integer.valueOf(e.getActionCommand());
+				JOptionPane.showMessageDialog(null, modelRow);
+				// / ((DefaultTableModel)table.getModel()).removeRow(modelRow);
+			}
+		};
+
+		ButtonColumn buttonColumn = new ButtonColumn(table, view, 2);
+
+		JLabel lblIssues = new JLabel("Articles");
+		lblIssues.setFont(new Font("Dialog", Font.BOLD, 28));
+		lblIssues.setForeground(new Color(240, 255, 255));
+		lblIssues.setBounds(120, 78, 180, 30);
+		articles.getContentPane().add(lblIssues);
+		
+		JLabel lblIssue = new JLabel("Issue:");
+		lblIssue.setForeground(new Color(240, 255, 255));
+		lblIssue.setFont(new Font("Dialog", Font.BOLD, 28));
+		lblIssue.setBounds(29, 20, 94, 30);
+		articles.getContentPane().add(lblIssue);
+		
+		JLabel lblIssueId = new JLabel("");
+		lblIssueId.setForeground(new Color(240, 255, 255));
+		lblIssueId.setFont(new Font("Dialog", Font.BOLD, 28));
+		lblIssueId.setBounds(129, 20, 94, 30);
+		lblIssueId.setText(Integer.toString(issue_id));
+		articles.getContentPane().add(lblIssueId);
 		buttonColumn.setMnemonic(KeyEvent.VK_D);
 	}
 
