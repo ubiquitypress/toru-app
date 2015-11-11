@@ -440,7 +440,7 @@ public class Main {
 				{ "Row2-Column1", "Row2-Column2", "View" },
 				{ "Row3-Column1", "Row3-Column2", "View" },
 				{ "Row4-Column1", "Row4-Column2", "View" } };
-		Object columnNames[] = { "Column One", "Column Two", "Column Three", "" };
+		Object columnNames[] = { "Column One", "Column Two", "" };
 		articles.getContentPane().setLayout(null);
 		final Button internet = new Button("ONLINE");
 		internet.setForeground(Color.WHITE);
@@ -517,11 +517,26 @@ public class Main {
 		lblIssueId.setBounds(129, 20, 94, 30);
 		lblIssueId.setText(Integer.toString(issue_id));
 		articles.getContentPane().add(lblIssueId);
+		
+		JButton btnGoBack = new JButton("Go back");
+		btnGoBack.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				if(issues==null){
+					issues();
+				}else if (!issues.isVisible()){
+					issues();
+				}else{
+					issues.setVisible(true);
+				}
+			}
+		});
+		btnGoBack.setBounds(167, 20, 117, 30);
+		articles.getContentPane().add(btnGoBack);
 		buttonColumn.setMnemonic(KeyEvent.VK_D);
 	}
 
 	public Main() {
-		settings();
+		articles(1);
 	}
 
 	public static void main(String[] args) {
