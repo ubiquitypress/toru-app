@@ -10,13 +10,15 @@ import java.awt.Color;
 import java.awt.Button;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
+import java.awt.event.KeyEvent;
 import java.awt.BorderLayout;
 import javax.swing.border.SoftBevelBorder;
 import javax.swing.border.BevelBorder;
+import javax.swing.table.DefaultTableModel;
 import javax.swing.JOptionPane;
 
 public class Main {
-	JFrame f,g;
+	JFrame f, g;
 	private JTextField api_url;
 	private JTextField access_key;
 	private JTable table;
@@ -26,53 +28,71 @@ public class Main {
 	 */
 	public Main() {
 		g = new JFrame();
-		g.setSize(640,480);
+		g.setSize(640, 480);
 		g.getContentPane().setBackground(new Color(128, 128, 128));
 		g.setVisible(false);
-		Object rowData[][] = {{ "Row1-Column1", "Row1-Column2", "Row1-Column3" },{ "Row2-Column1", "Row2-Column2", "Row2-Column3" },{ "Row3-Column1", "Row3-Column2", "Row3-Column3" },{ "Row4-Column1", "Row4-Column2", "Row4-Column3" }};
-		Object columnNames[] = { "Column One", "Column Two", "Column Three" };
+		Object rowData[][] = {
+				{ "Row1-Column1", "Row1-Column2", "Row1-Column3", "View" },
+				{ "Row2-Column1", "Row2-Column2", "Row2-Column3", "View" },
+				{ "Row3-Column1", "Row3-Column2", "Row3-Column3", "View" },
+				{ "Row4-Column1", "Row4-Column2", "Row4-Column3", "View" } };
+		Object columnNames[] = { "Column One", "Column Two", "Column Three", "" };
 		g.getContentPane().setLayout(null);
 		final Button internet = new Button("ONLINE");
 		internet.setForeground(Color.WHITE);
 		internet.setFont(new Font("Arial", Font.BOLD, 12));
-		
+
 		internet.setBounds(520, 20, 70, 25);
 		internet.setBackground(Color.GREEN);
 		g.getContentPane().add(internet);
-		
+
 		final JButton btnSync = new JButton("Sync");
 		btnSync.setBounds(445, 20, 70, 25);
 		g.getContentPane().add(btnSync);
-		
+
 		JScrollPane scrollPane = new JScrollPane();
 		scrollPane.setBounds(120, 80, 400, 280);
 		g.getContentPane().add(scrollPane);
 		table = new JTable(rowData, columnNames);
 		scrollPane.setViewportView(table);
 		table.setColumnSelectionAllowed(true);
-		table.setBorder(new BevelBorder(BevelBorder.RAISED, null, null, null, null));
+		table.setBorder(new BevelBorder(BevelBorder.RAISED, null, null, null,
+				null));
 		table.setCellSelectionEnabled(true);
-	    int delay = 500; //milliseconds
-	      ActionListener taskPerformer = new ActionListener() {
-	          public void actionPerformed(ActionEvent evt) {
-	      		try {
-	      			Socket sock = new Socket();
-	      			InetSocketAddress addr = new InetSocketAddress("www.google.com", 80);
-	      			
-	    			sock.connect(addr, 3000);
-	    			
-	    			internet.setBackground(Color.GREEN);
-	    			internet.setLabel("ONLINE");
-	    			btnSync.setEnabled(true);
-	    	
-	    		} catch (Exception e) {
-	    			internet.setBackground(Color.RED);
-	    			internet.setLabel("OFFLINE");
-	    			btnSync.setEnabled(false);
-	    		}
-	          }
-	      };
-	      new Timer(delay, taskPerformer).start();
+		int delay = 500; // milliseconds
+		ActionListener taskPerformer = new ActionListener() {
+			public void actionPerformed(ActionEvent evt) {
+				try {
+					Socket sock = new Socket();
+					InetSocketAddress addr = new InetSocketAddress("www.youtube.com", 80);
+					sock.setSoTimeout(500);
+					sock.connect(addr, 3000);
+					
+
+					internet.setBackground(Color.GREEN);
+					internet.setLabel("ONLINE");
+					btnSync.setEnabled(true);
+
+				} catch (Exception e) {
+					internet.setBackground(Color.RED);
+					internet.setLabel("OFFLINE");
+					btnSync.setEnabled(false);
+				}
+			}
+		};
+		new Timer(delay, taskPerformer).start();
+		DefaultTableModel model = new DefaultTableModel(rowData, columnNames);
+		Action view = new AbstractAction() {
+			public void actionPerformed(ActionEvent e) {
+				JTable table = (JTable) e.getSource();
+				int modelRow = Integer.valueOf(e.getActionCommand());
+				JOptionPane.showMessageDialog(null, modelRow);
+				// / ((DefaultTableModel)table.getModel()).removeRow(modelRow);
+			}
+		};
+
+		ButtonColumn buttonColumn = new ButtonColumn(table, view, 3);
+		buttonColumn.setMnemonic(KeyEvent.VK_D);
 		f = new JFrame();
 		f.getContentPane().setBackground(new Color(128, 128, 128));
 
@@ -108,17 +128,36 @@ public class Main {
 		f.getContentPane().add(lblAccessKey);
 
 		JButton btnSubmit = new JButton("Submit");
+		Action actionSubmit = new AbstractAction()
+		{
+		    @Override
+		    public void actionPerformed(ActionEvent e)
+		    {
+		    	String url = api_url.getText();
+				String key = access_key.getText();
+				if (key.compareTo("enter") == 0 && url.compareTo("api") == 0) {
+					f.setVisible(false);
+					g.setVisible(true);
+				} else {
+					JOptionPane.showMessageDialog(null,
+							"Wrong access key or API url");
+				}
+		    }
+		};
+		access_key.addActionListener(actionSubmit);
+		api_url.addActionListener(actionSubmit);
 		btnSubmit.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				String url = api_url.getText();
 				String key = access_key.getText();
-				if (key.compareTo("enter")==0 && url.compareTo("api")==0){
+				if (key.compareTo("enter") == 0 && url.compareTo("api") == 0) {
 					f.setVisible(false);
-					g.setVisible(true);}
-				else{
-					JOptionPane.showMessageDialog(null, "Wrong access key or API url");
+					g.setVisible(true);
+				} else {
+					JOptionPane.showMessageDialog(null,
+							"Wrong access key or API url");
 				}
-	
+
 			}
 		});
 
@@ -129,38 +168,37 @@ public class Main {
 		final Button internet1 = new Button("ONLINE");
 		internet1.setForeground(Color.WHITE);
 		internet1.setFont(new Font("Arial", Font.BOLD, 12));
-		
+
 		internet1.setBounds(311, 60, 70, 25);
 		internet1.setBackground(Color.GREEN);
 		f.getContentPane().add(internet1);
-		
+
 		final JButton btnSync1 = new JButton("Sync");
 		btnSync1.setBounds(235, 60, 70, 25);
 		f.getContentPane().add(btnSync1);
-	    int delay1 = 1000; //milliseconds
-	      ActionListener taskPerformer1 = new ActionListener() {
-	          public void actionPerformed(ActionEvent evt) {
-	      		try {
-	      			Socket sock = new Socket();
-	      			InetSocketAddress addr = new InetSocketAddress("www.google.com", 80);
-	      			
-	    			sock.connect(addr, 3000);
-	    			
-	    			internet1.setBackground(Color.GREEN);
-	    			internet1.setLabel("ONLINE");
-	    			btnSync1.setEnabled(true);
-	    	
-	    		} catch (Exception e) {
-	    			internet1.setBackground(Color.RED);
-	    			internet1.setLabel("OFFLINE");
-	    			btnSync1.setEnabled(false);
-	    		}
-	          }
-	      };
-	      new Timer(delay, taskPerformer1).start();
+		ActionListener taskPerformer1 = new ActionListener() {
+			public void actionPerformed(ActionEvent evt) {
+				try {
+					Socket sock = new Socket();
+					InetSocketAddress addr = new InetSocketAddress(
+							"www.google.com", 80);
+					sock.setSoTimeout(500);
+					sock.connect(addr, 3000);
+
+					internet1.setBackground(Color.GREEN);
+					internet1.setLabel("ONLINE");
+					btnSync1.setEnabled(true);
+
+				} catch (Exception e) {
+					internet1.setBackground(Color.RED);
+					internet1.setLabel("OFFLINE");
+					btnSync1.setEnabled(false);
+				}
+			}
+		};
+		new Timer(delay, taskPerformer1).start();
 		f.setVisible(true);// making the frame visible
-		
-		
+
 	}
 
 	public static void main(String[] args) {
