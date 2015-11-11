@@ -13,6 +13,7 @@ import java.awt.event.FocusEvent;
 import java.awt.BorderLayout;
 import javax.swing.border.SoftBevelBorder;
 import javax.swing.border.BevelBorder;
+import javax.swing.JOptionPane;
 
 public class Main {
 	JFrame f,g;
@@ -26,8 +27,9 @@ public class Main {
 	public Main() {
 		g = new JFrame();
 		g.setSize(640,480);
+		g.getContentPane().setBackground(new Color(128, 128, 128));
 		g.setVisible(false);
-		Object rowData[][] = {{ "Row1-Column1", "Row1-Column2", "Row1-Column3" }};
+		Object rowData[][] = {{ "Row1-Column1", "Row1-Column2", "Row1-Column3" },{ "Row2-Column1", "Row2-Column2", "Row2-Column3" },{ "Row3-Column1", "Row3-Column2", "Row3-Column3" },{ "Row4-Column1", "Row4-Column2", "Row4-Column3" }};
 		Object columnNames[] = { "Column One", "Column Two", "Column Three" };
 		g.getContentPane().setLayout(null);
 		final Button internet = new Button("ONLINE");
@@ -50,7 +52,7 @@ public class Main {
 		table.setColumnSelectionAllowed(true);
 		table.setBorder(new BevelBorder(BevelBorder.RAISED, null, null, null, null));
 		table.setCellSelectionEnabled(true);
-	    int delay = 1000; //milliseconds
+	    int delay = 500; //milliseconds
 	      ActionListener taskPerformer = new ActionListener() {
 	          public void actionPerformed(ActionEvent evt) {
 	      		try {
@@ -70,7 +72,7 @@ public class Main {
 	    		}
 	          }
 	      };
-	      
+	      new Timer(delay, taskPerformer).start();
 		f = new JFrame();
 		f.getContentPane().setBackground(new Color(128, 128, 128));
 
@@ -108,8 +110,15 @@ public class Main {
 		JButton btnSubmit = new JButton("Submit");
 		btnSubmit.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				f.setVisible(false);
-				g.setVisible(true);
+				String url = api_url.getText();
+				String key = access_key.getText();
+				if (key.compareTo("enter")==0 && url.compareTo("api")==0){
+					f.setVisible(false);
+					g.setVisible(true);}
+				else{
+					JOptionPane.showMessageDialog(null, "Wrong access key or API url");
+				}
+	
 			}
 		});
 
