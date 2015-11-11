@@ -521,6 +521,7 @@ public class Main {
 		JButton btnGoBack = new JButton("Go back");
 		btnGoBack.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
+				articles.setVisible(false);
 				if(issues==null){
 					issues();
 				}else if (!issues.isVisible()){
@@ -536,7 +537,7 @@ public class Main {
 	}
 
 	public Main() {
-		articles(1);
+		login();
 	}
 
 	public static void main(String[] args) {
