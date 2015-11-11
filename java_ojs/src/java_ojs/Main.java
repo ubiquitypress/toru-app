@@ -19,13 +19,12 @@ import javax.swing.JOptionPane;
 
 public class Main {
 	JFrame login, api, issues, articles, settings;
-	private JTextField username, access_key, api_url;
+	private JTextField access_key, api_url,username;
 	private JTable table;
 	private int delay = 500; // milliseconds
 	private String source_api = "";
 	private String source_access_key = "";
 	private JPasswordField passwordField;
-
 	/*
 	 * Initial setup test
 	 */
@@ -151,7 +150,81 @@ public class Main {
 		new Timer(delay, taskPerformer1).start();
 		login.setVisible(true);// making the frame visible
 	}
+	public void settings() {
+		settings = new JFrame();
+		settings.getContentPane().setBackground(new Color(128, 128, 128));
 
+		settings.setSize(400, 500);// 400 width and 500 height
+		settings.getContentPane().setLayout(null);
+		JPanel title_background = new JPanel();
+		title_background.setBackground(new Color(0, 0, 0));
+		title_background.setBounds(-17, 0, 433, 54);
+		settings.getContentPane().add(title_background);
+		JLabel lblNewLabel = new JLabel("TORU");
+		title_background.add(lblNewLabel);
+		lblNewLabel.setForeground(new Color(255, 250, 250));
+		lblNewLabel.setBackground(new Color(230, 230, 250));
+		lblNewLabel.setFont(new Font("Trattatello", Font.BOLD, 24));
+		lblNewLabel.setToolTipText("Welcome\n");
+	
+		final Button internet1 = new Button("ONLINE");
+		internet1.setForeground(Color.WHITE);
+		internet1.setFont(new Font("Arial", Font.BOLD, 12));
+
+		internet1.setBounds(311, 60, 70, 25);
+		internet1.setBackground(Color.GREEN);
+		settings.getContentPane().add(internet1);
+
+		final JButton btnSync1 = new JButton("Sync");
+		btnSync1.setBounds(235, 60, 70, 25);
+		settings.getContentPane().add(btnSync1);
+
+		JLabel lblSettings = new JLabel("Settings");
+		lblSettings.setForeground(new Color(224, 255, 255));
+		lblSettings.setFont(new Font("URW Gothic L", Font.BOLD, 24));
+		lblSettings.setHorizontalAlignment(SwingConstants.CENTER);
+		lblSettings.setBounds(110, 128, 160, 30);
+		settings.getContentPane().add(lblSettings);
+		
+		JCheckBox chckbxSampleSetting = new JCheckBox("Sample setting");
+		chckbxSampleSetting.setBounds(125, 206, 150, 23);
+		settings.getContentPane().add(chckbxSampleSetting);
+		
+		JButton btnSave = new JButton("Save");
+		btnSave.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				settings.setVisible(false);
+				if((issues==null)||!(issues.isVisible())){
+					issues();
+				}
+			}
+		});
+		btnSave.setBounds(150, 288, 100, 25);
+		settings.getContentPane().add(btnSave);
+
+		ActionListener taskPerformer1 = new ActionListener() {
+			public void actionPerformed(ActionEvent evt) {
+				try {
+					Socket sock = new Socket();
+					InetSocketAddress addr = new InetSocketAddress(
+							"www.google.com", 80);
+					sock.setSoTimeout(500);
+					sock.connect(addr, 3000);
+
+					internet1.setBackground(Color.GREEN);
+					internet1.setLabel("ONLINE");
+					btnSync1.setEnabled(true);
+
+				} catch (Exception e) {
+					internet1.setBackground(Color.RED);
+					internet1.setLabel("OFFLINE");
+					btnSync1.setEnabled(false);
+				}
+			}
+		};
+		new Timer(delay, taskPerformer1).start();
+		settings.setVisible(true);// making the frame visible
+	}
 	public void api() {
 		api = new JFrame();
 		api.getContentPane().setBackground(new Color(128, 128, 128));
@@ -345,6 +418,16 @@ public class Main {
 		lblIssues.setForeground(new Color(240, 255, 255));
 		lblIssues.setBounds(120, 78, 120, 30);
 		issues.getContentPane().add(lblIssues);
+		
+		JButton btnSettings = new JButton("Settings");
+		btnSettings.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				settings();
+			}
+		});
+		btnSettings.setBackground(UIManager.getColor("Button.disabledToolBarBorderBackground"));
+		btnSettings.setBounds(12, 20, 117, 25);
+		issues.getContentPane().add(btnSettings);
 		buttonColumn.setMnemonic(KeyEvent.VK_D);
 	}
 	public void articles(int issue_id) {
@@ -438,7 +521,7 @@ public class Main {
 	}
 
 	public Main() {
-		login();
+		settings();
 	}
 
 	public static void main(String[] args) {
