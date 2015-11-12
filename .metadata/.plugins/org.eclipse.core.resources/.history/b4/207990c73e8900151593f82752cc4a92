@@ -37,15 +37,12 @@ public class Main {
 	/*
 	 * Initial setup test
 	 */
-	public void database_save(){
-		System.out.println("Saving database");
-	}
 	public void login() {
 		login = new JFrame();
 		login.addWindowListener(new WindowAdapter() {
 			@Override
 			public void windowClosing(WindowEvent e) {
-				database_save();
+				System.out.println("Saving database")
 			}
 		});
 		login.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -179,12 +176,7 @@ public class Main {
 	public void settings() {
 		settings = new JFrame();
 		settings.getContentPane().setBackground(new Color(128, 128, 128));
-		settings.addWindowListener(new WindowAdapter() {
-			@Override
-			public void windowClosing(WindowEvent e) {
-				database_save();
-			}
-		});
+
 		settings.setSize(400, 500);// 400 width and 500 height
 		settings.getContentPane().setLayout(null);
 		JPanel title_background = new JPanel();
@@ -294,12 +286,7 @@ public class Main {
 	public void api(boolean edit) {
 		api = new JFrame();
 		api.getContentPane().setBackground(new Color(128, 128, 128));
-		api.addWindowListener(new WindowAdapter() {
-			@Override
-			public void windowClosing(WindowEvent e) {
-				database_save();
-			}
-		});
+
 		api.setSize(400, 500);// 400 width and 500 height
 		api.getContentPane().setLayout(null);// using no layout managers
 		api_url = new JTextField();
@@ -427,12 +414,6 @@ public class Main {
 		issues.setSize(640, 480);
 		issues.getContentPane().setBackground(new Color(128, 128, 128));
 		issues.setVisible(true);
-		issues.addWindowListener(new WindowAdapter() {
-			@Override
-			public void windowClosing(WindowEvent e) {
-				database_save();
-			}
-		});
 		Object rowData[][] = {
 				{ "Row1-Column1", "Row1-Column2", "Row1-Column3", "View" },
 				{ "Row2-Column1", "Row2-Column2", "Row2-Column3", "View" },
@@ -532,12 +513,6 @@ public class Main {
 		articles.setSize(640, 480);
 		articles.getContentPane().setBackground(new Color(128, 128, 128));
 		articles.setVisible(true);
-		articles.addWindowListener(new WindowAdapter() {
-			@Override
-			public void windowClosing(WindowEvent e) {
-				database_save();
-			}
-		});
 		Object rowData[][] = {
 				{ "Row1-Column1", "Row1-Column2", "View","Delete" },
 				{ "Row2-Column1", "Row2-Column2", "View","Delete"  },
@@ -657,12 +632,6 @@ public class Main {
 		article.setSize(400, 500);
 		article.getContentPane().setBackground(new Color(128, 128, 128));
 		article.setVisible(true);
-		article.addWindowListener(new WindowAdapter() {
-			@Override
-			public void windowClosing(WindowEvent e) {
-				database_save();
-			}
-		});
 		Object rowData[][] = {
 				{ "Row1-Column1", "Row1-Column2", "View","Delete" },
 				{ "Row2-Column1", "Row2-Column2", "View","Delete"  },
