@@ -44,11 +44,6 @@ public class Main {
 		System.out.println("Saving database...");
 
 		try {
-			if (c != null && c.isClosed())
-			{
-				c = DriverManager.getConnection("jdbc:sqlite:local_datatabse.db");
-				stmt = c.createStatement();
-			}
 			PreparedStatement prep = c.prepareStatement("INSERT OR REPLACE INTO API(URL,ACCESS_KEY) VALUES (?,?)");
 			prep.setString(1, source_api);
 			prep.setString(2, source_access_key);

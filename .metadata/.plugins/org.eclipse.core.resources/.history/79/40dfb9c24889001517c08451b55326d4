@@ -44,10 +44,10 @@ public class Main {
 		System.out.println("Saving database...");
 
 		try {
-			if (c != null && c.isClosed())
+			if (c != null && c.State == ConnectionState.Closed)
 			{
-				c = DriverManager.getConnection("jdbc:sqlite:local_datatabse.db");
-				stmt = c.createStatement();
+			   // do something
+			   // ...
 			}
 			PreparedStatement prep = c.prepareStatement("INSERT OR REPLACE INTO API(URL,ACCESS_KEY) VALUES (?,?)");
 			prep.setString(1, source_api);

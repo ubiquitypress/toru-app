@@ -29,8 +29,8 @@ public class Main {
 	private JTextField access_key, api_url, username;
 	private JTable issues_table;
 	private int delay = 1000; // milliseconds
-	private static String source_api = "";
-	private static String source_access_key = "";
+	private String source_api = "";
+	private String source_access_key = "";
 	private JPasswordField passwordField;
 	private static HashMap<String, Boolean> list_settings;
 	private static ArrayList<String> setting_keys = new ArrayList<String>();
@@ -44,15 +44,9 @@ public class Main {
 		System.out.println("Saving database...");
 
 		try {
-			if (c != null && c.isClosed())
-			{
-				c = DriverManager.getConnection("jdbc:sqlite:local_datatabse.db");
-				stmt = c.createStatement();
-			}
-			PreparedStatement prep = c.prepareStatement("INSERT OR REPLACE INTO API(URL,ACCESS_KEY) VALUES (?,?)");
-			prep.setString(1, source_api);
-			prep.setString(2, source_access_key);
-			prep.executeUpdate();
+			String sql = "INSERT INTO API (URL,ACCESS_KEY) "
+					+ "VALUES ("+source_api+","+source_access_key+");";
+			stmt.executeUpdate(sql);
 			stmt.close();
 			c.close();
 		} catch (SQLException e) {
@@ -62,7 +56,7 @@ public class Main {
 
 		System.out.println("Done.");
 	}
-	public static void populate_variables() {
+	public void populate_variables() {
 		System.out.println("Retrieving data from local database");
 
 		try {
@@ -815,7 +809,7 @@ public class Main {
 	}
 
 	public Main() {
-		issues();
+		login();
 	}
 
 	public static void main(String[] args) {
@@ -839,7 +833,6 @@ public class Main {
 		setting_keys.add("Setting 8");
 		setting_keys.add("Setting 9");
 		database_setup();
-		populate_variables();
 		new Main();
 	}
 }
