@@ -732,7 +732,7 @@ public class Main {
 				lblArticleId.setText(Integer.toString(article_id));
 	}
 	public Main() {
-		login();
+		settings();
 	}
 
 	public static void main(String[] args) {
