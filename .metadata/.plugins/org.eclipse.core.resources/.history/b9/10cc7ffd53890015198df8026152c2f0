@@ -87,7 +87,7 @@ public class Main {
 		         Boolean value = rs.getBoolean("value");
 		     	 list_settings.put(name, value);
 		      	 setting_keys.add(name);
-		         System.out.println("Setting - "+name+" : "+value.toString());
+		         System.out.println("ACCESS KEY: "+source_access_key);
 		      }
 		      rs.close();
 		      

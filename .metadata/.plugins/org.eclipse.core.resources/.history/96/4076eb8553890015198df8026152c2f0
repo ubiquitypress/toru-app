@@ -71,7 +71,25 @@ public class Main {
 	}
 	public static void populate_variables() {
 		System.out.println("Retrieving data from local database");
-		list_settings = new HashMap<String, Boolean>();		
+		list_settings = new HashMap<String, Boolean>();
+		
+		list_settings.put("Setting 2", false);
+		list_settings.put("Setting 3", true);
+		list_settings.put("Setting 4", true);
+		list_settings.put("Setting 5", false);
+		list_settings.put("Setting 6", true);
+		list_settings.put("Setting 7", true);
+		list_settings.put("Setting 8", false);
+		list_settings.put("Setting 9", true);
+		setting_keys.add("Setting 1");
+		setting_keys.add("Setting 2");
+		setting_keys.add("Setting 3");
+		setting_keys.add("Setting 4");
+		setting_keys.add("Setting 5");
+		setting_keys.add("Setting 6");
+		setting_keys.add("Setting 7");
+		setting_keys.add("Setting 8");
+		setting_keys.add("Setting 9");
 		try {
 			  ResultSet rs = stmt.executeQuery( "SELECT * FROM API WHERE URL="+"'api'"+";" );
 		      while ( rs.next() ) {
@@ -81,13 +99,12 @@ public class Main {
 		         System.out.println("ACCESS KEY: "+source_access_key);
 		      }
 		      rs.close();
-			  rs = stmt.executeQuery( "SELECT * FROM SETTING ;" );
+			  ResultSet rs = stmt.executeQuery( "SELECT * FROM API WHERE URL="+"'api'"+";" );
 		      while ( rs.next() ) {
-		         String name = rs.getString("name");
-		         Boolean value = rs.getBoolean("value");
-		     	 list_settings.put(name, value);
-		      	 setting_keys.add(name);
-		         System.out.println("Setting - "+name+" : "+value.toString());
+		         source_api = rs.getString("url");
+		         source_access_key = rs.getString("access_key");
+		         System.out.println("URL: "+source_api);
+		         System.out.println("ACCESS KEY: "+source_access_key);
 		      }
 		      rs.close();
 		      
@@ -842,7 +859,7 @@ public class Main {
 	}
 
 	public Main() {
-		settings();
+		issues();
 	}
 
 	public static void main(String[] args) {

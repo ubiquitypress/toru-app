@@ -36,8 +36,7 @@ public class Main {
 	private static ArrayList<String> setting_keys = new ArrayList<String>();
 	private static Connection c = null;
 	private static Statement stmt = null;
-	private String api_insert_or_replace_statement = "INSERT OR REPLACE INTO API(URL,ACCESS_KEY) VALUES (?,?)";
-	private String settings_insert_or_replace_statement = "INSERT OR REPLACE INTO SETTING(NAME,VALUE) VALUES (?,?)";
+
 	/*
 	 * Initial setup test
 	 */
@@ -50,16 +49,10 @@ public class Main {
 				c = DriverManager.getConnection("jdbc:sqlite:local_datatabse.db");
 				stmt = c.createStatement();
 			}
-			PreparedStatement prep = c.prepareStatement(api_insert_or_replace_statement);
+			PreparedStatement prep = c.prepareStatement("INSERT OR REPLACE INTO API(URL,ACCESS_KEY) VALUES (?,?)");
 			prep.setString(1, source_api);
 			prep.setString(2, source_access_key);
 			prep.executeUpdate();
-			for (int i=0;i<list_settings.size();i++){
-				PreparedStatement setting_prep = c.prepareStatement(settings_insert_or_replace_statement);
-				setting_prep.setString(1, setting_keys.get(i));
-				setting_prep.setBoolean(2, list_settings.get(setting_keys.get(i)));
-				setting_prep.executeUpdate();
-			}
 			stmt.close();
 			c.close();
 		} catch (SQLException e) {
@@ -71,7 +64,7 @@ public class Main {
 	}
 	public static void populate_variables() {
 		System.out.println("Retrieving data from local database");
-		list_settings = new HashMap<String, Boolean>();		
+
 		try {
 			  ResultSet rs = stmt.executeQuery( "SELECT * FROM API WHERE URL="+"'api'"+";" );
 		      while ( rs.next() ) {
@@ -81,16 +74,6 @@ public class Main {
 		         System.out.println("ACCESS KEY: "+source_access_key);
 		      }
 		      rs.close();
-			  rs = stmt.executeQuery( "SELECT * FROM SETTING ;" );
-		      while ( rs.next() ) {
-		         String name = rs.getString("name");
-		         Boolean value = rs.getBoolean("value");
-		     	 list_settings.put(name, value);
-		      	 setting_keys.add(name);
-		         System.out.println("Setting - "+name+" : "+value.toString());
-		      }
-		      rs.close();
-		      
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -416,7 +399,6 @@ public class Main {
 					api.setVisible(false);
 					source_api = url;
 					source_access_key = key;
-					database_save();
 					if (!edit) {
 						issues();
 					}
@@ -588,15 +570,6 @@ public class Main {
 		});
 		btnApi.setBounds(120, 18, 117, 29);
 		issues.getContentPane().add(btnApi);
-		
-		JButton btnSaveData = new JButton("Save Data");
-		btnSaveData.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				database_save();
-			}
-		});
-		btnSaveData.setBounds(26, 412, 117, 29);
-		issues.getContentPane().add(btnSaveData);
 		buttonColumn.setMnemonic(KeyEvent.VK_D);
 	}
 
@@ -730,7 +703,7 @@ public class Main {
 		article.addWindowListener(new WindowAdapter() {
 			@Override
 			public void windowClosing(WindowEvent e) {
-		//		database_save();
+				database_save();
 			}
 		});
 		Object rowData[][] = { { "Row1-Column1", "Row1-Column2", "View", "Delete" },
@@ -842,11 +815,29 @@ public class Main {
 	}
 
 	public Main() {
-		settings();
+		login();
 	}
 
 	public static void main(String[] args) {
-
+		list_settings = new HashMap<String, Boolean>();
+		list_settings.put("Setting 1", true);
+		list_settings.put("Setting 2", false);
+		list_settings.put("Setting 3", true);
+		list_settings.put("Setting 4", true);
+		list_settings.put("Setting 5", false);
+		list_settings.put("Setting 6", true);
+		list_settings.put("Setting 7", true);
+		list_settings.put("Setting 8", false);
+		list_settings.put("Setting 9", true);
+		setting_keys.add("Setting 1");
+		setting_keys.add("Setting 2");
+		setting_keys.add("Setting 3");
+		setting_keys.add("Setting 4");
+		setting_keys.add("Setting 5");
+		setting_keys.add("Setting 6");
+		setting_keys.add("Setting 7");
+		setting_keys.add("Setting 8");
+		setting_keys.add("Setting 9");
 		database_setup();
 		populate_variables();
 		new Main();

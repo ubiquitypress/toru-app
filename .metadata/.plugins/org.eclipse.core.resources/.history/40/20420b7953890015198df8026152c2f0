@@ -71,7 +71,7 @@ public class Main {
 	}
 	public static void populate_variables() {
 		System.out.println("Retrieving data from local database");
-		list_settings = new HashMap<String, Boolean>();		
+
 		try {
 			  ResultSet rs = stmt.executeQuery( "SELECT * FROM API WHERE URL="+"'api'"+";" );
 		      while ( rs.next() ) {
@@ -81,16 +81,6 @@ public class Main {
 		         System.out.println("ACCESS KEY: "+source_access_key);
 		      }
 		      rs.close();
-			  rs = stmt.executeQuery( "SELECT * FROM SETTING ;" );
-		      while ( rs.next() ) {
-		         String name = rs.getString("name");
-		         Boolean value = rs.getBoolean("value");
-		     	 list_settings.put(name, value);
-		      	 setting_keys.add(name);
-		         System.out.println("Setting - "+name+" : "+value.toString());
-		      }
-		      rs.close();
-		      
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -842,7 +832,7 @@ public class Main {
 	}
 
 	public Main() {
-		settings();
+		issues();
 	}
 
 	public static void main(String[] args) {
