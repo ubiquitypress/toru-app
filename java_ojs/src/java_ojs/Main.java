@@ -16,6 +16,7 @@ import javax.swing.border.SoftBevelBorder;
 import javax.swing.border.BevelBorder;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.JOptionPane;
+import java.awt.Label;
 
 public class Main {
 	JFrame login, api, issues, articles, settings;
@@ -30,6 +31,7 @@ public class Main {
 	 */
 	public void login() {
 		login = new JFrame();
+		login.getContentPane().setForeground(Color.WHITE);
 		login.getContentPane().setBackground(new Color(128, 128, 128));
 
 		login.setSize(400, 500);// 400 width and 500 height
@@ -108,14 +110,6 @@ public class Main {
 		btnLogin.setBounds(139, 300, 117, 29);
 		login.getContentPane().add(btnLogin);
 
-		final Button internet1 = new Button("ONLINE");
-		internet1.setForeground(Color.WHITE);
-		internet1.setFont(new Font("Arial", Font.BOLD, 12));
-
-		internet1.setBounds(311, 60, 70, 25);
-		internet1.setBackground(Color.GREEN);
-		login.getContentPane().add(internet1);
-
 		final JButton btnSync1 = new JButton("Sync");
 		btnSync1.setBounds(235, 60, 70, 25);
 		login.getContentPane().add(btnSync1);
@@ -126,6 +120,14 @@ public class Main {
 		lblLogIn.setHorizontalAlignment(SwingConstants.CENTER);
 		lblLogIn.setBounds(160, 128, 80, 30);
 		login.getContentPane().add(lblLogIn);
+		
+		final Label internetCheck = new Label("   ONLINE");
+		internetCheck.setFont(new Font("Dialog", Font.BOLD | Font.ITALIC, 12));
+		internetCheck.setBackground(Color.GREEN);
+		internetCheck.setForeground(new Color(255,255,255));
+		internetCheck.setAlignment(1);
+		internetCheck.setBounds(305, 62, 65, 20);
+		login.getContentPane().add(internetCheck);
 
 		ActionListener taskPerformer1 = new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
@@ -135,14 +137,14 @@ public class Main {
 							"www.google.com", 80);
 					sock.setSoTimeout(500);
 					sock.connect(addr, 3000);
-
-					internet1.setBackground(Color.GREEN);
-					internet1.setLabel("ONLINE");
+					sock.close();
+					internetCheck.setBackground(Color.GREEN);
+					internetCheck.setText("ONLINE");
 					btnSync1.setEnabled(true);
 
 				} catch (Exception e) {
-					internet1.setBackground(Color.RED);
-					internet1.setLabel("OFFLINE");
+					internetCheck.setBackground(Color.RED);
+					internetCheck.setText("OFFLINE");
 					btnSync1.setEnabled(false);
 				}
 			}
@@ -167,13 +169,6 @@ public class Main {
 		lblNewLabel.setFont(new Font("Trattatello", Font.BOLD, 24));
 		lblNewLabel.setToolTipText("Welcome\n");
 	
-		final Button internet1 = new Button("ONLINE");
-		internet1.setForeground(Color.WHITE);
-		internet1.setFont(new Font("Arial", Font.BOLD, 12));
-
-		internet1.setBounds(311, 60, 70, 25);
-		internet1.setBackground(Color.GREEN);
-		settings.getContentPane().add(internet1);
 
 		final JButton btnSync1 = new JButton("Sync");
 		btnSync1.setBounds(235, 60, 70, 25);
@@ -201,6 +196,13 @@ public class Main {
 		});
 		btnSave.setBounds(150, 288, 100, 25);
 		settings.getContentPane().add(btnSave);
+		final Label internetCheck = new Label("  ONLINE");
+		internetCheck.setFont(new Font("Dialog", Font.BOLD | Font.ITALIC, 12));
+		internetCheck.setBackground(Color.GREEN);
+		internetCheck.setAlignment(1);
+		internetCheck.setForeground(new Color(255,255,255));
+		internetCheck.setBounds(305, 62, 65, 20);
+		settings.getContentPane().add(internetCheck);
 
 		ActionListener taskPerformer1 = new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
@@ -211,17 +213,19 @@ public class Main {
 					sock.setSoTimeout(500);
 					sock.connect(addr, 3000);
 
-					internet1.setBackground(Color.GREEN);
-					internet1.setLabel("ONLINE");
+					internetCheck.setBackground(Color.GREEN);
+					internetCheck.setText("ONLINE");
 					btnSync1.setEnabled(true);
+					sock.close();
 
 				} catch (Exception e) {
-					internet1.setBackground(Color.RED);
-					internet1.setLabel("OFFLINE");
+					internetCheck.setBackground(Color.RED);
+					internetCheck.setText("OFFLINE");
 					btnSync1.setEnabled(false);
 				}
 			}
 		};
+	
 		new Timer(delay, taskPerformer1).start();
 		settings.setVisible(true);// making the frame visible
 	}
@@ -301,14 +305,7 @@ public class Main {
 		btnSubmit.setBounds(139, 300, 117, 29);
 		api.getContentPane().add(btnSubmit);
 
-		final Button internet1 = new Button("ONLINE");
-		internet1.setForeground(Color.WHITE);
-		internet1.setFont(new Font("Arial", Font.BOLD, 12));
-
-		internet1.setBounds(311, 60, 70, 25);
-		internet1.setBackground(Color.GREEN);
-		api.getContentPane().add(internet1);
-
+	
 		final JButton btnSync1 = new JButton("Sync");
 		btnSync1.setBounds(235, 60, 70, 25);
 		api.getContentPane().add(btnSync1);
@@ -319,6 +316,14 @@ public class Main {
 		lblApiInformation.setFont(new Font("Dialog", Font.BOLD, 20));
 		lblApiInformation.setBounds(55, 110, 309, 43);
 		api.getContentPane().add(lblApiInformation);
+		final Label internetCheck = new Label("  ONLINE");
+		internetCheck.setFont(new Font("Dialog", Font.BOLD | Font.ITALIC, 12));
+		internetCheck.setBackground(Color.GREEN);
+		internetCheck.setBounds(305, 62, 65, 20);
+		internetCheck.setForeground(new Color(255,255,255));
+		internetCheck.setAlignment(1);
+		api.getContentPane().add(internetCheck);
+
 		ActionListener taskPerformer1 = new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
 				try {
@@ -328,13 +333,14 @@ public class Main {
 					sock.setSoTimeout(500);
 					sock.connect(addr, 3000);
 
-					internet1.setBackground(Color.GREEN);
-					internet1.setLabel("ONLINE");
+					internetCheck.setBackground(Color.GREEN);
+					internetCheck.setText("ONLINE");
 					btnSync1.setEnabled(true);
+					sock.close();
 
 				} catch (Exception e) {
-					internet1.setBackground(Color.RED);
-					internet1.setLabel("OFFLINE");
+					internetCheck.setBackground(Color.RED);
+					internetCheck.setText("OFFLINE");
 					btnSync1.setEnabled(false);
 				}
 			}
@@ -355,13 +361,7 @@ public class Main {
 				{ "Row4-Column1", "Row4-Column2", "Row4-Column3", "View" } };
 		Object columnNames[] = { "Column One", "Column Two", "Column Three", "" };
 		issues.getContentPane().setLayout(null);
-		final Button internet = new Button("ONLINE");
-		internet.setForeground(Color.WHITE);
-		internet.setFont(new Font("Arial", Font.BOLD, 12));
 
-		internet.setBounds(520, 20, 70, 25);
-		internet.setBackground(Color.GREEN);
-		issues.getContentPane().add(internet);
 
 		final JButton btnSync = new JButton("Sync");
 		btnSync.setBounds(445, 20, 70, 25);
@@ -379,27 +379,36 @@ public class Main {
 				null));
 		table.setCellSelectionEnabled(true);
 
-		ActionListener taskPerformer = new ActionListener() {
+		final Label internetCheck = new Label("ONLINE");
+		internetCheck.setFont(new Font("Dialog", Font.BOLD | Font.ITALIC, 12));
+		internetCheck.setBackground(Color.GREEN);
+		internetCheck.setBounds(515, 22, 65, 20);
+		internetCheck.setForeground(new Color(255,255,255));
+		internetCheck.setAlignment(1);
+		issues.getContentPane().add(internetCheck);
+
+		ActionListener taskPerformer1 = new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
 				try {
 					Socket sock = new Socket();
 					InetSocketAddress addr = new InetSocketAddress(
-							"www.youtube.com", 80);
+							"www.google.com", 80);
 					sock.setSoTimeout(500);
 					sock.connect(addr, 3000);
 
-					internet.setBackground(Color.GREEN);
-					internet.setLabel("ONLINE");
+					internetCheck.setBackground(Color.GREEN);
+					internetCheck.setText("ONLINE");
 					btnSync.setEnabled(true);
+					sock.close();
 
 				} catch (Exception e) {
-					internet.setBackground(Color.RED);
-					internet.setLabel("OFFLINE");
+					internetCheck.setBackground(Color.RED);
+					internetCheck.setText("OFFLINE");
 					btnSync.setEnabled(false);
 				}
 			}
 		};
-		new Timer(delay, taskPerformer).start();
+		new Timer(delay, taskPerformer1).start();
 		DefaultTableModel model = new DefaultTableModel(rowData, columnNames);
 		Action view = new AbstractAction() {
 			public void actionPerformed(ActionEvent e) {
@@ -442,13 +451,6 @@ public class Main {
 				{ "Row4-Column1", "Row4-Column2", "View" } };
 		Object columnNames[] = { "Column One", "Column Two", "" };
 		articles.getContentPane().setLayout(null);
-		final Button internet = new Button("ONLINE");
-		internet.setForeground(Color.WHITE);
-		internet.setFont(new Font("Arial", Font.BOLD, 12));
-
-		internet.setBounds(520, 20, 70, 25);
-		internet.setBackground(Color.GREEN);
-		articles.getContentPane().add(internet);
 
 		final JButton btnSync = new JButton("Sync");
 		btnSync.setBounds(445, 20, 70, 25);
@@ -466,27 +468,36 @@ public class Main {
 				null));
 		table.setCellSelectionEnabled(true);
 
-		ActionListener taskPerformer = new ActionListener() {
+		final Label internetCheck = new Label("  ONLINE");
+		internetCheck.setFont(new Font("Dialog", Font.BOLD | Font.ITALIC, 12));
+		internetCheck.setBackground(Color.GREEN);
+		internetCheck.setAlignment(1);
+		internetCheck.setForeground(new Color(255,255,255));
+		internetCheck.setBounds(515, 22, 65, 20);
+		articles.getContentPane().add(internetCheck);
+
+		ActionListener taskPerformer1 = new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
 				try {
 					Socket sock = new Socket();
 					InetSocketAddress addr = new InetSocketAddress(
-							"www.youtube.com", 80);
+							"www.google.com", 80);
 					sock.setSoTimeout(500);
 					sock.connect(addr, 3000);
 
-					internet.setBackground(Color.GREEN);
-					internet.setLabel("ONLINE");
+					internetCheck.setBackground(Color.GREEN);
+					internetCheck.setText("ONLINE");
 					btnSync.setEnabled(true);
+					sock.close();
 
 				} catch (Exception e) {
-					internet.setBackground(Color.RED);
-					internet.setLabel("OFFLINE");
+					internetCheck.setBackground(Color.RED);
+					internetCheck.setText("OFFLINE");
 					btnSync.setEnabled(false);
 				}
 			}
 		};
-		new Timer(delay, taskPerformer).start();
+		new Timer(delay, taskPerformer1).start();
 		DefaultTableModel model = new DefaultTableModel(rowData, columnNames);
 		Action view = new AbstractAction() {
 			public void actionPerformed(ActionEvent e) {
