@@ -25,7 +25,7 @@ public class Main {
 	JFrame login, api, issues, articles, settings;
 	private JTextField access_key, api_url,username;
 	private JTable issues_table;
-	private int delay = 1000; // milliseconds
+	private int delay = 500; // milliseconds
 	private String source_api = "";
 	private String source_access_key = "";
 	private JPasswordField passwordField;
@@ -200,7 +200,7 @@ public class Main {
 		panelSettings.setLayout(null);
 		panelSettings.setAutoscrolls(true);
 		int y=10;
-		int settings_height=210+30*(setting_keys.size()-8);
+		int settings_height=200+32*(setting_keys.size()-8);
 		panelSettings.setPreferredSize(new Dimension( 320,settings_height));
 		JScrollPane scrollFrame = new JScrollPane(panelSettings);
 		panelSettings.setAutoscrolls(true);
@@ -209,7 +209,7 @@ public class Main {
 		scrollSettings.setViewportView(scrollFrame);
 		settings.getContentPane().add(scrollFrame);
 		for (int i=0;i<setting_keys.size();i++){
-			JCheckBox chckbxSampleSetting = new JCheckBox(setting_keys.get(i));
+			JCheckBox chckbxSampleSetting = new JCheckBox("Sample setting");
 			int s=i; 
 			chckbxSampleSetting.setName(Integer.toString(i));
 			chckbxSampleSetting.setBounds(81, y, 150, 23);

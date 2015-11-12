@@ -9,7 +9,6 @@ import java.util.HashMap;
 import java.awt.event.ActionEvent;
 import java.awt.Font;
 import java.awt.Color;
-import java.awt.Dimension;
 import java.awt.Button;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
@@ -25,7 +24,7 @@ public class Main {
 	JFrame login, api, issues, articles, settings;
 	private JTextField access_key, api_url,username;
 	private JTable issues_table;
-	private int delay = 1000; // milliseconds
+	private int delay = 500; // milliseconds
 	private String source_api = "";
 	private String source_access_key = "";
 	private JPasswordField passwordField;
@@ -192,24 +191,18 @@ public class Main {
 		lblSettings.setBounds(110, 128, 160, 30);
 		settings.getContentPane().add(lblSettings);
 		JScrollPane scrollSettings = new JScrollPane();
+		scrollSettings.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
 		scrollSettings.setBounds(40, 180, 320, 200);
-		
+		settings.getContentPane().add(scrollSettings);
 		
 		JPanel panelSettings = new JPanel();
-		
+		scrollSettings.setViewportView(panelSettings);
 		panelSettings.setLayout(null);
 		panelSettings.setAutoscrolls(true);
 		int y=10;
-		int settings_height=210+30*(setting_keys.size()-8);
-		panelSettings.setPreferredSize(new Dimension( 320,settings_height));
-		JScrollPane scrollFrame = new JScrollPane(panelSettings);
-		panelSettings.setAutoscrolls(true);
-		scrollFrame.setPreferredSize(new Dimension( 320,200));
-		scrollFrame.setBounds(40, 180, 320, 200);
-		scrollSettings.setViewportView(scrollFrame);
-		settings.getContentPane().add(scrollFrame);
+		
 		for (int i=0;i<setting_keys.size();i++){
-			JCheckBox chckbxSampleSetting = new JCheckBox(setting_keys.get(i));
+			JCheckBox chckbxSampleSetting = new JCheckBox("Sample setting");
 			int s=i; 
 			chckbxSampleSetting.setName(Integer.toString(i));
 			chckbxSampleSetting.setBounds(81, y, 150, 23);

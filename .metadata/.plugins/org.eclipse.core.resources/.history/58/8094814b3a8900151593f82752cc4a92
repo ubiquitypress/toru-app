@@ -209,10 +209,10 @@ public class Main {
 		scrollSettings.setViewportView(scrollFrame);
 		settings.getContentPane().add(scrollFrame);
 		for (int i=0;i<setting_keys.size();i++){
-			JCheckBox chckbxSampleSetting = new JCheckBox(setting_keys.get(i));
+			JCheckBox chckbxSampleSetting = new JCheckBox("Sample setting");
 			int s=i; 
 			chckbxSampleSetting.setName(Integer.toString(i));
-			chckbxSampleSetting.setBounds(81, y, 150, 23);
+			chckbxSampleSetting.setBounds(60, y, 200, 23);
 			chckbxSampleSetting.setSelected(list_settings.get(setting_keys.get(i)));
 			chckbxSampleSetting.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {

@@ -9,7 +9,6 @@ import java.util.HashMap;
 import java.awt.event.ActionEvent;
 import java.awt.Font;
 import java.awt.Color;
-import java.awt.Dimension;
 import java.awt.Button;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
@@ -25,7 +24,7 @@ public class Main {
 	JFrame login, api, issues, articles, settings;
 	private JTextField access_key, api_url,username;
 	private JTable issues_table;
-	private int delay = 1000; // milliseconds
+	private int delay = 500; // milliseconds
 	private String source_api = "";
 	private String source_access_key = "";
 	private JPasswordField passwordField;
@@ -191,28 +190,12 @@ public class Main {
 		lblSettings.setHorizontalAlignment(SwingConstants.CENTER);
 		lblSettings.setBounds(110, 128, 160, 30);
 		settings.getContentPane().add(lblSettings);
-		JScrollPane scrollSettings = new JScrollPane();
-		scrollSettings.setBounds(40, 180, 320, 200);
-		
-		
-		JPanel panelSettings = new JPanel();
-		
-		panelSettings.setLayout(null);
-		panelSettings.setAutoscrolls(true);
-		int y=10;
-		int settings_height=210+30*(setting_keys.size()-8);
-		panelSettings.setPreferredSize(new Dimension( 320,settings_height));
-		JScrollPane scrollFrame = new JScrollPane(panelSettings);
-		panelSettings.setAutoscrolls(true);
-		scrollFrame.setPreferredSize(new Dimension( 320,200));
-		scrollFrame.setBounds(40, 180, 320, 200);
-		scrollSettings.setViewportView(scrollFrame);
-		settings.getContentPane().add(scrollFrame);
+		int y=180;
 		for (int i=0;i<setting_keys.size();i++){
-			JCheckBox chckbxSampleSetting = new JCheckBox(setting_keys.get(i));
+			JCheckBox chckbxSampleSetting = new JCheckBox("Sample setting");
 			int s=i; 
 			chckbxSampleSetting.setName(Integer.toString(i));
-			chckbxSampleSetting.setBounds(81, y, 150, 23);
+			chckbxSampleSetting.setBounds(125, y, 150, 23);
 			chckbxSampleSetting.setSelected(list_settings.get(setting_keys.get(i)));
 			chckbxSampleSetting.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
@@ -220,7 +203,7 @@ public class Main {
 				}
 			});
 			y=y+25;
-			panelSettings.add(chckbxSampleSetting);
+			settings.getContentPane().add(chckbxSampleSetting);
 		}
 		JButton btnSave = new JButton("Save");
 		btnSave.addActionListener(new ActionListener() {
@@ -236,7 +219,7 @@ public class Main {
 			}
 		});
 		y=y+10;
-		btnSave.setBounds(140,400, 100, 25);
+		btnSave.setBounds(140,y, 100, 25);
 		settings.getContentPane().add(btnSave);
 		final Label internetCheck = new Label("  ONLINE");
 		internetCheck.setFont(new Font("Dialog", Font.BOLD | Font.ITALIC, 12));
@@ -246,6 +229,18 @@ public class Main {
 		internetCheck.setBounds(305, 62, 65, 20);
 		settings.getContentPane().add(internetCheck);
 		
+		JScrollPane scrollPane = new JScrollPane();
+		scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+		scrollPane.setBounds(40, 180, 320, 200);
+		settings.getContentPane().add(scrollPane);
+		
+		JPanel panel = new JPanel();
+		scrollPane.setViewportView(panel);
+		panel.setLayout(null);
+		
+		JCheckBox chckbxNewCheckBox = new JCheckBox("New check box");
+		chckbxNewCheckBox.setBounds(81, 46, 128, 23);
+		panel.add(chckbxNewCheckBox);
 
 
 		ActionListener taskPerformer1 = new ActionListener() {
@@ -740,21 +735,9 @@ public class Main {
 		list_settings.put("Setting 1", true);
 		list_settings.put("Setting 2", false);
 		list_settings.put("Setting 3", true);
-		list_settings.put("Setting 4", true);
-		list_settings.put("Setting 5", false);
-		list_settings.put("Setting 6", true);
-		list_settings.put("Setting 7", true);
-		list_settings.put("Setting 8", false);
-		list_settings.put("Setting 9", true);
 		setting_keys.add("Setting 1");
 		setting_keys.add("Setting 2");
 		setting_keys.add("Setting 3");
-		setting_keys.add("Setting 4");
-		setting_keys.add("Setting 5");
-		setting_keys.add("Setting 6");
-		setting_keys.add("Setting 7");
-		setting_keys.add("Setting 8");
-		setting_keys.add("Setting 9");
 		new Main();
 	}
 }
