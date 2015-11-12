@@ -196,10 +196,10 @@ public class Main {
 			public void actionPerformed(ActionEvent arg0) {
 				settings.setVisible(false);
 				settings.dispose();
-				if(issues==null){
+				if((issues==null)||!(issues.isVisible())){
 					issues();
-				}else if (!issues.isVisible()){
-					issues.setVisible(true);
+				}else{
+					
 				}
 			}
 		});

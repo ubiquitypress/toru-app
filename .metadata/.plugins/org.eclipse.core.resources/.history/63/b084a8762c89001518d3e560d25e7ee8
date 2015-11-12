@@ -73,10 +73,9 @@ public class Main {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				String user = username.getText();
-				String pass = String.valueOf(passwordField.getPassword());
+				String pass = passwordField.getText();
 				if (pass.compareTo("root") == 0 && user.compareTo("user") == 0) {
 					login.setVisible(false);
-					login.dispose();
 					if (source_api.compareTo("") == 0
 							&& source_access_key.compareTo("") == 0) {
 						api(false);
@@ -195,11 +194,8 @@ public class Main {
 		btnSave.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				settings.setVisible(false);
-				settings.dispose();
-				if(issues==null){
+				if((issues==null)||!(issues.isVisible())){
 					issues();
-				}else if (!issues.isVisible()){
-					issues.setVisible(true);
 				}
 			}
 		});
@@ -567,13 +563,10 @@ public class Main {
 			public void actionPerformed(ActionEvent arg0) {
 				articles.setVisible(false);
 				if(issues==null){
-					articles.dispose();
 					issues();
 				}else if (!issues.isVisible()){
-					articles.dispose();
 					issues();
 				}else{
-					articles.dispose();
 					issues.setVisible(true);
 				}
 			}
