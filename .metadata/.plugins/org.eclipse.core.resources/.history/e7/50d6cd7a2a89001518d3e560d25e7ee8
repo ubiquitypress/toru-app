@@ -78,7 +78,7 @@ public class Main {
 					login.setVisible(false);
 					if (source_api.compareTo("") == 0
 							&& source_access_key.compareTo("") == 0) {
-						api(false);
+						api();
 					} else {
 						issues();
 					}
@@ -98,7 +98,7 @@ public class Main {
 					login.setVisible(false);
 					if (source_api.compareTo("") == 0
 							&& source_access_key.compareTo("") == 0) {
-						api(false);
+						api();
 					} else {
 						issues();
 					}
@@ -234,7 +234,7 @@ public class Main {
 		new Timer(delay, taskPerformer1).start();
 		settings.setVisible(true);// making the frame visible
 	}
-	public void api(boolean edit) {
+	public void api() {
 		api = new JFrame();
 		api.getContentPane().setBackground(new Color(128, 128, 128));
 
@@ -263,7 +263,6 @@ public class Main {
 		lblNewLabel.setToolTipText("Welcome\n");
 		access_key = new JTextField();
 		access_key.setColumns(10);
-		access_key.setText(source_access_key);
 		access_key.setBounds(80, 248, 239, 26);
 		api.getContentPane().add(access_key);
 		JLabel lblAccessKey = new JLabel("Access Key");
@@ -273,9 +272,6 @@ public class Main {
 		api.getContentPane().add(lblAccessKey);
 
 		JButton btnSubmit = new JButton("Submit");
-		if (edit){
-			btnSubmit.setText("Save");
-		}
 		Action actionSubmit = new AbstractAction() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -285,8 +281,7 @@ public class Main {
 					api.setVisible(false);
 					source_api = url;
 					source_access_key = key;
-					if (!edit){
-					issues();}
+					issues();
 				} else {
 					JOptionPane.showMessageDialog(null,
 							"Wrong access key or API url");
@@ -452,7 +447,7 @@ public class Main {
 		JButton btnApi = new JButton("API");
 		btnApi.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				api(true);
+				api();
 			}
 		});
 		btnApi.setBounds(120, 18, 117, 29);

@@ -273,9 +273,6 @@ public class Main {
 		api.getContentPane().add(lblAccessKey);
 
 		JButton btnSubmit = new JButton("Submit");
-		if (edit){
-			btnSubmit.setText("Save");
-		}
 		Action actionSubmit = new AbstractAction() {
 			@Override
 			public void actionPerformed(ActionEvent e) {

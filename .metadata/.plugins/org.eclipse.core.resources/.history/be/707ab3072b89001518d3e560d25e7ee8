@@ -274,7 +274,7 @@ public class Main {
 
 		JButton btnSubmit = new JButton("Submit");
 		if (edit){
-			btnSubmit.setText("Save");
+			btnSubmit.setLabel("Save");
 		}
 		Action actionSubmit = new AbstractAction() {
 			@Override
