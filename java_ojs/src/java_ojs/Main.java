@@ -4,6 +4,8 @@ import javax.swing.*;
 import java.awt.event.ActionListener;
 import java.net.InetSocketAddress;
 import java.net.Socket;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.awt.event.ActionEvent;
 import java.awt.Font;
 import java.awt.Color;
@@ -21,11 +23,13 @@ import java.awt.Label;
 public class Main {
 	JFrame login, api, issues, articles, settings;
 	private JTextField access_key, api_url,username;
-	private JTable table;
+	private JTable issues_table;
 	private int delay = 500; // milliseconds
 	private String source_api = "";
 	private String source_access_key = "";
 	private JPasswordField passwordField;
+	private static HashMap<String,Boolean> list_settings;
+	private static ArrayList<String> setting_keys=new ArrayList<String>();
 	/*
 	 * Initial setup test
 	 */
@@ -186,14 +190,25 @@ public class Main {
 		lblSettings.setHorizontalAlignment(SwingConstants.CENTER);
 		lblSettings.setBounds(110, 128, 160, 30);
 		settings.getContentPane().add(lblSettings);
-		
-		JCheckBox chckbxSampleSetting = new JCheckBox("Sample setting");
-		chckbxSampleSetting.setBounds(125, 206, 150, 23);
-		settings.getContentPane().add(chckbxSampleSetting);
-		
+		int y=180;
+		for (int i=0;i<setting_keys.size();i++){
+			JCheckBox chckbxSampleSetting = new JCheckBox("Sample setting");
+			int s=i; 
+			chckbxSampleSetting.setName(Integer.toString(i));
+			chckbxSampleSetting.setBounds(125, y, 150, 23);
+			chckbxSampleSetting.setSelected(list_settings.get(setting_keys.get(i)));
+			chckbxSampleSetting.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					list_settings.replace(setting_keys.get(s), chckbxSampleSetting.isSelected());
+				}
+			});
+			y=y+25;
+			settings.getContentPane().add(chckbxSampleSetting);
+		}
 		JButton btnSave = new JButton("Save");
 		btnSave.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
+				
 				settings.setVisible(false);
 				settings.dispose();
 				if(issues==null){
@@ -203,7 +218,8 @@ public class Main {
 				}
 			}
 		});
-		btnSave.setBounds(150, 288, 100, 25);
+		y=y+10;
+		btnSave.setBounds(140,y, 100, 25);
 		settings.getContentPane().add(btnSave);
 		final Label internetCheck = new Label("  ONLINE");
 		internetCheck.setFont(new Font("Dialog", Font.BOLD | Font.ITALIC, 12));
@@ -212,6 +228,7 @@ public class Main {
 		internetCheck.setForeground(new Color(255,255,255));
 		internetCheck.setBounds(305, 62, 65, 20);
 		settings.getContentPane().add(internetCheck);
+
 
 		ActionListener taskPerformer1 = new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
@@ -387,12 +404,12 @@ public class Main {
 				.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
 		scrollPane.setBounds(120, 120, 400, 280);
 		issues.getContentPane().add(scrollPane);
-		table = new JTable(rowData, columnNames);
-		scrollPane.setViewportView(table);
-		table.setColumnSelectionAllowed(true);
-		table.setBorder(new BevelBorder(BevelBorder.RAISED, null, null, null,
+		issues_table = new JTable(rowData, columnNames);
+		scrollPane.setViewportView(issues_table);
+		issues_table.setColumnSelectionAllowed(true);
+		issues_table.setBorder(new BevelBorder(BevelBorder.RAISED, null, null, null,
 				null));
-		table.setCellSelectionEnabled(true);
+		issues_table.setCellSelectionEnabled(true);
 
 		final Label internetCheck = new Label("ONLINE");
 		internetCheck.setFont(new Font("Dialog", Font.BOLD | Font.ITALIC, 12));
@@ -435,7 +452,7 @@ public class Main {
 			}
 		};
 
-		ButtonColumn buttonColumn = new ButtonColumn(table, view, 3);
+		ButtonColumn buttonColumn = new ButtonColumn(issues_table, view, 3);
 
 		JLabel lblIssues = new JLabel("Issues");
 		lblIssues.setFont(new Font("Dialog", Font.BOLD, 28));
@@ -485,7 +502,7 @@ public class Main {
 				.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
 		scrollPane.setBounds(120, 120, 400, 280);
 		articles.getContentPane().add(scrollPane);
-		table = new JTable(rowData, columnNames);
+		JTable table = new JTable(rowData, columnNames);
 		scrollPane.setViewportView(table);
 		table.setColumnSelectionAllowed(true);
 		table.setBorder(new BevelBorder(BevelBorder.RAISED, null, null, null,
@@ -535,7 +552,7 @@ public class Main {
 			public void actionPerformed(ActionEvent e) {
 				JTable table = (JTable) e.getSource();
 				int modelRow = Integer.valueOf(e.getActionCommand());
-				JOptionPane.showMessageDialog(null, modelRow);
+				article(issue_id,modelRow);
 				// / ((DefaultTableModel)table.getModel()).removeRow(modelRow);
 			}
 		};
@@ -571,10 +588,9 @@ public class Main {
 					issues();
 				}else if (!issues.isVisible()){
 					articles.dispose();
-					issues();
+					issues.setVisible(true);
 				}else{
 					articles.dispose();
-					issues.setVisible(true);
 				}
 			}
 		});
@@ -583,12 +599,132 @@ public class Main {
 		buttonColumn.setMnemonic(KeyEvent.VK_D);
 		buttonColumn2.setMnemonic(KeyEvent.VK_D);
 	}
+	public void article(int issue_id, int article_id) {
+		JFrame article = new JFrame();
+		article.setSize(400, 500);
+		article.getContentPane().setBackground(new Color(128, 128, 128));
+		article.setVisible(true);
+		Object rowData[][] = {
+				{ "Row1-Column1", "Row1-Column2", "View","Delete" },
+				{ "Row2-Column1", "Row2-Column2", "View","Delete"  },
+				{ "Row3-Column1", "Row3-Column2", "View","Delete"  },
+				{ "Row4-Column1", "Row4-Column2", "View","Delete"  } };
+		Object columnNames[] = { "Column One", "Column Two", "" , "" };
+		article.getContentPane().setLayout(null);
 
+		final JButton btnSync = new JButton("Sync");
+		btnSync.setBounds(250, 20, 70, 25);
+		article.getContentPane().add(btnSync);
+
+		final Label internetCheck = new Label("  ONLINE");
+		internetCheck.setFont(new Font("Dialog", Font.BOLD | Font.ITALIC, 12));
+		internetCheck.setBackground(Color.GREEN);
+		internetCheck.setAlignment(1);
+		internetCheck.setForeground(new Color(255,255,255));
+		internetCheck.setBounds(320, 22, 65, 20);
+		article.getContentPane().add(internetCheck);
+
+		ActionListener taskPerformer1 = new ActionListener() {
+			public void actionPerformed(ActionEvent evt) {
+				try {
+					Socket sock = new Socket();
+					InetSocketAddress addr = new InetSocketAddress(
+							"www.google.com", 80);
+					sock.setSoTimeout(500);
+					sock.connect(addr, 3000);
+
+					internetCheck.setBackground(Color.GREEN);
+					internetCheck.setText("ONLINE");
+					btnSync.setEnabled(true);
+					sock.close();
+
+				} catch (Exception e) {
+					internetCheck.setBackground(Color.RED);
+					internetCheck.setText("OFFLINE");
+					btnSync.setEnabled(false);
+				}
+			}
+		};
+		new Timer(delay, taskPerformer1).start();
+		DefaultTableModel model = new DefaultTableModel(rowData, columnNames);
+		Action delete = new AbstractAction() {
+			public void actionPerformed(ActionEvent e) {
+				JTable table = (JTable) e.getSource();
+				int modelRow = Integer.valueOf(e.getActionCommand());
+				JOptionPane.showMessageDialog(null, "Deleted");
+				// / ((DefaultTableModel)table.getModel()).removeRow(modelRow);
+			}
+		};
+		Action view = new AbstractAction() {
+			public void actionPerformed(ActionEvent e) {
+				JTable table = (JTable) e.getSource();
+				int modelRow = Integer.valueOf(e.getActionCommand());
+				JOptionPane.showMessageDialog(null, modelRow);
+				// / ((DefaultTableModel)table.getModel()).removeRow(modelRow);
+			}
+		};
+		
+		JButton btnGoBack = new JButton("Close");
+		btnGoBack.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				article.setVisible(false);
+				if(articles==null){
+					article.dispose();
+					articles(issue_id);
+				}else if (!articles.isVisible()){
+					article.dispose();
+					articles.setVisible(true);
+				}else{
+					article.dispose();
+				}
+			}
+		});
+		btnGoBack.setBounds(6, 17, 117, 30);
+		article.getContentPane().add(btnGoBack);
+		
+		JPanel panel = new JPanel();
+		panel.setBounds(50, 107, 300, 307);
+		article.getContentPane().add(panel);
+		panel.setLayout(null);
+		
+				JLabel lblIssues = new JLabel("Article:");
+				lblIssues.setBounds(24, 18, 110, 30);
+				panel.add(lblIssues);
+				lblIssues.setFont(new Font("Dialog", Font.BOLD, 18));
+				lblIssues.setForeground(Color.BLACK);
+				
+				JLabel lblIssue = new JLabel("Issue:");
+				lblIssue.setBounds(24, 48, 94, 30);
+				panel.add(lblIssue);
+				lblIssue.setForeground(Color.BLACK);
+				lblIssue.setFont(new Font("Dialog", Font.BOLD, 18));
+				
+				JLabel lblIssueId = new JLabel("");
+				lblIssueId.setBounds(130, 49, 94, 30);
+				panel.add(lblIssueId);
+				lblIssueId.setForeground(Color.BLACK);
+				lblIssueId.setFont(new Font("Dialog", Font.BOLD, 16));
+				lblIssueId.setText(Integer.toString(issue_id));
+				
+				JLabel lblArticleId = new JLabel("1");
+				lblArticleId.setBounds(130, 19, 94, 30);
+				panel.add(lblArticleId);
+				lblArticleId.setForeground(Color.BLACK);
+				lblArticleId.setFont(new Font("Dialog", Font.BOLD, 16));
+				lblArticleId.setText(Integer.toString(article_id));
+	}
 	public Main() {
-		login();
+		settings();
 	}
 
 	public static void main(String[] args) {
+		list_settings = new HashMap<String,Boolean>();
+		list_settings.put("Setting 1", true);
+		list_settings.put("Setting 2", false);
+		list_settings.put("Setting 3", true);
+		setting_keys.add("Setting 1");
+		setting_keys.add("Setting 2");
+		setting_keys.add("Setting 3");
 		new Main();
 	}
 }
