@@ -25,6 +25,7 @@ import javax.swing.JOptionPane;
 import java.awt.Label;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.awt.Panel;
 
 public class Main {
 	JFrame login, api, issues, articles, settings;
@@ -205,7 +206,6 @@ public class Main {
 			}
 		});
 
-		btnLogin.setBackground(UIManager.getColor("Button.darkShadow"));
 		btnLogin.setBounds(139, 300, 117, 29);
 		login.getContentPane().add(btnLogin);
 
@@ -494,7 +494,7 @@ public class Main {
 
 	public void issues() {
 		issues = new JFrame();
-		issues.setSize(640, 480);
+		issues.setSize(640, 525);
 		issues.getContentPane().setBackground(new Color(128, 128, 128));
 		issues.setVisible(true);
 		issues.addWindowListener(new WindowAdapter() {
@@ -524,6 +524,7 @@ public class Main {
 		issues_table.setBorder(new BevelBorder(BevelBorder.RAISED, null, null, null, null));
 		issues_table.setCellSelectionEnabled(true);
 		issues_table.setRowHeight(23);
+		
 		final Label internetCheck = new Label("ONLINE");
 		internetCheck.setFont(new Font("Dialog", Font.BOLD | Font.ITALIC, 12));
 		internetCheck.setBackground(Color.GREEN);
@@ -578,7 +579,6 @@ public class Main {
 				settings();
 			}
 		});
-		btnSettings.setBackground(UIManager.getColor("Button.disabledToolBarBorderBackground"));
 		btnSettings.setBounds(15, 20, 117, 29);
 		issues.getContentPane().add(btnSettings);
 
@@ -606,12 +606,22 @@ public class Main {
 		lblUpdateDb.setHorizontalAlignment(SwingConstants.CENTER);
 		lblUpdateDb.setBounds(26, 395, 70, 15);
 		issues.getContentPane().add(lblUpdateDb);
+		
+		Panel footer_border = new Panel();
+		footer_border.setBackground(new Color(220, 20, 60));
+		footer_border.setBounds(0, 451, 640, 10);
+		issues.getContentPane().add(footer_border);
+		
+		Panel footer = new Panel();
+		footer.setBackground(new Color(178, 34, 34));
+		footer.setBounds(0, 451, 640, 120);
+		issues.getContentPane().add(footer);
 		buttonColumn.setMnemonic(KeyEvent.VK_D);
 	}
 
 	public void articles(final int issue_id) {
 		articles = new JFrame();
-		articles.setSize(640, 480);
+		articles.setSize(640, 525);
 		articles.getContentPane().setBackground(new Color(128, 128, 128));
 		articles.setVisible(true);
 		articles.addWindowListener(new WindowAdapter() {
@@ -622,21 +632,6 @@ public class Main {
 		});
 		Object rowData[][] = { { "Row1-Column1", "Row1-Column2", "View", "Delete" },
 				{ "Row2-Column1", "Row2-Column2", "View", "Delete" },
-				{ "Row3-Column1", "Row3-Column2", "View", "Delete" },
-				{ "Row3-Column1", "Row3-Column2", "View", "Delete" },
-				{ "Row3-Column1", "Row3-Column2", "View", "Delete" },
-				{ "Row3-Column1", "Row3-Column2", "View", "Delete" },
-				{ "Row3-Column1", "Row3-Column2", "View", "Delete" },
-				{ "Row3-Column1", "Row3-Column2", "View", "Delete" },
-				{ "Row3-Column1", "Row3-Column2", "View", "Delete" },
-				{ "Row3-Column1", "Row3-Column2", "View", "Delete" },
-				{ "Row3-Column1", "Row3-Column2", "View", "Delete" },
-				{ "Row3-Column1", "Row3-Column2", "View", "Delete" },
-				{ "Row3-Column1", "Row3-Column2", "View", "Delete" },
-				{ "Row3-Column1", "Row3-Column2", "View", "Delete" },
-				{ "Row3-Column1", "Row3-Column2", "View", "Delete" },
-				{ "Row3-Column1", "Row3-Column2", "View", "Delete" },
-				{ "Row3-Column1", "Row3-Column2", "View", "Delete" },
 				{ "Row3-Column1", "Row3-Column2", "View", "Delete" },
 				{ "Row4-Column1", "Row4-Column2", "View", "Delete" } };
 		Object columnNames[] = { "Tile", "Description", "", "" };
@@ -768,6 +763,15 @@ public class Main {
 		lblUpdateDb.setHorizontalAlignment(SwingConstants.CENTER);
 		lblUpdateDb.setBounds(26, 395, 70, 15);
 		articles.getContentPane().add(lblUpdateDb);
+		Panel footer_border = new Panel();
+		footer_border.setBackground(new Color(220, 20, 60));
+		footer_border.setBounds(0, 451, 640, 10);
+		articles.getContentPane().add(footer_border);
+		
+		Panel footer = new Panel();
+		footer.setBackground(new Color(178, 34, 34));
+		footer.setBounds(0, 451, 640, 120);
+		articles.getContentPane().add(footer);
 	}
 
 	public void article(final int issue_id, int article_id) {
