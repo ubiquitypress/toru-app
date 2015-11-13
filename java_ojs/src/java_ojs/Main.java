@@ -693,8 +693,13 @@ public class Main {
 				JTable table = (JTable) e.getSource();
 				int modelRow = Integer.valueOf(e.getActionCommand());
 	//			JOptionPane.showMessageDialog(null, "Deleted");
+				int reply = JOptionPane.showConfirmDialog(null, "Are you sure you want to delete this article?", "Delete ?",  JOptionPane.YES_NO_OPTION);
+				if (reply == JOptionPane.YES_OPTION)
+				{
+				  
+				
 				((DefaultTableModel)table.getModel()).removeRow(modelRow);
-				table.repaint();
+				table.repaint();}
 				
 				// / ((DefaultTableModel)table.getModel()).removeRow(modelRow);
 			}
