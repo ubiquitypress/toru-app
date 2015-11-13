@@ -1,6 +1,8 @@
 package java_ojs;
 
 import javax.swing.*;
+import javax.swing.UIManager.LookAndFeelInfo;
+
 import java.awt.event.ActionListener;
 import java.net.InetSocketAddress;
 import java.net.Socket;
@@ -521,7 +523,7 @@ public class Main {
 		issues_table.setColumnSelectionAllowed(true);
 		issues_table.setBorder(new BevelBorder(BevelBorder.RAISED, null, null, null, null));
 		issues_table.setCellSelectionEnabled(true);
-
+		issues_table.setRowHeight(22);
 		final Label internetCheck = new Label("ONLINE");
 		internetCheck.setFont(new Font("Dialog", Font.BOLD | Font.ITALIC, 12));
 		internetCheck.setBackground(Color.GREEN);
@@ -631,7 +633,7 @@ public class Main {
 		table.setColumnSelectionAllowed(true);
 		table.setBorder(new BevelBorder(BevelBorder.RAISED, null, null, null, null));
 		table.setCellSelectionEnabled(true);
-
+		table.setRowHeight(22);
 		final Label internetCheck = new Label("  ONLINE");
 		internetCheck.setFont(new Font("Dialog", Font.BOLD | Font.ITALIC, 12));
 		internetCheck.setBackground(Color.GREEN);
@@ -842,6 +844,22 @@ public class Main {
 	}
 
 	public Main() {
+		try {
+		    for (LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
+		        if ("Nimbus".equals(info.getName())) {
+		            UIManager.setLookAndFeel(info.getClassName());
+		            break;
+		        }
+		    }
+		} catch (UnsupportedLookAndFeelException e) {
+		    // handle exception
+		} catch (ClassNotFoundException e) {
+		    // handle exception
+		} catch (InstantiationException e) {
+		    // handle exception
+		} catch (IllegalAccessException e) {
+		    // handle exception
+		}
 		login();
 	}
 
