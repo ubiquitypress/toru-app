@@ -651,13 +651,6 @@ public class Main {
 		JButton btnAdd = new JButton("Add");
 		btnAdd.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-
-	//			JOptionPane.showMessageDialog(null, "Deleted");
-			
-				 Object[] new_row = { "Row3-Column1", "Row3-Column2", "Row3-Column3", "View","Delete"  };
-				
-				((DefaultTableModel)issues_table.getModel()).addRow(new_row);
-				issues_table.repaint();
 			}
 		});
 		btnAdd.setBounds(490, 109, 117, 25);
@@ -694,7 +687,7 @@ public class Main {
 		
 		DefaultTableModel dtm = new DefaultTableModel(rowData, columnNames);
 		
-		final JTable table = new JTable(dtm);
+		JTable table = new JTable(dtm);
 		
 		scrollPane.setViewportView(table);
 		table.setColumnSelectionAllowed(true);
@@ -839,10 +832,16 @@ public class Main {
 		JButton btnAdd = new JButton("Add");
 		btnAdd.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				 Object[] new_row = { "Row1-Column6", "Row1-Column2", "View", "Delete" };
+				JTable table = (JTable) e.getSource();
+				int modelRow = Integer.valueOf(e.getActionCommand());
+	//			JOptionPane.showMessageDialog(null, "Deleted");
+				int reply = JOptionPane.showConfirmDialog(null, "Are you sure you want to delete this article?", "Delete ?",  JOptionPane.YES_NO_OPTION);
+				if (reply == JOptionPane.YES_OPTION)
+				{
+				  
 				
-				((DefaultTableModel)table.getModel()).addRow(new_row);
-				table.repaint();
+				((DefaultTableModel)table.getModel()).addRow(rowData);
+				table.repaint();}
 			}
 		});
 		btnAdd.setBounds(490, 109, 117, 25);
