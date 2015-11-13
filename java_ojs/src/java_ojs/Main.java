@@ -516,7 +516,7 @@ public class Main {
 
 		JScrollPane scrollPane = new JScrollPane();
 		scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
-		scrollPane.setBounds(30, 100, 580, 280);
+		scrollPane.setBounds(30, 105, 580, 280);
 		issues.getContentPane().add(scrollPane);
 		issues_table = new JTable(rowData, columnNames);
 		scrollPane.setViewportView(issues_table);
@@ -568,6 +568,8 @@ public class Main {
 		ButtonColumn buttonColumn = new ButtonColumn(issues_table, view, 3);
 
 		JLabel lblIssues = new JLabel("Issues");
+		lblIssues.setBackground(new Color(220, 20, 60));
+		lblIssues.setOpaque(true);
 		lblIssues.setFont(new Font("Dialog", Font.BOLD, 28));
 		lblIssues.setForeground(new Color(240, 255, 255));
 		lblIssues.setBounds(40, 60, 120, 30);
@@ -616,6 +618,11 @@ public class Main {
 		footer.setBackground(new Color(178, 34, 34));
 		footer.setBounds(0, 451, 640, 120);
 		issues.getContentPane().add(footer);
+		
+		Panel panel = new Panel();
+		panel.setBackground(new Color(220, 20, 60));
+		panel.setBounds(0, 55, 640, 40);
+		issues.getContentPane().add(panel);
 		buttonColumn.setMnemonic(KeyEvent.VK_D);
 	}
 
@@ -910,7 +917,7 @@ public class Main {
 		} catch (IllegalAccessException e) {
 		    // handle exception
 		}
-		login();
+		issues();
 	}
 
 	public static void main(String[] args) {
