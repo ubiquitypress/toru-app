@@ -500,7 +500,7 @@ public class Main {
 		issues.addWindowListener(new WindowAdapter() {
 			@Override
 			public void windowClosing(WindowEvent e) {
-				database_save();
+			//	database_save();
 			}
 		});
 		Object rowData[][] = { { "Row1-Column1", "Row1-Column2", "Row1-Column3", "View" },
@@ -591,14 +591,21 @@ public class Main {
 		btnApi.setBounds(130, 20, 90, 29);
 		issues.getContentPane().add(btnApi);
 		
-		JButton btnSaveData = new JButton("Save Data");
+		JButton btnSaveData = new JButton("⛁");
+		btnSaveData.setFont(new Font("Dialog", Font.BOLD, 24));
 		btnSaveData.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				database_save();
 			}
 		});
-		btnSaveData.setBounds(26, 412, 117, 29);
+		btnSaveData.setBounds(26, 412, 70, 29);
 		issues.getContentPane().add(btnSaveData);
+		
+		JLabel lblUpdateDb = new JLabel("Update");
+		lblUpdateDb.setForeground(Color.WHITE);
+		lblUpdateDb.setHorizontalAlignment(SwingConstants.CENTER);
+		lblUpdateDb.setBounds(26, 395, 70, 15);
+		issues.getContentPane().add(lblUpdateDb);
 		buttonColumn.setMnemonic(KeyEvent.VK_D);
 	}
 
@@ -610,7 +617,7 @@ public class Main {
 		articles.addWindowListener(new WindowAdapter() {
 			@Override
 			public void windowClosing(WindowEvent e) {
-				database_save();
+				//database_save();
 			}
 		});
 		Object rowData[][] = { { "Row1-Column1", "Row1-Column2", "View", "Delete" },
@@ -722,6 +729,20 @@ public class Main {
 		articles.getContentPane().add(btnGoBack);
 		buttonColumn.setMnemonic(KeyEvent.VK_D);
 		buttonColumn2.setMnemonic(KeyEvent.VK_D);
+		JButton btnSaveData = new JButton("⛁");
+		btnSaveData.setFont(new Font("Dialog", Font.BOLD, 24));
+		btnSaveData.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				database_save();
+			}
+		});
+		btnSaveData.setBounds(26, 412, 70, 29);
+		articles.getContentPane().add(btnSaveData);
+		JLabel lblUpdateDb = new JLabel("Update");
+		lblUpdateDb.setForeground(Color.WHITE);
+		lblUpdateDb.setHorizontalAlignment(SwingConstants.CENTER);
+		lblUpdateDb.setBounds(26, 395, 70, 15);
+		articles.getContentPane().add(lblUpdateDb);
 	}
 
 	public void article(final int issue_id, int article_id) {
@@ -860,7 +881,7 @@ public class Main {
 		} catch (IllegalAccessException e) {
 		    // handle exception
 		}
-		login();
+		articles(1);
 	}
 
 	public static void main(String[] args) {
