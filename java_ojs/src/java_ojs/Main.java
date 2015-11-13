@@ -842,7 +842,7 @@ public class Main {
 	}
 
 	public Main() {
-		api(false);
+		login();
 	}
 
 	public static void main(String[] args) {
