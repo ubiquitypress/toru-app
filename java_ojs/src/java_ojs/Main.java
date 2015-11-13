@@ -650,12 +650,12 @@ public class Main {
 		articles.getContentPane().setLayout(null);
 
 		final JButton btnSync = new JButton("Sync");
-		btnSync.setBounds(445, 21, 70, 24);
+		btnSync.setBounds(485, 21, 70, 24);
 		articles.getContentPane().add(btnSync);
 
 		JScrollPane scrollPane = new JScrollPane();
 		scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
-		scrollPane.setBounds(30, 100, 580, 280);
+		scrollPane.setBounds(30, 110, 580, 270);
 		articles.getContentPane().add(scrollPane);
 		DefaultTableModel dtm = new DefaultTableModel(rowData, columnNames);
 		JTable table = new JTable(dtm);
@@ -670,7 +670,7 @@ public class Main {
 		internetCheck.setBackground(Color.GREEN);
 		internetCheck.setAlignment(1);
 		internetCheck.setForeground(new Color(255, 255, 255));
-		internetCheck.setBounds(515, 22, 65, 22);
+		internetCheck.setBounds(555, 22, 65, 22);
 		articles.getContentPane().add(internetCheck);
 
 		ActionListener taskPerformer1 = new ActionListener() {
@@ -723,22 +723,24 @@ public class Main {
 		ButtonColumn buttonColumn = new ButtonColumn(table, view, 2);
 		ButtonColumn buttonColumn2 = new ButtonColumn(table, delete, 3);
 
-		JLabel lblIssues = new JLabel("Articles");
-		lblIssues.setFont(new Font("Dialog", Font.BOLD, 28));
-		lblIssues.setForeground(new Color(240, 255, 255));
-		lblIssues.setBounds(40, 60, 180, 30);
-		articles.getContentPane().add(lblIssues);
+		JLabel lblArticles = new JLabel("Articles");
+		lblArticles.setFont(new Font("Dialog", Font.BOLD, 28));
+		lblArticles.setForeground(new Color(240, 255, 255));
+		lblArticles.setBounds(188, 60, 180, 30);
+		lblArticles.setOpaque(true);
+		articles.getContentPane().add(lblArticles);
 
 		JLabel lblIssue = new JLabel("Issue:");
 		lblIssue.setForeground(new Color(240, 255, 255));
 		lblIssue.setFont(new Font("Dialog", Font.BOLD, 28));
-		lblIssue.setBounds(29, 20, 94, 30);
+		lblIssue.setBounds(40, 60, 94, 30);
+		lblIssue.setOpaque(true);
 		articles.getContentPane().add(lblIssue);
 
 		JLabel lblIssueId = new JLabel("");
 		lblIssueId.setForeground(new Color(240, 255, 255));
 		lblIssueId.setFont(new Font("Dialog", Font.BOLD, 28));
-		lblIssueId.setBounds(129, 20, 94, 30);
+		lblIssueId.setBounds(136, 60, 50, 30);
 		lblIssueId.setText(Integer.toString(issue_id));
 		articles.getContentPane().add(lblIssueId);
 
@@ -757,7 +759,7 @@ public class Main {
 				}
 			}
 		});
-		btnGoBack.setBounds(167, 20, 117, 30);
+		btnGoBack.setBounds(15, 20, 117, 29);
 		articles.getContentPane().add(btnGoBack);
 		buttonColumn.setMnemonic(KeyEvent.VK_D);
 		buttonColumn2.setMnemonic(KeyEvent.VK_D);
@@ -784,6 +786,16 @@ public class Main {
 		footer.setBackground(new Color(178, 34, 34));
 		footer.setBounds(0, 451, 640, 120);
 		articles.getContentPane().add(footer);
+		
+		Panel panel = new Panel();
+		panel.setBackground(new Color(220, 20, 60));
+		panel.setBounds(0, 55, 640, 40);
+		articles.getContentPane().add(panel);
+		
+		Panel panel_1 = new Panel();
+		panel_1.setBackground(new Color(128, 0, 0));
+		panel_1.setBounds(0, 95, 640, 5);
+		articles.getContentPane().add(panel_1);
 	}
 
 	public void article(final int issue_id, int article_id) {
