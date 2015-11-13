@@ -635,7 +635,8 @@ public class Main {
 		scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
 		scrollPane.setBounds(120, 120, 400, 280);
 		articles.getContentPane().add(scrollPane);
-		JTable table = new JTable(rowData, columnNames);
+		DefaultTableModel dtm = new DefaultTableModel(rowData, columnNames);
+		JTable table = new JTable(dtm);
 		scrollPane.setViewportView(table);
 		table.setColumnSelectionAllowed(true);
 		table.setBorder(new BevelBorder(BevelBorder.RAISED, null, null, null, null));
@@ -675,7 +676,10 @@ public class Main {
 			public void actionPerformed(ActionEvent e) {
 				JTable table = (JTable) e.getSource();
 				int modelRow = Integer.valueOf(e.getActionCommand());
-				JOptionPane.showMessageDialog(null, "Deleted");
+	//			JOptionPane.showMessageDialog(null, "Deleted");
+				((DefaultTableModel)table.getModel()).removeRow(modelRow);
+				table.repaint();
+				
 				// / ((DefaultTableModel)table.getModel()).removeRow(modelRow);
 			}
 		};
