@@ -518,10 +518,7 @@ public class Main {
 		scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
 		scrollPane.setBounds(30, 110, 580, 270);
 		issues.getContentPane().add(scrollPane);
-	
-		DefaultTableModel dtm = new DefaultTableModel(rowData, columnNames);
-		
-		issues_table = new JTable(dtm);
+		issues_table = new JTable(rowData, columnNames);
 		scrollPane.setViewportView(issues_table);
 		issues_table.setColumnSelectionAllowed(true);
 		issues_table.setBorder(new BevelBorder(BevelBorder.RAISED, null, null, null, null));
@@ -563,7 +560,7 @@ public class Main {
 				JTable table = (JTable) e.getSource();
 				int modelRow = Integer.valueOf(e.getActionCommand());
 	//			JOptionPane.showMessageDialog(null, "Deleted");
-				int reply = JOptionPane.showConfirmDialog(null, "Are you sure you want to delete this issue?", "Delete ?",  JOptionPane.YES_NO_OPTION);
+				int reply = JOptionPane.showConfirmDialog(null, "Are you sure you want to delete this article?", "Delete ?",  JOptionPane.YES_NO_OPTION);
 				if (reply == JOptionPane.YES_OPTION)
 				{
 				  
