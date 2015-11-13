@@ -753,7 +753,7 @@ public class Main {
 		ButtonColumn buttonColumn2 = new ButtonColumn(table, delete, 3);
 
 		JLabel lblArticles = new JLabel("Articles");
-		lblArticles.setBackground(new Color(0, 139, 139));
+		lblArticles.setBackground(new Color(220, 20, 60));
 		lblArticles.setFont(new Font("Dialog", Font.BOLD, 28));
 		lblArticles.setForeground(new Color(240, 255, 255));
 		lblArticles.setBounds(188, 60, 180, 30);
@@ -761,7 +761,7 @@ public class Main {
 		articles.getContentPane().add(lblArticles);
 
 		JLabel lblIssue = new JLabel("Issue:");
-		lblIssue.setBackground(new Color(0, 139, 139));
+		lblIssue.setBackground(new Color(220, 20, 60));
 		lblIssue.setForeground(new Color(240, 255, 255));
 		lblIssue.setFont(new Font("Dialog", Font.BOLD, 28));
 		lblIssue.setBounds(40, 60, 94, 30);
@@ -769,7 +769,7 @@ public class Main {
 		articles.getContentPane().add(lblIssue);
 
 		JLabel lblIssueId = new JLabel("");
-		lblIssueId.setBackground(new Color(0, 139, 139));
+		lblIssueId.setBackground(new Color(220, 20, 60));
 		lblIssueId.setForeground(new Color(240, 255, 255));
 		lblIssueId.setFont(new Font("Dialog", Font.BOLD, 28));
 		lblIssueId.setBounds(136, 60, 50, 30);

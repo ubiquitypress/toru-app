@@ -682,7 +682,7 @@ public class Main {
 
 		JScrollPane scrollPane = new JScrollPane();
 		scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
-		scrollPane.setBounds(30, 140, 580, 240);
+		scrollPane.setBounds(30, 130, 580, 240);
 		articles.getContentPane().add(scrollPane);
 		
 		DefaultTableModel dtm = new DefaultTableModel(rowData, columnNames);
@@ -753,7 +753,7 @@ public class Main {
 		ButtonColumn buttonColumn2 = new ButtonColumn(table, delete, 3);
 
 		JLabel lblArticles = new JLabel("Articles");
-		lblArticles.setBackground(new Color(0, 139, 139));
+		lblArticles.setBackground(new Color(220, 20, 60));
 		lblArticles.setFont(new Font("Dialog", Font.BOLD, 28));
 		lblArticles.setForeground(new Color(240, 255, 255));
 		lblArticles.setBounds(188, 60, 180, 30);
@@ -761,7 +761,7 @@ public class Main {
 		articles.getContentPane().add(lblArticles);
 
 		JLabel lblIssue = new JLabel("Issue:");
-		lblIssue.setBackground(new Color(0, 139, 139));
+		lblIssue.setBackground(new Color(220, 20, 60));
 		lblIssue.setForeground(new Color(240, 255, 255));
 		lblIssue.setFont(new Font("Dialog", Font.BOLD, 28));
 		lblIssue.setBounds(40, 60, 94, 30);
@@ -769,7 +769,7 @@ public class Main {
 		articles.getContentPane().add(lblIssue);
 
 		JLabel lblIssueId = new JLabel("");
-		lblIssueId.setBackground(new Color(0, 139, 139));
+		lblIssueId.setBackground(new Color(220, 20, 60));
 		lblIssueId.setForeground(new Color(240, 255, 255));
 		lblIssueId.setFont(new Font("Dialog", Font.BOLD, 28));
 		lblIssueId.setBounds(136, 60, 50, 30);
@@ -811,24 +811,28 @@ public class Main {
 		lblUpdateDb.setBounds(26, 395, 70, 15);
 		articles.getContentPane().add(lblUpdateDb);
 		Panel footer_border = new Panel();
-		footer_border.setBackground(new Color(0, 139, 139));
+		footer_border.setBackground(new Color(220, 20, 60));
 		footer_border.setBounds(0, 451, 640, 10);
 		articles.getContentPane().add(footer_border);
 		
 		Panel footer = new Panel();
-		footer.setBackground(new Color(0, 128, 128));
+		footer.setBackground(new Color(178, 34, 34));
 		footer.setBounds(0, 451, 640, 120);
 		articles.getContentPane().add(footer);
 		
 		Panel panel = new Panel();
-		panel.setBackground(new Color(0, 139, 139));
+		panel.setBackground(new Color(220, 20, 60));
 		panel.setBounds(0, 55, 640, 40);
 		articles.getContentPane().add(panel);
 		
 		Panel panel_1 = new Panel();
-		panel_1.setBackground(new Color(47, 79, 79));
+		panel_1.setBackground(new Color(128, 0, 0));
 		panel_1.setBounds(0, 95, 640, 5);
 		articles.getContentPane().add(panel_1);
+		
+		JButton button = new JButton("New button");
+		button.setBounds(493, 101, 117, 25);
+		articles.getContentPane().add(button);
 		JButton btnAdd = new JButton("Add");
 		btnAdd.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
