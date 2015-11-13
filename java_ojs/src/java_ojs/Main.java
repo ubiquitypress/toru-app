@@ -178,7 +178,7 @@ public class Main {
 					if (source_api.compareTo("") == 0 && source_access_key.compareTo("") == 0) {
 						api(false);
 					} else {
-						issues();
+						dashboard();
 					}
 				} else {
 					JOptionPane.showMessageDialog(null, "Wrong username or password");
@@ -196,7 +196,7 @@ public class Main {
 					if (source_api.compareTo("") == 0 && source_access_key.compareTo("") == 0) {
 						api(false);
 					} else {
-						issues();
+						dashboard();
 					}
 
 				} else {
@@ -321,7 +321,7 @@ public class Main {
 				settings.setVisible(false);
 				settings.dispose();
 				if (issues == null) {
-					issues();
+					dashboard();
 				} else if (!issues.isVisible()) {
 					issues.setVisible(true);
 				}
@@ -421,7 +421,7 @@ public class Main {
 					source_access_key = key;
 					database_save();
 					if (!edit) {
-						issues();
+						dashboard();
 					}
 				} else {
 					JOptionPane.showMessageDialog(null, "Wrong access key or API url");
@@ -436,7 +436,7 @@ public class Main {
 				String key = access_key.getText();
 				if (key.compareTo("enter") == 0 && url.compareTo("api") == 0) {
 					api.setVisible(false);
-					issues();
+					dashboard();
 					source_api = url;
 					source_access_key = key;
 
@@ -492,7 +492,7 @@ public class Main {
 		api.setVisible(true);// making the frame visible
 	}
 
-	public void issues() {
+	public void dashboard() {
 		issues = new JFrame();
 		issues.setSize(640, 525);
 		issues.getContentPane().setBackground(new Color(105, 105, 105));
@@ -560,7 +560,7 @@ public class Main {
 				JTable table = (JTable) e.getSource();
 				int modelRow = Integer.valueOf(e.getActionCommand());
 				issues.setVisible(false);
-				articles(modelRow);
+				issue(modelRow);
 				// / ((DefaultTableModel)table.getModel()).removeRow(modelRow);
 			}
 		};
@@ -631,7 +631,7 @@ public class Main {
 		buttonColumn.setMnemonic(KeyEvent.VK_D);
 	}
 
-	public void articles(final int issue_id) {
+	public void issue(final int issue_id) {
 		articles = new JFrame();
 		articles.setSize(640, 525);
 		articles.getContentPane().setBackground(new Color(128, 128, 128));
@@ -657,7 +657,9 @@ public class Main {
 		scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
 		scrollPane.setBounds(30, 110, 580, 270);
 		articles.getContentPane().add(scrollPane);
+		
 		DefaultTableModel dtm = new DefaultTableModel(rowData, columnNames);
+		
 		JTable table = new JTable(dtm);
 		
 		scrollPane.setViewportView(table);
@@ -724,6 +726,7 @@ public class Main {
 		ButtonColumn buttonColumn2 = new ButtonColumn(table, delete, 3);
 
 		JLabel lblArticles = new JLabel("Articles");
+		lblArticles.setBackground(new Color(220, 20, 60));
 		lblArticles.setFont(new Font("Dialog", Font.BOLD, 28));
 		lblArticles.setForeground(new Color(240, 255, 255));
 		lblArticles.setBounds(188, 60, 180, 30);
@@ -731,6 +734,7 @@ public class Main {
 		articles.getContentPane().add(lblArticles);
 
 		JLabel lblIssue = new JLabel("Issue:");
+		lblIssue.setBackground(new Color(220, 20, 60));
 		lblIssue.setForeground(new Color(240, 255, 255));
 		lblIssue.setFont(new Font("Dialog", Font.BOLD, 28));
 		lblIssue.setBounds(40, 60, 94, 30);
@@ -738,10 +742,12 @@ public class Main {
 		articles.getContentPane().add(lblIssue);
 
 		JLabel lblIssueId = new JLabel("");
+		lblIssueId.setBackground(new Color(220, 20, 60));
 		lblIssueId.setForeground(new Color(240, 255, 255));
 		lblIssueId.setFont(new Font("Dialog", Font.BOLD, 28));
 		lblIssueId.setBounds(136, 60, 50, 30);
 		lblIssueId.setText(Integer.toString(issue_id));
+		lblIssueId.setOpaque(true);
 		articles.getContentPane().add(lblIssueId);
 
 		JButton btnGoBack = new JButton("Go back");
@@ -750,7 +756,7 @@ public class Main {
 				articles.setVisible(false);
 				if (issues == null) {
 					articles.dispose();
-					issues();
+					dashboard();
 				} else if (!issues.isVisible()) {
 					articles.dispose();
 					issues.setVisible(true);
@@ -873,7 +879,7 @@ public class Main {
 				article.setVisible(false);
 				if (articles == null) {
 					article.dispose();
-					articles(issue_id);
+					issue(issue_id);
 				} else if (!articles.isVisible()) {
 					article.dispose();
 					articles.setVisible(true);
@@ -934,7 +940,7 @@ public class Main {
 		} catch (IllegalAccessException e) {
 		    // handle exception
 		}
-		login();
+		issue(1);
 	}
 
 	public static void main(String[] args) {
