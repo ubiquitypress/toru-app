@@ -523,7 +523,7 @@ public class Main {
 		issues_table.setColumnSelectionAllowed(true);
 		issues_table.setBorder(new BevelBorder(BevelBorder.RAISED, null, null, null, null));
 		issues_table.setCellSelectionEnabled(true);
-		issues_table.setRowHeight(22);
+		issues_table.setRowHeight(23);
 		final Label internetCheck = new Label("ONLINE");
 		internetCheck.setFont(new Font("Dialog", Font.BOLD | Font.ITALIC, 12));
 		internetCheck.setBackground(Color.GREEN);
@@ -640,7 +640,7 @@ public class Main {
 		table.setColumnSelectionAllowed(true);
 		table.setBorder(new BevelBorder(BevelBorder.RAISED, null, null, null, null));
 		table.setCellSelectionEnabled(true);
-		table.setRowHeight(22);
+		table.setRowHeight(23);
 		final Label internetCheck = new Label("  ONLINE");
 		internetCheck.setFont(new Font("Dialog", Font.BOLD | Font.ITALIC, 12));
 		internetCheck.setBackground(Color.GREEN);
@@ -881,7 +881,7 @@ public class Main {
 		} catch (IllegalAccessException e) {
 		    // handle exception
 		}
-		articles(1);
+		login();
 	}
 
 	public static void main(String[] args) {
