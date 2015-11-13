@@ -495,7 +495,7 @@ public class Main {
 	public void issues() {
 		issues = new JFrame();
 		issues.setSize(640, 525);
-		issues.getContentPane().setBackground(new Color(128, 128, 128));
+		issues.getContentPane().setBackground(new Color(105, 105, 105));
 		issues.setVisible(true);
 		issues.addWindowListener(new WindowAdapter() {
 			@Override
@@ -511,12 +511,12 @@ public class Main {
 		issues.getContentPane().setLayout(null);
 
 		final JButton btnSync = new JButton("Sync");
-		btnSync.setBounds(445, 21, 70, 24);
+		btnSync.setBounds(485, 21, 70, 24);
 		issues.getContentPane().add(btnSync);
 
 		JScrollPane scrollPane = new JScrollPane();
 		scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
-		scrollPane.setBounds(30, 105, 580, 280);
+		scrollPane.setBounds(30, 110, 580, 270);
 		issues.getContentPane().add(scrollPane);
 		issues_table = new JTable(rowData, columnNames);
 		scrollPane.setViewportView(issues_table);
@@ -528,7 +528,7 @@ public class Main {
 		final Label internetCheck = new Label("ONLINE");
 		internetCheck.setFont(new Font("Dialog", Font.BOLD | Font.ITALIC, 12));
 		internetCheck.setBackground(Color.GREEN);
-		internetCheck.setBounds(515, 22, 65, 22);
+		internetCheck.setBounds(555, 22, 65, 22);
 		internetCheck.setForeground(new Color(255, 255, 255));
 		internetCheck.setAlignment(1);
 		issues.getContentPane().add(internetCheck);
@@ -613,6 +613,11 @@ public class Main {
 		footer_border.setBackground(new Color(220, 20, 60));
 		footer_border.setBounds(0, 451, 640, 10);
 		issues.getContentPane().add(footer_border);
+		
+		Panel panel_1 = new Panel();
+		panel_1.setBackground(new Color(128, 0, 0));
+		panel_1.setBounds(0, 95, 640, 5);
+		issues.getContentPane().add(panel_1);
 		
 		Panel footer = new Panel();
 		footer.setBackground(new Color(178, 34, 34));
@@ -917,7 +922,7 @@ public class Main {
 		} catch (IllegalAccessException e) {
 		    // handle exception
 		}
-		issues();
+		login();
 	}
 
 	public static void main(String[] args) {
