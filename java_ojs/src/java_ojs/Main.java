@@ -223,7 +223,7 @@ public class Main {
 		internetCheck.setBackground(Color.GREEN);
 		internetCheck.setForeground(new Color(255, 255, 255));
 		internetCheck.setAlignment(1);
-		internetCheck.setBounds(305, 62, 65, 20);
+		internetCheck.setBounds(305, 62, 65, 22);
 		login.getContentPane().add(internetCheck);
 
 		ActionListener taskPerformer1 = new ActionListener() {
@@ -298,14 +298,15 @@ public class Main {
 		scrollSettings.setViewportView(scrollFrame);
 		settings.getContentPane().add(scrollFrame);
 		for (int i = 0; i < setting_keys.size(); i++) {
-			JCheckBox chckbxSampleSetting = new JCheckBox(setting_keys.get(i));
-			int s = i;
+			final JCheckBox chckbxSampleSetting = new JCheckBox(setting_keys.get(i));
+			final int s = i;
 			chckbxSampleSetting.setName(Integer.toString(i));
 			chckbxSampleSetting.setBounds(81, y, 150, 23);
 			chckbxSampleSetting.setSelected(list_settings.get(setting_keys.get(i)));
 			chckbxSampleSetting.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
-					list_settings.replace(setting_keys.get(s), chckbxSampleSetting.isSelected());
+					list_settings.remove(setting_keys.get(s));
+					list_settings.put(setting_keys.get(s), chckbxSampleSetting.isSelected());
 				}
 			});
 			y = y + 25;
@@ -332,7 +333,7 @@ public class Main {
 		internetCheck.setBackground(Color.GREEN);
 		internetCheck.setAlignment(1);
 		internetCheck.setForeground(new Color(255, 255, 255));
-		internetCheck.setBounds(305, 62, 65, 20);
+		internetCheck.setBounds(305, 62, 65, 22);
 		settings.getContentPane().add(internetCheck);
 
 		ActionListener taskPerformer1 = new ActionListener() {
@@ -360,7 +361,7 @@ public class Main {
 		settings.setVisible(true);// making the frame visible
 	}
 
-	public void api(boolean edit) {
+	public void api(final boolean edit) {
 		api = new JFrame();
 		api.getContentPane().setBackground(new Color(128, 128, 128));
 		api.addWindowListener(new WindowAdapter() {
@@ -444,12 +445,11 @@ public class Main {
 			}
 		});
 
-		btnSubmit.setBackground(new Color(255, 255, 255));
 		btnSubmit.setBounds(139, 300, 117, 29);
 		api.getContentPane().add(btnSubmit);
 
 		final JButton btnSync1 = new JButton("Sync");
-		btnSync1.setBounds(235, 60, 70, 25);
+		btnSync1.setBounds(235, 61, 70, 24);
 		api.getContentPane().add(btnSync1);
 
 		JLabel lblApiInformation = new JLabel("API Information");
@@ -461,7 +461,7 @@ public class Main {
 		final Label internetCheck = new Label("  ONLINE");
 		internetCheck.setFont(new Font("Dialog", Font.BOLD | Font.ITALIC, 12));
 		internetCheck.setBackground(Color.GREEN);
-		internetCheck.setBounds(305, 62, 65, 20);
+		internetCheck.setBounds(305, 62, 65, 22);
 		internetCheck.setForeground(new Color(255, 255, 255));
 		internetCheck.setAlignment(1);
 		api.getContentPane().add(internetCheck);
@@ -509,7 +509,7 @@ public class Main {
 		issues.getContentPane().setLayout(null);
 
 		final JButton btnSync = new JButton("Sync");
-		btnSync.setBounds(445, 20, 70, 25);
+		btnSync.setBounds(445, 21, 70, 24);
 		issues.getContentPane().add(btnSync);
 
 		JScrollPane scrollPane = new JScrollPane();
@@ -525,7 +525,7 @@ public class Main {
 		final Label internetCheck = new Label("ONLINE");
 		internetCheck.setFont(new Font("Dialog", Font.BOLD | Font.ITALIC, 12));
 		internetCheck.setBackground(Color.GREEN);
-		internetCheck.setBounds(515, 22, 65, 20);
+		internetCheck.setBounds(515, 22, 65, 22);
 		internetCheck.setForeground(new Color(255, 255, 255));
 		internetCheck.setAlignment(1);
 		issues.getContentPane().add(internetCheck);
@@ -577,7 +577,7 @@ public class Main {
 			}
 		});
 		btnSettings.setBackground(UIManager.getColor("Button.disabledToolBarBorderBackground"));
-		btnSettings.setBounds(12, 20, 117, 25);
+		btnSettings.setBounds(15, 20, 117, 29);
 		issues.getContentPane().add(btnSettings);
 
 		JButton btnApi = new JButton("API");
@@ -586,7 +586,7 @@ public class Main {
 				api(true);
 			}
 		});
-		btnApi.setBounds(120, 18, 117, 29);
+		btnApi.setBounds(130, 20, 90, 29);
 		issues.getContentPane().add(btnApi);
 		
 		JButton btnSaveData = new JButton("Save Data");
@@ -600,7 +600,7 @@ public class Main {
 		buttonColumn.setMnemonic(KeyEvent.VK_D);
 	}
 
-	public void articles(int issue_id) {
+	public void articles(final int issue_id) {
 		articles = new JFrame();
 		articles.setSize(640, 480);
 		articles.getContentPane().setBackground(new Color(128, 128, 128));
@@ -619,7 +619,7 @@ public class Main {
 		articles.getContentPane().setLayout(null);
 
 		final JButton btnSync = new JButton("Sync");
-		btnSync.setBounds(445, 20, 70, 25);
+		btnSync.setBounds(445, 21, 70, 24);
 		articles.getContentPane().add(btnSync);
 
 		JScrollPane scrollPane = new JScrollPane();
@@ -637,7 +637,7 @@ public class Main {
 		internetCheck.setBackground(Color.GREEN);
 		internetCheck.setAlignment(1);
 		internetCheck.setForeground(new Color(255, 255, 255));
-		internetCheck.setBounds(515, 22, 65, 20);
+		internetCheck.setBounds(515, 22, 65, 22);
 		articles.getContentPane().add(internetCheck);
 
 		ActionListener taskPerformer1 = new ActionListener() {
@@ -722,8 +722,8 @@ public class Main {
 		buttonColumn2.setMnemonic(KeyEvent.VK_D);
 	}
 
-	public void article(int issue_id, int article_id) {
-		JFrame article = new JFrame();
+	public void article(final int issue_id, int article_id) {
+		final JFrame article = new JFrame();
 		article.setSize(400, 500);
 		article.getContentPane().setBackground(new Color(128, 128, 128));
 		article.setVisible(true);
@@ -741,7 +741,7 @@ public class Main {
 		article.getContentPane().setLayout(null);
 
 		final JButton btnSync = new JButton("Sync");
-		btnSync.setBounds(250, 20, 70, 25);
+		btnSync.setBounds(250, 21, 70, 24);
 		article.getContentPane().add(btnSync);
 
 		final Label internetCheck = new Label("  ONLINE");
@@ -749,7 +749,7 @@ public class Main {
 		internetCheck.setBackground(Color.GREEN);
 		internetCheck.setAlignment(1);
 		internetCheck.setForeground(new Color(255, 255, 255));
-		internetCheck.setBounds(320, 22, 65, 20);
+		internetCheck.setBounds(320, 22, 65, 22);
 		article.getContentPane().add(internetCheck);
 
 		ActionListener taskPerformer1 = new ActionListener() {
@@ -842,7 +842,7 @@ public class Main {
 	}
 
 	public Main() {
-		settings();
+		api(false);
 	}
 
 	public static void main(String[] args) {
