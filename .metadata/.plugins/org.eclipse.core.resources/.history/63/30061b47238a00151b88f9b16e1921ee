@@ -300,7 +300,7 @@ public class Main {
 		scrollFrame.setPreferredSize(new Dimension(320, 200));
 		scrollFrame.setBounds(40, 180, 320, 200);
 		scrollSettings.setViewportView(scrollFrame);
-		settings.getContentPane().add(scrollFrame);
+		scrollSettings.add(scrollFrame);
 		for (int i = 0; i < setting_keys.size(); i++) {
 			final JCheckBox chckbxSampleSetting = new JCheckBox(setting_keys.get(i));
 			final int s = i;

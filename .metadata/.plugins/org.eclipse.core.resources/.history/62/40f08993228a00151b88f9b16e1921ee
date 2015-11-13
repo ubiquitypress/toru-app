@@ -274,13 +274,11 @@ public class Main {
 		lblNewLabel.setToolTipText("Welcome\n");
 
 		final JButton btnSync1 = new JButton("Sync");
-		btnSync1.setBounds(245, 60, 70, 25);
+		btnSync1.setBounds(235, 60, 70, 25);
 		settings.getContentPane().add(btnSync1);
 
 		JLabel lblSettings = new JLabel("Settings");
-		lblSettings.setBackground(new Color(128, 0, 128));
-		lblSettings.setOpaque(true);
-		lblSettings.setForeground(new Color(255, 255, 255));
+		lblSettings.setForeground(new Color(224, 255, 255));
 		lblSettings.setFont(new Font("URW Gothic L", Font.BOLD, 24));
 		lblSettings.setHorizontalAlignment(SwingConstants.CENTER);
 		lblSettings.setBounds(110, 128, 160, 30);
@@ -300,7 +298,6 @@ public class Main {
 		scrollFrame.setPreferredSize(new Dimension(320, 200));
 		scrollFrame.setBounds(40, 180, 320, 200);
 		scrollSettings.setViewportView(scrollFrame);
-		settings.getContentPane().add(scrollFrame);
 		for (int i = 0; i < setting_keys.size(); i++) {
 			final JCheckBox chckbxSampleSetting = new JCheckBox(setting_keys.get(i));
 			final int s = i;
@@ -337,18 +334,8 @@ public class Main {
 		internetCheck.setBackground(Color.GREEN);
 		internetCheck.setAlignment(1);
 		internetCheck.setForeground(new Color(255, 255, 255));
-		internetCheck.setBounds(315, 62, 65, 22);
+		internetCheck.setBounds(305, 62, 65, 22);
 		settings.getContentPane().add(internetCheck);
-		
-		Panel panel = new Panel();
-		panel.setBackground(new Color(128, 0, 128));
-		panel.setBounds(0, 120, 400, 40);
-		settings.getContentPane().add(panel);
-		
-		Panel panel_1 = new Panel();
-		panel_1.setBackground(new Color(102, 0, 102));
-		panel_1.setBounds(0, 160, 400, 5);
-		settings.getContentPane().add(panel_1);
 
 		ActionListener taskPerformer1 = new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
