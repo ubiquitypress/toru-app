@@ -473,7 +473,7 @@ public class Main {
 		api.getContentPane().add(btnSubmit);
 
 		final JButton btnSync1 = new JButton("Sync");
-		btnSync1.setBounds(250, 68, 70, 24);
+		btnSync1.setBounds(245, 68, 70, 24);
 		api.getContentPane().add(btnSync1);
 
 		JLabel lblApiInformation = new JLabel("API Information");
@@ -487,7 +487,7 @@ public class Main {
 		final Label internetCheck = new Label("  ONLINE");
 		internetCheck.setFont(new Font("Dialog", Font.BOLD | Font.ITALIC, 12));
 		internetCheck.setBackground(Color.GREEN);
-		internetCheck.setBounds(320, 70, 65, 22);
+		internetCheck.setBounds(315, 70, 65, 22);
 		internetCheck.setForeground(new Color(255, 255, 255));
 		internetCheck.setAlignment(1);
 		api.getContentPane().add(internetCheck);

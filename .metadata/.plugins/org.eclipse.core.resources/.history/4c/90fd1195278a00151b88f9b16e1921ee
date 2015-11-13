@@ -473,21 +473,19 @@ public class Main {
 		api.getContentPane().add(btnSubmit);
 
 		final JButton btnSync1 = new JButton("Sync");
-		btnSync1.setBounds(250, 68, 70, 24);
+		btnSync1.setBounds(245, 68, 70, 24);
 		api.getContentPane().add(btnSync1);
 
 		JLabel lblApiInformation = new JLabel("API Information");
-		lblApiInformation.setBackground(new Color(51, 102, 204));
 		lblApiInformation.setHorizontalAlignment(SwingConstants.CENTER);
 		lblApiInformation.setForeground(new Color(255, 255, 255));
 		lblApiInformation.setFont(new Font("Dialog", Font.BOLD, 20));
-		lblApiInformation.setBounds(55, 108, 309, 40);
-		lblApiInformation.setOpaque(true);
+		lblApiInformation.setBounds(55, 110, 309, 43);
 		api.getContentPane().add(lblApiInformation);
 		final Label internetCheck = new Label("  ONLINE");
 		internetCheck.setFont(new Font("Dialog", Font.BOLD | Font.ITALIC, 12));
 		internetCheck.setBackground(Color.GREEN);
-		internetCheck.setBounds(320, 70, 65, 22);
+		internetCheck.setBounds(315, 70, 65, 22);
 		internetCheck.setForeground(new Color(255, 255, 255));
 		internetCheck.setAlignment(1);
 		api.getContentPane().add(internetCheck);
@@ -519,15 +517,15 @@ public class Main {
 		};
 		new Timer(delay, taskPerformer1).start();
 		api.setVisible(true);// making the frame visible
+		Panel panel_1 = new Panel();
+		panel_1.setBackground(new Color(204, 153, 102));
+		panel_1.setBounds(0, 65, 400, 45);
+		article.getContentPane().add(panel_1);
 		
 		Panel panel_2 = new Panel();
-		panel_2.setBackground(new Color(51, 51, 204));
-		panel_2.setBounds(0, 150, 400, 5);
-		api.getContentPane().add(panel_2);
-		Panel panel_1 = new Panel();
-		panel_1.setBackground(new Color(51, 102, 204));
-		panel_1.setBounds(0, 105, 400, 45);
-		api.getContentPane().add(panel_1);
+		panel_2.setBackground(new Color(153, 102, 51));
+		panel_2.setBounds(0, 110, 400, 5);
+		article.getContentPane().add(panel_2);
 	}
 
 	public void dashboard() {

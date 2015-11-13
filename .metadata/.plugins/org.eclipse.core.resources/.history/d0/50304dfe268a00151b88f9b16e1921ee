@@ -210,7 +210,7 @@ public class Main {
 		login.getContentPane().add(btnLogin);
 
 		final JButton btnSync1 = new JButton("Sync");
-		btnSync1.setBounds(245, 68, 70, 25);
+		btnSync1.setBounds(245, 70, 70, 25);
 		login.getContentPane().add(btnSync1);
 
 		JLabel lblLogIn = new JLabel("Log in");
@@ -279,7 +279,7 @@ public class Main {
 		lblNewLabel.setToolTipText("Welcome\n");
 
 		final JButton btnSync1 = new JButton("Sync");
-		btnSync1.setBounds(245, 68, 70, 25);
+		btnSync1.setBounds(245, 60, 70, 25);
 		settings.getContentPane().add(btnSync1);
 
 		JLabel lblSettings = new JLabel("Settings");
@@ -304,7 +304,7 @@ public class Main {
 		panelSettings.setAutoscrolls(true);
 		scrollFrame.setPreferredSize(new Dimension(320, 200));
 		scrollFrame.setBounds(40, 180, 320, 200);
-	//	scrollSettings.setViewportView(scrollFrame);
+		scrollSettings.setViewportView(scrollFrame);
 		settings.getContentPane().add(scrollFrame);
 		for (int i = 0; i < setting_keys.size(); i++) {
 			final JCheckBox chckbxSampleSetting = new JCheckBox(setting_keys.get(i));
@@ -342,7 +342,7 @@ public class Main {
 		internetCheck.setBackground(Color.GREEN);
 		internetCheck.setAlignment(1);
 		internetCheck.setForeground(new Color(255, 255, 255));
-		internetCheck.setBounds(315, 70, 65, 22);
+		internetCheck.setBounds(315, 62, 65, 22);
 		settings.getContentPane().add(internetCheck);
 		
 		Panel panel = new Panel();
@@ -354,11 +354,6 @@ public class Main {
 		panel_1.setBackground(new Color(102, 0, 102));
 		panel_1.setBounds(0, 160, 400, 5);
 		settings.getContentPane().add(panel_1);
-		
-		Panel panel_2 = new Panel();
-		panel_2.setBackground(new Color(204, 51, 51));
-		panel_2.setBounds(0, 54, 400, 5);
-		settings.getContentPane().add(panel_2);
 
 		ActionListener taskPerformer1 = new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
@@ -473,29 +468,22 @@ public class Main {
 		api.getContentPane().add(btnSubmit);
 
 		final JButton btnSync1 = new JButton("Sync");
-		btnSync1.setBounds(250, 68, 70, 24);
+		btnSync1.setBounds(235, 61, 70, 24);
 		api.getContentPane().add(btnSync1);
 
 		JLabel lblApiInformation = new JLabel("API Information");
-		lblApiInformation.setBackground(new Color(51, 102, 204));
 		lblApiInformation.setHorizontalAlignment(SwingConstants.CENTER);
 		lblApiInformation.setForeground(new Color(255, 255, 255));
 		lblApiInformation.setFont(new Font("Dialog", Font.BOLD, 20));
-		lblApiInformation.setBounds(55, 108, 309, 40);
-		lblApiInformation.setOpaque(true);
+		lblApiInformation.setBounds(55, 110, 309, 43);
 		api.getContentPane().add(lblApiInformation);
 		final Label internetCheck = new Label("  ONLINE");
 		internetCheck.setFont(new Font("Dialog", Font.BOLD | Font.ITALIC, 12));
 		internetCheck.setBackground(Color.GREEN);
-		internetCheck.setBounds(320, 70, 65, 22);
+		internetCheck.setBounds(305, 62, 65, 22);
 		internetCheck.setForeground(new Color(255, 255, 255));
 		internetCheck.setAlignment(1);
 		api.getContentPane().add(internetCheck);
-		
-		Panel panel = new Panel();
-		panel.setBackground(new Color(204, 51, 51));
-		panel.setBounds(0, 54, 400, 5);
-		api.getContentPane().add(panel);
 
 		ActionListener taskPerformer1 = new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
@@ -519,15 +507,6 @@ public class Main {
 		};
 		new Timer(delay, taskPerformer1).start();
 		api.setVisible(true);// making the frame visible
-		
-		Panel panel_2 = new Panel();
-		panel_2.setBackground(new Color(51, 51, 204));
-		panel_2.setBounds(0, 150, 400, 5);
-		api.getContentPane().add(panel_2);
-		Panel panel_1 = new Panel();
-		panel_1.setBackground(new Color(51, 102, 204));
-		panel_1.setBounds(0, 105, 400, 45);
-		api.getContentPane().add(panel_1);
 	}
 
 	public void dashboard() {
@@ -1054,7 +1033,7 @@ public class Main {
 		} catch (IllegalAccessException e) {
 		    // handle exception
 		}
-		api(false);
+		login();
 	}
 
 	public static void main(String[] args) {
