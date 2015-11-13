@@ -516,7 +516,7 @@ public class Main {
 
 		JScrollPane scrollPane = new JScrollPane();
 		scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
-		scrollPane.setBounds(120, 120, 400, 280);
+		scrollPane.setBounds(30, 100, 580, 280);
 		issues.getContentPane().add(scrollPane);
 		issues_table = new JTable(rowData, columnNames);
 		scrollPane.setViewportView(issues_table);
@@ -569,7 +569,7 @@ public class Main {
 		JLabel lblIssues = new JLabel("Issues");
 		lblIssues.setFont(new Font("Dialog", Font.BOLD, 28));
 		lblIssues.setForeground(new Color(240, 255, 255));
-		lblIssues.setBounds(120, 78, 120, 30);
+		lblIssues.setBounds(40, 60, 120, 30);
 		issues.getContentPane().add(lblIssues);
 
 		JButton btnSettings = new JButton("Settings");
@@ -623,8 +623,23 @@ public class Main {
 		Object rowData[][] = { { "Row1-Column1", "Row1-Column2", "View", "Delete" },
 				{ "Row2-Column1", "Row2-Column2", "View", "Delete" },
 				{ "Row3-Column1", "Row3-Column2", "View", "Delete" },
+				{ "Row3-Column1", "Row3-Column2", "View", "Delete" },
+				{ "Row3-Column1", "Row3-Column2", "View", "Delete" },
+				{ "Row3-Column1", "Row3-Column2", "View", "Delete" },
+				{ "Row3-Column1", "Row3-Column2", "View", "Delete" },
+				{ "Row3-Column1", "Row3-Column2", "View", "Delete" },
+				{ "Row3-Column1", "Row3-Column2", "View", "Delete" },
+				{ "Row3-Column1", "Row3-Column2", "View", "Delete" },
+				{ "Row3-Column1", "Row3-Column2", "View", "Delete" },
+				{ "Row3-Column1", "Row3-Column2", "View", "Delete" },
+				{ "Row3-Column1", "Row3-Column2", "View", "Delete" },
+				{ "Row3-Column1", "Row3-Column2", "View", "Delete" },
+				{ "Row3-Column1", "Row3-Column2", "View", "Delete" },
+				{ "Row3-Column1", "Row3-Column2", "View", "Delete" },
+				{ "Row3-Column1", "Row3-Column2", "View", "Delete" },
+				{ "Row3-Column1", "Row3-Column2", "View", "Delete" },
 				{ "Row4-Column1", "Row4-Column2", "View", "Delete" } };
-		Object columnNames[] = { "Column One", "Column Two", "", "" };
+		Object columnNames[] = { "Tile", "Description", "", "" };
 		articles.getContentPane().setLayout(null);
 
 		final JButton btnSync = new JButton("Sync");
@@ -633,10 +648,11 @@ public class Main {
 
 		JScrollPane scrollPane = new JScrollPane();
 		scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
-		scrollPane.setBounds(120, 120, 400, 280);
+		scrollPane.setBounds(30, 100, 580, 280);
 		articles.getContentPane().add(scrollPane);
 		DefaultTableModel dtm = new DefaultTableModel(rowData, columnNames);
 		JTable table = new JTable(dtm);
+		
 		scrollPane.setViewportView(table);
 		table.setColumnSelectionAllowed(true);
 		table.setBorder(new BevelBorder(BevelBorder.RAISED, null, null, null, null));
@@ -698,7 +714,7 @@ public class Main {
 		JLabel lblIssues = new JLabel("Articles");
 		lblIssues.setFont(new Font("Dialog", Font.BOLD, 28));
 		lblIssues.setForeground(new Color(240, 255, 255));
-		lblIssues.setBounds(120, 78, 180, 30);
+		lblIssues.setBounds(40, 60, 180, 30);
 		articles.getContentPane().add(lblIssues);
 
 		JLabel lblIssue = new JLabel("Issue:");
