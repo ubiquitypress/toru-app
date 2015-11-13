@@ -734,7 +734,7 @@ public class Main {
 		DefaultTableModel dtm = new DefaultTableModel(rowData, columnNames);
 		
 		final JTable table = new JTable(dtm);
-		table.setAutoCreateRowSorter(true);
+		
 		scrollPane.setViewportView(table);
 		table.setColumnSelectionAllowed(true);
 		table.setBorder(new BevelBorder(BevelBorder.RAISED, null, null, null, null));

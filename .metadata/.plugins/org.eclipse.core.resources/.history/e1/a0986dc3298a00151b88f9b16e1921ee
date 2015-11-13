@@ -565,7 +565,6 @@ public class Main {
 		issues_table.setBorder(new BevelBorder(BevelBorder.RAISED, null, null, null, null));
 		issues_table.setCellSelectionEnabled(true);
 		issues_table.setRowHeight(23);
-		issues_table.setAutoCreateRowSorter(true);
 		
 		final Label internetCheck = new Label("ONLINE");
 		internetCheck.setFont(new Font("Dialog", Font.BOLD | Font.ITALIC, 12));
@@ -734,7 +733,7 @@ public class Main {
 		DefaultTableModel dtm = new DefaultTableModel(rowData, columnNames);
 		
 		final JTable table = new JTable(dtm);
-		table.setAutoCreateRowSorter(true);
+		
 		scrollPane.setViewportView(table);
 		table.setColumnSelectionAllowed(true);
 		table.setBorder(new BevelBorder(BevelBorder.RAISED, null, null, null, null));
