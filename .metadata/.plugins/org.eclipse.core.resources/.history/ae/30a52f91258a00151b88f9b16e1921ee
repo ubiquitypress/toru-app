@@ -884,7 +884,7 @@ public class Main {
 		lblArticleDetails.setFont(new Font("Dialog", Font.BOLD, 20));
 		lblArticleDetails.setForeground(new Color(255, 255, 255));
 		lblArticleDetails.setBackground(new Color(204, 153, 102));
-		lblArticleDetails.setBounds(100, 65, 200, 40);
+		lblArticleDetails.setBounds(100, 55, 200, 40);
 		lblArticleDetails.setOpaque(true);
 		article.getContentPane().add(lblArticleDetails);
 
@@ -970,12 +970,12 @@ public class Main {
 		
 		Panel panel_1 = new Panel();
 		panel_1.setBackground(new Color(204, 153, 102));
-		panel_1.setBounds(0, 65, 400, 45);
+		panel_1.setBounds(0, 55, 400, 45);
 		article.getContentPane().add(panel_1);
 		
 		Panel panel_2 = new Panel();
 		panel_2.setBackground(new Color(153, 102, 51));
-		panel_2.setBounds(0, 110, 400, 5);
+		panel_2.setBounds(0, 100, 400, 5);
 		article.getContentPane().add(panel_2);
 		panel.setPreferredSize(new Dimension(320, settings_height));
 		JScrollPane scrollFrame = new JScrollPane(panel);
@@ -984,27 +984,27 @@ public class Main {
 		scrollFrame.setBounds(40, 132, 320, 220);
 		//scrollSettings.setViewportView(scrollFrame);
 		article.getContentPane().add(scrollFrame);
-		JLabel lblIssues = new JLabel("Article id:");
+		JLabel lblIssues = new JLabel("Article:");
 		lblIssues.setBounds(24, 18, 110, 30);
 		panel.add(lblIssues);
 		lblIssues.setFont(new Font("Dialog", Font.BOLD, 18));
 		lblIssues.setForeground(Color.BLACK);
 
-		JLabel lblIssue = new JLabel("Issue id:");
+		JLabel lblIssue = new JLabel("Issue:");
 		lblIssue.setBounds(24, 48, 94, 30);
 		panel.add(lblIssue);
 		lblIssue.setForeground(Color.BLACK);
 		lblIssue.setFont(new Font("Dialog", Font.BOLD, 18));
 
 		JLabel lblIssueId = new JLabel("");
-		lblIssueId.setBounds(130, 48, 94, 30);
+		lblIssueId.setBounds(130, 49, 94, 30);
 		panel.add(lblIssueId);
 		lblIssueId.setForeground(Color.BLACK);
 		lblIssueId.setFont(new Font("Dialog", Font.BOLD, 16));
 		lblIssueId.setText(Integer.toString(issue_id));
 
 		JLabel lblArticleId = new JLabel("1");
-		lblArticleId.setBounds(130, 18, 94, 30);
+		lblArticleId.setBounds(130, 19, 94, 30);
 		panel.add(lblArticleId);
 		lblArticleId.setForeground(Color.BLACK);
 		lblArticleId.setFont(new Font("Dialog", Font.BOLD, 16));
