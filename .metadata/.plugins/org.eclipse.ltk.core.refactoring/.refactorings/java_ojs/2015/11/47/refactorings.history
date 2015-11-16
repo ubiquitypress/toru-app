@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<session version="1.0">
+<refactoring comment="Rename local variable &apos;btnGoBack&apos; in &apos;java_ojs.Main.issue(...)&apos; to &apos;btnClose&apos;&#x0A;- Original project: &apos;java_ojs&apos;&#x0A;- Original element: &apos;java_ojs.Main.issue(int).btnGoBack&apos;&#x0A;- Renamed element: &apos;btnGoBack&apos;&#x0A;- Update references to refactored element" description="Rename local variable &apos;btnGoBack&apos;" id="org.eclipse.jdt.ui.rename.local.variable" input="/src&lt;java_ojs{Main.java[Main~issue~I@btnGoBack!31942!31984!31950!31958!QJButton;!0!false" name="btnClose" references="true" stamp="1447689312083" version="1.0"/>
+</session>
