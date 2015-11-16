@@ -30,6 +30,7 @@ import java.awt.Label;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.Panel;
+import java.awt.SystemColor;
 
 public class Main {
 	JFrame login, api, issues, articles, settings;
@@ -42,6 +43,7 @@ public class Main {
 	private static HashMap<String, Boolean> list_settings;
 	private static HashMap<Integer, Integer> list_issues;
 	private static HashMap<Integer, JFrame> issue_screens;
+	private static HashMap<Integer, HashMap<Integer, JFrame>> article_screens;
 	private static ArrayList<String> setting_keys = new ArrayList<String>();
 	private static Connection c = null;
 	private static Statement stmt = null;
@@ -49,7 +51,7 @@ public class Main {
 	private String settings_insert_or_replace_statement = "INSERT OR REPLACE INTO SETTING(NAME,VALUE) VALUES (?,?)";
 	private int width = 960;
 	private int height = 720;
-	private Boolean logged_in = false;
+	private Boolean logged_in = true;
 	private static int i_id = 1;
 
 	/*
@@ -88,6 +90,7 @@ public class Main {
 		list_settings = new HashMap<String, Boolean>();
 		list_issues = new HashMap<Integer, Integer>();
 		issue_screens = new HashMap<Integer, JFrame>();
+		article_screens = new HashMap<Integer, HashMap<Integer, JFrame>>();
 		try {
 			ResultSet rs = stmt.executeQuery("SELECT * FROM API WHERE URL=" + "'api'" + ";");
 			while (rs.next()) {
@@ -135,165 +138,180 @@ public class Main {
 	}
 
 	public void login(final String returning_view) {
-		int width_small = 0;
-		int height_small = 0;
-		if (width >= 640) {
-			width_small = (int) (960 - (960 * (37.5 / 100)));
+		if (!logged_in) {
+			int width_small = 0;
+			int height_small = 0;
+			if (width >= 640) {
+				width_small = (int) (960 - (960 * (37.5 / 100)));
+			} else {
+				width_small = (int) (640 - (640 * (37.5 / 100)));
+			}
+			height_small = (int) (480 - (480 * (5 / 100)));
+
+			login = new JFrame();
+			login.addWindowListener(new WindowAdapter() {
+				@Override
+				public void windowClosing(WindowEvent e) {
+					// database_save();
+				}
+			});
+			login.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+			login.getContentPane().setForeground(Color.WHITE);
+			login.getContentPane().setBackground(new Color(128, 128, 128));
+
+			login.setSize(width_small, height_small);// 400 width and 500 height
+			login.getContentPane().setLayout(null);// using no layout managers
+			JLabel lblNewLabel = new JLabel("TORU");
+
+			lblNewLabel.setForeground(new Color(255, 250, 250));
+			lblNewLabel.setBackground(new Color(230, 230, 250));
+			lblNewLabel.setFont(new Font("Trattatello", Font.BOLD, 24));
+			lblNewLabel.setToolTipText("Welcome\n");
+			lblNewLabel.setBounds((width_small / 2) - 34, 15, 70, 25);
+			login.getContentPane().add(lblNewLabel);
+			username = new JTextField();
+			username.setBounds(80, 220, width_small - 161, 26);
+			login.getContentPane().add(username);
+			username.setColumns(10);
+			JLabel lblUsername = new JLabel("Username");
+			lblUsername.setForeground(new Color(245, 255, 250));
+			lblUsername.setHorizontalAlignment(SwingConstants.CENTER);
+			lblUsername.setBounds(80, 200, width_small - 161, 16);
+			login.getContentPane().add(lblUsername);
+			JPanel title_background = new JPanel();
+			title_background.setBackground(new Color(0, 0, 0));
+			title_background.setBounds(-17, 0, width - 67, 54);
+			login.getContentPane().add(title_background);
+			JLabel lblPassword = new JLabel("Password");
+			lblPassword.setHorizontalAlignment(SwingConstants.CENTER);
+			lblPassword.setForeground(new Color(245, 255, 250));
+			lblPassword.setBounds(80, 260, width_small - 161, 16);
+			login.getContentPane().add(lblPassword);
+			passwordField = new JPasswordField();
+			passwordField.setBounds(80, 280, width_small - 161, 26);
+			login.getContentPane().add(passwordField);
+			JButton btnLogin = new JButton("Login");
+			Action actionSubmit = new AbstractAction() {
+				/**
+				 * 
+				 */
+				private static final long serialVersionUID = 1L;
+
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					String user = username.getText();
+					String pass = String.valueOf(passwordField.getPassword());
+					if (pass.compareTo("root") == 0 && user.compareTo("user") == 0) {
+						logged_in = true;
+						login.setVisible(false);
+						login.dispose();
+						if (source_api.compareTo("") == 0 && source_access_key.compareTo("") == 0) {
+							api(false);
+						} else {
+							System.out.println(returning_view);
+							if (returning_view.compareTo("api") == 0) {
+								api(true);
+							} else if (returning_view.compareTo("settings") == 0) {
+								settings();
+							} else {
+								dashboard();
+							}
+						}
+					} else {
+						JOptionPane.showMessageDialog(null, "Wrong username or password");
+					}
+				}
+			};
+			username.addActionListener(actionSubmit);
+			passwordField.addActionListener(actionSubmit);
+			btnLogin.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					String user = username.getText();
+					String pass = String.valueOf(passwordField.getPassword());
+					if (pass.compareTo("root") == 0 && user.compareTo("user") == 0) {
+						login.setVisible(false);
+						if (source_api.compareTo("") == 0 && source_access_key.compareTo("") == 0) {
+							api(false);
+						} else {
+							System.out.println(returning_view);
+							if (returning_view.compareTo("api") == 0) {
+								api(true);
+							} else if (returning_view.compareTo("settings") == 0) {
+								settings();
+							} else {
+								dashboard();
+							}
+						}
+
+					} else {
+						JOptionPane.showMessageDialog(null, "Wrong username or password");
+					}
+
+				}
+			});
+
+			btnLogin.setBounds(width_small / 3, 340, width_small / 3, 29);
+			login.getContentPane().add(btnLogin);
+
+			final JButton btnSync1 = new JButton("Sync");
+			btnSync1.setBounds(width_small - 155, 68, 70, 25);
+			login.getContentPane().add(btnSync1);
+
+			JLabel lblLogIn = new JLabel("Log in");
+			lblLogIn.setForeground(new Color(224, 255, 255));
+			lblLogIn.setFont(new Font("URW Gothic L", Font.BOLD, 24));
+			lblLogIn.setHorizontalAlignment(SwingConstants.CENTER);
+			lblLogIn.setBounds((width_small / 2) - 40, 150, 80, 30);
+			login.getContentPane().add(lblLogIn);
+
+			final Label internetCheck = new Label("   ONLINE");
+			internetCheck.setFont(new Font("Dialog", Font.BOLD | Font.ITALIC, 12));
+			internetCheck.setBackground(Color.GREEN);
+			internetCheck.setForeground(new Color(255, 255, 255));
+			internetCheck.setAlignment(1);
+			internetCheck.setBounds(width_small - 85, 70, 65, 22);
+			login.getContentPane().add(internetCheck);
+
+			Panel panel = new Panel();
+			panel.setBackground(new Color(204, 51, 51));
+			panel.setBounds(0, 54, width_small, 5);
+			login.getContentPane().add(panel);
+
+			ActionListener taskPerformer1 = new ActionListener() {
+				public void actionPerformed(ActionEvent evt) {
+					try {
+						Socket sock = new Socket();
+						InetSocketAddress addr = new InetSocketAddress("www.google.com", 80);
+						sock.setSoTimeout(500);
+						sock.connect(addr, 3000);
+						sock.close();
+						internetCheck.setBackground(Color.GREEN);
+						internetCheck.setText("ONLINE");
+						btnSync1.setEnabled(true);
+
+					} catch (Exception e) {
+						internetCheck.setBackground(Color.RED);
+						internetCheck.setText("OFFLINE");
+						btnSync1.setEnabled(false);
+					}
+				}
+			};
+			new Timer(delay, taskPerformer1).start();
+			login.setVisible(true);// making the frame visible
 		} else {
-			width_small = (int) (640 - (640 * (37.5 / 100)));
+			if (source_api.compareTo("") == 0 && source_access_key.compareTo("") == 0) {
+				api(false);
+			} else {
+				System.out.println(returning_view);
+				if (returning_view.compareTo("api") == 0) {
+					api(true);
+				} else if (returning_view.compareTo("settings") == 0) {
+					settings();
+				} else {
+					dashboard();
+				}
+			}
 		}
-		height_small = (int) (480 - (480 * (5 / 100)));
-
-		login = new JFrame();
-		login.addWindowListener(new WindowAdapter() {
-			@Override
-			public void windowClosing(WindowEvent e) {
-				// database_save();
-			}
-		});
-		login.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		login.getContentPane().setForeground(Color.WHITE);
-		login.getContentPane().setBackground(new Color(128, 128, 128));
-
-		login.setSize(width_small, height_small);// 400 width and 500 height
-		login.getContentPane().setLayout(null);// using no layout managers
-		JLabel lblNewLabel = new JLabel("TORU");
-
-		lblNewLabel.setForeground(new Color(255, 250, 250));
-		lblNewLabel.setBackground(new Color(230, 230, 250));
-		lblNewLabel.setFont(new Font("Trattatello", Font.BOLD, 24));
-		lblNewLabel.setToolTipText("Welcome\n");
-		lblNewLabel.setBounds((width_small / 2) - 34, 15, 70, 25);
-		login.getContentPane().add(lblNewLabel);
-		username = new JTextField();
-		username.setBounds(80, 220, width_small - 161, 26);
-		login.getContentPane().add(username);
-		username.setColumns(10);
-		JLabel lblUsername = new JLabel("Username");
-		lblUsername.setForeground(new Color(245, 255, 250));
-		lblUsername.setHorizontalAlignment(SwingConstants.CENTER);
-		lblUsername.setBounds(80, 200, width_small - 161, 16);
-		login.getContentPane().add(lblUsername);
-		JPanel title_background = new JPanel();
-		title_background.setBackground(new Color(0, 0, 0));
-		title_background.setBounds(-17, 0, width - 67, 54);
-		login.getContentPane().add(title_background);
-		JLabel lblPassword = new JLabel("Password");
-		lblPassword.setHorizontalAlignment(SwingConstants.CENTER);
-		lblPassword.setForeground(new Color(245, 255, 250));
-		lblPassword.setBounds(80, 260, width_small - 161, 16);
-		login.getContentPane().add(lblPassword);
-		passwordField = new JPasswordField();
-		passwordField.setBounds(80, 280, width_small - 161, 26);
-		login.getContentPane().add(passwordField);
-		JButton btnLogin = new JButton("Login");
-		Action actionSubmit = new AbstractAction() {
-			/**
-			 * 
-			 */
-			private static final long serialVersionUID = 1L;
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				String user = username.getText();
-				String pass = String.valueOf(passwordField.getPassword());
-				if (pass.compareTo("root") == 0 && user.compareTo("user") == 0) {
-					logged_in = true;
-					login.setVisible(false);
-					login.dispose();
-					if (source_api.compareTo("") == 0 && source_access_key.compareTo("") == 0) {
-						api(false);
-					} else {
-						System.out.println(returning_view);
-						if (returning_view.compareTo("api") == 0) {
-							api(true);
-						} else if (returning_view.compareTo("settings") == 0) {
-							settings();
-						} else {
-							dashboard();
-						}
-					}
-				} else {
-					JOptionPane.showMessageDialog(null, "Wrong username or password");
-				}
-			}
-		};
-		username.addActionListener(actionSubmit);
-		passwordField.addActionListener(actionSubmit);
-		btnLogin.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				String user = username.getText();
-				String pass = String.valueOf(passwordField.getPassword());
-				if (pass.compareTo("root") == 0 && user.compareTo("user") == 0) {
-					login.setVisible(false);
-					if (source_api.compareTo("") == 0 && source_access_key.compareTo("") == 0) {
-						api(false);
-					} else {
-						System.out.println(returning_view);
-						if (returning_view.compareTo("api") == 0) {
-							api(true);
-						} else if (returning_view.compareTo("settings") == 0) {
-							settings();
-						} else {
-							dashboard();
-						}
-					}
-
-				} else {
-					JOptionPane.showMessageDialog(null, "Wrong username or password");
-				}
-
-			}
-		});
-
-		btnLogin.setBounds(width_small / 3, 340, width_small / 3, 29);
-		login.getContentPane().add(btnLogin);
-
-		final JButton btnSync1 = new JButton("Sync");
-		btnSync1.setBounds(width_small - 155, 68, 70, 25);
-		login.getContentPane().add(btnSync1);
-
-		JLabel lblLogIn = new JLabel("Log in");
-		lblLogIn.setForeground(new Color(224, 255, 255));
-		lblLogIn.setFont(new Font("URW Gothic L", Font.BOLD, 24));
-		lblLogIn.setHorizontalAlignment(SwingConstants.CENTER);
-		lblLogIn.setBounds((width_small / 2) - 40, 150, 80, 30);
-		login.getContentPane().add(lblLogIn);
-
-		final Label internetCheck = new Label("   ONLINE");
-		internetCheck.setFont(new Font("Dialog", Font.BOLD | Font.ITALIC, 12));
-		internetCheck.setBackground(Color.GREEN);
-		internetCheck.setForeground(new Color(255, 255, 255));
-		internetCheck.setAlignment(1);
-		internetCheck.setBounds(width_small - 85, 70, 65, 22);
-		login.getContentPane().add(internetCheck);
-
-		Panel panel = new Panel();
-		panel.setBackground(new Color(204, 51, 51));
-		panel.setBounds(0, 54, width_small, 5);
-		login.getContentPane().add(panel);
-
-		ActionListener taskPerformer1 = new ActionListener() {
-			public void actionPerformed(ActionEvent evt) {
-				try {
-					Socket sock = new Socket();
-					InetSocketAddress addr = new InetSocketAddress("www.google.com", 80);
-					sock.setSoTimeout(500);
-					sock.connect(addr, 3000);
-					sock.close();
-					internetCheck.setBackground(Color.GREEN);
-					internetCheck.setText("ONLINE");
-					btnSync1.setEnabled(true);
-
-				} catch (Exception e) {
-					internetCheck.setBackground(Color.RED);
-					internetCheck.setText("OFFLINE");
-					btnSync1.setEnabled(false);
-				}
-			}
-		};
-		new Timer(delay, taskPerformer1).start();
-		login.setVisible(true);// making the frame visible
 	}
 
 	public void settings() {
@@ -821,7 +839,9 @@ public class Main {
 					height = 480;
 					articles.setSize(640, 480);
 				}
-
+				HashMap<Integer, JFrame> issue_articles = new HashMap<Integer, JFrame>();
+				issue_articles.put(1, new JFrame());
+				article_screens.put(1, issue_articles);
 				articles.getContentPane().setBackground(new Color(128, 128, 128));
 				articles.setVisible(true);
 				articles.addWindowListener(new WindowAdapter() {
@@ -903,7 +923,7 @@ public class Main {
 					public void actionPerformed(ActionEvent e) {
 						JTable table = (JTable) e.getSource();
 						int modelRow = Integer.valueOf(e.getActionCommand());
-						article(issue_id, modelRow);
+						article(issue_id, modelRow + 1);
 						// /
 						// ((DefaultTableModel)table.getModel()).removeRow(modelRow);
 					}
@@ -997,7 +1017,9 @@ public class Main {
 						int a_id = list_issues.get(issue_id) + 1;
 						list_issues.replace(issue_id, a_id);
 						Object[] new_row = { a_id, "Row1-Column2", "View", "Delete" };
-
+						HashMap<Integer, JFrame> issue_articles = article_screens.get(issue_id);
+						issue_articles.put(a_id, new JFrame());
+						article_screens.put(issue_id, issue_articles);
 						((DefaultTableModel) table.getModel()).addRow(new_row);
 						table.repaint();
 					}
@@ -1013,170 +1035,301 @@ public class Main {
 
 	public void article(final int issue_id, int article_id) {
 		if (logged_in) {
-			int width_small = 0;
-			int height_small = 0;
-			if (height >= 480 && width >= 640) {
-				width_small = (int) (width - (width * (37.5 / 100)));
-				height_small = (int) (height - (height * (5 / 100)));
-			} else {
-				width_small = (int) (640 - (640 * (37.5 / 100)));
-				height_small = (int) (480 - (480 * (5 / 100)));
+			if (article_screens.containsKey(issue_id) && article_screens.get(issue_id).containsKey(article_id)
+					&& !article_screens.get(issue_id).get(article_id).isVisible()) {
+				int width_small = 0;
+				int height_small = 0;
+				if (height >= 768 && width >= 640) {
+					width_small = (int) (width - (width * (37.5 / 100)));
+					height_small = (int) (height - (height * (5 / 100)));
+				} else {
+					width_small = (int) (640 + (640 * (37.5 / 100)));
+					height_small = (int) (768 - (768 * (5 / 100)));
+				}
+				final JFrame article = new JFrame();
+				article.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+				// article.setSize(width_small, height_small);
+				article.setSize(width_small, height_small);
+				article.getContentPane().setBackground(new Color(128, 128, 128));
+				article.setVisible(true);
+				article.addWindowListener(new WindowAdapter() {
+					@Override
+					public void windowClosing(WindowEvent e) {
+						// database_save();
+					}
+				});
+				Object rowData[][] = { { "Row1-Column1", "Row1-Column2", "View", "Delete" },
+						{ "Row2-Column1", "Row2-Column2", "View", "Delete" },
+						{ "Row3-Column1", "Row3-Column2", "View", "Delete" },
+						{ "Row4-Column1", "Row4-Column2", "View", "Delete" } };
+				Object columnNames[] = { "Column One", "Column Two", "", "" };
+				article.getContentPane().setLayout(null);
+
+				JLabel lblArticleDetails = new JLabel("Article Details");
+				lblArticleDetails.setHorizontalAlignment(SwingConstants.CENTER);
+				lblArticleDetails.setFont(new Font("Dialog", Font.BOLD, 20));
+				lblArticleDetails.setForeground(new Color(255, 255, 255));
+				lblArticleDetails.setBackground(new Color(204, 153, 102));
+				lblArticleDetails.setBounds(width_small / 4, 65, width_small / 2, 40);
+				lblArticleDetails.setOpaque(true);
+				article.getContentPane().add(lblArticleDetails);
+
+				final JButton btnSync = new JButton("Sync");
+				btnSync.setBounds(width_small - 150, 21, 70, 24);
+				article.getContentPane().add(btnSync);
+
+				final Label internetCheck = new Label("  ONLINE");
+				internetCheck.setFont(new Font("Dialog", Font.BOLD | Font.ITALIC, 12));
+				internetCheck.setBackground(Color.GREEN);
+				internetCheck.setAlignment(1);
+				internetCheck.setForeground(new Color(255, 255, 255));
+				internetCheck.setBounds(width_small - 80, 22, 65, 22);
+				article.getContentPane().add(internetCheck);
+
+				ActionListener taskPerformer1 = new ActionListener() {
+					public void actionPerformed(ActionEvent evt) {
+						try {
+							Socket sock = new Socket();
+							InetSocketAddress addr = new InetSocketAddress("www.google.com", 80);
+							sock.setSoTimeout(500);
+							sock.connect(addr, 3000);
+
+							internetCheck.setBackground(Color.GREEN);
+							internetCheck.setText("ONLINE");
+							btnSync.setEnabled(true);
+							sock.close();
+
+						} catch (Exception e) {
+							internetCheck.setBackground(Color.RED);
+							internetCheck.setText("OFFLINE");
+							btnSync.setEnabled(false);
+						}
+					}
+				};
+				new Timer(delay, taskPerformer1).start();
+				DefaultTableModel model = new DefaultTableModel(rowData, columnNames);
+				Action delete = new AbstractAction() {
+					public void actionPerformed(ActionEvent e) {
+						JTable table = (JTable) e.getSource();
+						int modelRow = Integer.valueOf(e.getActionCommand());
+						JOptionPane.showMessageDialog(null, "Deleted");
+						// /
+						// ((DefaultTableModel)table.getModel()).removeRow(modelRow);
+					}
+				};
+				Action view = new AbstractAction() {
+					public void actionPerformed(ActionEvent e) {
+						JTable table = (JTable) e.getSource();
+						int modelRow = Integer.valueOf(e.getActionCommand());
+						JOptionPane.showMessageDialog(null, modelRow);
+						// /
+						// ((DefaultTableModel)table.getModel()).removeRow(modelRow);
+					}
+				};
+
+				JButton btnGoBack = new JButton("Close");
+				btnGoBack.addActionListener(new ActionListener() {
+					public void actionPerformed(ActionEvent arg0) {
+						article.setVisible(false);
+						if (articles == null) {
+							article.dispose();
+							issue(issue_id);
+						} else if (!articles.isVisible()) {
+							article.dispose();
+							articles.setVisible(true);
+						} else {
+							article.dispose();
+						}
+					}
+				});
+				btnGoBack.setBounds(6, 17, 117, 30);
+				article.getContentPane().add(btnGoBack);
+				JScrollPane scrollSettings = new JScrollPane();
+				scrollSettings.setBounds(40, 180, 320, 200);
+
+				JPanel panel = new JPanel();
+				panel.setBackground(SystemColor.window);
+				panel.setBounds(50, 107, 300, 307);
+				article.getContentPane().add(panel);
+				panel.setLayout(null);
+				panel.setAutoscrolls(true);
+				int y = 10;
+				int fields = 5;
+				int settings_height = 210 + 30 * (fields - 8);
+
+				Panel panel_1 = new Panel();
+				panel_1.setBackground(new Color(204, 153, 102));
+				panel_1.setBounds(0, 65, width_small, 45);
+				article.getContentPane().add(panel_1);
+
+				Panel panel_2 = new Panel();
+				panel_2.setBackground(new Color(153, 102, 51));
+				panel_2.setBounds(0, 110, width_small, 5);
+				article.getContentPane().add(panel_2);
+				panel.setPreferredSize(new Dimension(320, settings_height));
+				JScrollPane articleSection = new JScrollPane(panel);
+				panel.setAutoscrolls(true);
+				articleSection.setPreferredSize(new Dimension(320, 200));
+				articleSection.setBounds(40, 132, width_small / 2 - 100, height_small - 280);
+				// scrollSettings.setViewportView(scrollFrame);
+				article.getContentPane().add(articleSection);
+
+				JPanel panel3 = new JPanel();
+				panel3.setBackground(SystemColor.window);
+				panel3.setBounds(50, 107, 300, 307);
+				article.getContentPane().add(panel3);
+				panel3.setLayout(null);
+				panel3.setAutoscrolls(true);
+				Panel panel4 = new Panel();
+				panel4.setBackground(new Color(204, 153, 102));
+				panel4.setBounds(0, 65, width_small, 45);
+				article.getContentPane().add(panel4);
+
+				Panel panel5 = new Panel();
+				panel5.setBackground(new Color(153, 102, 51));
+				panel5.setBounds(0, 110, width_small, 5);
+				article.getContentPane().add(panel5);
+				panel3.setPreferredSize(new Dimension(320, settings_height));
+				JScrollPane abstractSection = new JScrollPane(panel3);
+				panel3.setAutoscrolls(true);
+
+				JLabel lblNewLabel_1 = new JLabel("Abstract");
+				lblNewLabel_1.setBounds(16, 6, 61, 16);
+				panel3.add(lblNewLabel_1);
+
+				JLabel lblAbstract = new JLabel("");
+				lblAbstract.setVerticalAlignment(SwingConstants.TOP);
+				lblAbstract.setBounds(16, 28, 260, 180);
+				panel3.add(lblAbstract);
+				abstractSection.setPreferredSize(new Dimension(320, 200));
+				abstractSection.setBounds(width_small / 2 - 40, 132, width_small / 2, height_small / 2 - 150);
+				// scrollSettings.setViewportView(scrollFrame);
+				article.getContentPane().add(abstractSection);
+
+				JPanel panel6 = new JPanel();
+				panel6.setBackground(SystemColor.window);
+				panel6.setBounds(50, 107, 300, 307);
+				article.getContentPane().add(panel6);
+				panel6.setLayout(null);
+				panel6.setAutoscrolls(true);
+				Panel panel7 = new Panel();
+				panel7.setBackground(new Color(204, 153, 102));
+				panel7.setBounds(0, 65, width_small, 45);
+				article.getContentPane().add(panel7);
+
+				Panel panel8 = new Panel();
+				panel8.setBackground(new Color(153, 102, 51));
+				panel8.setBounds(0, 110, width_small, 5);
+				article.getContentPane().add(panel8);
+				panel6.setPreferredSize(new Dimension(320, settings_height));
+				JScrollPane authorSection = new JScrollPane(panel6);
+				panel6.setAutoscrolls(true);
+
+				JLabel lblNewLabel_3 = new JLabel("Author Information");
+				lblNewLabel_3.setBounds(6, 6, 156, 16);
+				panel6.add(lblNewLabel_3);
+
+				JLabel lblAuthorInfo = new JLabel("");
+				lblAuthorInfo.setVerticalAlignment(SwingConstants.TOP);
+				lblAuthorInfo.setBounds(16, 34, 286, 175);
+				panel6.add(lblAuthorInfo);
+				authorSection.setPreferredSize(new Dimension(320, 200));
+				authorSection.setBounds(width_small / 2 - 40, 132 + height_small / 2 - 130, width_small / 2,
+						height_small / 2 - 150);
+				// scrollSettings.setViewportView(scrollFrame);
+				article.getContentPane().add(authorSection);
+
+				JLabel lblIssues = new JLabel("Article:");
+				lblIssues.setBounds(24, 18, 110, 30);
+				panel.add(lblIssues);
+				lblIssues.setFont(new Font("Dialog", Font.BOLD, 18));
+				lblIssues.setForeground(Color.BLACK);
+
+				JLabel lblDate = new JLabel("1");
+				lblDate.setVerticalAlignment(SwingConstants.TOP);
+				lblDate.setForeground(Color.BLACK);
+				lblDate.setFont(new Font("Dialog", Font.BOLD, 16));
+				lblDate.setBounds(180, 235, 125, 30);
+				panel.add(lblDate);
+
+				JLabel lblIssue = new JLabel("Issue:");
+				lblIssue.setBounds(24, 48, 94, 30);
+				panel.add(lblIssue);
+				lblIssue.setForeground(Color.BLACK);
+				lblIssue.setFont(new Font("Dialog", Font.BOLD, 18));
+
+				JLabel lblIssueId = new JLabel("");
+				lblIssueId.setBounds(130, 48, 94, 30);
+				panel.add(lblIssueId);
+				lblIssueId.setForeground(Color.BLACK);
+				lblIssueId.setFont(new Font("Dialog", Font.BOLD, 16));
+				lblIssueId.setText(Integer.toString(issue_id));
+
+				JLabel lblDatePublished = new JLabel("Date Published:");
+				lblDatePublished.setForeground(Color.BLACK);
+				lblDatePublished.setFont(new Font("Dialog", Font.BOLD, 18));
+				lblDatePublished.setBounds(24, 230, 150, 30);
+				panel.add(lblDatePublished);
+
+				JLabel lblArticleId = new JLabel("1");
+				lblArticleId.setBounds(130, 18, 94, 30);
+				panel.add(lblArticleId);
+				lblArticleId.setForeground(Color.BLACK);
+				lblArticleId.setFont(new Font("Dialog", Font.BOLD, 16));
+				lblArticleId.setText(Integer.toString(article_id));
+
+				JLabel lblPages = new JLabel("Pages:");
+				lblPages.setForeground(Color.BLACK);
+				lblPages.setFont(new Font("Dialog", Font.BOLD, 18));
+				lblPages.setBounds(24, 195, 94, 30);
+				panel.add(lblPages);
+
+				JLabel lblPageNum = new JLabel("1");
+				lblPageNum.setVerticalAlignment(SwingConstants.TOP);
+				lblPageNum.setForeground(Color.BLACK);
+				lblPageNum.setFont(new Font("Dialog", Font.BOLD, 16));
+				lblPageNum.setBounds(130, 200, 125, 30);
+				panel.add(lblPageNum);
+
+				JLabel lblTitle = new JLabel("Title:");
+				lblTitle.setForeground(Color.BLACK);
+				lblTitle.setFont(new Font("Dialog", Font.BOLD, 18));
+				lblTitle.setBounds(24, 110, 94, 30);
+				panel.add(lblTitle);
+
+				JLabel lblTitleText = new JLabel("1");
+				lblTitleText.setVerticalAlignment(SwingConstants.TOP);
+				lblTitleText.setForeground(Color.BLACK);
+				lblTitleText.setFont(new Font("Dialog", Font.BOLD, 16));
+				lblTitleText.setBounds(85, 117, 125, 80);
+				panel.add(lblTitleText);
+
+				JLabel lblSectionId = new JLabel("1");
+				lblSectionId.setForeground(Color.BLACK);
+				lblSectionId.setFont(new Font("Dialog", Font.BOLD, 16));
+				lblSectionId.setBounds(130, 80, 94, 30);
+				panel.add(lblSectionId);
+
+				JLabel lblSection = new JLabel("Section:");
+				lblSection.setForeground(Color.BLACK);
+				lblSection.setFont(new Font("Dialog", Font.BOLD, 18));
+				lblSection.setBounds(24, 80, 94, 30);
+				panel.add(lblSection);
+				if (article_screens.containsKey(issue_id)) {
+					HashMap<Integer, JFrame> issue_articles = article_screens.get(issue_id);
+					issue_articles.put(article_id, article);
+					article_screens.put(issue_id, issue_articles);
+				}
 			}
-			final JFrame article = new JFrame();
-			article.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-			article.setSize(width_small, height_small);
-			article.getContentPane().setBackground(new Color(128, 128, 128));
-			article.setVisible(true);
-			article.addWindowListener(new WindowAdapter() {
-				@Override
-				public void windowClosing(WindowEvent e) {
-					// database_save();
-				}
-			});
-			Object rowData[][] = { { "Row1-Column1", "Row1-Column2", "View", "Delete" },
-					{ "Row2-Column1", "Row2-Column2", "View", "Delete" },
-					{ "Row3-Column1", "Row3-Column2", "View", "Delete" },
-					{ "Row4-Column1", "Row4-Column2", "View", "Delete" } };
-			Object columnNames[] = { "Column One", "Column Two", "", "" };
-			article.getContentPane().setLayout(null);
 
-			JLabel lblArticleDetails = new JLabel("Article Details");
-			lblArticleDetails.setHorizontalAlignment(SwingConstants.CENTER);
-			lblArticleDetails.setFont(new Font("Dialog", Font.BOLD, 20));
-			lblArticleDetails.setForeground(new Color(255, 255, 255));
-			lblArticleDetails.setBackground(new Color(204, 153, 102));
-			lblArticleDetails.setBounds(width_small / 4, 65, width_small / 2, 40);
-			lblArticleDetails.setOpaque(true);
-			article.getContentPane().add(lblArticleDetails);
-
-			final JButton btnSync = new JButton("Sync");
-			btnSync.setBounds(width_small - 150, 21, 70, 24);
-			article.getContentPane().add(btnSync);
-
-			final Label internetCheck = new Label("  ONLINE");
-			internetCheck.setFont(new Font("Dialog", Font.BOLD | Font.ITALIC, 12));
-			internetCheck.setBackground(Color.GREEN);
-			internetCheck.setAlignment(1);
-			internetCheck.setForeground(new Color(255, 255, 255));
-			internetCheck.setBounds(width_small - 80, 22, 65, 22);
-			article.getContentPane().add(internetCheck);
-
-			ActionListener taskPerformer1 = new ActionListener() {
-				public void actionPerformed(ActionEvent evt) {
-					try {
-						Socket sock = new Socket();
-						InetSocketAddress addr = new InetSocketAddress("www.google.com", 80);
-						sock.setSoTimeout(500);
-						sock.connect(addr, 3000);
-
-						internetCheck.setBackground(Color.GREEN);
-						internetCheck.setText("ONLINE");
-						btnSync.setEnabled(true);
-						sock.close();
-
-					} catch (Exception e) {
-						internetCheck.setBackground(Color.RED);
-						internetCheck.setText("OFFLINE");
-						btnSync.setEnabled(false);
-					}
-				}
-			};
-			new Timer(delay, taskPerformer1).start();
-			DefaultTableModel model = new DefaultTableModel(rowData, columnNames);
-			Action delete = new AbstractAction() {
-				public void actionPerformed(ActionEvent e) {
-					JTable table = (JTable) e.getSource();
-					int modelRow = Integer.valueOf(e.getActionCommand());
-					JOptionPane.showMessageDialog(null, "Deleted");
-					// /
-					// ((DefaultTableModel)table.getModel()).removeRow(modelRow);
-				}
-			};
-			Action view = new AbstractAction() {
-				public void actionPerformed(ActionEvent e) {
-					JTable table = (JTable) e.getSource();
-					int modelRow = Integer.valueOf(e.getActionCommand());
-					JOptionPane.showMessageDialog(null, modelRow);
-					// /
-					// ((DefaultTableModel)table.getModel()).removeRow(modelRow);
-				}
-			};
-
-			JButton btnGoBack = new JButton("Close");
-			btnGoBack.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent arg0) {
-					article.setVisible(false);
-					if (articles == null) {
-						article.dispose();
-						issue(issue_id);
-					} else if (!articles.isVisible()) {
-						article.dispose();
-						articles.setVisible(true);
-					} else {
-						article.dispose();
-					}
-				}
-			});
-			btnGoBack.setBounds(6, 17, 117, 30);
-			article.getContentPane().add(btnGoBack);
-			JScrollPane scrollSettings = new JScrollPane();
-			scrollSettings.setBounds(40, 180, 320, 200);
-
-			JPanel panel = new JPanel();
-			panel.setBounds(50, 107, 300, 307);
-			article.getContentPane().add(panel);
-			panel.setLayout(null);
-			panel.setAutoscrolls(true);
-			int y = 10;
-			int fields = 5;
-			int settings_height = 210 + 30 * (fields - 8);
-
-			Panel panel_1 = new Panel();
-			panel_1.setBackground(new Color(204, 153, 102));
-			panel_1.setBounds(0, 65, width_small, 45);
-			article.getContentPane().add(panel_1);
-
-			Panel panel_2 = new Panel();
-			panel_2.setBackground(new Color(153, 102, 51));
-			panel_2.setBounds(0, 110, width_small, 5);
-			article.getContentPane().add(panel_2);
-			panel.setPreferredSize(new Dimension(320, settings_height));
-			JScrollPane scrollFrame = new JScrollPane(panel);
-			panel.setAutoscrolls(true);
-			scrollFrame.setPreferredSize(new Dimension(320, 200));
-			scrollFrame.setBounds(40, 132, width_small - 80, height_small - 280);
-			// scrollSettings.setViewportView(scrollFrame);
-			article.getContentPane().add(scrollFrame);
-			JLabel lblIssues = new JLabel("Article id:");
-			lblIssues.setBounds(24, 18, 110, 30);
-			panel.add(lblIssues);
-			lblIssues.setFont(new Font("Dialog", Font.BOLD, 18));
-			lblIssues.setForeground(Color.BLACK);
-
-			JLabel lblIssue = new JLabel("Issue id:");
-			lblIssue.setBounds(24, 48, 94, 30);
-			panel.add(lblIssue);
-			lblIssue.setForeground(Color.BLACK);
-			lblIssue.setFont(new Font("Dialog", Font.BOLD, 18));
-
-			JLabel lblIssueId = new JLabel("");
-			lblIssueId.setBounds(130, 48, 94, 30);
-			panel.add(lblIssueId);
-			lblIssueId.setForeground(Color.BLACK);
-			lblIssueId.setFont(new Font("Dialog", Font.BOLD, 16));
-			lblIssueId.setText(Integer.toString(issue_id));
-
-			JLabel lblArticleId = new JLabel("1");
-			lblArticleId.setBounds(130, 18, 94, 30);
-			panel.add(lblArticleId);
-			lblArticleId.setForeground(Color.BLACK);
-			lblArticleId.setFont(new Font("Dialog", Font.BOLD, 16));
-			lblArticleId.setText(Integer.toString(article_id));
 		} else {
-			settings();
+			login("dashboard");
 		}
 	}
 
+	/**
+	 * @wbp.parser.entryPoint
+	 */
 	public Main() {
 		try {
 			for (LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
@@ -1194,7 +1347,7 @@ public class Main {
 		} catch (IllegalAccessException e) {
 			// handle exception
 		}
-		settings();
+		dashboard();
 	}
 
 	public static void main(String[] args) {
