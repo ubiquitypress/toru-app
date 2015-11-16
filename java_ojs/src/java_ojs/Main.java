@@ -41,8 +41,9 @@ public class Main {
 	private static Statement stmt = null;
 	private String api_insert_or_replace_statement = "INSERT OR REPLACE INTO API(URL,ACCESS_KEY) VALUES (?,?)";
 	private String settings_insert_or_replace_statement = "INSERT OR REPLACE INTO SETTING(NAME,VALUE) VALUES (?,?)";
-	private int width = 800;
-	private int height = 600;
+	private int width = 1280;
+	private int height = 720;
+
 	/*
 	 * Initial setup test
 	 */
@@ -50,8 +51,7 @@ public class Main {
 		System.out.println("Saving database...");
 
 		try {
-			if (c != null && c.isClosed())
-			{
+			if (c != null && c.isClosed()) {
 				c = DriverManager.getConnection("jdbc:sqlite:local_datatabse.db");
 				stmt = c.createStatement();
 			}
@@ -59,7 +59,7 @@ public class Main {
 			prep.setString(1, source_api);
 			prep.setString(2, source_access_key);
 			prep.executeUpdate();
-			for (int i=0;i<list_settings.size();i++){
+			for (int i = 0; i < list_settings.size(); i++) {
 				PreparedStatement setting_prep = c.prepareStatement(settings_insert_or_replace_statement);
 				setting_prep.setString(1, setting_keys.get(i));
 				setting_prep.setBoolean(2, list_settings.get(setting_keys.get(i)));
@@ -74,28 +74,29 @@ public class Main {
 
 		System.out.println("Done.");
 	}
+
 	public static void populate_variables() {
 		System.out.println("Retrieving data from local database");
-		list_settings = new HashMap<String, Boolean>();		
+		list_settings = new HashMap<String, Boolean>();
 		try {
-			  ResultSet rs = stmt.executeQuery( "SELECT * FROM API WHERE URL="+"'api'"+";" );
-		      while ( rs.next() ) {
-		         source_api = rs.getString("url");
-		         source_access_key = rs.getString("access_key");
-		         System.out.println("URL: "+source_api);
-		         System.out.println("ACCESS KEY: "+source_access_key);
-		      }
-		      rs.close();
-			  rs = stmt.executeQuery( "SELECT * FROM SETTING ;" );
-		      while ( rs.next() ) {
-		         String name = rs.getString("name");
-		         Boolean value = rs.getBoolean("value");
-		     	 list_settings.put(name, value);
-		      	 setting_keys.add(name);
-		         System.out.println("Setting - "+name+" : "+value.toString());
-		      }
-		      rs.close();
-		      
+			ResultSet rs = stmt.executeQuery("SELECT * FROM API WHERE URL=" + "'api'" + ";");
+			while (rs.next()) {
+				source_api = rs.getString("url");
+				source_access_key = rs.getString("access_key");
+				System.out.println("URL: " + source_api);
+				System.out.println("ACCESS KEY: " + source_access_key);
+			}
+			rs.close();
+			rs = stmt.executeQuery("SELECT * FROM SETTING ;");
+			while (rs.next()) {
+				String name = rs.getString("name");
+				Boolean value = rs.getBoolean("value");
+				list_settings.put(name, value);
+				setting_keys.add(name);
+				System.out.println("Setting - " + name + " : " + value.toString());
+			}
+			rs.close();
+
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -103,6 +104,7 @@ public class Main {
 
 		System.out.println("Done.");
 	}
+
 	public static void database_setup() {
 
 		try {
@@ -123,13 +125,20 @@ public class Main {
 	}
 
 	public void login() {
-		int width_small = width - 240;
-		int height_small = height - 25;
+		int width_small = 0;
+		int height_small = 0;
+		if (width >= 640) {
+			width_small = (int) (width - (width * (37.5 / 100)));
+		} else {
+			width_small = (int) (640 - (640 * (37.5 / 100)));
+		}
+		height_small = (int) (480 - (480 * (5 / 100)));
+
 		login = new JFrame();
 		login.addWindowListener(new WindowAdapter() {
 			@Override
 			public void windowClosing(WindowEvent e) {
-			//	database_save();
+				// database_save();
 			}
 		});
 		login.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -139,33 +148,33 @@ public class Main {
 		login.setSize(width_small, height_small);// 400 width and 500 height
 		login.getContentPane().setLayout(null);// using no layout managers
 		JLabel lblNewLabel = new JLabel("TORU");
-		
-			lblNewLabel.setForeground(new Color(255, 250, 250));
-			lblNewLabel.setBackground(new Color(230, 230, 250));
-			lblNewLabel.setFont(new Font("Trattatello", Font.BOLD, 24));
-			lblNewLabel.setToolTipText("Welcome\n");
-			lblNewLabel.setBounds((width_small/2)-34,15,70,25);
-			login.getContentPane().add(lblNewLabel);
+
+		lblNewLabel.setForeground(new Color(255, 250, 250));
+		lblNewLabel.setBackground(new Color(230, 230, 250));
+		lblNewLabel.setFont(new Font("Trattatello", Font.BOLD, 24));
+		lblNewLabel.setToolTipText("Welcome\n");
+		lblNewLabel.setBounds((width_small / 2) - 34, 15, 70, 25);
+		login.getContentPane().add(lblNewLabel);
 		username = new JTextField();
-		username.setBounds(80, height_small-305, width_small-161, 26);
+		username.setBounds(80, 220, width_small - 161, 26);
 		login.getContentPane().add(username);
 		username.setColumns(10);
 		JLabel lblUsername = new JLabel("Username");
 		lblUsername.setForeground(new Color(245, 255, 250));
 		lblUsername.setHorizontalAlignment(SwingConstants.CENTER);
-		lblUsername.setBounds(80, height_small-321, width_small-161, 16);
+		lblUsername.setBounds(80, 200, width_small - 161, 16);
 		login.getContentPane().add(lblUsername);
 		JPanel title_background = new JPanel();
 		title_background.setBackground(new Color(0, 0, 0));
-		title_background.setBounds(-17, 0, width-67, 54);
+		title_background.setBounds(-17, 0, width - 67, 54);
 		login.getContentPane().add(title_background);
 		JLabel lblPassword = new JLabel("Password");
 		lblPassword.setHorizontalAlignment(SwingConstants.CENTER);
 		lblPassword.setForeground(new Color(245, 255, 250));
-		lblPassword.setBounds(80, height_small-267, width_small-161, 16);
+		lblPassword.setBounds(80, 260, width_small - 161, 16);
 		login.getContentPane().add(lblPassword);
 		passwordField = new JPasswordField();
-		passwordField.setBounds(80, height_small-252, width_small-161, 26);
+		passwordField.setBounds(80, 280, width_small - 161, 26);
 		login.getContentPane().add(passwordField);
 		JButton btnLogin = new JButton("Login");
 		Action actionSubmit = new AbstractAction() {
@@ -212,18 +221,18 @@ public class Main {
 			}
 		});
 
-		btnLogin.setBounds(139, height_small-200, width_small-283, 29);
+		btnLogin.setBounds(139, 350, width_small - 283, 29);
 		login.getContentPane().add(btnLogin);
 
 		final JButton btnSync1 = new JButton("Sync");
-		btnSync1.setBounds(width_small-155, 68, 70, 25);
+		btnSync1.setBounds(width_small - 155, 68, 70, 25);
 		login.getContentPane().add(btnSync1);
 
 		JLabel lblLogIn = new JLabel("Log in");
 		lblLogIn.setForeground(new Color(224, 255, 255));
 		lblLogIn.setFont(new Font("URW Gothic L", Font.BOLD, 24));
 		lblLogIn.setHorizontalAlignment(SwingConstants.CENTER);
-		lblLogIn.setBounds((width_small/2)-40, height_small-372, 80, 30);
+		lblLogIn.setBounds((width_small / 2) - 40, 150, 80, 30);
 		login.getContentPane().add(lblLogIn);
 
 		final Label internetCheck = new Label("   ONLINE");
@@ -231,9 +240,9 @@ public class Main {
 		internetCheck.setBackground(Color.GREEN);
 		internetCheck.setForeground(new Color(255, 255, 255));
 		internetCheck.setAlignment(1);
-		internetCheck.setBounds(width_small-85, 70, 65, 22);
+		internetCheck.setBounds(width_small - 85, 70, 65, 22);
 		login.getContentPane().add(internetCheck);
-		
+
 		Panel panel = new Panel();
 		panel.setBackground(new Color(204, 51, 51));
 		panel.setBounds(0, 54, width_small, 5);
@@ -263,29 +272,32 @@ public class Main {
 	}
 
 	public void settings() {
+		int width_small = (int) (width - (width * (37.5 / 100)));
+		int height_small = (int) (height - (height * (5 / 100)));
 		settings = new JFrame();
 		settings.getContentPane().setBackground(new Color(128, 128, 128));
 		settings.addWindowListener(new WindowAdapter() {
 			@Override
 			public void windowClosing(WindowEvent e) {
-			//	database_save();
+				// database_save();
 			}
 		});
-		settings.setSize(400, 500);// 400 width and 500 height
+		settings.setSize(width_small, height_small);// 400 width and 500 height
 		settings.getContentPane().setLayout(null);
-		JPanel title_background = new JPanel();
-		title_background.setBackground(new Color(0, 0, 0));
-		title_background.setBounds(-17, 0, 433, 54);
-		settings.getContentPane().add(title_background);
 		JLabel lblNewLabel = new JLabel("TORU");
-		title_background.add(lblNewLabel);
 		lblNewLabel.setForeground(new Color(255, 250, 250));
 		lblNewLabel.setBackground(new Color(230, 230, 250));
 		lblNewLabel.setFont(new Font("Trattatello", Font.BOLD, 24));
 		lblNewLabel.setToolTipText("Welcome\n");
 
+		lblNewLabel.setBounds((width_small / 2) - 34, 15, 70, 25);
+		settings.getContentPane().add(lblNewLabel);
+		JPanel title_background = new JPanel();
+		title_background.setBackground(new Color(0, 0, 0));
+		title_background.setBounds(-17, 0, width_small + 33, 54);
+		settings.getContentPane().add(title_background);
 		final JButton btnSync1 = new JButton("Sync");
-		btnSync1.setBounds(245, 68, 70, 25);
+		btnSync1.setBounds(width_small - 155, 68, 70, 25);
 		settings.getContentPane().add(btnSync1);
 
 		JLabel lblSettings = new JLabel("Settings");
@@ -294,10 +306,10 @@ public class Main {
 		lblSettings.setForeground(new Color(255, 255, 255));
 		lblSettings.setFont(new Font("URW Gothic L", Font.BOLD, 24));
 		lblSettings.setHorizontalAlignment(SwingConstants.CENTER);
-		lblSettings.setBounds(110, 128, 160, 30);
+		lblSettings.setBounds((width_small / 2) - 83, 128, 160, 30);
 		settings.getContentPane().add(lblSettings);
 		JScrollPane scrollSettings = new JScrollPane();
-		scrollSettings.setBounds(40, 180, 320, 200);
+		scrollSettings.setBounds(40, 180, width_small - 80, height_small - 300);
 
 		JPanel panelSettings = new JPanel();
 
@@ -305,12 +317,12 @@ public class Main {
 		panelSettings.setAutoscrolls(true);
 		int y = 10;
 		int settings_height = 210 + 30 * (setting_keys.size() - 8);
-		panelSettings.setPreferredSize(new Dimension(320, settings_height));
+		panelSettings.setPreferredSize(new Dimension(width_small - 80, settings_height));
 		JScrollPane scrollFrame = new JScrollPane(panelSettings);
 		panelSettings.setAutoscrolls(true);
 		scrollFrame.setPreferredSize(new Dimension(320, 200));
-		scrollFrame.setBounds(40, 180, 320, 200);
-	//	scrollSettings.setViewportView(scrollFrame);
+		scrollFrame.setBounds(40, 180, width_small - 80, height_small - 300);
+		// scrollSettings.setViewportView(scrollFrame);
 		settings.getContentPane().add(scrollFrame);
 		for (int i = 0; i < setting_keys.size(); i++) {
 			final JCheckBox chckbxSampleSetting = new JCheckBox(setting_keys.get(i));
@@ -341,29 +353,29 @@ public class Main {
 			}
 		});
 		y = y + 10;
-		btnSave.setBounds(140, 400, 100, 25);
+		btnSave.setBounds((width_small / 2) - 60, height_small - 100, 100, 25);
 		settings.getContentPane().add(btnSave);
 		final Label internetCheck = new Label("  ONLINE");
 		internetCheck.setFont(new Font("Dialog", Font.BOLD | Font.ITALIC, 12));
 		internetCheck.setBackground(Color.GREEN);
 		internetCheck.setAlignment(1);
 		internetCheck.setForeground(new Color(255, 255, 255));
-		internetCheck.setBounds(315, 70, 65, 22);
+		internetCheck.setBounds(width_small - 85, 70, 65, 22);
 		settings.getContentPane().add(internetCheck);
-		
+
 		Panel panel = new Panel();
 		panel.setBackground(new Color(128, 0, 128));
-		panel.setBounds(0, 120, 400, 40);
+		panel.setBounds(0, 120, width_small, 40);
 		settings.getContentPane().add(panel);
-		
+
 		Panel panel_1 = new Panel();
 		panel_1.setBackground(new Color(102, 0, 102));
-		panel_1.setBounds(0, 160, 400, 5);
+		panel_1.setBounds(0, 160, width_small, 5);
 		settings.getContentPane().add(panel_1);
-		
+
 		Panel panel_2 = new Panel();
 		panel_2.setBackground(new Color(204, 51, 51));
-		panel_2.setBounds(0, 54, 400, 5);
+		panel_2.setBounds(0, 54, width_small, 5);
 		settings.getContentPane().add(panel_2);
 
 		ActionListener taskPerformer1 = new ActionListener() {
@@ -392,18 +404,35 @@ public class Main {
 	}
 
 	public void api(final boolean edit) {
+		int width_small = 0;
+		int height_small = 0;
+		if (height >= 480 && width >= 640) {
+			width_small = (int) (width - (width * (37.5 / 100)));
+		} else {
+			width_small = (int) (640 - (640 * (37.5 / 100)));
+		}
+
+		height_small = (int) (480 - (480 * (5 / 100)));
 		api = new JFrame();
 		api.getContentPane().setBackground(new Color(128, 128, 128));
 		api.addWindowListener(new WindowAdapter() {
 			@Override
 			public void windowClosing(WindowEvent e) {
-			//	database_save();
+				// database_save();
 			}
 		});
-		api.setSize(400, 500);// 400 width and 500 height
+		api.setSize(width_small, height_small);// 400 width and 500 height
 		api.getContentPane().setLayout(null);// using no layout managers
+		JLabel lblNewLabel = new JLabel("TORU");
+		lblNewLabel.setForeground(new Color(255, 250, 250));
+		lblNewLabel.setBackground(new Color(230, 230, 250));
+		lblNewLabel.setFont(new Font("Trattatello", Font.BOLD, 24));
+		lblNewLabel.setToolTipText("Welcome\n");
+
+		lblNewLabel.setBounds((width_small / 2) - 34, 15, 70, 25);
+		api.getContentPane().add(lblNewLabel);
 		api_url = new JTextField();
-		api_url.setBounds(80, 195, 239, 26);
+		api_url.setBounds(80, 218, width_small - 161, 26);
 		api_url.setText(source_api);
 		api.getContentPane().add(api_url);
 		api_url.setColumns(10);
@@ -411,27 +440,22 @@ public class Main {
 		JLabel lblApi = new JLabel("API URL");
 		lblApi.setForeground(new Color(245, 255, 250));
 		lblApi.setHorizontalAlignment(SwingConstants.CENTER);
-		lblApi.setBounds(80, 179, 239, 16);
+		lblApi.setBounds(80, 200, width_small - 151, 16);
 		api.getContentPane().add(lblApi);
 		JPanel title_background = new JPanel();
 		title_background.setBackground(new Color(0, 0, 0));
-		title_background.setBounds(-17, 0, 433, 54);
+		title_background.setBounds(-17, 0, width_small + 33, 54);
 		api.getContentPane().add(title_background);
-		JLabel lblNewLabel = new JLabel("TORU");
-		title_background.add(lblNewLabel);
-		lblNewLabel.setForeground(new Color(255, 250, 250));
-		lblNewLabel.setBackground(new Color(230, 230, 250));
-		lblNewLabel.setFont(new Font("Trattatello", Font.BOLD, 24));
-		lblNewLabel.setToolTipText("Welcome\n");
+
 		access_key = new JTextField();
 		access_key.setColumns(10);
 		access_key.setText(source_access_key);
-		access_key.setBounds(80, 248, 239, 26);
+		access_key.setBounds(80, 270, width_small - 161, 26);
 		api.getContentPane().add(access_key);
 		JLabel lblAccessKey = new JLabel("Access Key");
 		lblAccessKey.setHorizontalAlignment(SwingConstants.CENTER);
 		lblAccessKey.setForeground(new Color(245, 255, 250));
-		lblAccessKey.setBounds(80, 233, 239, 16);
+		lblAccessKey.setBounds(80, 250, width_small - 161, 16);
 		api.getContentPane().add(lblAccessKey);
 
 		JButton btnSubmit = new JButton("Submit");
@@ -474,12 +498,16 @@ public class Main {
 
 			}
 		});
+		if (height_small - 150 > 300) {
+			btnSubmit.setBounds(((width_small / 3) * 2) / 2, height_small - 150, width_small / 3, 29);
+		} else {
+			btnSubmit.setBounds(((width_small / 3) * 2) / 2, 310, width_small / 3, 29);
+		}
 
-		btnSubmit.setBounds(139, 300, 117, 29);
 		api.getContentPane().add(btnSubmit);
 
 		final JButton btnSync1 = new JButton("Sync");
-		btnSync1.setBounds(250, 68, 70, 24);
+		btnSync1.setBounds(width_small - 150, 68, 70, 24);
 		api.getContentPane().add(btnSync1);
 
 		JLabel lblApiInformation = new JLabel("API Information");
@@ -487,20 +515,20 @@ public class Main {
 		lblApiInformation.setHorizontalAlignment(SwingConstants.CENTER);
 		lblApiInformation.setForeground(new Color(255, 255, 255));
 		lblApiInformation.setFont(new Font("Dialog", Font.BOLD, 20));
-		lblApiInformation.setBounds(55, 108, 309, 40);
+		lblApiInformation.setBounds((width_small / 2) - 145, 108, 309, 40);
 		lblApiInformation.setOpaque(true);
 		api.getContentPane().add(lblApiInformation);
 		final Label internetCheck = new Label("  ONLINE");
 		internetCheck.setFont(new Font("Dialog", Font.BOLD | Font.ITALIC, 12));
 		internetCheck.setBackground(Color.GREEN);
-		internetCheck.setBounds(320, 70, 65, 22);
+		internetCheck.setBounds(width_small - 80, 70, 65, 22);
 		internetCheck.setForeground(new Color(255, 255, 255));
 		internetCheck.setAlignment(1);
 		api.getContentPane().add(internetCheck);
-		
+
 		Panel panel = new Panel();
 		panel.setBackground(new Color(204, 51, 51));
-		panel.setBounds(0, 54, 400, 5);
+		panel.setBounds(0, 54, width_small, 5);
 		api.getContentPane().add(panel);
 
 		ActionListener taskPerformer1 = new ActionListener() {
@@ -525,46 +553,55 @@ public class Main {
 		};
 		new Timer(delay, taskPerformer1).start();
 		api.setVisible(true);// making the frame visible
-		
+
 		Panel panel_2 = new Panel();
 		panel_2.setBackground(new Color(51, 51, 204));
-		panel_2.setBounds(0, 150, 400, 5);
+		panel_2.setBounds(0, 150, width_small, 5);
 		api.getContentPane().add(panel_2);
 		Panel panel_1 = new Panel();
 		panel_1.setBackground(new Color(51, 102, 204));
-		panel_1.setBounds(0, 105, 400, 45);
+		panel_1.setBounds(0, 105, width_small, 45);
 		api.getContentPane().add(panel_1);
 	}
 
 	public void dashboard() {
+
 		issues = new JFrame();
-		issues.setSize(width, height);
+
+		if (height >= 480 && width >= 640) {
+			issues.setSize(width, height);
+		} else {
+			width = 640;
+			height = 480;
+			issues.setSize(640, 480);
+		}
+
 		issues.getContentPane().setBackground(new Color(105, 105, 105));
 		issues.setVisible(true);
 		issues.addWindowListener(new WindowAdapter() {
 			@Override
 			public void windowClosing(WindowEvent e) {
-			//	database_save();
+				// database_save();
 			}
 		});
-		Object rowData[][] = { { "Row1-Column1", "Row1-Column2", "Row1-Column3", "View","Delete"  },
-				{ "Row2-Column1", "Row2-Column2", "Row2-Column3", "View","Delete"  },
-				{ "Row3-Column1", "Row3-Column2", "Row3-Column3", "View","Delete"  },
-				{ "Row4-Column1", "Row4-Column2", "Row4-Column3", "View","Delete" } };
-		Object columnNames[] = { "Date", "Issue ID", "Name", "","" };
+		Object rowData[][] = { { "Row1-Column1", "Row1-Column2", "Row1-Column3", "View", "Delete" },
+				{ "Row2-Column1", "Row2-Column2", "Row2-Column3", "View", "Delete" },
+				{ "Row3-Column1", "Row3-Column2", "Row3-Column3", "View", "Delete" },
+				{ "Row4-Column1", "Row4-Column2", "Row4-Column3", "View", "Delete" } };
+		Object columnNames[] = { "Date", "Issue ID", "Name", "", "" };
 		issues.getContentPane().setLayout(null);
 
 		final JButton btnSync = new JButton("Sync");
-		btnSync.setBounds(width-155, 21, 70, 24);
+		btnSync.setBounds(width - 155, 21, 70, 24);
 		issues.getContentPane().add(btnSync);
 
 		JScrollPane scrollPane = new JScrollPane();
 		scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
-		scrollPane.setBounds(30, 140, width-60, height-285);
+		scrollPane.setBounds(30, 140, width - 60, height - 285);
 		issues.getContentPane().add(scrollPane);
-	
+
 		DefaultTableModel dtm = new DefaultTableModel(rowData, columnNames);
-		
+
 		issues_table = new JTable(dtm);
 		scrollPane.setViewportView(issues_table);
 		issues_table.setColumnSelectionAllowed(true);
@@ -572,11 +609,11 @@ public class Main {
 		issues_table.setCellSelectionEnabled(true);
 		issues_table.setRowHeight(23);
 		issues_table.setAutoCreateRowSorter(true);
-		
+
 		final Label internetCheck = new Label("ONLINE");
 		internetCheck.setFont(new Font("Dialog", Font.BOLD | Font.ITALIC, 12));
 		internetCheck.setBackground(Color.GREEN);
-		internetCheck.setBounds(width-85, 22, 65, 22);
+		internetCheck.setBounds(width - 85, 22, 65, 22);
 		internetCheck.setForeground(new Color(255, 255, 255));
 		internetCheck.setAlignment(1);
 		issues.getContentPane().add(internetCheck);
@@ -607,15 +644,15 @@ public class Main {
 			public void actionPerformed(ActionEvent e) {
 				JTable table = (JTable) e.getSource();
 				int modelRow = Integer.valueOf(e.getActionCommand());
-	//			JOptionPane.showMessageDialog(null, "Deleted");
-				int reply = JOptionPane.showConfirmDialog(null, "Are you sure you want to delete this issue?", "Delete ?",  JOptionPane.YES_NO_OPTION);
-				if (reply == JOptionPane.YES_OPTION)
-				{
-				  
-				
-				((DefaultTableModel)table.getModel()).removeRow(modelRow);
-				table.repaint();}
-				
+				// JOptionPane.showMessageDialog(null, "Deleted");
+				int reply = JOptionPane.showConfirmDialog(null, "Are you sure you want to delete this issue?",
+						"Delete ?", JOptionPane.YES_NO_OPTION);
+				if (reply == JOptionPane.YES_OPTION) {
+
+					((DefaultTableModel) table.getModel()).removeRow(modelRow);
+					table.repaint();
+				}
+
 				// / ((DefaultTableModel)table.getModel()).removeRow(modelRow);
 			}
 		};
@@ -630,7 +667,7 @@ public class Main {
 
 		ButtonColumn buttonColumn = new ButtonColumn(issues_table, view, 3);
 		ButtonColumn buttonColumn2 = new ButtonColumn(issues_table, delete, 4);
-		
+
 		JLabel lblIssues = new JLabel("Issues");
 		lblIssues.setBackground(new Color(220, 20, 60));
 		lblIssues.setOpaque(true);
@@ -664,61 +701,69 @@ public class Main {
 				database_save();
 			}
 		});
-		btnSaveData.setBounds(26, height-115, 70, 40);
+		btnSaveData.setBounds(26, height - 115, 70, 40);
 		issues.getContentPane().add(btnSaveData);
-		
+
 		JLabel lblUpdateDb = new JLabel("Update");
 		lblUpdateDb.setForeground(Color.WHITE);
 		lblUpdateDb.setHorizontalAlignment(SwingConstants.CENTER);
-		lblUpdateDb.setBounds(26, height-130, 70, 15);
+		lblUpdateDb.setBounds(26, height - 130, 70, 15);
 		issues.getContentPane().add(lblUpdateDb);
-		
+
 		Panel footer_border = new Panel();
 		footer_border.setBackground(new Color(220, 20, 60));
-		footer_border.setBounds(0, height-74, width, 10);
+		footer_border.setBounds(0, height - 74, width, 10);
 		issues.getContentPane().add(footer_border);
-		
+
 		Panel panel_1 = new Panel();
 		panel_1.setBackground(new Color(128, 0, 0));
 		panel_1.setBounds(0, 95, width, 5);
 		issues.getContentPane().add(panel_1);
-		
+
 		Panel footer = new Panel();
 		footer.setBackground(new Color(178, 34, 34));
-		footer.setBounds(0, height-74, width, 120);
+		footer.setBounds(0, height - 74, width, 120);
 		issues.getContentPane().add(footer);
-		
+
 		Panel panel = new Panel();
 		panel.setBackground(new Color(220, 20, 60));
 		panel.setBounds(0, 55, width, 40);
 		issues.getContentPane().add(panel);
-		
+
 		JButton btnAdd = new JButton("Add");
 		btnAdd.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 
-	//			JOptionPane.showMessageDialog(null, "Deleted");
-			
-				 Object[] new_row = { "Row3-Column1", "Row3-Column2", "Row3-Column3", "View","Delete"  };
-				
-				((DefaultTableModel)issues_table.getModel()).addRow(new_row);
+				// JOptionPane.showMessageDialog(null, "Deleted");
+
+				Object[] new_row = { "Row3-Column1", "Row3-Column2", "Row3-Column3", "View", "Delete" };
+
+				((DefaultTableModel) issues_table.getModel()).addRow(new_row);
 				issues_table.repaint();
 			}
 		});
-		btnAdd.setBounds(width-150, 109, 117, 25);
+		btnAdd.setBounds(width - 150, 109, 117, 25);
 		issues.getContentPane().add(btnAdd);
 		buttonColumn.setMnemonic(KeyEvent.VK_D);
 	}
 
 	public void issue(final int issue_id) {
+
 		articles = new JFrame();
-		articles.setSize(width, height);
+		if (height >= 480 && width >= 640) {
+			articles.setSize(width, height);
+		} else {
+			width = 640;
+			height = 480;
+			articles.setSize(640, 480);
+		}
+
 		articles.getContentPane().setBackground(new Color(128, 128, 128));
 		articles.setVisible(true);
 		articles.addWindowListener(new WindowAdapter() {
 			@Override
 			public void windowClosing(WindowEvent e) {
-				//database_save();
+				// database_save();
 			}
 		});
 		Object rowData[][] = { { "Row1-Column1", "Row1-Column2", "View", "Delete" },
@@ -729,16 +774,16 @@ public class Main {
 		articles.getContentPane().setLayout(null);
 
 		final JButton btnSync = new JButton("Sync");
-		btnSync.setBounds(width-155, 21, 70, 24);
+		btnSync.setBounds(width - 155, 21, 70, 24);
 		articles.getContentPane().add(btnSync);
 
 		JScrollPane scrollPane = new JScrollPane();
 		scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
-		scrollPane.setBounds(30, 140, width-60, height-285);
+		scrollPane.setBounds(30, 140, width - 60, height - 285);
 		articles.getContentPane().add(scrollPane);
-		
+
 		DefaultTableModel dtm = new DefaultTableModel(rowData, columnNames);
-		
+
 		final JTable table = new JTable(dtm);
 		table.setAutoCreateRowSorter(true);
 		scrollPane.setViewportView(table);
@@ -751,7 +796,7 @@ public class Main {
 		internetCheck.setBackground(Color.GREEN);
 		internetCheck.setAlignment(1);
 		internetCheck.setForeground(new Color(255, 255, 255));
-		internetCheck.setBounds(width-85, 22, 65, 22);
+		internetCheck.setBounds(width - 85, 22, 65, 22);
 		articles.getContentPane().add(internetCheck);
 
 		ActionListener taskPerformer1 = new ActionListener() {
@@ -780,15 +825,15 @@ public class Main {
 			public void actionPerformed(ActionEvent e) {
 				JTable table = (JTable) e.getSource();
 				int modelRow = Integer.valueOf(e.getActionCommand());
-	//			JOptionPane.showMessageDialog(null, "Deleted");
-				int reply = JOptionPane.showConfirmDialog(null, "Are you sure you want to delete this article?", "Delete ?",  JOptionPane.YES_NO_OPTION);
-				if (reply == JOptionPane.YES_OPTION)
-				{
-				  
-				
-				((DefaultTableModel)table.getModel()).removeRow(modelRow);
-				table.repaint();}
-				
+				// JOptionPane.showMessageDialog(null, "Deleted");
+				int reply = JOptionPane.showConfirmDialog(null, "Are you sure you want to delete this article?",
+						"Delete ?", JOptionPane.YES_NO_OPTION);
+				if (reply == JOptionPane.YES_OPTION) {
+
+					((DefaultTableModel) table.getModel()).removeRow(modelRow);
+					table.repaint();
+				}
+
 				// / ((DefaultTableModel)table.getModel()).removeRow(modelRow);
 			}
 		};
@@ -856,28 +901,28 @@ public class Main {
 				database_save();
 			}
 		});
-		btnSaveData.setBounds(26, height-115, 70, 40);
+		btnSaveData.setBounds(26, height - 115, 70, 40);
 		articles.getContentPane().add(btnSaveData);
 		JLabel lblUpdateDb = new JLabel("Update");
 		lblUpdateDb.setForeground(Color.WHITE);
 		lblUpdateDb.setHorizontalAlignment(SwingConstants.CENTER);
-		lblUpdateDb.setBounds(26, height-130, 70, 15);
+		lblUpdateDb.setBounds(26, height - 130, 70, 15);
 		articles.getContentPane().add(lblUpdateDb);
 		Panel footer_border = new Panel();
 		footer_border.setBackground(new Color(0, 139, 139));
-		footer_border.setBounds(0, height-74, width, 10);
+		footer_border.setBounds(0, height - 74, width, 10);
 		articles.getContentPane().add(footer_border);
-		
+
 		Panel footer = new Panel();
 		footer.setBackground(new Color(0, 128, 128));
-		footer.setBounds(0, height-74, width, 120);
+		footer.setBounds(0, height - 74, width, 120);
 		articles.getContentPane().add(footer);
-		
+
 		Panel panel = new Panel();
 		panel.setBackground(new Color(0, 139, 139));
 		panel.setBounds(0, 55, width, 40);
 		articles.getContentPane().add(panel);
-		
+
 		Panel panel_1 = new Panel();
 		panel_1.setBackground(new Color(47, 79, 79));
 		panel_1.setBounds(0, 95, width, 5);
@@ -885,25 +930,34 @@ public class Main {
 		JButton btnAdd = new JButton("Add");
 		btnAdd.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				 Object[] new_row = { "Row1-Column6", "Row1-Column2", "View", "Delete" };
-				
-				((DefaultTableModel)table.getModel()).addRow(new_row);
+				Object[] new_row = { "Row1-Column6", "Row1-Column2", "View", "Delete" };
+
+				((DefaultTableModel) table.getModel()).addRow(new_row);
 				table.repaint();
 			}
 		});
-		btnAdd.setBounds(width-150, 109, 117, 25);
+		btnAdd.setBounds(width - 150, 109, 117, 25);
 		articles.getContentPane().add(btnAdd);
 	}
 
 	public void article(final int issue_id, int article_id) {
+		int width_small = 0;
+		int height_small = 0;
+		if (height >= 480 && width >= 640) {
+			width_small = (int) (width - (width * (37.5 / 100)));
+			height_small = (int) (height - (height * (5 / 100)));
+		} else {
+			width_small = (int) (640 - (640 * (37.5 / 100)));
+			height_small = (int) (480 - (480 * (5 / 100)));
+		}
 		final JFrame article = new JFrame();
-		article.setSize(400, 500);
+		article.setSize(width_small, height_small);
 		article.getContentPane().setBackground(new Color(128, 128, 128));
 		article.setVisible(true);
 		article.addWindowListener(new WindowAdapter() {
 			@Override
 			public void windowClosing(WindowEvent e) {
-		//		database_save();
+				// database_save();
 			}
 		});
 		Object rowData[][] = { { "Row1-Column1", "Row1-Column2", "View", "Delete" },
@@ -912,18 +966,18 @@ public class Main {
 				{ "Row4-Column1", "Row4-Column2", "View", "Delete" } };
 		Object columnNames[] = { "Column One", "Column Two", "", "" };
 		article.getContentPane().setLayout(null);
-		
+
 		JLabel lblArticleDetails = new JLabel("Article Details");
 		lblArticleDetails.setHorizontalAlignment(SwingConstants.CENTER);
 		lblArticleDetails.setFont(new Font("Dialog", Font.BOLD, 20));
 		lblArticleDetails.setForeground(new Color(255, 255, 255));
 		lblArticleDetails.setBackground(new Color(204, 153, 102));
-		lblArticleDetails.setBounds(100, 65, 200, 40);
+		lblArticleDetails.setBounds(width_small / 4, 65, width_small / 2, 40);
 		lblArticleDetails.setOpaque(true);
 		article.getContentPane().add(lblArticleDetails);
 
 		final JButton btnSync = new JButton("Sync");
-		btnSync.setBounds(250, 21, 70, 24);
+		btnSync.setBounds(width_small - 150, 21, 70, 24);
 		article.getContentPane().add(btnSync);
 
 		final Label internetCheck = new Label("  ONLINE");
@@ -931,7 +985,7 @@ public class Main {
 		internetCheck.setBackground(Color.GREEN);
 		internetCheck.setAlignment(1);
 		internetCheck.setForeground(new Color(255, 255, 255));
-		internetCheck.setBounds(320, 22, 65, 22);
+		internetCheck.setBounds(width_small - 80, 22, 65, 22);
 		article.getContentPane().add(internetCheck);
 
 		ActionListener taskPerformer1 = new ActionListener() {
@@ -999,24 +1053,24 @@ public class Main {
 		panel.setLayout(null);
 		panel.setAutoscrolls(true);
 		int y = 10;
-		int fields=5;
+		int fields = 5;
 		int settings_height = 210 + 30 * (fields - 8);
-		
+
 		Panel panel_1 = new Panel();
 		panel_1.setBackground(new Color(204, 153, 102));
-		panel_1.setBounds(0, 65, 400, 45);
+		panel_1.setBounds(0, 65, width_small, 45);
 		article.getContentPane().add(panel_1);
-		
+
 		Panel panel_2 = new Panel();
 		panel_2.setBackground(new Color(153, 102, 51));
-		panel_2.setBounds(0, 110, 400, 5);
+		panel_2.setBounds(0, 110, width_small, 5);
 		article.getContentPane().add(panel_2);
 		panel.setPreferredSize(new Dimension(320, settings_height));
 		JScrollPane scrollFrame = new JScrollPane(panel);
 		panel.setAutoscrolls(true);
 		scrollFrame.setPreferredSize(new Dimension(320, 200));
-		scrollFrame.setBounds(40, 132, 320, 220);
-		//scrollSettings.setViewportView(scrollFrame);
+		scrollFrame.setBounds(40, 132, width_small - 80, height_small - 280);
+		// scrollSettings.setViewportView(scrollFrame);
 		article.getContentPane().add(scrollFrame);
 		JLabel lblIssues = new JLabel("Article id:");
 		lblIssues.setBounds(24, 18, 110, 30);
@@ -1047,20 +1101,20 @@ public class Main {
 
 	public Main() {
 		try {
-		    for (LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
-		        if ("Nimbus".equals(info.getName())) {
-		            UIManager.setLookAndFeel(info.getClassName());
-		            break;
-		        }
-		    }
+			for (LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
+				if ("Nimbus".equals(info.getName())) {
+					UIManager.setLookAndFeel(info.getClassName());
+					break;
+				}
+			}
 		} catch (UnsupportedLookAndFeelException e) {
-		    // handle exception
+			// handle exception
 		} catch (ClassNotFoundException e) {
-		    // handle exception
+			// handle exception
 		} catch (InstantiationException e) {
-		    // handle exception
+			// handle exception
 		} catch (IllegalAccessException e) {
-		    // handle exception
+			// handle exception
 		}
 		login();
 	}
