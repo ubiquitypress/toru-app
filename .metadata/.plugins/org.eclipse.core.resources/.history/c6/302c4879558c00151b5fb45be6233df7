@@ -138,14 +138,6 @@ public class Main {
 
 		login.setSize(width_small, height_small);// 400 width and 500 height
 		login.getContentPane().setLayout(null);// using no layout managers
-		JLabel lblNewLabel = new JLabel("TORU");
-		
-			lblNewLabel.setForeground(new Color(255, 250, 250));
-			lblNewLabel.setBackground(new Color(230, 230, 250));
-			lblNewLabel.setFont(new Font("Trattatello", Font.BOLD, 24));
-			lblNewLabel.setToolTipText("Welcome\n");
-			lblNewLabel.setBounds((width_small/2)-34,15,70,25);
-			login.getContentPane().add(lblNewLabel);
 		username = new JTextField();
 		username.setBounds(80, height_small-305, width_small-161, 26);
 		login.getContentPane().add(username);
@@ -159,6 +151,12 @@ public class Main {
 		title_background.setBackground(new Color(0, 0, 0));
 		title_background.setBounds(-17, 0, width-67, 54);
 		login.getContentPane().add(title_background);
+		JLabel lblNewLabel = new JLabel("TORU");
+		title_background.add(lblNewLabel);
+		lblNewLabel.setForeground(new Color(255, 250, 250));
+		lblNewLabel.setBackground(new Color(230, 230, 250));
+		lblNewLabel.setFont(new Font("Trattatello", Font.BOLD, 24));
+		lblNewLabel.setToolTipText("Welcome\n");
 		JLabel lblPassword = new JLabel("Password");
 		lblPassword.setHorizontalAlignment(SwingConstants.CENTER);
 		lblPassword.setForeground(new Color(245, 255, 250));
@@ -223,7 +221,7 @@ public class Main {
 		lblLogIn.setForeground(new Color(224, 255, 255));
 		lblLogIn.setFont(new Font("URW Gothic L", Font.BOLD, 24));
 		lblLogIn.setHorizontalAlignment(SwingConstants.CENTER);
-		lblLogIn.setBounds((width_small/2)-40, height_small-372, 80, 30);
+		lblLogIn.setBounds(160, height_small-372, 80, 30);
 		login.getContentPane().add(lblLogIn);
 
 		final Label internetCheck = new Label("   ONLINE");

@@ -138,14 +138,6 @@ public class Main {
 
 		login.setSize(width_small, height_small);// 400 width and 500 height
 		login.getContentPane().setLayout(null);// using no layout managers
-		JLabel lblNewLabel = new JLabel("TORU");
-		
-			lblNewLabel.setForeground(new Color(255, 250, 250));
-			lblNewLabel.setBackground(new Color(230, 230, 250));
-			lblNewLabel.setFont(new Font("Trattatello", Font.BOLD, 24));
-			lblNewLabel.setToolTipText("Welcome\n");
-			lblNewLabel.setBounds((width_small/2)-34,15,70,25);
-			login.getContentPane().add(lblNewLabel);
 		username = new JTextField();
 		username.setBounds(80, height_small-305, width_small-161, 26);
 		login.getContentPane().add(username);
@@ -153,19 +145,25 @@ public class Main {
 		JLabel lblUsername = new JLabel("Username");
 		lblUsername.setForeground(new Color(245, 255, 250));
 		lblUsername.setHorizontalAlignment(SwingConstants.CENTER);
-		lblUsername.setBounds(80, height_small-321, width_small-161, 16);
+		lblUsername.setBounds(80, height_small-321, width-161, 16);
 		login.getContentPane().add(lblUsername);
 		JPanel title_background = new JPanel();
 		title_background.setBackground(new Color(0, 0, 0));
 		title_background.setBounds(-17, 0, width-67, 54);
 		login.getContentPane().add(title_background);
+		JLabel lblNewLabel = new JLabel("TORU");
+		title_background.add(lblNewLabel);
+		lblNewLabel.setForeground(new Color(255, 250, 250));
+		lblNewLabel.setBackground(new Color(230, 230, 250));
+		lblNewLabel.setFont(new Font("Trattatello", Font.BOLD, 24));
+		lblNewLabel.setToolTipText("Welcome\n");
 		JLabel lblPassword = new JLabel("Password");
 		lblPassword.setHorizontalAlignment(SwingConstants.CENTER);
 		lblPassword.setForeground(new Color(245, 255, 250));
-		lblPassword.setBounds(80, height_small-267, width_small-161, 16);
+		lblPassword.setBounds(80, height-267, width-161, 16);
 		login.getContentPane().add(lblPassword);
 		passwordField = new JPasswordField();
-		passwordField.setBounds(80, height_small-252, width_small-161, 26);
+		passwordField.setBounds(80, height-252, width-161, 26);
 		login.getContentPane().add(passwordField);
 		JButton btnLogin = new JButton("Login");
 		Action actionSubmit = new AbstractAction() {
@@ -212,18 +210,18 @@ public class Main {
 			}
 		});
 
-		btnLogin.setBounds(139, height_small-200, width_small-283, 29);
+		btnLogin.setBounds(139, height-200, width-283, 29);
 		login.getContentPane().add(btnLogin);
 
 		final JButton btnSync1 = new JButton("Sync");
-		btnSync1.setBounds(width_small-155, 68, 70, 25);
+		btnSync1.setBounds(width-155, 68, 70, 25);
 		login.getContentPane().add(btnSync1);
 
 		JLabel lblLogIn = new JLabel("Log in");
 		lblLogIn.setForeground(new Color(224, 255, 255));
 		lblLogIn.setFont(new Font("URW Gothic L", Font.BOLD, 24));
 		lblLogIn.setHorizontalAlignment(SwingConstants.CENTER);
-		lblLogIn.setBounds((width_small/2)-40, height_small-372, 80, 30);
+		lblLogIn.setBounds(width-240, height-372, 80, 30);
 		login.getContentPane().add(lblLogIn);
 
 		final Label internetCheck = new Label("   ONLINE");
@@ -231,12 +229,12 @@ public class Main {
 		internetCheck.setBackground(Color.GREEN);
 		internetCheck.setForeground(new Color(255, 255, 255));
 		internetCheck.setAlignment(1);
-		internetCheck.setBounds(width_small-85, 70, 65, 22);
+		internetCheck.setBounds(width-85, 70, 65, 22);
 		login.getContentPane().add(internetCheck);
 		
 		Panel panel = new Panel();
 		panel.setBackground(new Color(204, 51, 51));
-		panel.setBounds(0, 54, width_small, 5);
+		panel.setBounds(0, 54, width, 5);
 		login.getContentPane().add(panel);
 
 		ActionListener taskPerformer1 = new ActionListener() {

@@ -144,7 +144,7 @@ public class Main {
 			lblNewLabel.setBackground(new Color(230, 230, 250));
 			lblNewLabel.setFont(new Font("Trattatello", Font.BOLD, 24));
 			lblNewLabel.setToolTipText("Welcome\n");
-			lblNewLabel.setBounds((width_small/2)-34,15,70,25);
+			lblNewLabel.setBounds(0,25,100,25);
 			login.getContentPane().add(lblNewLabel);
 		username = new JTextField();
 		username.setBounds(80, height_small-305, width_small-161, 26);

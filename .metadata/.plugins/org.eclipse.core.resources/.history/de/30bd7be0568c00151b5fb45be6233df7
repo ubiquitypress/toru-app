@@ -41,8 +41,8 @@ public class Main {
 	private static Statement stmt = null;
 	private String api_insert_or_replace_statement = "INSERT OR REPLACE INTO API(URL,ACCESS_KEY) VALUES (?,?)";
 	private String settings_insert_or_replace_statement = "INSERT OR REPLACE INTO SETTING(NAME,VALUE) VALUES (?,?)";
-	private int width = 800;
-	private int height = 600;
+	private int width = 640;
+	private int height = 525;
 	/*
 	 * Initial setup test
 	 */
@@ -144,7 +144,7 @@ public class Main {
 			lblNewLabel.setBackground(new Color(230, 230, 250));
 			lblNewLabel.setFont(new Font("Trattatello", Font.BOLD, 24));
 			lblNewLabel.setToolTipText("Welcome\n");
-			lblNewLabel.setBounds((width_small/2)-34,15,70,25);
+			lblNewLabel.setBounds((width_small/2)-31,15,40,25);
 			login.getContentPane().add(lblNewLabel);
 		username = new JTextField();
 		username.setBounds(80, height_small-305, width_small-161, 26);
