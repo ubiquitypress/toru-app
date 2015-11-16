@@ -41,8 +41,8 @@ public class Main {
 	private static Statement stmt = null;
 	private String api_insert_or_replace_statement = "INSERT OR REPLACE INTO API(URL,ACCESS_KEY) VALUES (?,?)";
 	private String settings_insert_or_replace_statement = "INSERT OR REPLACE INTO SETTING(NAME,VALUE) VALUES (?,?)";
-	private int width = 800;
-	private int height = 600;
+	private int width = 640;
+	private int height = 525;
 	/*
 	 * Initial setup test
 	 */
@@ -671,7 +671,7 @@ public class Main {
 		
 		Panel footer_border = new Panel();
 		footer_border.setBackground(new Color(220, 20, 60));
-		footer_border.setBounds(0, height-74, width, 10);
+		footer_border.setBounds(0, 451, width, 10);
 		issues.getContentPane().add(footer_border);
 		
 		Panel panel_1 = new Panel();
@@ -681,7 +681,7 @@ public class Main {
 		
 		Panel footer = new Panel();
 		footer.setBackground(new Color(178, 34, 34));
-		footer.setBounds(0, height-74, width, 120);
+		footer.setBounds(0, 451, width, 120);
 		issues.getContentPane().add(footer);
 		
 		Panel panel = new Panel();

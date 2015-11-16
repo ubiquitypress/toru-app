@@ -41,8 +41,7 @@ public class Main {
 	private static Statement stmt = null;
 	private String api_insert_or_replace_statement = "INSERT OR REPLACE INTO API(URL,ACCESS_KEY) VALUES (?,?)";
 	private String settings_insert_or_replace_statement = "INSERT OR REPLACE INTO SETTING(NAME,VALUE) VALUES (?,?)";
-	private int width = 800;
-	private int height = 600;
+	private int width = 640;
 	/*
 	 * Initial setup test
 	 */
@@ -534,7 +533,7 @@ public class Main {
 
 	public void dashboard() {
 		issues = new JFrame();
-		issues.setSize(width, height);
+		issues.setSize(width, 525);
 		issues.getContentPane().setBackground(new Color(105, 105, 105));
 		issues.setVisible(true);
 		issues.addWindowListener(new WindowAdapter() {
@@ -551,12 +550,12 @@ public class Main {
 		issues.getContentPane().setLayout(null);
 
 		final JButton btnSync = new JButton("Sync");
-		btnSync.setBounds(width-155, 21, 70, 24);
+		btnSync.setBounds(width-185, 21, 70, 24);
 		issues.getContentPane().add(btnSync);
 
 		JScrollPane scrollPane = new JScrollPane();
 		scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
-		scrollPane.setBounds(30, 140, width-60, height-285);
+		scrollPane.setBounds(30, 140, 580, 240);
 		issues.getContentPane().add(scrollPane);
 	
 		DefaultTableModel dtm = new DefaultTableModel(rowData, columnNames);
@@ -660,33 +659,33 @@ public class Main {
 				database_save();
 			}
 		});
-		btnSaveData.setBounds(26, height-115, 70, 40);
+		btnSaveData.setBounds(26, 410, 70, 40);
 		issues.getContentPane().add(btnSaveData);
 		
 		JLabel lblUpdateDb = new JLabel("Update");
 		lblUpdateDb.setForeground(Color.WHITE);
 		lblUpdateDb.setHorizontalAlignment(SwingConstants.CENTER);
-		lblUpdateDb.setBounds(26, height-130, 70, 15);
+		lblUpdateDb.setBounds(26, 395, 70, 15);
 		issues.getContentPane().add(lblUpdateDb);
 		
 		Panel footer_border = new Panel();
 		footer_border.setBackground(new Color(220, 20, 60));
-		footer_border.setBounds(0, height-74, width, 10);
+		footer_border.setBounds(0, 451, width, 10);
 		issues.getContentPane().add(footer_border);
 		
 		Panel panel_1 = new Panel();
 		panel_1.setBackground(new Color(128, 0, 0));
-		panel_1.setBounds(0, 95, width, 5);
+		panel_1.setBounds(0, 95, 640, 5);
 		issues.getContentPane().add(panel_1);
 		
 		Panel footer = new Panel();
 		footer.setBackground(new Color(178, 34, 34));
-		footer.setBounds(0, height-74, width, 120);
+		footer.setBounds(0, 451, 640, 120);
 		issues.getContentPane().add(footer);
 		
 		Panel panel = new Panel();
 		panel.setBackground(new Color(220, 20, 60));
-		panel.setBounds(0, 55, width, 40);
+		panel.setBounds(0, 55, 640, 40);
 		issues.getContentPane().add(panel);
 		
 		JButton btnAdd = new JButton("Add");
@@ -701,7 +700,7 @@ public class Main {
 				issues_table.repaint();
 			}
 		});
-		btnAdd.setBounds(width-150, 109, 117, 25);
+		btnAdd.setBounds(490, 109, 117, 25);
 		issues.getContentPane().add(btnAdd);
 		buttonColumn.setMnemonic(KeyEvent.VK_D);
 	}
