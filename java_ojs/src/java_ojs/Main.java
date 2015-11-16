@@ -650,15 +650,15 @@ public class Main {
 		});
 		btnApi.setBounds(130, 20, 90, 29);
 		issues.getContentPane().add(btnApi);
-		
-		JButton btnSaveData = new JButton("⛁");
+		ImageIcon db_icon = new ImageIcon("src/lib/db_xxs.png");
+		JButton btnSaveData = new JButton(db_icon);
 		btnSaveData.setFont(new Font("Dialog", Font.BOLD, 24));
 		btnSaveData.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				database_save();
 			}
 		});
-		btnSaveData.setBounds(26, 412, 70, 29);
+		btnSaveData.setBounds(26, 410, 70, 40);
 		issues.getContentPane().add(btnSaveData);
 		
 		JLabel lblUpdateDb = new JLabel("Update");
@@ -842,14 +842,15 @@ public class Main {
 		articles.getContentPane().add(btnGoBack);
 		buttonColumn.setMnemonic(KeyEvent.VK_D);
 		buttonColumn2.setMnemonic(KeyEvent.VK_D);
-		JButton btnSaveData = new JButton("⛁");
+		ImageIcon db_icon = new ImageIcon("src/lib/db_xxs.png");
+		JButton btnSaveData = new JButton(db_icon);
 		btnSaveData.setFont(new Font("Dialog", Font.BOLD, 24));
 		btnSaveData.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				database_save();
 			}
 		});
-		btnSaveData.setBounds(26, 412, 70, 29);
+		btnSaveData.setBounds(26, 410, 70, 40);
 		articles.getContentPane().add(btnSaveData);
 		JLabel lblUpdateDb = new JLabel("Update");
 		lblUpdateDb.setForeground(Color.WHITE);
@@ -1055,7 +1056,7 @@ public class Main {
 		} catch (IllegalAccessException e) {
 		    // handle exception
 		}
-		article(1,1);
+		dashboard();
 	}
 
 	public static void main(String[] args) {
