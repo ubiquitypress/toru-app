@@ -2,11 +2,12 @@ package java_ojs;
 
 import javax.swing.*;
 import javax.swing.UIManager.LookAndFeelInfo;
-
+import java.util.Date;
 import java.awt.event.ActionListener;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.sql.*;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.awt.event.ActionEvent;
@@ -21,6 +22,9 @@ import java.awt.BorderLayout;
 import javax.swing.border.SoftBevelBorder;
 import javax.swing.border.BevelBorder;
 import javax.swing.table.DefaultTableModel;
+
+import models.Issue;
+
 import javax.swing.JOptionPane;
 import java.awt.Label;
 import java.awt.event.WindowAdapter;
@@ -36,6 +40,8 @@ public class Main {
 	private static String source_access_key = "";
 	private JPasswordField passwordField;
 	private static HashMap<String, Boolean> list_settings;
+	private static HashMap<Integer, Integer> list_issues;
+	private static HashMap<Integer, JFrame> issue_screens;
 	private static ArrayList<String> setting_keys = new ArrayList<String>();
 	private static Connection c = null;
 	private static Statement stmt = null;
@@ -43,6 +49,7 @@ public class Main {
 	private String settings_insert_or_replace_statement = "INSERT OR REPLACE INTO SETTING(NAME,VALUE) VALUES (?,?)";
 	private int width = 960;
 	private int height = 720;
+	private static int i_id=1;
 
 	/*
 	 * Initial setup test
@@ -78,6 +85,8 @@ public class Main {
 	public static void populate_variables() {
 		System.out.println("Retrieving data from local database");
 		list_settings = new HashMap<String, Boolean>();
+		list_issues = new HashMap<Integer,Integer>();
+		issue_screens = new HashMap<Integer,JFrame>();
 		try {
 			ResultSet rs = stmt.executeQuery("SELECT * FROM API WHERE URL=" + "'api'" + ";");
 			while (rs.next()) {
@@ -567,10 +576,14 @@ public class Main {
 	}
 
 	public void dashboard() {
-
+		Date date = new Date();
+		Issue issue = new Issue(i_id,"title",1,1,2015,"title",1,1,2015,date);
+		//Issue Table [title, volume, number, year, show_title, show_volume, show_number, show_year, date_published]
 		issues = new JFrame();
 		issues.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		list_issues.put(i_id, 1);
 
+		issue_screens.put(1, new JFrame());
 		if (height >= 480 && width >= 640) {
 			issues.setSize(width, height);
 		} else {
@@ -578,7 +591,7 @@ public class Main {
 			height = 480;
 			issues.setSize(640, 480);
 		}
-
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
 		issues.getContentPane().setBackground(new Color(105, 105, 105));
 		issues.setVisible(true);
 		issues.addWindowListener(new WindowAdapter() {
@@ -587,11 +600,8 @@ public class Main {
 				// database_save();
 			}
 		});
-		Object rowData[][] = { { "Row1-Column1", "Row1-Column2", "Row1-Column3", "View", "Delete" },
-				{ "Row2-Column1", "Row2-Column2", "Row2-Column3", "View", "Delete" },
-				{ "Row3-Column1", "Row3-Column2", "Row3-Column3", "View", "Delete" },
-				{ "Row4-Column1", "Row4-Column2", "Row4-Column3", "View", "Delete" } };
-		Object columnNames[] = { "Date", "Issue ID", "Name", "", "" };
+		Object rowData[][] = { { 1,"title",1,1,2015,sdf.format(date),"View","Delete" }};
+		Object columnNames[] = { "ID","Title", "Volume","Number", "Year", "Date Published","", "" };
 		issues.getContentPane().setLayout(null);
 
 		final JButton btnSync = new JButton("Sync");
@@ -663,13 +673,14 @@ public class Main {
 			public void actionPerformed(ActionEvent e) {
 				JTable table = (JTable) e.getSource();
 				int modelRow = Integer.valueOf(e.getActionCommand());
-				issue(modelRow);
+				if (!issue_screens.get(modelRow+1).isVisible()){
+				issue(modelRow+1);}
 				// / ((DefaultTableModel)table.getModel()).removeRow(modelRow);
 			}
 		};
 
-		ButtonColumn buttonColumn = new ButtonColumn(issues_table, view, 3);
-		ButtonColumn buttonColumn2 = new ButtonColumn(issues_table, delete, 4);
+		ButtonColumn buttonColumn = new ButtonColumn(issues_table, view, 6);
+		ButtonColumn buttonColumn2 = new ButtonColumn(issues_table, delete, 7);
 
 		JLabel lblIssues = new JLabel("Issues");
 		lblIssues.setBackground(new Color(220, 20, 60));
@@ -736,10 +747,15 @@ public class Main {
 		JButton btnAdd = new JButton("Add");
 		btnAdd.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-
+				i_id=i_id+1;
 				// JOptionPane.showMessageDialog(null, "Deleted");
-
-				Object[] new_row = { "Row3-Column1", "Row3-Column2", "Row3-Column3", "View", "Delete" };
+				Date date = new Date();
+				SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
+				Issue issue = new Issue(i_id,"title",1,1,2015,"title",1,1,2015,date);
+				
+				list_issues.put(i_id, 1);
+				issue_screens.put(i_id, new JFrame());
+				Object[] new_row =  { i_id,"title",1,1,2015,sdf.format(date),"View","Delete" };
 
 				((DefaultTableModel) issues_table.getModel()).addRow(new_row);
 				issues_table.repaint();
@@ -751,7 +767,7 @@ public class Main {
 	}
 
 	public void issue(final int issue_id) {
-
+		if (!issue_screens.get(issue_id).isVisible()){
 		articles = new JFrame();
 		articles.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		if (height >= 480 && width >= 640) {
@@ -770,10 +786,7 @@ public class Main {
 				// database_save();
 			}
 		});
-		Object rowData[][] = { { "Row1-Column1", "Row1-Column2", "View", "Delete" },
-				{ "Row2-Column1", "Row2-Column2", "View", "Delete" },
-				{ "Row3-Column1", "Row3-Column2", "View", "Delete" },
-				{ "Row4-Column1", "Row4-Column2", "View", "Delete" } };
+		Object rowData[][] = { { 1, "Row1-Column2", "View", "Delete" }};
 		Object columnNames[] = { "Tile", "Description", "", "" };
 		articles.getContentPane().setLayout(null);
 
@@ -869,7 +882,7 @@ public class Main {
 		lblIssue.setOpaque(true);
 		articles.getContentPane().add(lblIssue);
 
-		JLabel lblIssueId = new JLabel("");
+		final JLabel lblIssueId = new JLabel("");
 		lblIssueId.setBackground(new Color(0, 139, 139));
 		lblIssueId.setForeground(new Color(240, 255, 255));
 		lblIssueId.setFont(new Font("Dialog", Font.BOLD, 28));
@@ -934,7 +947,10 @@ public class Main {
 		JButton btnAdd = new JButton("Add");
 		btnAdd.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				Object[] new_row = { "Row1-Column6", "Row1-Column2", "View", "Delete" };
+				int issue_id= Integer.parseInt(lblIssueId.getText());
+				int a_id=list_issues.get(issue_id)+1;
+				list_issues.replace(issue_id,a_id);
+				Object[] new_row = { a_id, "Row1-Column2", "View", "Delete" };
 
 				((DefaultTableModel) table.getModel()).addRow(new_row);
 				table.repaint();
@@ -942,6 +958,8 @@ public class Main {
 		});
 		btnAdd.setBounds(width - 150, 109, 117, 25);
 		articles.getContentPane().add(btnAdd);
+		issue_screens.put(i_id, articles);
+	}
 	}
 
 	public void article(final int issue_id, int article_id) {
@@ -1121,7 +1139,7 @@ public class Main {
 		} catch (IllegalAccessException e) {
 			// handle exception
 		}
-		login();
+		dashboard();
 	}
 
 	public static void main(String[] args) {
