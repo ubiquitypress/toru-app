@@ -21,9 +21,7 @@ public class Article {
 		this.date_published = date_published;
 		this.issue_fk = issue_fk;
 	}
-	public int getId() {
-		return id;
-	}
+	
 	public String getTitle() {
 		return title;
 	}

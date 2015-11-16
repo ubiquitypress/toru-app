@@ -3,7 +3,7 @@ package models;
 import java.sql.Date;
 
 public class Issue {
-	private int id;
+
 	private String title; 
 	private int volume;  
 	private int number;
@@ -14,10 +14,9 @@ public class Issue {
 	private int show_year;
 	private Date date_published;
 	
-	public Issue(int id, String title, int volume, int number, int year, String show_title, int show_volume, int show_number,
+	public Issue(String title, int volume, int number, int year, String show_title, int show_volume, int show_number,
 			int show_year, Date date_published) {
 		this.title = title;
-		this.id = id;
 		this.volume = volume;
 		this.number = number;
 		this.year = year;
@@ -26,10 +25,6 @@ public class Issue {
 		this.show_number = show_number;
 		this.show_year = show_year;
 		this.date_published = date_published;
-	}
-
-	public int getId() {
-		return id;
 	}
 
 	public String getTitle() {

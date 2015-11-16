@@ -10,7 +10,6 @@ public class Author {
 	private String orcid; 
 	private String department;
 	private String country;
-	private int id;
 	
 	public Author(int id, String first_name, String middle_name, String last_name, String email, String affiliation, String bio,
 			String orcid, String department, String country) {
@@ -25,10 +24,6 @@ public class Author {
 		this.department = department;
 		this.country = country;
 	}
-	public int getId() {
-		return id;
-	}
-	
 	public String getFirst_name() {
 		return first_name;
 	}

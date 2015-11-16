@@ -12,7 +12,7 @@ public class Article {
 	private Issue issue_fk;
 	
 	public Article(int id,String title, int section_id, int pages, String abstract_text, Date date_published, Issue issue_fk) {
-	
+		super();
 		this.title = title;
 		this.id = id;
 		this.section_id = section_id;
@@ -21,9 +21,7 @@ public class Article {
 		this.date_published = date_published;
 		this.issue_fk = issue_fk;
 	}
-	public int getId() {
-		return id;
-	}
+	
 	public String getTitle() {
 		return title;
 	}

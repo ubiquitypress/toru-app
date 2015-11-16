@@ -1,0 +1,8 @@
+package models;
+
+public class Section {
+	private int section_id;
+	private String title;
+	
+	
+}
