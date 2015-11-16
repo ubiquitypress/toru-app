@@ -1194,7 +1194,7 @@ public class Main {
 		} catch (IllegalAccessException e) {
 			// handle exception
 		}
-		settings();
+		dashboard();
 	}
 
 	public static void main(String[] args) {

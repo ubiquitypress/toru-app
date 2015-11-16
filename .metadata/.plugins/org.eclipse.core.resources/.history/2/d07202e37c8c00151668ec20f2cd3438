@@ -134,7 +134,7 @@ public class Main {
 		System.out.println("Opened database successfully");
 	}
 
-	public void login(final String returning_view) {
+	public void login(String returning_view) {
 		int width_small = 0;
 		int height_small = 0;
 		if (width >= 640) {
@@ -204,14 +204,7 @@ public class Main {
 					if (source_api.compareTo("") == 0 && source_access_key.compareTo("") == 0) {
 						api(false);
 					} else {
-						System.out.println(returning_view);
-						if (returning_view.compareTo("api") == 0) {
-							api(true);
-						} else if (returning_view.compareTo("settings") == 0) {
-							settings();
-						} else {
-							dashboard();
-						}
+						dashboard();
 					}
 				} else {
 					JOptionPane.showMessageDialog(null, "Wrong username or password");
@@ -229,14 +222,7 @@ public class Main {
 					if (source_api.compareTo("") == 0 && source_access_key.compareTo("") == 0) {
 						api(false);
 					} else {
-						System.out.println(returning_view);
-						if (returning_view.compareTo("api") == 0) {
-							api(true);
-						} else if (returning_view.compareTo("settings") == 0) {
-							settings();
-						} else {
-							dashboard();
-						}
+						dashboard();
 					}
 
 				} else {
@@ -1173,7 +1159,7 @@ public class Main {
 			lblArticleId.setFont(new Font("Dialog", Font.BOLD, 16));
 			lblArticleId.setText(Integer.toString(article_id));
 		} else {
-			settings();
+			login("api");
 		}
 	}
 
@@ -1194,7 +1180,7 @@ public class Main {
 		} catch (IllegalAccessException e) {
 			// handle exception
 		}
-		settings();
+		dashboard();
 	}
 
 	public static void main(String[] args) {

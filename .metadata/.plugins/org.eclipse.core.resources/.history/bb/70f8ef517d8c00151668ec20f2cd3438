@@ -204,14 +204,8 @@ public class Main {
 					if (source_api.compareTo("") == 0 && source_access_key.compareTo("") == 0) {
 						api(false);
 					} else {
-						System.out.println(returning_view);
-						if (returning_view.compareTo("api") == 0) {
-							api(true);
-						} else if (returning_view.compareTo("settings") == 0) {
-							settings();
-						} else {
-							dashboard();
-						}
+						
+						dashboard();
 					}
 				} else {
 					JOptionPane.showMessageDialog(null, "Wrong username or password");
@@ -229,13 +223,13 @@ public class Main {
 					if (source_api.compareTo("") == 0 && source_access_key.compareTo("") == 0) {
 						api(false);
 					} else {
-						System.out.println(returning_view);
-						if (returning_view.compareTo("api") == 0) {
+System.out.println(returning_view);
+						if(returning_view.compareTo("api")==0){
 							api(true);
-						} else if (returning_view.compareTo("settings") == 0) {
+						}else if(returning_view.compareTo("settings")==0){
 							settings();
-						} else {
-							dashboard();
+						}else {
+						dashboard();
 						}
 					}
 
@@ -1194,7 +1188,7 @@ public class Main {
 		} catch (IllegalAccessException e) {
 			// handle exception
 		}
-		settings();
+		dashboard();
 	}
 
 	public static void main(String[] args) {
