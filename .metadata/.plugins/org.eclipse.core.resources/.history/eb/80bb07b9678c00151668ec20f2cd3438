@@ -1,0 +1,9 @@
+package models;
+
+public class Article {
+	title, section_id, pages, abstract, date_published, issue_fk
+	public Article() {
+		// TODO Auto-generated constructor stub
+	}
+
+}

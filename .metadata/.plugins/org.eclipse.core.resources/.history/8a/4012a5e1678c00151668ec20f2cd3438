@@ -1,0 +1,13 @@
+package models;
+
+public class Article {
+	private String title; 
+	private int section_id;
+	private int pages; 
+	private String abstract_text;
+	date_published; issue_fk
+	public Article() {
+		// TODO Auto-generated constructor stub
+	}
+
+}

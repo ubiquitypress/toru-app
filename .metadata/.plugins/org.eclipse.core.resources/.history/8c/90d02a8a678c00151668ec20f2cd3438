@@ -1,0 +1,19 @@
+package models;
+
+import java.sql.Date;
+
+public class Issue {
+	private String title; 
+	private int volume;  
+	private int number;
+	private int year;
+	private String show_title;
+	private int show_volume;
+	private int show_number;
+	private int show_year;
+	private Date date_published;
+	public Issue() {
+		// TODO Auto-generated constructor stub
+	}
+
+}

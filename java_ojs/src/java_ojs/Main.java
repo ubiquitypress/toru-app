@@ -41,7 +41,7 @@ public class Main {
 	private static Statement stmt = null;
 	private String api_insert_or_replace_statement = "INSERT OR REPLACE INTO API(URL,ACCESS_KEY) VALUES (?,?)";
 	private String settings_insert_or_replace_statement = "INSERT OR REPLACE INTO SETTING(NAME,VALUE) VALUES (?,?)";
-	private int width = 1280;
+	private int width = 960;
 	private int height = 720;
 
 	/*
@@ -128,7 +128,7 @@ public class Main {
 		int width_small = 0;
 		int height_small = 0;
 		if (width >= 640) {
-			width_small = (int) (width - (width * (37.5 / 100)));
+			width_small = (int) (960 - (960 * (37.5 / 100)));
 		} else {
 			width_small = (int) (640 - (640 * (37.5 / 100)));
 		}
@@ -141,7 +141,7 @@ public class Main {
 				// database_save();
 			}
 		});
-		login.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+		login.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		login.getContentPane().setForeground(Color.WHITE);
 		login.getContentPane().setBackground(new Color(128, 128, 128));
 
@@ -221,7 +221,7 @@ public class Main {
 			}
 		});
 
-		btnLogin.setBounds(139, 350, width_small - 283, 29);
+		btnLogin.setBounds(width_small/3, 340, width_small/3, 29);
 		login.getContentPane().add(btnLogin);
 
 		final JButton btnSync1 = new JButton("Sync");
@@ -275,6 +275,7 @@ public class Main {
 		int width_small = (int) (width - (width * (37.5 / 100)));
 		int height_small = (int) (height - (height * (5 / 100)));
 		settings = new JFrame();
+		settings.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		settings.getContentPane().setBackground(new Color(128, 128, 128));
 		settings.addWindowListener(new WindowAdapter() {
 			@Override
@@ -407,13 +408,14 @@ public class Main {
 		int width_small = 0;
 		int height_small = 0;
 		if (height >= 480 && width >= 640) {
-			width_small = (int) (width - (width * (37.5 / 100)));
+			width_small = (int) (900 - (900 * (37.5 / 100)));
 		} else {
 			width_small = (int) (640 - (640 * (37.5 / 100)));
 		}
 
 		height_small = (int) (480 - (480 * (5 / 100)));
 		api = new JFrame();
+		api.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		api.getContentPane().setBackground(new Color(128, 128, 128));
 		api.addWindowListener(new WindowAdapter() {
 			@Override
@@ -432,7 +434,7 @@ public class Main {
 		lblNewLabel.setBounds((width_small / 2) - 34, 15, 70, 25);
 		api.getContentPane().add(lblNewLabel);
 		api_url = new JTextField();
-		api_url.setBounds(80, 218, width_small - 161, 26);
+		api_url.setBounds( 100, 218, width_small - 200, 26);
 		api_url.setText(source_api);
 		api.getContentPane().add(api_url);
 		api_url.setColumns(10);
@@ -440,7 +442,7 @@ public class Main {
 		JLabel lblApi = new JLabel("API URL");
 		lblApi.setForeground(new Color(245, 255, 250));
 		lblApi.setHorizontalAlignment(SwingConstants.CENTER);
-		lblApi.setBounds(80, 200, width_small - 151, 16);
+		lblApi.setBounds(74, 200, width_small - 151, 16);
 		api.getContentPane().add(lblApi);
 		JPanel title_background = new JPanel();
 		title_background.setBackground(new Color(0, 0, 0));
@@ -450,7 +452,7 @@ public class Main {
 		access_key = new JTextField();
 		access_key.setColumns(10);
 		access_key.setText(source_access_key);
-		access_key.setBounds(80, 270, width_small - 161, 26);
+		access_key.setBounds(100, 270, width_small - 200, 26);
 		api.getContentPane().add(access_key);
 		JLabel lblAccessKey = new JLabel("Access Key");
 		lblAccessKey.setHorizontalAlignment(SwingConstants.CENTER);
@@ -567,6 +569,7 @@ public class Main {
 	public void dashboard() {
 
 		issues = new JFrame();
+		issues.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
 		if (height >= 480 && width >= 640) {
 			issues.setSize(width, height);
@@ -750,6 +753,7 @@ public class Main {
 	public void issue(final int issue_id) {
 
 		articles = new JFrame();
+		articles.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		if (height >= 480 && width >= 640) {
 			articles.setSize(width, height);
 		} else {
@@ -951,6 +955,7 @@ public class Main {
 			height_small = (int) (480 - (480 * (5 / 100)));
 		}
 		final JFrame article = new JFrame();
+		article.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		article.setSize(width_small, height_small);
 		article.getContentPane().setBackground(new Color(128, 128, 128));
 		article.setVisible(true);

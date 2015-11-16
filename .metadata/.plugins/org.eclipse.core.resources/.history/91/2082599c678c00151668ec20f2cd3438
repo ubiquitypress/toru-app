@@ -1,0 +1,30 @@
+package models;
+
+import java.sql.Date;
+
+public class Issue {
+
+	private String title; 
+	private int volume;  
+	private int number;
+	private int year;
+	private String show_title;
+	private int show_volume;
+	private int show_number;
+	private int show_year;
+	private Date date_published;
+	
+	public Issue(String title, int volume, int number, int year, String show_title, int show_volume, int show_number,
+			int show_year, Date date_published) {
+		this.title = title;
+		this.volume = volume;
+		this.number = number;
+		this.year = year;
+		this.show_title = show_title;
+		this.show_volume = show_volume;
+		this.show_number = show_number;
+		this.show_year = show_year;
+		this.date_published = date_published;
+	}
+
+}
