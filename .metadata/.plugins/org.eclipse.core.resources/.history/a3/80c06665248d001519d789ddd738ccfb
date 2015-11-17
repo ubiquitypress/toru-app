@@ -50,7 +50,7 @@ public class Main {
 	private String api_insert_or_replace_statement = "INSERT OR REPLACE INTO API(URL,ACCESS_KEY) VALUES (?,?)";
 	private String settings_insert_or_replace_statement = "INSERT OR REPLACE INTO SETTING(NAME,VALUE) VALUES (?,?)";
 	private int width = 800;
-	private int height = 600;
+	private int height = 480;
 	private Boolean logged_in = true;
 	private static int i_id = 1;
 
@@ -1060,8 +1060,7 @@ public class Main {
 				panel3.add(lblNewLabel_1);
 	
 				abstractSection.setPreferredSize(new Dimension(320, 520));
-				//(int)((height/32)*5.5)
-				abstractSection.setBounds(30, 110, width -60, height/16*7-146);
+				abstractSection.setBounds(30, 108, width -60,(height/16)*2);
 				// scrollSettings.setViewportView(scrollFrame);
 				articles.getContentPane().add(abstractSection);
 			}

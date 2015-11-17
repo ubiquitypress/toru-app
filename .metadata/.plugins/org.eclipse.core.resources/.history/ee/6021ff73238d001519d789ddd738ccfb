@@ -50,7 +50,7 @@ public class Main {
 	private String api_insert_or_replace_statement = "INSERT OR REPLACE INTO API(URL,ACCESS_KEY) VALUES (?,?)";
 	private String settings_insert_or_replace_statement = "INSERT OR REPLACE INTO SETTING(NAME,VALUE) VALUES (?,?)";
 	private int width = 800;
-	private int height = 600;
+	private int height = 960;
 	private Boolean logged_in = true;
 	private static int i_id = 1;
 
@@ -1045,12 +1045,19 @@ public class Main {
 				
 				JPanel panel3 = new JPanel();
 				panel3.setBackground(SystemColor.window);
-				panel3.setBounds(30, 108,width -60,( height/16)*2);
+				panel3.setBounds(30, 107,320, 307);
 				articles.getContentPane().add(panel3);
 				panel3.setLayout(null);
 				panel3.setAutoscrolls(true);
+				Panel panel4 = new Panel();
+				panel4.setBackground(new Color(204, 153, 102));
+				panel4.setBounds(0, 65, width, 45);
+				articles.getContentPane().add(panel4);
 
-
+				Panel panel5 = new Panel();
+				panel5.setBackground(new Color(153, 102, 51));
+				panel5.setBounds(0, 110, width, 5);
+				articles.getContentPane().add(panel5);
 				panel3.setPreferredSize(new Dimension(320, height / 4));
 				JScrollPane abstractSection = new JScrollPane(panel3);
 				panel3.setAutoscrolls(true);
@@ -1059,9 +1066,8 @@ public class Main {
 				lblNewLabel_1.setBounds(16, 6, 61, 16);
 				panel3.add(lblNewLabel_1);
 	
-				abstractSection.setPreferredSize(new Dimension(320, 520));
-				//(int)((height/32)*5.5)
-				abstractSection.setBounds(30, 110, width -60, height/16*7-146);
+				abstractSection.setPreferredSize(new Dimension(320, 200));
+				abstractSection.setBounds(30, 132, width / 2, height / 2 - 150);
 				// scrollSettings.setViewportView(scrollFrame);
 				articles.getContentPane().add(abstractSection);
 			}

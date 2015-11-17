@@ -50,7 +50,7 @@ public class Main {
 	private String api_insert_or_replace_statement = "INSERT OR REPLACE INTO API(URL,ACCESS_KEY) VALUES (?,?)";
 	private String settings_insert_or_replace_statement = "INSERT OR REPLACE INTO SETTING(NAME,VALUE) VALUES (?,?)";
 	private int width = 800;
-	private int height = 600;
+	private int height = 960;
 	private Boolean logged_in = true;
 	private static int i_id = 1;
 
@@ -946,10 +946,10 @@ public class Main {
 				ButtonColumn buttonColumn2 = new ButtonColumn(article_table, delete, 8);
 
 				JLabel lblArticles = new JLabel("Articles");
-				lblArticles.setBackground(new Color(128, 128, 128));
+				lblArticles.setBackground(new Color(0, 139, 139));
 				lblArticles.setFont(new Font("Dialog", Font.BOLD, 28));
 				lblArticles.setForeground(new Color(240, 255, 255));
-				lblArticles.setBounds(40, height/16*7-35, 180, 30);
+				lblArticles.setBounds(40, height/16*7-30, 180, 30);
 				lblArticles.setOpaque(true);
 				articles.getContentPane().add(lblArticles);
 
@@ -1042,28 +1042,6 @@ public class Main {
 				btnAdd.setBounds(width - 150, height/16*7-30, 117, 25);
 				articles.getContentPane().add(btnAdd);
 				issue_screens.put(i_id, articles);
-				
-				JPanel panel3 = new JPanel();
-				panel3.setBackground(SystemColor.window);
-				panel3.setBounds(30, 108,width -60,( height/16)*2);
-				articles.getContentPane().add(panel3);
-				panel3.setLayout(null);
-				panel3.setAutoscrolls(true);
-
-
-				panel3.setPreferredSize(new Dimension(320, height / 4));
-				JScrollPane abstractSection = new JScrollPane(panel3);
-				panel3.setAutoscrolls(true);
-
-				JLabel lblNewLabel_1 = new JLabel("Abstract");
-				lblNewLabel_1.setBounds(16, 6, 61, 16);
-				panel3.add(lblNewLabel_1);
-	
-				abstractSection.setPreferredSize(new Dimension(320, 520));
-				//(int)((height/32)*5.5)
-				abstractSection.setBounds(30, 110, width -60, height/16*7-146);
-				// scrollSettings.setViewportView(scrollFrame);
-				articles.getContentPane().add(abstractSection);
 			}
 		/*} else {
 			login("dashboard");
