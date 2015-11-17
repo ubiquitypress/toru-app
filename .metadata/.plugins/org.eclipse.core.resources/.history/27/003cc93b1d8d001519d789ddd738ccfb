@@ -727,12 +727,8 @@ public class Main {
 					public void actionPerformed(ActionEvent e) {
 						JTable table = (JTable) e.getSource();
 						int modelRow = Integer.valueOf(e.getActionCommand());
-						int issue_row = table.getSelectedRow();
-						int selectedColumnIndex = 0;
-						Object selectedObject = (Object) table.getModel().getValueAt(issue_row, selectedColumnIndex);
-						int selected_issue=(int) selectedObject;
-						if (!issue_screens.get(selected_issue).isVisible()) {
-							issue(selected_issue);
+						if (!issue_screens.get(modelRow + 1).isVisible()) {
+							issue(modelRow + 1);
 						}
 						// /
 						// ((DefaultTableModel)table.getModel()).removeRow(modelRow);
@@ -930,13 +926,8 @@ public class Main {
 				Action view = new AbstractAction() {
 					public void actionPerformed(ActionEvent e) {
 						JTable table = (JTable) e.getSource();
-						
 						int modelRow = Integer.valueOf(e.getActionCommand());
-						int article_row = table.getSelectedRow();
-						int selectedColumnIndex = 0;
-						Object selectedObject = (Object) table.getModel().getValueAt(article_row, selectedColumnIndex);
-						int selected_article=(int) selectedObject;
-						article(issue_id,selected_article);
+						article(issue_id, modelRow + 1);
 						// /
 						// ((DefaultTableModel)table.getModel()).removeRow(modelRow);
 					}
@@ -1035,7 +1026,7 @@ public class Main {
 						HashMap<Integer, JFrame> issue_articles = article_screens.get(issue_id);
 						issue_articles.put(a_id, new JFrame());
 						article_screens.put(issue_id, issue_articles);
-						((DefaultTableModel) article_table.getModel()).addRow(new_row);
+						((DefaultTableModel) table.getModel()).addRow(new_row);
 						article_table.repaint();
 					}
 				});

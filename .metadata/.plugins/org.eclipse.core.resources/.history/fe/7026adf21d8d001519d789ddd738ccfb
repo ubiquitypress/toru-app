@@ -732,7 +732,7 @@ public class Main {
 						Object selectedObject = (Object) table.getModel().getValueAt(issue_row, selectedColumnIndex);
 						int selected_issue=(int) selectedObject;
 						if (!issue_screens.get(selected_issue).isVisible()) {
-							issue(selected_issue);
+							issue(modelRow + 1);
 						}
 						// /
 						// ((DefaultTableModel)table.getModel()).removeRow(modelRow);

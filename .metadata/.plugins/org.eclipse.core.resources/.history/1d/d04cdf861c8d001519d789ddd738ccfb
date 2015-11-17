@@ -727,12 +727,8 @@ public class Main {
 					public void actionPerformed(ActionEvent e) {
 						JTable table = (JTable) e.getSource();
 						int modelRow = Integer.valueOf(e.getActionCommand());
-						int issue_row = table.getSelectedRow();
-						int selectedColumnIndex = 0;
-						Object selectedObject = (Object) table.getModel().getValueAt(issue_row, selectedColumnIndex);
-						int selected_issue=(int) selectedObject;
-						if (!issue_screens.get(selected_issue).isVisible()) {
-							issue(selected_issue);
+						if (!issue_screens.get(modelRow + 1).isVisible()) {
+							issue(modelRow + 1);
 						}
 						// /
 						// ((DefaultTableModel)table.getModel()).removeRow(modelRow);
@@ -854,10 +850,7 @@ public class Main {
 						// database_save();
 					}
 				});
-				Date current = new Date();
-
-				SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
-				Object rowData[][] = { { 1,issue_id,1, "title",1,"abstract",sdf.format(current), "View", "Delete" },};
+				Object rowData[][] = { { 1,"Row1-Column1", "Row1-Column2", "View", "Delete" },};
 				 
 				Object columnNames[] = { "ID","Issue", "Section", "Title", "Pages", "Abstract", "Date Published", "", "" };
 				articles.getContentPane().setLayout(null);
@@ -873,13 +866,13 @@ public class Main {
 
 				DefaultTableModel dtm = new DefaultTableModel(rowData, columnNames);
 
-				final JTable article_table = new JTable(dtm);
-				article_table.setAutoCreateRowSorter(true);
-				scrollPane.setViewportView(article_table);
-				article_table.setColumnSelectionAllowed(true);
-				article_table.setBorder(new BevelBorder(BevelBorder.RAISED, null, null, null, null));
-				article_table.setCellSelectionEnabled(true);
-				article_table.setRowHeight(23);
+				final JTable table = new JTable(dtm);
+				table.setAutoCreateRowSorter(true);
+				scrollPane.setViewportView(table);
+				table.setColumnSelectionAllowed(true);
+				table.setBorder(new BevelBorder(BevelBorder.RAISED, null, null, null, null));
+				table.setCellSelectionEnabled(true);
+				table.setRowHeight(23);
 				final Label internetCheck = new Label("  ONLINE");
 				internetCheck.setFont(new Font("Dialog", Font.BOLD | Font.ITALIC, 12));
 				internetCheck.setBackground(Color.GREEN);
@@ -930,20 +923,15 @@ public class Main {
 				Action view = new AbstractAction() {
 					public void actionPerformed(ActionEvent e) {
 						JTable table = (JTable) e.getSource();
-						
 						int modelRow = Integer.valueOf(e.getActionCommand());
-						int article_row = table.getSelectedRow();
-						int selectedColumnIndex = 0;
-						Object selectedObject = (Object) table.getModel().getValueAt(article_row, selectedColumnIndex);
-						int selected_article=(int) selectedObject;
-						article(issue_id,selected_article);
+						article(issue_id, modelRow + 1);
 						// /
 						// ((DefaultTableModel)table.getModel()).removeRow(modelRow);
 					}
 				};
 
-				ButtonColumn buttonColumn = new ButtonColumn(article_table, view, 7);
-				ButtonColumn buttonColumn2 = new ButtonColumn(article_table, delete, 8);
+				ButtonColumn buttonColumn = new ButtonColumn(table, view, 2);
+				ButtonColumn buttonColumn2 = new ButtonColumn(table, delete, 3);
 
 				JLabel lblArticles = new JLabel("Articles");
 				lblArticles.setBackground(new Color(0, 139, 139));
@@ -1029,14 +1017,12 @@ public class Main {
 						int issue_id = Integer.parseInt(lblIssueId.getText());
 						int a_id = list_issues.get(issue_id) + 1;
 						list_issues.replace(issue_id, a_id);
-						Date current = new Date();
-						SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
-						Object[] new_row = { a_id,issue_id,1, "title",1,"abstract",sdf.format(current), "View", "Delete" };
+						Object[] new_row = { a_id, "Row1-Column2", "View", "Delete" };
 						HashMap<Integer, JFrame> issue_articles = article_screens.get(issue_id);
 						issue_articles.put(a_id, new JFrame());
 						article_screens.put(issue_id, issue_articles);
-						((DefaultTableModel) article_table.getModel()).addRow(new_row);
-						article_table.repaint();
+						((DefaultTableModel) table.getModel()).addRow(new_row);
+						table.repaint();
 					}
 				});
 				btnAdd.setBounds(width - 150, 109, 117, 25);
@@ -1209,7 +1195,7 @@ public class Main {
 				lblNewLabel_1.setBounds(16, 6, 61, 16);
 				panel3.add(lblNewLabel_1);
 			
-				JTextArea lblAbstract = new JTextArea("abstract");
+				JTextArea lblAbstract = new JTextArea("abstract abstract abstract abstract abstract abstract \nabstract abstract abstract abstract abstract abstract \nabstract abstract abstract abstract abstract abstract ");
 				lblAbstract.setEditable(false);
 				lblAbstract.setBounds(16, 28, 400, 180);
 				panel3.add(lblAbstract);
@@ -1318,7 +1304,7 @@ public class Main {
 				Panel panel9 = new Panel();
 				panel9.setBackground(new Color(153, 102, 51));
 				panel9.setBounds(85, 118, 180, 80);
-				JTextArea lblTitleText = new JTextArea("title");
+				JTextArea lblTitleText = new JTextArea("1fssssssssssssssssssssssssssssssssssssssss");
 				lblTitleText.setEditable(false);
 				lblTitleText.setForeground(Color.BLACK);
 				lblTitleText.setFont(new Font("Dialog", Font.BOLD, 14));
