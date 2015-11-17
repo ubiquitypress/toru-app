@@ -138,6 +138,9 @@ public class Issue {
 		articles_list.put(current_article_id,a);
 		current_article_id++;
 	}
+	public void remove_article(int id){
+		articles_list.remove(id);
+	}
 	
 	
 

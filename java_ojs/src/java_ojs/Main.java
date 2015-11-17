@@ -27,9 +27,11 @@ import javax.swing.table.DefaultTableModel;
 
 import org.jdesktop.swingx.JXDatePicker;
 
+import models.Article;
 import models.Issue;
 
 import java.awt.Label;
+import java.util.List;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.Panel;
@@ -46,6 +48,7 @@ public class Main {
 	private static HashMap<String, Boolean> list_settings;
 	private static HashMap<Integer, Integer> list_issues;
 	private static HashMap<Integer, JFrame> issue_screens;
+	private static HashMap<Integer, Issue> issue_storage;
 	private static HashMap<Integer, HashMap<Integer, JFrame>> article_screens;
 	private static ArrayList<String> setting_keys = new ArrayList<String>();
 	private static Connection c = null;
@@ -92,6 +95,7 @@ public class Main {
 		System.out.println("Retrieving data from local database");
 		list_settings = new HashMap<String, Boolean>();
 		list_issues = new HashMap<Integer, Integer>();
+		issue_storage = new HashMap<Integer, Issue>();
 		issue_screens = new HashMap<Integer, JFrame>();
 		article_screens = new HashMap<Integer, HashMap<Integer, JFrame>>();
 		try {
@@ -641,7 +645,7 @@ public class Main {
 				issues = new JFrame();
 				issues.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 				list_issues.put(i_id, 1);
-
+				issue_storage.put(1, issue);
 				issue_screens.put(1, new JFrame());
 				if (height >= 480 && width >= 640) {
 					issues.setSize(width, height);
@@ -660,8 +664,8 @@ public class Main {
 						// database_save();
 					}
 				});
-				Object rowData[][] = { { 1, "title", 1, 1, 2015, sdf.format(date), "View","Edit", "Delete" } };
-				Object columnNames[] = { "ID", "Title", "Volume", "Number", "Year", "Date Published","", "", "" };
+				Object rowData[][] = { { 1, "title", 1, 1, 2015, sdf.format(date), "View", "Edit", "Delete" } };
+				Object columnNames[] = { "ID", "Title", "Volume", "Number", "Year", "Date Published", "", "", "" };
 				issues.getContentPane().setLayout(null);
 
 				final JButton btnSync = new JButton("Sync");
@@ -675,24 +679,27 @@ public class Main {
 
 				DefaultTableModel dtm = new DefaultTableModel(rowData, columnNames);
 
-				issues_table = new JTable(dtm){
-					//**** Source: http://stackoverflow.com/questions/9467093/how-to-add-a-tooltip-to-a-cell-in-a-jtable ****//
-		            //Implement table cell tool tips.           
-		            public String getToolTipText(MouseEvent e) {
-		                String tip = null;
-		                java.awt.Point p = e.getPoint();
-		                int rowIndex = rowAtPoint(p);
-		                int colIndex = columnAtPoint(p);
+				issues_table = new JTable(dtm) {
+					// **** Source:
+					// http://stackoverflow.com/questions/9467093/how-to-add-a-tooltip-to-a-cell-in-a-jtable
+					// ****//
+					// Implement table cell tool tips.
+					public String getToolTipText(MouseEvent e) {
+						String tip = null;
+						java.awt.Point p = e.getPoint();
+						int rowIndex = rowAtPoint(p);
+						int colIndex = columnAtPoint(p);
 
-		                try {
-		                    tip = getValueAt(rowIndex, colIndex).toString();
-		                } catch (RuntimeException e1) {
-		                    //catch null pointer exception if mouse is over an empty line
-		                }
+						try {
+							tip = getValueAt(rowIndex, colIndex).toString();
+						} catch (RuntimeException e1) {
+							// catch null pointer exception if mouse is over an
+							// empty line
+						}
 
-		                return tip;
-		            }
-		        };
+						return tip;
+					}
+				};
 				scrollPane.setViewportView(issues_table);
 				issues_table.setColumnSelectionAllowed(true);
 				issues_table.getColumnModel().getColumn(5).setMinWidth(95);
@@ -743,25 +750,26 @@ public class Main {
 								"Delete ?", JOptionPane.YES_NO_OPTION);
 						if (reply == JOptionPane.YES_OPTION) {
 
-							
 							int issue_row = table.getSelectedRow();
 							int selectedColumnIndex = 0;
-							Object selectedObject = (Object) table.getModel().getValueAt(issue_row, selectedColumnIndex);
+							Object selectedObject = (Object) table.getModel().getValueAt(issue_row,
+									selectedColumnIndex);
 							int selected_issue = (int) selectedObject;
-							if (issue_screens.get(selected_issue).isVisible() || !(issue_screens.get(selected_issue)==null) ) {
-								HashMap<Integer,JFrame> opened=article_screens.get(selected_issue);
+							if (issue_screens.get(selected_issue).isVisible()
+									|| !(issue_screens.get(selected_issue) == null)) {
+								HashMap<Integer, JFrame> opened = article_screens.get(selected_issue);
 								Set<Integer> ids = opened.keySet();
-								System.out.println("Issue: "+Integer.toString(selected_issue));
-								for (int id : ids){
+								System.out.println("Issue: " + Integer.toString(selected_issue));
+								for (int id : ids) {
 									System.out.println(id);
-									JFrame art_window=opened.get(id);
-									if (art_window.isVisible() || !(art_window==null)){
+									JFrame art_window = opened.get(id);
+									if (art_window.isVisible() || !(art_window == null)) {
 										art_window.dispose();
 									}
 								}
 								article_screens.remove(selected_issue);
 								issue_screens.get(selected_issue).dispose();
-								System.out.println(issue_screens.get(selected_issue)==null);
+								System.out.println(issue_screens.get(selected_issue) == null);
 								issue_screens.remove(selected_issue);
 								((DefaultTableModel) table.getModel()).removeRow(modelRow);
 								table.repaint();
@@ -879,8 +887,9 @@ public class Main {
 
 						list_issues.put(i_id, 1);
 						issue_screens.put(i_id, new JFrame());
-						article_screens.put(i_id,new HashMap<Integer,JFrame>());
-						Object[] new_row = { i_id, "title", 1, 1, 2015, sdf.format(date), "View","Edit", "Delete" };
+						article_screens.put(i_id, new HashMap<Integer, JFrame>());
+						issue_storage.put(i_id, issue);
+						Object[] new_row = { i_id, "title", 1, 1, 2015, sdf.format(date), "View", "Edit", "Delete" };
 
 						((DefaultTableModel) issues_table.getModel()).addRow(new_row);
 						issues_table.repaint();
@@ -915,7 +924,7 @@ public class Main {
 				article_screens.put(1, issue_articles);
 				articles.getContentPane().setBackground(new Color(128, 128, 128));
 				articles.setVisible(true);
-				articles.setTitle("Issue <"+Integer.toString(issue_id)+">");
+				articles.setTitle("Issue <" + Integer.toString(issue_id) + ">");
 				articles.addWindowListener(new WindowAdapter() {
 					@Override
 					public void windowClosing(WindowEvent e) {
@@ -925,11 +934,34 @@ public class Main {
 				Date current = new Date();
 
 				SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
-				Object rowData[][] = {
-						{ 1, issue_id, 1, "title", 1, "abstract", sdf.format(current), "View","Edit", "Delete" }, };
+				Issue current_issue = issue_storage.get(issue_id);
+				HashMap<Integer, Article> current_articles = current_issue.getArticles_list();
+				Set<Integer> art_keys = current_articles.keySet();
+				ArrayList<List<Object>> rowData = new ArrayList<List<Object>>() ;
+				Object[][] rows = new Object[art_keys.size()][10];
+				int i=0;
+				for (int id : art_keys) {
+					 ArrayList<Object> data = new ArrayList<Object>();
+			
+					data.add(Integer.toString(current_articles.get(id).getId()));
+					data.add(Integer.toString(current_articles.get(id).getIssue_fk().getId()));
+					data.add(Integer.toString((current_articles.get(id).getSection_id())));
+					data.add(current_articles.get(id).getTitle());
+					data.add(Integer.toString(current_articles.get(id).getPages()));
+					data.add(current_articles.get(id).getAbstract_text());
+					data.add(sdf.format(current));
+					data.add("View");
+					data.add("Edit");
+					data.add("Delete");
+					Object[] row = {current_articles.get(id).getId(),current_articles.get(id).getIssue_fk().getId(),current_articles.get(id).getSection_id(),current_articles.get(id).getTitle(),current_articles.get(id).getPages(),current_articles.get(id).getAbstract_text(),sdf.format(current),"View","Edit","Delete"};
+					rows[i]=row;
+					i++;
+					rowData.add(data);
 
-				Object columnNames[] = { "ID", "Issue", "Section", "Title", "Pages", "Abstract", "Date Published", "","",
-						"" };
+				}
+			
+				Object columnNames[] = { "ID", "Issue", "Section", "Title", "Pages", "Abstract", "Date Published", "",
+						"", "" };
 
 				articles.getContentPane().setLayout(null);
 
@@ -942,26 +974,29 @@ public class Main {
 				scrollPane.setBounds(15, height / 16 * 7, width - 30, (height - 130) - (height / 16 * 7) - 10);
 				articles.getContentPane().add(scrollPane);
 
-				DefaultTableModel dtm = new DefaultTableModel(rowData, columnNames);
+				DefaultTableModel dtm = new DefaultTableModel(rows, columnNames);
 
-				final JTable article_table = new JTable(dtm){
-					//**** Source: http://stackoverflow.com/questions/9467093/how-to-add-a-tooltip-to-a-cell-in-a-jtable ****//
-		            //Implement table cell tool tips.           
-		            public String getToolTipText(MouseEvent e) {
-		                String tip = null;
-		                java.awt.Point p = e.getPoint();
-		                int rowIndex = rowAtPoint(p);
-		                int colIndex = columnAtPoint(p);
+				final JTable article_table = new JTable(dtm) {
+					// **** Source:
+					// http://stackoverflow.com/questions/9467093/how-to-add-a-tooltip-to-a-cell-in-a-jtable
+					// ****//
+					// Implement table cell tool tips.
+					public String getToolTipText(MouseEvent e) {
+						String tip = null;
+						java.awt.Point p = e.getPoint();
+						int rowIndex = rowAtPoint(p);
+						int colIndex = columnAtPoint(p);
 
-		                try {
-		                    tip = getValueAt(rowIndex, colIndex).toString();
-		                } catch (RuntimeException e1) {
-		                    //catch null pointer exception if mouse is over an empty line
-		                }
+						try {
+							tip = getValueAt(rowIndex, colIndex).toString();
+						} catch (RuntimeException e1) {
+							// catch null pointer exception if mouse is over an
+							// empty line
+						}
 
-		                return tip;
-		            }
-		        };
+						return tip;
+					}
+				};
 				article_table.setAutoCreateRowSorter(true);
 				scrollPane.setViewportView(article_table);
 				article_table.getColumnModel().getColumn(6).setMinWidth(50);
@@ -1001,7 +1036,7 @@ public class Main {
 					}
 				};
 				new Timer(delay, taskPerformer1).start();
-				DefaultTableModel model = new DefaultTableModel(rowData, columnNames);
+				DefaultTableModel model = new DefaultTableModel(rows, columnNames);
 				Action delete = new AbstractAction() {
 					public void actionPerformed(ActionEvent e) {
 						JTable table = (JTable) e.getSource();
@@ -1012,9 +1047,14 @@ public class Main {
 						if (reply == JOptionPane.YES_OPTION) {
 							int article_row = table.getSelectedRow();
 							int selectedColumnIndex = 0;
-							Object selectedObject = (Object) table.getModel().getValueAt(article_row, selectedColumnIndex);
+							Object selectedObject = (Object) table.getModel().getValueAt(article_row,
+									selectedColumnIndex);
 							int selected_article = (int) selectedObject;
-							article_screens.get(issue_id).get(selected_article).dispose();
+							Issue current_issue=issue_storage.get(issue_id);
+							current_issue.remove_article(selected_article);
+						    issue_storage.put(issue_id, current_issue);
+						    if(article_screens.get(issue_id).get(selected_article).isVisible()){
+							article_screens.get(issue_id).get(selected_article).dispose();}
 							((DefaultTableModel) table.getModel()).removeRow(modelRow);
 							table.repaint();
 						}
@@ -1026,14 +1066,15 @@ public class Main {
 				Action view = new AbstractAction() {
 					public void actionPerformed(ActionEvent e) {
 						JTable table = (JTable) e.getSource();
-						
+
 						int modelRow = Integer.valueOf(e.getActionCommand());
 						int article_row = table.getSelectedRow();
 						int selectedColumnIndex = 0;
 						Object selectedObject = (Object) table.getModel().getValueAt(article_row, selectedColumnIndex);
 						int selected_article = (int) selectedObject;
-						if(article_screens.get(issue_id).get(selected_article).isVisible()){
-						article_screens.get(issue_id).get(selected_article).dispose();}
+						if (article_screens.get(issue_id).get(selected_article).isVisible()) {
+							article_screens.get(issue_id).get(selected_article).dispose();
+						}
 						article(issue_id, selected_article);
 						// /
 						// ((DefaultTableModel)table.getModel()).removeRow(modelRow);
@@ -1048,8 +1089,9 @@ public class Main {
 						int selectedColumnIndex = 0;
 						Object selectedObject = (Object) table.getModel().getValueAt(article_row, selectedColumnIndex);
 						int selected_article = (int) selectedObject;
-						if(article_screens.get(issue_id).get(selected_article).isVisible()){
-							article_screens.get(issue_id).get(selected_article).dispose();}
+						if (article_screens.get(issue_id).get(selected_article).isVisible()) {
+							article_screens.get(issue_id).get(selected_article).dispose();
+						}
 						edit_article(issue_id, selected_article);
 						// /
 						// ((DefaultTableModel)table.getModel()).removeRow(modelRow);
@@ -1057,7 +1099,7 @@ public class Main {
 				};
 				ButtonColumn buttonColumn = new ButtonColumn(article_table, view, 7);
 				ButtonColumn buttonColumn2 = new ButtonColumn(article_table, edit, 8);
-				ButtonColumn buttonColumn3 = new ButtonColumn(article_table, delete,9);
+				ButtonColumn buttonColumn3 = new ButtonColumn(article_table, delete, 9);
 
 				JLabel lblArticles = new JLabel("Articles");
 				lblArticles.setBackground(new Color(128, 128, 128));
@@ -1146,10 +1188,15 @@ public class Main {
 						list_issues.replace(issue_id, a_id);
 						Date current = new Date();
 						SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
-						Object[] new_row = { a_id, issue_id, 1, "title", 1, "abstract", sdf.format(current), "View","Edit",
-								"Delete" };
+						Issue current_issue = issue_storage.get(issue_id);
+						int artID=current_issue.getCurrent_aricle_id();
+						current_issue.add_article(new Article("title", 1, 1,
+								"abstract", current, current_issue));
+						issue_storage.put(issue_id, current_issue);
+						Object[] new_row = { artID, issue_id, 1, "title", 1, "abstract", sdf.format(current), "View",
+								"Edit", "Delete" };
 						HashMap<Integer, JFrame> issue_articles = article_screens.get(issue_id);
-						issue_articles.put(a_id, new JFrame());
+						issue_articles.put(artID, new JFrame());
 						article_screens.put(issue_id, issue_articles);
 						((DefaultTableModel) article_table.getModel()).addRow(new_row);
 						article_table.repaint();
@@ -1207,24 +1254,27 @@ public class Main {
 
 				DefaultTableModel issue_dtm = new DefaultTableModel(issue_rowData, issue_columnNames);
 
-				final JTable issuedetails = new JTable(issue_dtm){
-					//**** Source: http://stackoverflow.com/questions/9467093/how-to-add-a-tooltip-to-a-cell-in-a-jtable ****//
-		            //Implement table cell tool tips.           
-		            public String getToolTipText(MouseEvent e) {
-		                String tip = null;
-		                java.awt.Point p = e.getPoint();
-		                int rowIndex = rowAtPoint(p);
-		                int colIndex = columnAtPoint(p);
+				final JTable issuedetails = new JTable(issue_dtm) {
+					// **** Source:
+					// http://stackoverflow.com/questions/9467093/how-to-add-a-tooltip-to-a-cell-in-a-jtable
+					// ****//
+					// Implement table cell tool tips.
+					public String getToolTipText(MouseEvent e) {
+						String tip = null;
+						java.awt.Point p = e.getPoint();
+						int rowIndex = rowAtPoint(p);
+						int colIndex = columnAtPoint(p);
 
-		                try {
-		                    tip = getValueAt(rowIndex, colIndex).toString();
-		                } catch (RuntimeException e1) {
-		                    //catch null pointer exception if mouse is over an empty line
-		                }
+						try {
+							tip = getValueAt(rowIndex, colIndex).toString();
+						} catch (RuntimeException e1) {
+							// catch null pointer exception if mouse is over an
+							// empty line
+						}
 
-		                return tip;
-		            }
-		        };
+						return tip;
+					}
+				};
 				issuedetails.setAutoCreateRowSorter(true);
 				issuedetails.setColumnSelectionAllowed(true);
 				issuedetails.setBounds(20, 15, width, 20);
@@ -1272,7 +1322,7 @@ public class Main {
 				article.setSize(width_small, height_small);
 				article.getContentPane().setBackground(new Color(128, 128, 128));
 				article.setVisible(true);
-				article.setTitle("Article <"+article_id+"> Details");
+				article.setTitle("Article <" + article_id + "> Details");
 				article.addWindowListener(new WindowAdapter() {
 					@Override
 					public void windowClosing(WindowEvent e) {
@@ -1340,7 +1390,7 @@ public class Main {
 				JButton btnGoBack = new JButton("Close");
 				btnGoBack.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent arg0) {
-					
+
 						if (issue_screens.get(issue_id) == null) {
 							article.dispose();
 							issue(issue_id);
@@ -1358,7 +1408,7 @@ public class Main {
 				btnEdit.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent arg0) {
 						article.dispose();
-						edit_article(issue_id,article_id);
+						edit_article(issue_id, article_id);
 					}
 				});
 				btnEdit.setBounds(25, 17, 117, 30);
@@ -1399,7 +1449,7 @@ public class Main {
 				article.getContentPane().add(panel3);
 				panel3.setLayout(null);
 				panel3.setAutoscrolls(true);
-	
+
 				panel3.setPreferredSize(new Dimension(320, settings_height));
 				JScrollPane abstractSection = new JScrollPane(panel3);
 				panel3.setAutoscrolls(true);
@@ -1425,7 +1475,7 @@ public class Main {
 				article.getContentPane().add(panel6);
 				panel6.setLayout(null);
 				panel6.setAutoscrolls(true);
-	
+
 				panel6.setPreferredSize(new Dimension(210 * 2, settings_height)); // scrollable
 																					// size
 				JScrollPane authorSection = new JScrollPane(panel6);
@@ -1519,7 +1569,7 @@ public class Main {
 				lblTitleText.setBackground(SystemColor.window);
 				lblTitleText.setForeground(Color.BLACK);
 				lblTitleText.setFont(new Font("Dialog", Font.BOLD, 14));
-			
+
 				panel9.add(lblTitleText);
 				JScrollPane titleSection = new JScrollPane(lblTitleText);
 				titleSection.setPreferredSize(new Dimension(300 * 2, 200));
@@ -1550,6 +1600,7 @@ public class Main {
 			login("dashboard");
 		}
 	}
+
 	public void edit_article(final int issue_id, final int article_id) {
 		if (logged_in) {
 			if (article_screens.containsKey(issue_id) && article_screens.get(issue_id).containsKey(article_id)
@@ -1567,7 +1618,7 @@ public class Main {
 				article.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 				// article.setSize(width_small, height_small);
 				article.setSize(width_small, height_small);
-				article.setTitle("Editing - Article <"+article_id+">");
+				article.setTitle("Editing - Article <" + article_id + ">");
 				article.getContentPane().setBackground(new Color(128, 128, 128));
 				article.setVisible(true);
 				article.addWindowListener(new WindowAdapter() {
@@ -1637,7 +1688,7 @@ public class Main {
 				JButton btnGoBack = new JButton("Close");
 				btnGoBack.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent arg0) {
-					
+
 						if (issue_screens.get(issue_id) == null) {
 							article.dispose();
 							issue(issue_id);
@@ -1687,7 +1738,7 @@ public class Main {
 				article.getContentPane().add(panel3);
 				panel3.setLayout(null);
 				panel3.setAutoscrolls(true);
-		
+
 				panel3.setPreferredSize(new Dimension(320, settings_height));
 				JScrollPane abstractSection = new JScrollPane(panel3);
 				panel3.setAutoscrolls(true);
@@ -1763,12 +1814,13 @@ public class Main {
 
 				SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
 
-			/*	JLabel lblDate = new JLabel(sdf.format(current));
-				lblDate.setVerticalAlignment(SwingConstants.TOP);
-				lblDate.setForeground(Color.BLACK);
-				lblDate.setFont(new Font("Dialog", Font.BOLD, 14));
-				lblDate.setBounds(160, 203, 125, 30);
-				panel.add(lblDate);*/
+				/*
+				 * JLabel lblDate = new JLabel(sdf.format(current));
+				 * lblDate.setVerticalAlignment(SwingConstants.TOP);
+				 * lblDate.setForeground(Color.BLACK); lblDate.setFont(new
+				 * Font("Dialog", Font.BOLD, 14)); lblDate.setBounds(160, 203,
+				 * 125, 30); panel.add(lblDate);
+				 */
 
 				JLabel lblArticleId = new JLabel("1");
 				lblArticleId.setBounds(160, 19, 94, 30);
@@ -1803,7 +1855,7 @@ public class Main {
 				lblTitleText.setOpaque(true);
 				lblTitleText.setForeground(Color.BLACK);
 				lblTitleText.setFont(new Font("Dialog", Font.BOLD, 14));
-			
+
 				panel9.add(lblTitleText);
 				JScrollPane titleSection = new JScrollPane(lblTitleText);
 				titleSection.setPreferredSize(new Dimension(300 * 2, 200));
@@ -1826,26 +1878,26 @@ public class Main {
 						System.out.println(datePicker.getDate());
 					}
 				});
-				label.setBounds(160,250,100,25);
+				label.setBounds(160, 250, 100, 25);
 				datePicker.setDate(current);
 				datePicker.setBounds(156, 198, 160, 30);
-				//panel.add(label);
+				// panel.add(label);
 				panel.add(datePicker);
-				
+
 				JLabel lblSection = new JLabel("Section:");
 				lblSection.setForeground(Color.BLACK);
 				lblSection.setFont(new Font("Dialog", Font.BOLD, 14));
 				lblSection.setBounds(24, 80, 94, 30);
 				panel.add(lblSection);
-				
+
 				JButton btnSave = new JButton("Save");
 				btnSave.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent arg0) {
 						article.dispose();
-						article(issue_id,article_id);
+						article(issue_id, article_id);
 					}
 				});
-				btnSave.setBounds((width_small-200)/2, height_small-100, 200, 30);
+				btnSave.setBounds((width_small - 200) / 2, height_small - 100, 200, 30);
 				article.getContentPane().add(btnSave);
 				if (article_screens.containsKey(issue_id)) {
 					HashMap<Integer, JFrame> issue_articles = article_screens.get(issue_id);
