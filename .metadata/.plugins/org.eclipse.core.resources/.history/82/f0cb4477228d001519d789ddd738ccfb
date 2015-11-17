@@ -50,7 +50,7 @@ public class Main {
 	private String api_insert_or_replace_statement = "INSERT OR REPLACE INTO API(URL,ACCESS_KEY) VALUES (?,?)";
 	private String settings_insert_or_replace_statement = "INSERT OR REPLACE INTO SETTING(NAME,VALUE) VALUES (?,?)";
 	private int width = 800;
-	private int height = 960;
+	private int height = 640;
 	private Boolean logged_in = true;
 	private static int i_id = 1;
 
@@ -868,7 +868,7 @@ public class Main {
 
 				JScrollPane scrollPane = new JScrollPane();
 				scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
-				scrollPane.setBounds(30, height/16*7, width - 60, (height - 130)-(height/16*7)-10);
+				scrollPane.setBounds(30, height/16*7, width - 60, (height - 115)-(height/16*7)-10);
 				articles.getContentPane().add(scrollPane);
 
 				DefaultTableModel dtm = new DefaultTableModel(rowData, columnNames);
