@@ -29,6 +29,7 @@ import org.jdesktop.swingx.JXDatePicker;
 
 import models.Issue;
 
+import javax.swing.JOptionPane;
 import java.awt.Label;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
@@ -1041,7 +1042,7 @@ public class Main {
 						int selectedColumnIndex = 0;
 						Object selectedObject = (Object) table.getModel().getValueAt(article_row, selectedColumnIndex);
 						int selected_article = (int) selectedObject;
-						edit_article(issue_id, selected_article);
+						article(issue_id, selected_article);
 						// /
 						// ((DefaultTableModel)table.getModel()).removeRow(modelRow);
 					}
@@ -1244,7 +1245,7 @@ public class Main {
 		}
 	}
 
-	public void article(final int issue_id, final int article_id) {
+	public void article(final int issue_id, int article_id) {
 		if (logged_in) {
 			if (article_screens.containsKey(issue_id) && article_screens.get(issue_id).containsKey(article_id)
 					&& !article_screens.get(issue_id).get(article_id).isVisible()) {
@@ -1344,15 +1345,6 @@ public class Main {
 				});
 				btnGoBack.setBounds(width_small - 150, 17, 117, 30);
 				article.getContentPane().add(btnGoBack);
-				JButton btnEdit = new JButton("Edit");
-				btnEdit.addActionListener(new ActionListener() {
-					public void actionPerformed(ActionEvent arg0) {
-						article.dispose();
-						edit_article(issue_id,article_id);
-					}
-				});
-				btnEdit.setBounds(25, 17, 117, 30);
-				article.getContentPane().add(btnEdit);
 				JScrollPane scrollSettings = new JScrollPane();
 				scrollSettings.setBounds(40, 180, 320, 200);
 
@@ -1389,7 +1381,15 @@ public class Main {
 				article.getContentPane().add(panel3);
 				panel3.setLayout(null);
 				panel3.setAutoscrolls(true);
-	
+				Panel panel4 = new Panel();
+				panel4.setBackground(new Color(204, 153, 102));
+				panel4.setBounds(0, 65, width_small, 45);
+				article.getContentPane().add(panel4);
+
+				Panel panel5 = new Panel();
+				panel5.setBackground(new Color(153, 102, 51));
+				panel5.setBounds(0, 110, width_small, 5);
+				article.getContentPane().add(panel5);
 				panel3.setPreferredSize(new Dimension(320, settings_height));
 				JScrollPane abstractSection = new JScrollPane(panel3);
 				panel3.setAutoscrolls(true);
@@ -1415,7 +1415,15 @@ public class Main {
 				article.getContentPane().add(panel6);
 				panel6.setLayout(null);
 				panel6.setAutoscrolls(true);
-	
+				Panel panel7 = new Panel();
+				panel7.setBackground(new Color(204, 153, 102));
+				panel7.setBounds(0, 65, width_small, 45);
+				article.getContentPane().add(panel7);
+
+				Panel panel8 = new Panel();
+				panel8.setBackground(new Color(153, 102, 51));
+				panel8.setBounds(0, 110, width_small, 5);
+				article.getContentPane().add(panel8);
 				panel6.setPreferredSize(new Dimension(210 * 2, settings_height)); // scrollable
 																					// size
 				JScrollPane authorSection = new JScrollPane(panel6);
@@ -1431,291 +1439,6 @@ public class Main {
 				lblAuthorInfo.setBounds(16, 34, 205 * 2, 175); // white box
 				lblAuthorInfo.setOpaque(true);
 				lblAuthorInfo.setBackground(SystemColor.window);
-				panel6.add(lblAuthorInfo);
-
-				authorSection.setPreferredSize(new Dimension(220 * 2, 200));
-				authorSection.setBounds(width_small / 2 - 40, 132 + height_small / 2 - 130, width_small / 2,
-						height_small / 2 - 150);
-				// scrollSettings.setViewportView(scrollFrame);
-				article.getContentPane().add(authorSection);
-
-				JLabel lblIssues = new JLabel("Article:");
-				lblIssues.setBounds(24, 18, 110, 30);
-				panel.add(lblIssues);
-				lblIssues.setFont(new Font("Dialog", Font.BOLD, 14));
-				lblIssues.setForeground(Color.BLACK);
-
-				JLabel lblIssue = new JLabel("Issue:");
-				lblIssue.setBounds(24, 48, 94, 30);
-				panel.add(lblIssue);
-				lblIssue.setForeground(Color.BLACK);
-				lblIssue.setFont(new Font("Dialog", Font.BOLD, 14));
-
-				JLabel lblIssueId = new JLabel("34");
-				lblIssueId.setBounds(160, 48, 94, 30);
-				panel.add(lblIssueId);
-				lblIssueId.setForeground(Color.BLACK);
-				lblIssueId.setFont(new Font("Dialog", Font.BOLD, 14));
-				lblIssueId.setText(Integer.toString(issue_id));
-
-				JLabel lblDatePublished = new JLabel("Date Published:");
-				lblDatePublished.setForeground(Color.BLACK);
-				lblDatePublished.setFont(new Font("Dialog", Font.BOLD, 14));
-				lblDatePublished.setBounds(24, 195, 150, 30);
-				panel.add(lblDatePublished);
-				Date current = new Date();
-
-				SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
-
-				JLabel lblDate = new JLabel(sdf.format(current));
-				lblDate.setVerticalAlignment(SwingConstants.TOP);
-				lblDate.setForeground(Color.BLACK);
-				lblDate.setFont(new Font("Dialog", Font.BOLD, 14));
-				lblDate.setBounds(160, 203, 125, 30);
-				panel.add(lblDate);
-
-				JLabel lblArticleId = new JLabel("1");
-				lblArticleId.setBounds(160, 19, 94, 30);
-				panel.add(lblArticleId);
-				lblArticleId.setForeground(Color.BLACK);
-				lblArticleId.setFont(new Font("Dialog", Font.BOLD, 14));
-				lblArticleId.setText(Integer.toString(article_id));
-
-				JLabel lblPages = new JLabel("Pages:");
-				lblPages.setForeground(Color.BLACK);
-				lblPages.setFont(new Font("Dialog", Font.BOLD, 14));
-				lblPages.setBounds(24, 165, 94, 30);
-				panel.add(lblPages);
-
-				JLabel lblPageNum = new JLabel("1");
-				lblPageNum.setVerticalAlignment(SwingConstants.TOP);
-				lblPageNum.setForeground(Color.BLACK);
-				lblPageNum.setFont(new Font("Dialog", Font.BOLD, 14));
-				lblPageNum.setBounds(160, 171, 125, 30);
-				panel.add(lblPageNum);
-
-				JLabel lblTitle = new JLabel("Title:");
-				lblTitle.setForeground(Color.BLACK);
-				lblTitle.setFont(new Font("Dialog", Font.BOLD, 14));
-				lblTitle.setBounds(24, 115, 94, 30);
-				panel.add(lblTitle);
-
-				Panel panel9 = new Panel();
-				panel9.setBackground(new Color(153, 102, 51));
-				panel9.setBounds(85, 118, 180, 80);
-				JTextArea lblTitleText = new JTextArea("title");
-				lblTitleText.setEditable(false);
-				lblTitleText.setOpaque(true);
-				lblTitleText.setBackground(SystemColor.window);
-				lblTitleText.setForeground(Color.BLACK);
-				lblTitleText.setFont(new Font("Dialog", Font.BOLD, 14));
-			
-				panel9.add(lblTitleText);
-				JScrollPane titleSection = new JScrollPane(lblTitleText);
-				titleSection.setPreferredSize(new Dimension(300 * 2, 200));
-				titleSection.setBounds(85, 113, 225, 50);
-				titleSection.add(panel9);
-				titleSection.createHorizontalScrollBar();
-				panel.add(titleSection);
-
-				JLabel lblSectionId = new JLabel("1");
-				lblSectionId.setForeground(Color.BLACK);
-				lblSectionId.setFont(new Font("Dialog", Font.BOLD, 14));
-				lblSectionId.setBounds(160, 81, 94, 30);
-				panel.add(lblSectionId);
-
-				JLabel lblSection = new JLabel("Section:");
-				lblSection.setForeground(Color.BLACK);
-				lblSection.setFont(new Font("Dialog", Font.BOLD, 14));
-				lblSection.setBounds(24, 80, 94, 30);
-				panel.add(lblSection);
-				if (article_screens.containsKey(issue_id)) {
-					HashMap<Integer, JFrame> issue_articles = article_screens.get(issue_id);
-					issue_articles.put(article_id, article);
-					article_screens.put(issue_id, issue_articles);
-				}
-			}
-
-		} else {
-			login("dashboard");
-		}
-	}
-	public void edit_article(final int issue_id, final int article_id) {
-		if (logged_in) {
-			if (article_screens.containsKey(issue_id) && article_screens.get(issue_id).containsKey(article_id)
-					&& !article_screens.get(issue_id).get(article_id).isVisible()) {
-				int width_small = 0;
-				int height_small = 0;
-				if (height >= 768 && width >= 640) {
-					width_small = (int) (width - (width * (37.5 / 100)));
-					height_small = (int) (height - (height * (5 / 100)));
-				} else {
-					width_small = (int) (640 + (640 * (37.5 / 100)));
-					height_small = (int) (768 - (768 * (5 / 100)));
-				}
-				final JFrame article = new JFrame();
-				article.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-				// article.setSize(width_small, height_small);
-				article.setSize(width_small, height_small);
-				article.getContentPane().setBackground(new Color(128, 128, 128));
-				article.setVisible(true);
-				article.addWindowListener(new WindowAdapter() {
-					@Override
-					public void windowClosing(WindowEvent e) {
-						// database_save();
-					}
-				});
-				Object rowData[][] = { { article_id, "Row1-Column1", "Row1-Column2", "View", "Delete" }, };
-
-				Object columnNames[] = { "ID", "Issue", "Section", "Title", "Pages", "Abstract", "Date Published", "",
-						"" };
-				article.getContentPane().setLayout(null);
-
-				JLabel lblArticleDetails = new JLabel("Article Details");
-				lblArticleDetails.setHorizontalAlignment(SwingConstants.CENTER);
-				lblArticleDetails.setFont(new Font("Dialog", Font.BOLD, 20));
-				lblArticleDetails.setForeground(new Color(255, 255, 255));
-				lblArticleDetails.setBackground(new Color(204, 153, 102));
-				lblArticleDetails.setBounds(width_small / 4, 65, width_small / 2, 40);
-				lblArticleDetails.setOpaque(true);
-				article.getContentPane().add(lblArticleDetails);
-
-				/*
-				 * final JButton btnSync = new JButton("Sync");
-				 * btnSync.setBounds(width_small - 150, 21, 70, 24);
-				 * article.getContentPane().add(btnSync);
-				 * 
-				 * final Label internetCheck = new Label("  ONLINE");
-				 * internetCheck.setFont(new Font("Dialog", Font.BOLD |
-				 * Font.ITALIC, 12)); internetCheck.setBackground(Color.GREEN);
-				 * internetCheck.setAlignment(1);
-				 * internetCheck.setForeground(new Color(255, 255, 255));
-				 * internetCheck.setBounds(width_small - 80, 22, 65, 22);
-				 * article.getContentPane().add(internetCheck);
-				 * 
-				 * ActionListener taskPerformer1 = new ActionListener() { public
-				 * void actionPerformed(ActionEvent evt) { try { Socket sock =
-				 * new Socket(); InetSocketAddress addr = new
-				 * InetSocketAddress("www.google.com", 80);
-				 * sock.setSoTimeout(500); sock.connect(addr, 3000);
-				 * 
-				 * internetCheck.setBackground(Color.GREEN);
-				 * internetCheck.setText("ONLINE"); btnSync.setEnabled(true);
-				 * sock.close();
-				 * 
-				 * } catch (Exception e) {
-				 * internetCheck.setBackground(Color.RED);
-				 * internetCheck.setText("OFFLINE"); btnSync.setEnabled(false);
-				 * } } }; new Timer(delay, taskPerformer1).start();
-				 * DefaultTableModel model = new DefaultTableModel(rowData,
-				 * columnNames); Action delete = new AbstractAction() { public
-				 * void actionPerformed(ActionEvent e) { JTable table = (JTable)
-				 * e.getSource(); int modelRow =
-				 * Integer.valueOf(e.getActionCommand());
-				 * JOptionPane.showMessageDialog(null, "Deleted"); // / //
-				 * ((DefaultTableModel)table.getModel()).removeRow(modelRow); }
-				 * }; Action view = new AbstractAction() { public void
-				 * actionPerformed(ActionEvent e) { JTable table = (JTable)
-				 * e.getSource(); int modelRow =
-				 * Integer.valueOf(e.getActionCommand());
-				 * JOptionPane.showMessageDialog(null, modelRow); // / //
-				 * ((DefaultTableModel)table.getModel()).removeRow(modelRow); }
-				 * };
-				 */
-
-				JButton btnGoBack = new JButton("Close");
-				btnGoBack.addActionListener(new ActionListener() {
-					public void actionPerformed(ActionEvent arg0) {
-					
-						if (issue_screens.get(issue_id) == null) {
-							article.dispose();
-							issue(issue_id);
-						} else if (!issue_screens.get(issue_id).isVisible()) {
-							article.dispose();
-							issue_screens.get(issue_id).setVisible(true);
-						} else {
-							article.dispose();
-						}
-					}
-				});
-				btnGoBack.setBounds(width_small - 150, 17, 117, 30);
-				article.getContentPane().add(btnGoBack);
-				JScrollPane scrollSettings = new JScrollPane();
-				scrollSettings.setBounds(40, 180, 320, 200);
-
-				JPanel panel = new JPanel();
-				panel.setBackground(SystemColor.window);
-				panel.setBounds(50, 107, 300, 307);
-				article.getContentPane().add(panel);
-				panel.setLayout(null);
-				panel.setAutoscrolls(true);
-				int y = 10;
-				int fields = 5;
-				int settings_height = 210 + 30 * (fields - 8);
-
-				Panel panel_1 = new Panel();
-				panel_1.setBackground(new Color(204, 153, 102));
-				panel_1.setBounds(0, 65, width_small, 45);
-				article.getContentPane().add(panel_1);
-
-				Panel panel_2 = new Panel();
-				panel_2.setBackground(new Color(153, 102, 51));
-				panel_2.setBounds(0, 110, width_small, 5);
-				article.getContentPane().add(panel_2);
-				panel.setPreferredSize(new Dimension(320, settings_height));
-				JScrollPane articleSection = new JScrollPane(panel);
-				panel.setAutoscrolls(true);
-				articleSection.setPreferredSize(new Dimension(320, 200));
-				articleSection.setBounds(40, 132, width_small / 2 - 100, height_small - 280);
-				// scrollSettings.setViewportView(scrollFrame);
-				article.getContentPane().add(articleSection);
-
-				JPanel panel3 = new JPanel();
-				panel3.setBackground(SystemColor.window);
-				panel3.setBounds(50, 107, 320, 307);
-				article.getContentPane().add(panel3);
-				panel3.setLayout(null);
-				panel3.setAutoscrolls(true);
-		
-				panel3.setPreferredSize(new Dimension(320, settings_height));
-				JScrollPane abstractSection = new JScrollPane(panel3);
-				panel3.setAutoscrolls(true);
-
-				JLabel lblNewLabel_1 = new JLabel("Abstract");
-				lblNewLabel_1.setBounds(16, 6, 61, 16);
-				panel3.add(lblNewLabel_1);
-
-				JTextArea lblAbstract = new JTextArea("abstract");
-				lblAbstract.setEditable(true);
-				lblAbstract.setBounds(16, 28, 400, 180);
-				lblAbstract.setOpaque(true);
-				panel3.add(lblAbstract);
-				abstractSection.setPreferredSize(new Dimension(320, 200));
-				abstractSection.setBounds(width_small / 2 - 40, 132, width_small / 2, height_small / 2 - 150);
-				// scrollSettings.setViewportView(scrollFrame);
-				article.getContentPane().add(abstractSection);
-
-				JPanel panel6 = new JPanel();
-				panel6.setBackground(SystemColor.window);
-				panel6.setBounds(50, 107, 180 * 2, 307);
-				article.getContentPane().add(panel6);
-				panel6.setLayout(null);
-				panel6.setAutoscrolls(true);
-
-				panel6.setPreferredSize(new Dimension(210 * 2, settings_height)); // scrollable
-																					// size
-				JScrollPane authorSection = new JScrollPane(panel6);
-				panel6.setAutoscrolls(true);
-
-				JLabel lblNewLabel_3 = new JLabel("Author Information");
-				lblNewLabel_3.setBounds(6, 6, 156, 16);
-				panel6.add(lblNewLabel_3);
-
-				JTextArea lblAuthorInfo = new JTextArea(
-						"First Name: Pete\tFirst Name: Bob 2 \nLast Name: User\tLast Name: User 2 \n ");
-				lblAuthorInfo.setEditable(true);
-				lblAuthorInfo.setBounds(16, 34, 205 * 2, 175); // white box
-				lblAuthorInfo.setOpaque(true);
 				panel6.add(lblAuthorInfo);
 
 				authorSection.setPreferredSize(new Dimension(220 * 2, 200));
@@ -1772,10 +1495,11 @@ public class Main {
 				lblPages.setBounds(24, 165, 94, 30);
 				panel.add(lblPages);
 
-				JTextField lblPageNum = new JTextField("1");
+				JLabel lblPageNum = new JLabel("1");
+				lblPageNum.setVerticalAlignment(SwingConstants.TOP);
 				lblPageNum.setForeground(Color.BLACK);
 				lblPageNum.setFont(new Font("Dialog", Font.BOLD, 14));
-				lblPageNum.setBounds(156, 171, 125, 30);
+				lblPageNum.setBounds(160, 171, 125, 30);
 				panel.add(lblPageNum);
 
 				JLabel lblTitle = new JLabel("Title:");
@@ -1788,8 +1512,9 @@ public class Main {
 				panel9.setBackground(new Color(153, 102, 51));
 				panel9.setBounds(85, 118, 180, 80);
 				JTextArea lblTitleText = new JTextArea("title");
-				lblTitleText.setEditable(true);
+				lblTitleText.setEditable(false);
 				lblTitleText.setOpaque(true);
+				lblTitleText.setBackground(SystemColor.window);
 				lblTitleText.setForeground(Color.BLACK);
 				lblTitleText.setFont(new Font("Dialog", Font.BOLD, 14));
 			
@@ -1801,10 +1526,10 @@ public class Main {
 				titleSection.createHorizontalScrollBar();
 				panel.add(titleSection);
 
-				JTextField lblSectionId = new JTextField("1");
+				JLabel lblSectionId = new JLabel("1");
 				lblSectionId.setForeground(Color.BLACK);
 				lblSectionId.setFont(new Font("Dialog", Font.BOLD, 14));
-				lblSectionId.setBounds(156, 81, 94, 30);
+				lblSectionId.setBounds(160, 81, 94, 30);
 				panel.add(lblSectionId);
 				final JLabel label = new JLabel();
 				label.setText("Choose Date by selecting below.");
@@ -1816,8 +1541,7 @@ public class Main {
 					}
 				});
 				label.setBounds(160,250,100,25);
-				datePicker.setDate(current);
-				datePicker.setBounds(156, 198, 160, 30);
+				datePicker.setBounds(160, 203, 125, 30);
 				//panel.add(label);
 				panel.add(datePicker);
 				
@@ -1826,16 +1550,6 @@ public class Main {
 				lblSection.setFont(new Font("Dialog", Font.BOLD, 14));
 				lblSection.setBounds(24, 80, 94, 30);
 				panel.add(lblSection);
-				
-				JButton btnSave = new JButton("Save");
-				btnSave.addActionListener(new ActionListener() {
-					public void actionPerformed(ActionEvent arg0) {
-						article.dispose();
-						article(issue_id,article_id);
-					}
-				});
-				btnSave.setBounds((width_small-200)/2, height_small-100, 200, 30);
-				article.getContentPane().add(btnSave);
 				if (article_screens.containsKey(issue_id)) {
 					HashMap<Integer, JFrame> issue_articles = article_screens.get(issue_id);
 					issue_articles.put(article_id, article);

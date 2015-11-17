@@ -1834,7 +1834,7 @@ public class Main {
 						article(issue_id,article_id);
 					}
 				});
-				btnSave.setBounds((width_small-200)/2, height_small-100, 200, 30);
+				btnSave.setBounds((width_small-117)/2, height_small-100, 200, 30);
 				article.getContentPane().add(btnSave);
 				if (article_screens.containsKey(issue_id)) {
 					HashMap<Integer, JFrame> issue_articles = article_screens.get(issue_id);

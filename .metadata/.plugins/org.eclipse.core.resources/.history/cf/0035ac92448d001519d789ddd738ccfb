@@ -1244,7 +1244,7 @@ public class Main {
 		}
 	}
 
-	public void article(final int issue_id, final int article_id) {
+	public void article(final int issue_id, int article_id) {
 		if (logged_in) {
 			if (article_screens.containsKey(issue_id) && article_screens.get(issue_id).containsKey(article_id)
 					&& !article_screens.get(issue_id).get(article_id).isVisible()) {
@@ -1344,15 +1344,6 @@ public class Main {
 				});
 				btnGoBack.setBounds(width_small - 150, 17, 117, 30);
 				article.getContentPane().add(btnGoBack);
-				JButton btnEdit = new JButton("Edit");
-				btnEdit.addActionListener(new ActionListener() {
-					public void actionPerformed(ActionEvent arg0) {
-						article.dispose();
-						edit_article(issue_id,article_id);
-					}
-				});
-				btnEdit.setBounds(25, 17, 117, 30);
-				article.getContentPane().add(btnEdit);
 				JScrollPane scrollSettings = new JScrollPane();
 				scrollSettings.setBounds(40, 180, 320, 200);
 
@@ -1540,7 +1531,7 @@ public class Main {
 			login("dashboard");
 		}
 	}
-	public void edit_article(final int issue_id, final int article_id) {
+	public void edit_article(final int issue_id, int article_id) {
 		if (logged_in) {
 			if (article_screens.containsKey(issue_id) && article_screens.get(issue_id).containsKey(article_id)
 					&& !article_screens.get(issue_id).get(article_id).isVisible()) {
@@ -1826,16 +1817,6 @@ public class Main {
 				lblSection.setFont(new Font("Dialog", Font.BOLD, 14));
 				lblSection.setBounds(24, 80, 94, 30);
 				panel.add(lblSection);
-				
-				JButton btnSave = new JButton("Save");
-				btnSave.addActionListener(new ActionListener() {
-					public void actionPerformed(ActionEvent arg0) {
-						article.dispose();
-						article(issue_id,article_id);
-					}
-				});
-				btnSave.setBounds((width_small-200)/2, height_small-100, 200, 30);
-				article.getContentPane().add(btnSave);
 				if (article_screens.containsKey(issue_id)) {
 					HashMap<Integer, JFrame> issue_articles = article_screens.get(issue_id);
 					issue_articles.put(article_id, article);

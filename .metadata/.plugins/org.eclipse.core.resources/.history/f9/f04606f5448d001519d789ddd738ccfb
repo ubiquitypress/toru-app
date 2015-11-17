@@ -1827,15 +1827,15 @@ public class Main {
 				lblSection.setBounds(24, 80, 94, 30);
 				panel.add(lblSection);
 				
-				JButton btnSave = new JButton("Save");
-				btnSave.addActionListener(new ActionListener() {
+				JButton btnEdit = new JButton("Save");
+				btnEdit.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent arg0) {
 						article.dispose();
 						article(issue_id,article_id);
 					}
 				});
-				btnSave.setBounds((width_small-200)/2, height_small-100, 200, 30);
-				article.getContentPane().add(btnSave);
+				btnEdit.setBounds(25, 17, 117, 30);
+				
 				if (article_screens.containsKey(issue_id)) {
 					HashMap<Integer, JFrame> issue_articles = article_screens.get(issue_id);
 					issue_articles.put(article_id, article);

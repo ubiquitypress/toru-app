@@ -29,6 +29,7 @@ import org.jdesktop.swingx.JXDatePicker;
 
 import models.Issue;
 
+import javax.swing.JOptionPane;
 import java.awt.Label;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
@@ -1244,7 +1245,7 @@ public class Main {
 		}
 	}
 
-	public void article(final int issue_id, final int article_id) {
+	public void article(final int issue_id, int article_id) {
 		if (logged_in) {
 			if (article_screens.containsKey(issue_id) && article_screens.get(issue_id).containsKey(article_id)
 					&& !article_screens.get(issue_id).get(article_id).isVisible()) {
@@ -1344,15 +1345,6 @@ public class Main {
 				});
 				btnGoBack.setBounds(width_small - 150, 17, 117, 30);
 				article.getContentPane().add(btnGoBack);
-				JButton btnEdit = new JButton("Edit");
-				btnEdit.addActionListener(new ActionListener() {
-					public void actionPerformed(ActionEvent arg0) {
-						article.dispose();
-						edit_article(issue_id,article_id);
-					}
-				});
-				btnEdit.setBounds(25, 17, 117, 30);
-				article.getContentPane().add(btnEdit);
 				JScrollPane scrollSettings = new JScrollPane();
 				scrollSettings.setBounds(40, 180, 320, 200);
 
@@ -1389,7 +1381,15 @@ public class Main {
 				article.getContentPane().add(panel3);
 				panel3.setLayout(null);
 				panel3.setAutoscrolls(true);
-	
+				Panel panel4 = new Panel();
+				panel4.setBackground(new Color(204, 153, 102));
+				panel4.setBounds(0, 65, width_small, 45);
+				article.getContentPane().add(panel4);
+
+				Panel panel5 = new Panel();
+				panel5.setBackground(new Color(153, 102, 51));
+				panel5.setBounds(0, 110, width_small, 5);
+				article.getContentPane().add(panel5);
 				panel3.setPreferredSize(new Dimension(320, settings_height));
 				JScrollPane abstractSection = new JScrollPane(panel3);
 				panel3.setAutoscrolls(true);
@@ -1415,7 +1415,15 @@ public class Main {
 				article.getContentPane().add(panel6);
 				panel6.setLayout(null);
 				panel6.setAutoscrolls(true);
-	
+				Panel panel7 = new Panel();
+				panel7.setBackground(new Color(204, 153, 102));
+				panel7.setBounds(0, 65, width_small, 45);
+				article.getContentPane().add(panel7);
+
+				Panel panel8 = new Panel();
+				panel8.setBackground(new Color(153, 102, 51));
+				panel8.setBounds(0, 110, width_small, 5);
+				article.getContentPane().add(panel8);
 				panel6.setPreferredSize(new Dimension(210 * 2, settings_height)); // scrollable
 																					// size
 				JScrollPane authorSection = new JScrollPane(panel6);
@@ -1540,7 +1548,7 @@ public class Main {
 			login("dashboard");
 		}
 	}
-	public void edit_article(final int issue_id, final int article_id) {
+	public void edit_article(final int issue_id, int article_id) {
 		if (logged_in) {
 			if (article_screens.containsKey(issue_id) && article_screens.get(issue_id).containsKey(article_id)
 					&& !article_screens.get(issue_id).get(article_id).isVisible()) {
@@ -1676,7 +1684,15 @@ public class Main {
 				article.getContentPane().add(panel3);
 				panel3.setLayout(null);
 				panel3.setAutoscrolls(true);
-		
+				Panel panel4 = new Panel();
+				panel4.setBackground(new Color(204, 153, 102));
+				panel4.setBounds(0, 65, width_small, 45);
+				article.getContentPane().add(panel4);
+
+				Panel panel5 = new Panel();
+				panel5.setBackground(new Color(153, 102, 51));
+				panel5.setBounds(0, 110, width_small, 5);
+				article.getContentPane().add(panel5);
 				panel3.setPreferredSize(new Dimension(320, settings_height));
 				JScrollPane abstractSection = new JScrollPane(panel3);
 				panel3.setAutoscrolls(true);
@@ -1701,7 +1717,15 @@ public class Main {
 				article.getContentPane().add(panel6);
 				panel6.setLayout(null);
 				panel6.setAutoscrolls(true);
+				Panel panel7 = new Panel();
+				panel7.setBackground(new Color(204, 153, 102));
+				panel7.setBounds(0, 65, width_small, 45);
+				article.getContentPane().add(panel7);
 
+				Panel panel8 = new Panel();
+				panel8.setBackground(new Color(153, 102, 51));
+				panel8.setBounds(0, 110, width_small, 5);
+				article.getContentPane().add(panel8);
 				panel6.setPreferredSize(new Dimension(210 * 2, settings_height)); // scrollable
 																					// size
 				JScrollPane authorSection = new JScrollPane(panel6);
@@ -1772,10 +1796,11 @@ public class Main {
 				lblPages.setBounds(24, 165, 94, 30);
 				panel.add(lblPages);
 
-				JTextField lblPageNum = new JTextField("1");
+				JLabel lblPageNum = new JLabel("1");
+				lblPageNum.setVerticalAlignment(SwingConstants.TOP);
 				lblPageNum.setForeground(Color.BLACK);
 				lblPageNum.setFont(new Font("Dialog", Font.BOLD, 14));
-				lblPageNum.setBounds(156, 171, 125, 30);
+				lblPageNum.setBounds(160, 171, 125, 30);
 				panel.add(lblPageNum);
 
 				JLabel lblTitle = new JLabel("Title:");
@@ -1801,10 +1826,10 @@ public class Main {
 				titleSection.createHorizontalScrollBar();
 				panel.add(titleSection);
 
-				JTextField lblSectionId = new JTextField("1");
+				JLabel lblSectionId = new JTextfield("1");
 				lblSectionId.setForeground(Color.BLACK);
 				lblSectionId.setFont(new Font("Dialog", Font.BOLD, 14));
-				lblSectionId.setBounds(156, 81, 94, 30);
+				lblSectionId.setBounds(160, 81, 94, 30);
 				panel.add(lblSectionId);
 				final JLabel label = new JLabel();
 				label.setText("Choose Date by selecting below.");
@@ -1826,16 +1851,6 @@ public class Main {
 				lblSection.setFont(new Font("Dialog", Font.BOLD, 14));
 				lblSection.setBounds(24, 80, 94, 30);
 				panel.add(lblSection);
-				
-				JButton btnSave = new JButton("Save");
-				btnSave.addActionListener(new ActionListener() {
-					public void actionPerformed(ActionEvent arg0) {
-						article.dispose();
-						article(issue_id,article_id);
-					}
-				});
-				btnSave.setBounds((width_small-200)/2, height_small-100, 200, 30);
-				article.getContentPane().add(btnSave);
 				if (article_screens.containsKey(issue_id)) {
 					HashMap<Integer, JFrame> issue_articles = article_screens.get(issue_id);
 					issue_articles.put(article_id, article);
