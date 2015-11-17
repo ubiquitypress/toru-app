@@ -152,7 +152,6 @@ public class Main {
 			height_small = (int) (480 - (480 * (5 / 100)));
 
 			login = new JFrame();
-			login.setTitle("TORU - Log In");
 			login.addWindowListener(new WindowAdapter() {
 				@Override
 				public void windowClosing(WindowEvent e) {
@@ -326,7 +325,6 @@ public class Main {
 				settings = new JFrame();
 				settings.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 				settings.getContentPane().setBackground(new Color(128, 128, 128));
-				settings.setTitle("Settings");
 				settings.addWindowListener(new WindowAdapter() {
 					@Override
 					public void windowClosing(WindowEvent e) {
@@ -474,7 +472,6 @@ public class Main {
 				api = new JFrame();
 				api.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 				api.getContentPane().setBackground(new Color(128, 128, 128));
-				api.setTitle("API Information");
 				api.addWindowListener(new WindowAdapter() {
 					@Override
 					public void windowClosing(WindowEvent e) {
@@ -653,7 +650,6 @@ public class Main {
 				SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
 				issues.getContentPane().setBackground(new Color(105, 105, 105));
 				issues.setVisible(true);
-				issues.setTitle("Dashboard");
 				issues.addWindowListener(new WindowAdapter() {
 					@Override
 					public void windowClosing(WindowEvent e) {
@@ -915,7 +911,6 @@ public class Main {
 				article_screens.put(1, issue_articles);
 				articles.getContentPane().setBackground(new Color(128, 128, 128));
 				articles.setVisible(true);
-				articles.setTitle("Issue <"+Integer.toString(issue_id)+">");
 				articles.addWindowListener(new WindowAdapter() {
 					@Override
 					public void windowClosing(WindowEvent e) {
@@ -1026,14 +1021,12 @@ public class Main {
 				Action view = new AbstractAction() {
 					public void actionPerformed(ActionEvent e) {
 						JTable table = (JTable) e.getSource();
-						
+
 						int modelRow = Integer.valueOf(e.getActionCommand());
 						int article_row = table.getSelectedRow();
 						int selectedColumnIndex = 0;
 						Object selectedObject = (Object) table.getModel().getValueAt(article_row, selectedColumnIndex);
 						int selected_article = (int) selectedObject;
-						if(article_screens.get(issue_id).get(selected_article).isVisible()){
-						article_screens.get(issue_id).get(selected_article).dispose();}
 						article(issue_id, selected_article);
 						// /
 						// ((DefaultTableModel)table.getModel()).removeRow(modelRow);
@@ -1048,8 +1041,6 @@ public class Main {
 						int selectedColumnIndex = 0;
 						Object selectedObject = (Object) table.getModel().getValueAt(article_row, selectedColumnIndex);
 						int selected_article = (int) selectedObject;
-						if(article_screens.get(issue_id).get(selected_article).isVisible()){
-							article_screens.get(issue_id).get(selected_article).dispose();}
 						edit_article(issue_id, selected_article);
 						// /
 						// ((DefaultTableModel)table.getModel()).removeRow(modelRow);
@@ -1272,7 +1263,6 @@ public class Main {
 				article.setSize(width_small, height_small);
 				article.getContentPane().setBackground(new Color(128, 128, 128));
 				article.setVisible(true);
-				article.setTitle("Article <"+article_id+"> Details");
 				article.addWindowListener(new WindowAdapter() {
 					@Override
 					public void windowClosing(WindowEvent e) {
@@ -1567,7 +1557,6 @@ public class Main {
 				article.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 				// article.setSize(width_small, height_small);
 				article.setSize(width_small, height_small);
-				article.setTitle("Editing - Article <"+article_id+">");
 				article.getContentPane().setBackground(new Color(128, 128, 128));
 				article.setVisible(true);
 				article.addWindowListener(new WindowAdapter() {
@@ -1586,7 +1575,7 @@ public class Main {
 				lblArticleDetails.setHorizontalAlignment(SwingConstants.CENTER);
 				lblArticleDetails.setFont(new Font("Dialog", Font.BOLD, 20));
 				lblArticleDetails.setForeground(new Color(255, 255, 255));
-				lblArticleDetails.setBackground(new Color(2, 216, 138));
+				lblArticleDetails.setBackground(new Color(204, 153, 102));
 				lblArticleDetails.setBounds(width_small / 4, 65, width_small / 2, 40);
 				lblArticleDetails.setOpaque(true);
 				article.getContentPane().add(lblArticleDetails);
@@ -1670,7 +1659,7 @@ public class Main {
 				article.getContentPane().add(panel_1);
 
 				Panel panel_2 = new Panel();
-				panel_2.setBackground(new Color(6, 141, 91));
+				panel_2.setBackground(new Color(153, 102, 51));
 				panel_2.setBounds(0, 110, width_small, 5);
 				article.getContentPane().add(panel_2);
 				panel.setPreferredSize(new Dimension(320, settings_height));
