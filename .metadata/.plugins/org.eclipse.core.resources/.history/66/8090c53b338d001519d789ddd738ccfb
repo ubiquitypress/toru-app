@@ -50,7 +50,7 @@ public class Main {
 	private static Statement stmt = null;
 	private String api_insert_or_replace_statement = "INSERT OR REPLACE INTO API(URL,ACCESS_KEY) VALUES (?,?)";
 	private String settings_insert_or_replace_statement = "INSERT OR REPLACE INTO SETTING(NAME,VALUE) VALUES (?,?)";
-	private int width = 800;
+	private int width = 640;
 	private int height = 600;
 	private Boolean logged_in = true;
 	private static int i_id = 1;
@@ -690,9 +690,6 @@ public class Main {
 				scrollPane.setViewportView(issues_table);
 				issues_table.setColumnSelectionAllowed(true);
 				issues_table.getColumnModel().getColumn(5).setMinWidth(95);
-				issues_table.getColumnModel().getColumn(6).setMinWidth(50);
-				issues_table.getColumnModel().getColumn(7).setMinWidth(40);
-				issues_table.getColumnModel().getColumn(8).setMinWidth(50);
 				issues_table.setBorder(new BevelBorder(BevelBorder.RAISED, null, null, null, null));
 				issues_table.setCellSelectionEnabled(true);
 				issues_table.setRowHeight(23);
@@ -935,6 +932,7 @@ public class Main {
 		        };
 				article_table.setAutoCreateRowSorter(true);
 				scrollPane.setViewportView(article_table);
+				article_table.getColumnModel().getColumn(0).setMaxWidth(30);
 				article_table.getColumnModel().getColumn(6).setMinWidth(50);
 				article_table.getColumnModel().getColumn(7).setMinWidth(40);
 				article_table.getColumnModel().getColumn(8).setMinWidth(40);
