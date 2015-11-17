@@ -35,7 +35,7 @@ import java.awt.Panel;
 import java.awt.SystemColor;
 
 public class Main {
-	JFrame login, api, issues, settings;
+	JFrame login, api, issues, articles, settings;
 	private JTextField access_key, api_url, username;
 	private JTable issues_table;
 	private int delay = 2000; // milliseconds
@@ -756,7 +756,6 @@ public class Main {
 								}
 								article_screens.remove(selected_issue);
 								issue_screens.get(selected_issue).dispose();
-								System.out.println(issue_screens.get(selected_issue)==null);
 								issue_screens.remove(selected_issue);
 								((DefaultTableModel) table.getModel()).removeRow(modelRow);
 								table.repaint();
@@ -896,7 +895,7 @@ public class Main {
 	public void issue(final int issue_id) {
 		if (logged_in) {
 			if (!issue_screens.get(issue_id).isVisible()) {
-				final JFrame articles = new JFrame();
+				articles = new JFrame();
 				articles.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 				if (height >= 480 && width >= 640) {
 					articles.setSize(width, height);
@@ -1004,11 +1003,7 @@ public class Main {
 						int reply = JOptionPane.showConfirmDialog(null, "Are you sure you want to delete this article?",
 								"Delete ?", JOptionPane.YES_NO_OPTION);
 						if (reply == JOptionPane.YES_OPTION) {
-							int article_row = table.getSelectedRow();
-							int selectedColumnIndex = 0;
-							Object selectedObject = (Object) table.getModel().getValueAt(article_row, selectedColumnIndex);
-							int selected_article = (int) selectedObject;
-							article_screens.get(issue_id).get(selected_article).dispose();
+
 							((DefaultTableModel) table.getModel()).removeRow(modelRow);
 							table.repaint();
 						}
@@ -1329,13 +1324,12 @@ public class Main {
 				JButton btnGoBack = new JButton("Close");
 				btnGoBack.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent arg0) {
-					
-						if (issue_screens.get(issue_id) == null) {
+						if (articles == null) {
 							article.dispose();
 							issue(issue_id);
-						} else if (!issue_screens.get(issue_id).isVisible()) {
+						} else if (!articles.isVisible()) {
 							article.dispose();
-							issue_screens.get(issue_id).setVisible(true);
+							articles.setVisible(true);
 						} else {
 							article.dispose();
 						}
