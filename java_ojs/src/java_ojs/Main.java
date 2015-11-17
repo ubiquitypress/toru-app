@@ -1074,7 +1074,7 @@ public class Main {
 				lblArticleDetails.setOpaque(true);
 				article.getContentPane().add(lblArticleDetails);
 
-				final JButton btnSync = new JButton("Sync");
+		/*		final JButton btnSync = new JButton("Sync");
 				btnSync.setBounds(width_small - 150, 21, 70, 24);
 				article.getContentPane().add(btnSync);
 
@@ -1125,12 +1125,11 @@ public class Main {
 						// /
 						// ((DefaultTableModel)table.getModel()).removeRow(modelRow);
 					}
-				};
+				};*/
 
 				JButton btnGoBack = new JButton("Close");
 				btnGoBack.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent arg0) {
-						article.setVisible(false);
 						if (articles == null) {
 							article.dispose();
 							issue(issue_id);
@@ -1142,7 +1141,7 @@ public class Main {
 						}
 					}
 				});
-				btnGoBack.setBounds(6, 17, 117, 30);
+				btnGoBack.setBounds(width_small - 150, 17, 117, 30);
 				article.getContentPane().add(btnGoBack);
 				JScrollPane scrollSettings = new JScrollPane();
 				scrollSettings.setBounds(40, 180, 320, 200);
@@ -1176,7 +1175,7 @@ public class Main {
 
 				JPanel panel3 = new JPanel();
 				panel3.setBackground(SystemColor.window);
-				panel3.setBounds(50, 107, 300, 307);
+				panel3.setBounds(50, 107,320, 307);
 				article.getContentPane().add(panel3);
 				panel3.setLayout(null);
 				panel3.setAutoscrolls(true);
@@ -1196,10 +1195,10 @@ public class Main {
 				JLabel lblNewLabel_1 = new JLabel("Abstract");
 				lblNewLabel_1.setBounds(16, 6, 61, 16);
 				panel3.add(lblNewLabel_1);
-
-				JLabel lblAbstract = new JLabel("");
-				lblAbstract.setVerticalAlignment(SwingConstants.TOP);
-				lblAbstract.setBounds(16, 28, 260, 180);
+			
+				JTextArea lblAbstract = new JTextArea("abstract abstract abstract abstract abstract abstract \nabstract abstract abstract abstract abstract abstract \nabstract abstract abstract abstract abstract abstract ");
+				lblAbstract.setEditable(false);
+				lblAbstract.setBounds(16, 28, 400, 180);
 				panel3.add(lblAbstract);
 				abstractSection.setPreferredSize(new Dimension(320, 200));
 				abstractSection.setBounds(width_small / 2 - 40, 132, width_small / 2, height_small / 2 - 150);
@@ -1208,7 +1207,7 @@ public class Main {
 
 				JPanel panel6 = new JPanel();
 				panel6.setBackground(SystemColor.window);
-				panel6.setBounds(50, 107, 300, 307);
+				panel6.setBounds(50, 107, 180*2, 307);
 				article.getContentPane().add(panel6);
 				panel6.setLayout(null);
 				panel6.setAutoscrolls(true);
@@ -1221,7 +1220,7 @@ public class Main {
 				panel8.setBackground(new Color(153, 102, 51));
 				panel8.setBounds(0, 110, width_small, 5);
 				article.getContentPane().add(panel8);
-				panel6.setPreferredSize(new Dimension(320, settings_height));
+				panel6.setPreferredSize(new Dimension(210*2, settings_height)); // scrollable size
 				JScrollPane authorSection = new JScrollPane(panel6);
 				panel6.setAutoscrolls(true);
 
@@ -1229,11 +1228,12 @@ public class Main {
 				lblNewLabel_3.setBounds(6, 6, 156, 16);
 				panel6.add(lblNewLabel_3);
 
-				JLabel lblAuthorInfo = new JLabel("");
-				lblAuthorInfo.setVerticalAlignment(SwingConstants.TOP);
-				lblAuthorInfo.setBounds(16, 34, 286, 175);
+				JTextArea lblAuthorInfo = new JTextArea( "First Name: Pete\tFirst Name: Bob 2 \nLast Name: User\tLast Name: User 2 \n ");
+				lblAuthorInfo.setEditable(false);
+				lblAuthorInfo.setBounds(16, 34, 205*2, 175); // white box
 				panel6.add(lblAuthorInfo);
-				authorSection.setPreferredSize(new Dimension(320, 200));
+				
+				authorSection.setPreferredSize(new Dimension(220*2, 200));
 				authorSection.setBounds(width_small / 2 - 40, 132 + height_small / 2 - 130, width_small / 2,
 						height_small / 2 - 150);
 				// scrollSettings.setViewportView(scrollFrame);
@@ -1242,77 +1242,90 @@ public class Main {
 				JLabel lblIssues = new JLabel("Article:");
 				lblIssues.setBounds(24, 18, 110, 30);
 				panel.add(lblIssues);
-				lblIssues.setFont(new Font("Dialog", Font.BOLD, 18));
+				lblIssues.setFont(new Font("Dialog", Font.BOLD, 14));
 				lblIssues.setForeground(Color.BLACK);
 
-				JLabel lblDate = new JLabel("1");
-				lblDate.setVerticalAlignment(SwingConstants.TOP);
-				lblDate.setForeground(Color.BLACK);
-				lblDate.setFont(new Font("Dialog", Font.BOLD, 16));
-				lblDate.setBounds(180, 235, 125, 30);
-				panel.add(lblDate);
+	
 
 				JLabel lblIssue = new JLabel("Issue:");
 				lblIssue.setBounds(24, 48, 94, 30);
 				panel.add(lblIssue);
 				lblIssue.setForeground(Color.BLACK);
-				lblIssue.setFont(new Font("Dialog", Font.BOLD, 18));
+				lblIssue.setFont(new Font("Dialog", Font.BOLD, 14));
 
-				JLabel lblIssueId = new JLabel("");
-				lblIssueId.setBounds(130, 48, 94, 30);
+				JLabel lblIssueId = new JLabel("34");
+				lblIssueId.setBounds(160, 48, 94, 30);
 				panel.add(lblIssueId);
 				lblIssueId.setForeground(Color.BLACK);
-				lblIssueId.setFont(new Font("Dialog", Font.BOLD, 16));
+				lblIssueId.setFont(new Font("Dialog", Font.BOLD, 14));
 				lblIssueId.setText(Integer.toString(issue_id));
 
 				JLabel lblDatePublished = new JLabel("Date Published:");
 				lblDatePublished.setForeground(Color.BLACK);
-				lblDatePublished.setFont(new Font("Dialog", Font.BOLD, 18));
-				lblDatePublished.setBounds(24, 230, 150, 30);
+				lblDatePublished.setFont(new Font("Dialog", Font.BOLD, 14));
+				lblDatePublished.setBounds(24, 195, 150, 30);
 				panel.add(lblDatePublished);
+				Date current = new Date();
 
+				SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
+				
+				JLabel lblDate = new JLabel(sdf.format(current));
+				lblDate.setVerticalAlignment(SwingConstants.TOP);
+				lblDate.setForeground(Color.BLACK);
+				lblDate.setFont(new Font("Dialog", Font.BOLD, 14));
+				lblDate.setBounds(160, 203, 125, 30);
+				panel.add(lblDate);
+				
 				JLabel lblArticleId = new JLabel("1");
-				lblArticleId.setBounds(130, 18, 94, 30);
+				lblArticleId.setBounds(160, 19, 94, 30);
 				panel.add(lblArticleId);
 				lblArticleId.setForeground(Color.BLACK);
-				lblArticleId.setFont(new Font("Dialog", Font.BOLD, 16));
+				lblArticleId.setFont(new Font("Dialog", Font.BOLD, 14));
 				lblArticleId.setText(Integer.toString(article_id));
 
 				JLabel lblPages = new JLabel("Pages:");
 				lblPages.setForeground(Color.BLACK);
-				lblPages.setFont(new Font("Dialog", Font.BOLD, 18));
-				lblPages.setBounds(24, 195, 94, 30);
+				lblPages.setFont(new Font("Dialog", Font.BOLD, 14));
+				lblPages.setBounds(24, 165, 94, 30);
 				panel.add(lblPages);
 
 				JLabel lblPageNum = new JLabel("1");
 				lblPageNum.setVerticalAlignment(SwingConstants.TOP);
 				lblPageNum.setForeground(Color.BLACK);
-				lblPageNum.setFont(new Font("Dialog", Font.BOLD, 16));
-				lblPageNum.setBounds(130, 200, 125, 30);
+				lblPageNum.setFont(new Font("Dialog", Font.BOLD, 14));
+				lblPageNum.setBounds(160, 171, 125, 30);
 				panel.add(lblPageNum);
 
 				JLabel lblTitle = new JLabel("Title:");
 				lblTitle.setForeground(Color.BLACK);
-				lblTitle.setFont(new Font("Dialog", Font.BOLD, 18));
-				lblTitle.setBounds(24, 110, 94, 30);
+				lblTitle.setFont(new Font("Dialog", Font.BOLD, 14));
+				lblTitle.setBounds(24, 115, 94, 30);
 				panel.add(lblTitle);
-
-				JLabel lblTitleText = new JLabel("1");
-				lblTitleText.setVerticalAlignment(SwingConstants.TOP);
+				
+				Panel panel9 = new Panel();
+				panel9.setBackground(new Color(153, 102, 51));
+				panel9.setBounds(85, 118, 180, 80);
+				JTextArea lblTitleText = new JTextArea("1fssssssssssssssssssssssssssssssssssssssss");
+				lblTitleText.setEditable(false);
 				lblTitleText.setForeground(Color.BLACK);
-				lblTitleText.setFont(new Font("Dialog", Font.BOLD, 16));
-				lblTitleText.setBounds(85, 117, 125, 80);
-				panel.add(lblTitleText);
+				lblTitleText.setFont(new Font("Dialog", Font.BOLD, 14));
+				panel9.add(lblTitleText);
+				JScrollPane titleSection = new JScrollPane(lblTitleText);
+				titleSection.setPreferredSize(new Dimension(300*2, 200));
+				titleSection.setBounds(85, 113, 225, 50);
+				titleSection.add(panel9);
+				titleSection.createHorizontalScrollBar();
+				panel.add(titleSection);
 
 				JLabel lblSectionId = new JLabel("1");
 				lblSectionId.setForeground(Color.BLACK);
-				lblSectionId.setFont(new Font("Dialog", Font.BOLD, 16));
-				lblSectionId.setBounds(130, 80, 94, 30);
+				lblSectionId.setFont(new Font("Dialog", Font.BOLD, 14));
+				lblSectionId.setBounds(160, 81, 94, 30);
 				panel.add(lblSectionId);
 
 				JLabel lblSection = new JLabel("Section:");
 				lblSection.setForeground(Color.BLACK);
-				lblSection.setFont(new Font("Dialog", Font.BOLD, 18));
+				lblSection.setFont(new Font("Dialog", Font.BOLD, 14));
 				lblSection.setBounds(24, 80, 94, 30);
 				panel.add(lblSection);
 				if (article_screens.containsKey(issue_id)) {
