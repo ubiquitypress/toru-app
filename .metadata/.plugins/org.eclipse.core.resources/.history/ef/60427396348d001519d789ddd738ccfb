@@ -136,7 +136,6 @@ public class Issue {
 	}
 	public void add_article(Article a){
 		articles_list.put(current_article_id,a);
-		current_article_id++;
 	}
 	
 	
