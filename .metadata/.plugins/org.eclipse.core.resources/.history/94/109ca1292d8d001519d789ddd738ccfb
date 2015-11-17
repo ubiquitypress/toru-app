@@ -18,7 +18,6 @@ import java.awt.Button;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import java.awt.event.KeyEvent;
-import java.awt.event.MouseEvent;
 import java.awt.BorderLayout;
 import javax.swing.border.SoftBevelBorder;
 import javax.swing.border.BevelBorder;
@@ -664,29 +663,12 @@ public class Main {
 
 				JScrollPane scrollPane = new JScrollPane();
 				scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
-				scrollPane.setBounds(20, 140, width - 40, height - 285);
+				scrollPane.setBounds(30, 140, width - 60, height - 285);
 				issues.getContentPane().add(scrollPane);
 
 				DefaultTableModel dtm = new DefaultTableModel(rowData, columnNames);
 
-				issues_table = new JTable(dtm){
-					//**** Source: http://stackoverflow.com/questions/9467093/how-to-add-a-tooltip-to-a-cell-in-a-jtable ****//
-		            //Implement table cell tool tips.           
-		            public String getToolTipText(MouseEvent e) {
-		                String tip = null;
-		                java.awt.Point p = e.getPoint();
-		                int rowIndex = rowAtPoint(p);
-		                int colIndex = columnAtPoint(p);
-
-		                try {
-		                    tip = getValueAt(rowIndex, colIndex).toString();
-		                } catch (RuntimeException e1) {
-		                    //catch null pointer exception if mouse is over an empty line
-		                }
-
-		                return tip;
-		            }
-		        };
+				issues_table = new JTable(dtm);
 				scrollPane.setViewportView(issues_table);
 				issues_table.setColumnSelectionAllowed(true);
 				issues_table.setBorder(new BevelBorder(BevelBorder.RAISED, null, null, null, null));
@@ -875,12 +857,11 @@ public class Main {
 				Date current = new Date();
 
 				SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
-				Object rowData[][] = {
-						{ 1, issue_id, 1, "title", 1, "abstract", sdf.format(current), "View", "Delete" }, };
-
-				Object columnNames[] = { "ID", "Issue", "Section", "Title", "Pages", "Abstract", "Date Published", "",
-						"" };
-
+				Object rowData[][] = { { 1,issue_id,1, "title",1,"abstract",sdf.format(current), "View", "Delete" },};
+				 
+				Object columnNames[] = { "ID","Issue", "Section", "Title", "Pages", "Abstract", "Date Published", "", "" };
+			
+				
 				articles.getContentPane().setLayout(null);
 
 				final JButton btnSync = new JButton("Sync");
@@ -889,29 +870,12 @@ public class Main {
 
 				JScrollPane scrollPane = new JScrollPane();
 				scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
-				scrollPane.setBounds(15, height / 16 * 7, width - 30, (height - 130) - (height / 16 * 7) - 10);
+				scrollPane.setBounds(15, height/16*7, width - 30, (height - 130)-(height/16*7)-10);
 				articles.getContentPane().add(scrollPane);
 
 				DefaultTableModel dtm = new DefaultTableModel(rowData, columnNames);
 
-				final JTable article_table = new JTable(dtm){
-					//**** Source: http://stackoverflow.com/questions/9467093/how-to-add-a-tooltip-to-a-cell-in-a-jtable ****//
-		            //Implement table cell tool tips.           
-		            public String getToolTipText(MouseEvent e) {
-		                String tip = null;
-		                java.awt.Point p = e.getPoint();
-		                int rowIndex = rowAtPoint(p);
-		                int colIndex = columnAtPoint(p);
-
-		                try {
-		                    tip = getValueAt(rowIndex, colIndex).toString();
-		                } catch (RuntimeException e1) {
-		                    //catch null pointer exception if mouse is over an empty line
-		                }
-
-		                return tip;
-		            }
-		        };
+				final JTable article_table = new JTable(dtm);
 				article_table.setAutoCreateRowSorter(true);
 				scrollPane.setViewportView(article_table);
 				article_table.setColumnSelectionAllowed(true);
@@ -968,13 +932,13 @@ public class Main {
 				Action view = new AbstractAction() {
 					public void actionPerformed(ActionEvent e) {
 						JTable table = (JTable) e.getSource();
-
+						
 						int modelRow = Integer.valueOf(e.getActionCommand());
 						int article_row = table.getSelectedRow();
 						int selectedColumnIndex = 0;
 						Object selectedObject = (Object) table.getModel().getValueAt(article_row, selectedColumnIndex);
-						int selected_article = (int) selectedObject;
-						article(issue_id, selected_article);
+						int selected_article=(int) selectedObject;
+						article(issue_id,selected_article);
 						// /
 						// ((DefaultTableModel)table.getModel()).removeRow(modelRow);
 					}
@@ -987,7 +951,7 @@ public class Main {
 				lblArticles.setBackground(new Color(128, 128, 128));
 				lblArticles.setFont(new Font("Dialog", Font.BOLD, 26));
 				lblArticles.setForeground(new Color(240, 255, 255));
-				lblArticles.setBounds(25, height / 16 * 7 - 32, 180, 30);
+				lblArticles.setBounds(25, height/16*7-32, 180, 30);
 				lblArticles.setOpaque(true);
 				articles.getContentPane().add(lblArticles);
 
@@ -1069,8 +1033,7 @@ public class Main {
 						list_issues.replace(issue_id, a_id);
 						Date current = new Date();
 						SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
-						Object[] new_row = { a_id, issue_id, 1, "title", 1, "abstract", sdf.format(current), "View",
-								"Delete" };
+						Object[] new_row = { a_id,issue_id,1, "title",1,"abstract",sdf.format(current), "View", "Delete" };
 						HashMap<Integer, JFrame> issue_articles = article_screens.get(issue_id);
 						issue_articles.put(a_id, new JFrame());
 						article_screens.put(issue_id, issue_articles);
@@ -1078,103 +1041,88 @@ public class Main {
 						article_table.repaint();
 					}
 				});
-				btnAdd.setBounds(width - 150, height / 16 * 7 - 27, 117, 25);
+				btnAdd.setBounds(width - 150, height/16*7-27, 117, 25);
 				articles.getContentPane().add(btnAdd);
 				issue_screens.put(i_id, articles);
-
+				
 				JPanel panel3 = new JPanel();
 				panel3.setBackground(SystemColor.window);
-				panel3.setBounds(20, 108, width - 40, (height / 16) * 2);
+				panel3.setBounds(20, 108,width -40,( height/16)*2);
 				articles.getContentPane().add(panel3);
 				panel3.setLayout(null);
 				panel3.setAutoscrolls(true);
-				int space = 0;
+				int space= 0;
 
 				panel3.setPreferredSize(new Dimension(width, height / 8));
 				JScrollPane abstractSection = new JScrollPane(panel3);
 				panel3.setAutoscrolls(true);
 				/*
-				 * JLabel lblTitle = new JLabel("Title:");
-				 * lblTitle.setBounds(space+20, 10, 35, 16);
-				 * panel3.add(lblTitle); JLabel lblTitleText = new
-				 * JLabel("Abstract"); lblTitleText.setBounds(space+60, 10, 61,
-				 * 16); panel3.add(lblTitleText);
-				 * 
-				 * JLabel lblVolume = new JLabel("Volume:");
-				 * lblVolume.setBounds(space+145, 10, 50, 16);
-				 * panel3.add(lblVolume); JLabel lblVolumeText = new
-				 * JLabel("123"); lblVolumeText.setBounds(space+200, 10, 25,
-				 * 16); panel3.add(lblVolumeText);
-				 * 
-				 * JLabel lblNumber= new JLabel("Number:");
-				 * lblNumber.setBounds(space+249, 10, 55, 16);
-				 * panel3.add(lblNumber); JLabel lblNumberText = new
-				 * JLabel("1"); lblNumberText.setBounds(space+310, 10, 25, 16);
-				 * panel3.add(lblNumberText);
-				 * 
-				 * JLabel lblYear= new JLabel("Year:");
-				 * lblYear.setBounds(space+350, 10, 40, 16);
-				 * panel3.add(lblYear); JLabel lblYearText = new JLabel("2015");
-				 * lblYearText.setBounds(space+390, 10, 35, 16);
-				 * panel3.add(lblYearText);
-				 * 
-				 * JLabel lblDate= new JLabel("Date Published:");
-				 * lblDate.setBounds(space+449, 10, 100, 16);
-				 * panel3.add(lblDate); JLabel lblDateText = new
-				 * JLabel("2015/11/20"); lblDateText.setBounds(space+550, 10,
-				 * 80, 16); panel3.add(lblDateText);
-				 */
+				JLabel lblTitle = new JLabel("Title:");
+				lblTitle.setBounds(space+20, 10, 35, 16);
+				panel3.add(lblTitle);
+				JLabel lblTitleText = new JLabel("Abstract");
+				lblTitleText.setBounds(space+60, 10, 61, 16);
+				panel3.add(lblTitleText);
+				
+				JLabel lblVolume = new JLabel("Volume:");
+				lblVolume.setBounds(space+145, 10, 50, 16);
+				panel3.add(lblVolume);
+				JLabel lblVolumeText = new JLabel("123");
+				lblVolumeText.setBounds(space+200, 10, 25, 16);
+				panel3.add(lblVolumeText);
+				
+				JLabel lblNumber= new JLabel("Number:");
+				lblNumber.setBounds(space+249, 10, 55, 16);
+				panel3.add(lblNumber);
+				JLabel lblNumberText = new JLabel("1");
+				lblNumberText.setBounds(space+310, 10, 25, 16);
+				panel3.add(lblNumberText);
+				
+				JLabel lblYear= new JLabel("Year:");
+				lblYear.setBounds(space+350, 10, 40, 16);
+				panel3.add(lblYear);
+				JLabel lblYearText = new JLabel("2015");
+				lblYearText.setBounds(space+390, 10, 35, 16);
+				panel3.add(lblYearText);
+				
+				JLabel lblDate= new JLabel("Date Published:");
+				lblDate.setBounds(space+449, 10, 100, 16);
+				panel3.add(lblDate);
+				JLabel lblDateText = new JLabel("2015/11/20");
+				lblDateText.setBounds(space+550, 10, 80, 16);
+				panel3.add(lblDateText);*/
 				Date date = new Date();
 				Object issue_rowData[][] = { { 1, "title", 1, 1, 2015, sdf.format(date) } };
 				Object issue_columnNames[] = { "ID", "Title", "Volume", "Number", "Year", "Date Published" };
-
+			
 				DefaultTableModel issue_dtm = new DefaultTableModel(issue_rowData, issue_columnNames);
 
-				final JTable issuedetails = new JTable(issue_dtm){
-					//**** Source: http://stackoverflow.com/questions/9467093/how-to-add-a-tooltip-to-a-cell-in-a-jtable ****//
-		            //Implement table cell tool tips.           
-		            public String getToolTipText(MouseEvent e) {
-		                String tip = null;
-		                java.awt.Point p = e.getPoint();
-		                int rowIndex = rowAtPoint(p);
-		                int colIndex = columnAtPoint(p);
-
-		                try {
-		                    tip = getValueAt(rowIndex, colIndex).toString();
-		                } catch (RuntimeException e1) {
-		                    //catch null pointer exception if mouse is over an empty line
-		                }
-
-		                return tip;
-		            }
-		        };
+				final JTable issuedetails = new JTable(issue_dtm);
 				issuedetails.setAutoCreateRowSorter(true);
 				issuedetails.setColumnSelectionAllowed(true);
-				issuedetails.setBounds(20, 15, width, 20);
+				issuedetails.setBounds(20,15,width,20);
 				issuedetails.setBorder(new BevelBorder(BevelBorder.RAISED, null, null, null, null));
 				issuedetails.setCellSelectionEnabled(true);
 				issuedetails.setRowHeight(23);
 				issuedetails.setEnabled(false);
 				abstractSection.setViewportView(issuedetails);
 				abstractSection.setPreferredSize(new Dimension(320, 205));
-				// (int)((height/32)*5.5)
-				abstractSection.setBounds(20, height / 16 * 7 - 106, width - 40, 50);
+				//(int)((height/32)*5.5)
+				abstractSection.setBounds(20, height/16*7-106, width-40, 50);
 				// scrollSettings.setViewportView(scrollFrame);
 				articles.getContentPane().add(abstractSection);
-
+				
 				JLabel lblIssueDetails = new JLabel("Details");
 				lblIssueDetails.setBackground(new Color(128, 128, 128));
 				lblIssueDetails.setFont(new Font("Dialog", Font.BOLD, 26));
 				lblIssueDetails.setForeground(new Color(240, 255, 255));
-				lblIssueDetails.setBounds((width - 95) / 2, 118, 95, 30);
+				lblIssueDetails.setBounds((width-95)/2, 118, 95, 30);
 				lblIssueDetails.setOpaque(true);
 				articles.getContentPane().add(lblIssueDetails);
 			}
 
-		} else {
-			login("dashboard");
-		}
-	}
+	 } else { login("dashboard"); } }
+	 
 
 	public void article(final int issue_id, int article_id) {
 		if (logged_in) {
@@ -1331,8 +1279,6 @@ public class Main {
 				JTextArea lblAbstract = new JTextArea("abstract");
 				lblAbstract.setEditable(false);
 				lblAbstract.setBounds(16, 28, 400, 180);
-				lblAbstract.setOpaque(true);
-				lblAbstract.setBackground(SystemColor.window);
 				panel3.add(lblAbstract);
 				abstractSection.setPreferredSize(new Dimension(320, 200));
 				abstractSection.setBounds(width_small / 2 - 40, 132, width_small / 2, height_small / 2 - 150);
@@ -1367,8 +1313,6 @@ public class Main {
 						"First Name: Pete\tFirst Name: Bob 2 \nLast Name: User\tLast Name: User 2 \n ");
 				lblAuthorInfo.setEditable(false);
 				lblAuthorInfo.setBounds(16, 34, 205 * 2, 175); // white box
-				lblAuthorInfo.setOpaque(true);
-				lblAuthorInfo.setBackground(SystemColor.window);
 				panel6.add(lblAuthorInfo);
 
 				authorSection.setPreferredSize(new Dimension(220 * 2, 200));
@@ -1443,11 +1387,8 @@ public class Main {
 				panel9.setBounds(85, 118, 180, 80);
 				JTextArea lblTitleText = new JTextArea("title");
 				lblTitleText.setEditable(false);
-				lblTitleText.setOpaque(true);
-				lblTitleText.setBackground(SystemColor.window);
 				lblTitleText.setForeground(Color.BLACK);
 				lblTitleText.setFont(new Font("Dialog", Font.BOLD, 14));
-			
 				panel9.add(lblTitleText);
 				JScrollPane titleSection = new JScrollPane(lblTitleText);
 				titleSection.setPreferredSize(new Dimension(300 * 2, 200));
@@ -1499,7 +1440,7 @@ public class Main {
 		} catch (IllegalAccessException e) {
 			// handle exception
 		}
-		login("dashboard");
+		issue(1);
 	}
 
 	public static void main(String[] args) {

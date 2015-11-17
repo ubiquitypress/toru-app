@@ -18,7 +18,6 @@ import java.awt.Button;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import java.awt.event.KeyEvent;
-import java.awt.event.MouseEvent;
 import java.awt.BorderLayout;
 import javax.swing.border.SoftBevelBorder;
 import javax.swing.border.BevelBorder;
@@ -669,24 +668,7 @@ public class Main {
 
 				DefaultTableModel dtm = new DefaultTableModel(rowData, columnNames);
 
-				issues_table = new JTable(dtm){
-					//**** Source: http://stackoverflow.com/questions/9467093/how-to-add-a-tooltip-to-a-cell-in-a-jtable ****//
-		            //Implement table cell tool tips.           
-		            public String getToolTipText(MouseEvent e) {
-		                String tip = null;
-		                java.awt.Point p = e.getPoint();
-		                int rowIndex = rowAtPoint(p);
-		                int colIndex = columnAtPoint(p);
-
-		                try {
-		                    tip = getValueAt(rowIndex, colIndex).toString();
-		                } catch (RuntimeException e1) {
-		                    //catch null pointer exception if mouse is over an empty line
-		                }
-
-		                return tip;
-		            }
-		        };
+				issues_table = new JTable(dtm);
 				scrollPane.setViewportView(issues_table);
 				issues_table.setColumnSelectionAllowed(true);
 				issues_table.setBorder(new BevelBorder(BevelBorder.RAISED, null, null, null, null));
@@ -894,24 +876,7 @@ public class Main {
 
 				DefaultTableModel dtm = new DefaultTableModel(rowData, columnNames);
 
-				final JTable article_table = new JTable(dtm){
-					//**** Source: http://stackoverflow.com/questions/9467093/how-to-add-a-tooltip-to-a-cell-in-a-jtable ****//
-		            //Implement table cell tool tips.           
-		            public String getToolTipText(MouseEvent e) {
-		                String tip = null;
-		                java.awt.Point p = e.getPoint();
-		                int rowIndex = rowAtPoint(p);
-		                int colIndex = columnAtPoint(p);
-
-		                try {
-		                    tip = getValueAt(rowIndex, colIndex).toString();
-		                } catch (RuntimeException e1) {
-		                    //catch null pointer exception if mouse is over an empty line
-		                }
-
-		                return tip;
-		            }
-		        };
+				final JTable article_table = new JTable(dtm);
 				article_table.setAutoCreateRowSorter(true);
 				scrollPane.setViewportView(article_table);
 				article_table.setColumnSelectionAllowed(true);
@@ -1130,24 +1095,7 @@ public class Main {
 
 				DefaultTableModel issue_dtm = new DefaultTableModel(issue_rowData, issue_columnNames);
 
-				final JTable issuedetails = new JTable(issue_dtm){
-					//**** Source: http://stackoverflow.com/questions/9467093/how-to-add-a-tooltip-to-a-cell-in-a-jtable ****//
-		            //Implement table cell tool tips.           
-		            public String getToolTipText(MouseEvent e) {
-		                String tip = null;
-		                java.awt.Point p = e.getPoint();
-		                int rowIndex = rowAtPoint(p);
-		                int colIndex = columnAtPoint(p);
-
-		                try {
-		                    tip = getValueAt(rowIndex, colIndex).toString();
-		                } catch (RuntimeException e1) {
-		                    //catch null pointer exception if mouse is over an empty line
-		                }
-
-		                return tip;
-		            }
-		        };
+				final JTable issuedetails = new JTable(issue_dtm);
 				issuedetails.setAutoCreateRowSorter(true);
 				issuedetails.setColumnSelectionAllowed(true);
 				issuedetails.setBounds(20, 15, width, 20);
@@ -1331,8 +1279,6 @@ public class Main {
 				JTextArea lblAbstract = new JTextArea("abstract");
 				lblAbstract.setEditable(false);
 				lblAbstract.setBounds(16, 28, 400, 180);
-				lblAbstract.setOpaque(true);
-				lblAbstract.setBackground(SystemColor.window);
 				panel3.add(lblAbstract);
 				abstractSection.setPreferredSize(new Dimension(320, 200));
 				abstractSection.setBounds(width_small / 2 - 40, 132, width_small / 2, height_small / 2 - 150);
