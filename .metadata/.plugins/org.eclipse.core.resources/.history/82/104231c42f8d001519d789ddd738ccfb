@@ -50,7 +50,7 @@ public class Main {
 	private static Statement stmt = null;
 	private String api_insert_or_replace_statement = "INSERT OR REPLACE INTO API(URL,ACCESS_KEY) VALUES (?,?)";
 	private String settings_insert_or_replace_statement = "INSERT OR REPLACE INTO SETTING(NAME,VALUE) VALUES (?,?)";
-	private int width = 960;
+	private int width = 640;
 	private int height = 600;
 	private Boolean logged_in = true;
 	private static int i_id = 1;
@@ -654,8 +654,8 @@ public class Main {
 						// database_save();
 					}
 				});
-				Object rowData[][] = { { 1, "title", 1, 1, 2015, sdf.format(date), "View","Edit", "Delete" } };
-				Object columnNames[] = { "ID", "Title", "Volume", "Number", "Year", "Date Published","", "", "" };
+				Object rowData[][] = { { 1, "title", 1, 1, 2015, sdf.format(date), "View", "Delete" } };
+				Object columnNames[] = { "ID", "Title", "Volume", "Number", "Year", "Date Published", "", "" };
 				issues.getContentPane().setLayout(null);
 
 				final JButton btnSync = new JButton("Sync");
@@ -756,24 +756,9 @@ public class Main {
 						// ((DefaultTableModel)table.getModel()).removeRow(modelRow);
 					}
 				};
-				Action edit = new AbstractAction() {
-					public void actionPerformed(ActionEvent e) {
-						JTable table = (JTable) e.getSource();
-						int modelRow = Integer.valueOf(e.getActionCommand());
-						int issue_row = table.getSelectedRow();
-						int selectedColumnIndex = 0;
-						Object selectedObject = (Object) table.getModel().getValueAt(issue_row, selectedColumnIndex);
-						int selected_issue = (int) selectedObject;
-						if (!issue_screens.get(selected_issue).isVisible()) {
-							issue(selected_issue);
-						}
-						// /
-						// ((DefaultTableModel)table.getModel()).removeRow(modelRow);
-					}
-				};
+
 				ButtonColumn buttonColumn = new ButtonColumn(issues_table, view, 6);
-				ButtonColumn buttonColumn2 = new ButtonColumn(issues_table, edit, 7);
-				ButtonColumn buttonColumn3 = new ButtonColumn(issues_table, delete, 8);
+				ButtonColumn buttonColumn2 = new ButtonColumn(issues_table, delete, 7);
 
 				JLabel lblIssues = new JLabel("Issues");
 				lblIssues.setBackground(new Color(220, 20, 60));
@@ -848,7 +833,7 @@ public class Main {
 
 						list_issues.put(i_id, 1);
 						issue_screens.put(i_id, new JFrame());
-						Object[] new_row = { i_id, "title", 1, 1, 2015, sdf.format(date), "View","Edit", "Delete" };
+						Object[] new_row = { i_id, "title", 1, 1, 2015, sdf.format(date), "View", "Delete" };
 
 						((DefaultTableModel) issues_table.getModel()).addRow(new_row);
 						issues_table.repaint();
@@ -857,8 +842,6 @@ public class Main {
 				btnAdd.setBounds(width - 150, 112, 117, 25);
 				issues.getContentPane().add(btnAdd);
 				buttonColumn.setMnemonic(KeyEvent.VK_D);
-				buttonColumn2.setMnemonic(KeyEvent.VK_D);
-				buttonColumn3.setMnemonic(KeyEvent.VK_D);
 			}
 		} else {
 			login("dashboard");
@@ -893,9 +876,9 @@ public class Main {
 
 				SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
 				Object rowData[][] = {
-						{ 1, issue_id, 1, "title", 1, "abstract", sdf.format(current), "View","Edit", "Delete" }, };
+						{ 1, issue_id, 1, "title", 1, "abstract", sdf.format(current), "View", "Delete" }, };
 
-				Object columnNames[] = { "ID", "Issue", "Section", "Title", "Pages", "Abstract", "Date Published", "","",
+				Object columnNames[] = { "ID", "Issue", "Section", "Title", "Pages", "Abstract", "Date Published", "",
 						"" };
 
 				articles.getContentPane().setLayout(null);
@@ -996,23 +979,10 @@ public class Main {
 						// ((DefaultTableModel)table.getModel()).removeRow(modelRow);
 					}
 				};
-				Action edit = new AbstractAction() {
-					public void actionPerformed(ActionEvent e) {
-						JTable table = (JTable) e.getSource();
 
-						int modelRow = Integer.valueOf(e.getActionCommand());
-						int article_row = table.getSelectedRow();
-						int selectedColumnIndex = 0;
-						Object selectedObject = (Object) table.getModel().getValueAt(article_row, selectedColumnIndex);
-						int selected_article = (int) selectedObject;
-						article(issue_id, selected_article);
-						// /
-						// ((DefaultTableModel)table.getModel()).removeRow(modelRow);
-					}
-				};
 				ButtonColumn buttonColumn = new ButtonColumn(article_table, view, 7);
-				ButtonColumn buttonColumn2 = new ButtonColumn(article_table, edit, 8);
-				ButtonColumn buttonColumn3 = new ButtonColumn(article_table, delete,9);
+				ButtonColumn buttonColumn = new ButtonColumn(article_table, edit, 8);
+				ButtonColumn buttonColumn2 = new ButtonColumn(article_table, delete,9);
 
 				JLabel lblArticles = new JLabel("Articles");
 				lblArticles.setBackground(new Color(128, 128, 128));
@@ -1058,7 +1028,6 @@ public class Main {
 				articles.getContentPane().add(btnClose);
 				buttonColumn.setMnemonic(KeyEvent.VK_D);
 				buttonColumn2.setMnemonic(KeyEvent.VK_D);
-				buttonColumn3.setMnemonic(KeyEvent.VK_D);
 				ImageIcon db_icon = new ImageIcon("src/lib/db_xxs.png");
 				JButton btnSaveData = new JButton(db_icon);
 				btnSaveData.setFont(new Font("Dialog", Font.BOLD, 24));
@@ -1101,7 +1070,7 @@ public class Main {
 						list_issues.replace(issue_id, a_id);
 						Date current = new Date();
 						SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
-						Object[] new_row = { a_id, issue_id, 1, "title", 1, "abstract", sdf.format(current), "View","Edit",
+						Object[] new_row = { a_id, issue_id, 1, "title", 1, "abstract", sdf.format(current), "View",
 								"Delete" };
 						HashMap<Integer, JFrame> issue_articles = article_screens.get(issue_id);
 						issue_articles.put(a_id, new JFrame());
