@@ -49,7 +49,7 @@ public class Main {
 	private static Statement stmt = null;
 	private String api_insert_or_replace_statement = "INSERT OR REPLACE INTO API(URL,ACCESS_KEY) VALUES (?,?)";
 	private String settings_insert_or_replace_statement = "INSERT OR REPLACE INTO SETTING(NAME,VALUE) VALUES (?,?)";
-	private int width = 800;
+	private int width = 640;
 	private int height = 600;
 	private Boolean logged_in = true;
 	private static int i_id = 1;
@@ -730,7 +730,7 @@ public class Main {
 						int issue_row = table.getSelectedRow();
 						int selectedColumnIndex = 0;
 						Object selectedObject = (Object) table.getModel().getValueAt(issue_row, selectedColumnIndex);
-						int selected_issue=(int) selectedObject;
+						int selected_issue = (int) selectedObject;
 						if (!issue_screens.get(selected_issue).isVisible()) {
 							issue(selected_issue);
 						}
@@ -775,13 +775,13 @@ public class Main {
 						database_save();
 					}
 				});
-				btnSaveData.setBounds(26, height - 115, 70, 40);
+				btnSaveData.setBounds(26, height - 117, 70, 40);
 				issues.getContentPane().add(btnSaveData);
 
 				JLabel lblUpdateDb = new JLabel("Update");
 				lblUpdateDb.setForeground(Color.WHITE);
 				lblUpdateDb.setHorizontalAlignment(SwingConstants.CENTER);
-				lblUpdateDb.setBounds(26, height - 130, 70, 15);
+				lblUpdateDb.setBounds(26, height - 132, 70, 15);
 				issues.getContentPane().add(lblUpdateDb);
 
 				Panel footer_border = new Panel();
@@ -821,7 +821,7 @@ public class Main {
 						issues_table.repaint();
 					}
 				});
-				btnAdd.setBounds(width - 150, 109, 117, 25);
+				btnAdd.setBounds(width - 150, 112, 117, 25);
 				issues.getContentPane().add(btnAdd);
 				buttonColumn.setMnemonic(KeyEvent.VK_D);
 			}
@@ -860,6 +860,8 @@ public class Main {
 				Object rowData[][] = { { 1,issue_id,1, "title",1,"abstract",sdf.format(current), "View", "Delete" },};
 				 
 				Object columnNames[] = { "ID","Issue", "Section", "Title", "Pages", "Abstract", "Date Published", "", "" };
+			
+				
 				articles.getContentPane().setLayout(null);
 
 				final JButton btnSync = new JButton("Sync");
@@ -868,7 +870,7 @@ public class Main {
 
 				JScrollPane scrollPane = new JScrollPane();
 				scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
-				scrollPane.setBounds(30, height/16*7, width - 60, (height - 130)-(height/16*7)-10);
+				scrollPane.setBounds(15, height/16*7, width - 30, (height - 130)-(height/16*7)-10);
 				articles.getContentPane().add(scrollPane);
 
 				DefaultTableModel dtm = new DefaultTableModel(rowData, columnNames);
@@ -947,9 +949,9 @@ public class Main {
 
 				JLabel lblArticles = new JLabel("Articles");
 				lblArticles.setBackground(new Color(128, 128, 128));
-				lblArticles.setFont(new Font("Dialog", Font.BOLD, 28));
+				lblArticles.setFont(new Font("Dialog", Font.BOLD, 26));
 				lblArticles.setForeground(new Color(240, 255, 255));
-				lblArticles.setBounds(40, height/16*7-35, 180, 30);
+				lblArticles.setBounds(25, height/16*7-32, 180, 30);
 				lblArticles.setOpaque(true);
 				articles.getContentPane().add(lblArticles);
 
@@ -997,12 +999,12 @@ public class Main {
 						database_save();
 					}
 				});
-				btnSaveData.setBounds(26, height - 115, 70, 40);
+				btnSaveData.setBounds(26, height - 117, 70, 40);
 				articles.getContentPane().add(btnSaveData);
 				JLabel lblUpdateDb = new JLabel("Update");
 				lblUpdateDb.setForeground(Color.WHITE);
 				lblUpdateDb.setHorizontalAlignment(SwingConstants.CENTER);
-				lblUpdateDb.setBounds(26, height - 130, 70, 15);
+				lblUpdateDb.setBounds(26, height - 132, 70, 15);
 				articles.getContentPane().add(lblUpdateDb);
 				Panel footer_border = new Panel();
 				footer_border.setBackground(new Color(0, 139, 139));
@@ -1039,36 +1041,88 @@ public class Main {
 						article_table.repaint();
 					}
 				});
-				btnAdd.setBounds(width - 150, height/16*7-30, 117, 25);
+				btnAdd.setBounds(width - 150, height/16*7-27, 117, 25);
 				articles.getContentPane().add(btnAdd);
 				issue_screens.put(i_id, articles);
 				
 				JPanel panel3 = new JPanel();
 				panel3.setBackground(SystemColor.window);
-				panel3.setBounds(30, 108,width -60,( height/16)*2);
+				panel3.setBounds(20, 108,width -40,( height/16)*2);
 				articles.getContentPane().add(panel3);
 				panel3.setLayout(null);
 				panel3.setAutoscrolls(true);
+				int space= 0;
 
-
-				panel3.setPreferredSize(new Dimension(320, height / 4));
+				panel3.setPreferredSize(new Dimension(width, height / 8));
 				JScrollPane abstractSection = new JScrollPane(panel3);
 				panel3.setAutoscrolls(true);
+				/*
+				JLabel lblTitle = new JLabel("Title:");
+				lblTitle.setBounds(space+20, 10, 35, 16);
+				panel3.add(lblTitle);
+				JLabel lblTitleText = new JLabel("Abstract");
+				lblTitleText.setBounds(space+60, 10, 61, 16);
+				panel3.add(lblTitleText);
+				
+				JLabel lblVolume = new JLabel("Volume:");
+				lblVolume.setBounds(space+145, 10, 50, 16);
+				panel3.add(lblVolume);
+				JLabel lblVolumeText = new JLabel("123");
+				lblVolumeText.setBounds(space+200, 10, 25, 16);
+				panel3.add(lblVolumeText);
+				
+				JLabel lblNumber= new JLabel("Number:");
+				lblNumber.setBounds(space+249, 10, 55, 16);
+				panel3.add(lblNumber);
+				JLabel lblNumberText = new JLabel("1");
+				lblNumberText.setBounds(space+310, 10, 25, 16);
+				panel3.add(lblNumberText);
+				
+				JLabel lblYear= new JLabel("Year:");
+				lblYear.setBounds(space+350, 10, 40, 16);
+				panel3.add(lblYear);
+				JLabel lblYearText = new JLabel("2015");
+				lblYearText.setBounds(space+390, 10, 35, 16);
+				panel3.add(lblYearText);
+				
+				JLabel lblDate= new JLabel("Date Published:");
+				lblDate.setBounds(space+449, 10, 100, 16);
+				panel3.add(lblDate);
+				JLabel lblDateText = new JLabel("2015/11/20");
+				lblDateText.setBounds(space+550, 10, 80, 16);
+				panel3.add(lblDateText);*/
+				Date date = new Date();
+				Object issue_rowData[][] = { { 1, "title", 1, 1, 2015, sdf.format(date) } };
+				Object issue_columnNames[] = { "ID", "Title", "Volume", "Number", "Year", "Date Published" };
+			
+				DefaultTableModel issue_dtm = new DefaultTableModel(issue_rowData, issue_columnNames);
 
-				JLabel lblNewLabel_1 = new JLabel("Abstract");
-				lblNewLabel_1.setBounds(16, 6, 61, 16);
-				panel3.add(lblNewLabel_1);
-	
-				abstractSection.setPreferredSize(new Dimension(320, 520));
+				final JTable issuedetails = new JTable(issue_dtm);
+				issuedetails.setAutoCreateRowSorter(true);
+				issuedetails.setColumnSelectionAllowed(true);
+				issuedetails.setBounds(20,15,width,20);
+				issuedetails.setBorder(new BevelBorder(BevelBorder.RAISED, null, null, null, null));
+				issuedetails.setCellSelectionEnabled(true);
+				issuedetails.setRowHeight(23);
+				issuedetails.setEnabled(false);
+				abstractSection.setViewportView(issuedetails);
+				abstractSection.setPreferredSize(new Dimension(320, 205));
 				//(int)((height/32)*5.5)
-				abstractSection.setBounds(30, 110, width -60, height/16*7-146);
+				abstractSection.setBounds(20, height/16*7-106, width-40, 50);
 				// scrollSettings.setViewportView(scrollFrame);
 				articles.getContentPane().add(abstractSection);
+				
+				JLabel lblIssueDetails = new JLabel("Details");
+				lblIssueDetails.setBackground(new Color(128, 128, 128));
+				lblIssueDetails.setFont(new Font("Dialog", Font.BOLD, 26));
+				lblIssueDetails.setForeground(new Color(240, 255, 255));
+				lblIssueDetails.setBounds((width-95)/2, 118, 95, 30);
+				lblIssueDetails.setOpaque(true);
+				articles.getContentPane().add(lblIssueDetails);
 			}
-		/*} else {
-			login("dashboard");
-		}
-	}*/
+	/*
+	 * } else { login("dashboard"); } }
+	 */
 
 	public void article(final int issue_id, int article_id) {
 		if (logged_in) {
@@ -1095,9 +1149,10 @@ public class Main {
 						// database_save();
 					}
 				});
-				Object rowData[][] = { { article_id,"Row1-Column1", "Row1-Column2", "View", "Delete" },};
-				 
-				Object columnNames[] = { "ID","Issue", "Section", "Title", "Pages", "Abstract", "Date Published", "", "" };
+				Object rowData[][] = { { article_id, "Row1-Column1", "Row1-Column2", "View", "Delete" }, };
+
+				Object columnNames[] = { "ID", "Issue", "Section", "Title", "Pages", "Abstract", "Date Published", "",
+						"" };
 				article.getContentPane().setLayout(null);
 
 				JLabel lblArticleDetails = new JLabel("Article Details");
@@ -1109,58 +1164,48 @@ public class Main {
 				lblArticleDetails.setOpaque(true);
 				article.getContentPane().add(lblArticleDetails);
 
-		/*		final JButton btnSync = new JButton("Sync");
-				btnSync.setBounds(width_small - 150, 21, 70, 24);
-				article.getContentPane().add(btnSync);
-
-				final Label internetCheck = new Label("  ONLINE");
-				internetCheck.setFont(new Font("Dialog", Font.BOLD | Font.ITALIC, 12));
-				internetCheck.setBackground(Color.GREEN);
-				internetCheck.setAlignment(1);
-				internetCheck.setForeground(new Color(255, 255, 255));
-				internetCheck.setBounds(width_small - 80, 22, 65, 22);
-				article.getContentPane().add(internetCheck);
-
-				ActionListener taskPerformer1 = new ActionListener() {
-					public void actionPerformed(ActionEvent evt) {
-						try {
-							Socket sock = new Socket();
-							InetSocketAddress addr = new InetSocketAddress("www.google.com", 80);
-							sock.setSoTimeout(500);
-							sock.connect(addr, 3000);
-
-							internetCheck.setBackground(Color.GREEN);
-							internetCheck.setText("ONLINE");
-							btnSync.setEnabled(true);
-							sock.close();
-
-						} catch (Exception e) {
-							internetCheck.setBackground(Color.RED);
-							internetCheck.setText("OFFLINE");
-							btnSync.setEnabled(false);
-						}
-					}
-				};
-				new Timer(delay, taskPerformer1).start();
-				DefaultTableModel model = new DefaultTableModel(rowData, columnNames);
-				Action delete = new AbstractAction() {
-					public void actionPerformed(ActionEvent e) {
-						JTable table = (JTable) e.getSource();
-						int modelRow = Integer.valueOf(e.getActionCommand());
-						JOptionPane.showMessageDialog(null, "Deleted");
-						// /
-						// ((DefaultTableModel)table.getModel()).removeRow(modelRow);
-					}
-				};
-				Action view = new AbstractAction() {
-					public void actionPerformed(ActionEvent e) {
-						JTable table = (JTable) e.getSource();
-						int modelRow = Integer.valueOf(e.getActionCommand());
-						JOptionPane.showMessageDialog(null, modelRow);
-						// /
-						// ((DefaultTableModel)table.getModel()).removeRow(modelRow);
-					}
-				};*/
+				/*
+				 * final JButton btnSync = new JButton("Sync");
+				 * btnSync.setBounds(width_small - 150, 21, 70, 24);
+				 * article.getContentPane().add(btnSync);
+				 * 
+				 * final Label internetCheck = new Label("  ONLINE");
+				 * internetCheck.setFont(new Font("Dialog", Font.BOLD |
+				 * Font.ITALIC, 12)); internetCheck.setBackground(Color.GREEN);
+				 * internetCheck.setAlignment(1);
+				 * internetCheck.setForeground(new Color(255, 255, 255));
+				 * internetCheck.setBounds(width_small - 80, 22, 65, 22);
+				 * article.getContentPane().add(internetCheck);
+				 * 
+				 * ActionListener taskPerformer1 = new ActionListener() { public
+				 * void actionPerformed(ActionEvent evt) { try { Socket sock =
+				 * new Socket(); InetSocketAddress addr = new
+				 * InetSocketAddress("www.google.com", 80);
+				 * sock.setSoTimeout(500); sock.connect(addr, 3000);
+				 * 
+				 * internetCheck.setBackground(Color.GREEN);
+				 * internetCheck.setText("ONLINE"); btnSync.setEnabled(true);
+				 * sock.close();
+				 * 
+				 * } catch (Exception e) {
+				 * internetCheck.setBackground(Color.RED);
+				 * internetCheck.setText("OFFLINE"); btnSync.setEnabled(false);
+				 * } } }; new Timer(delay, taskPerformer1).start();
+				 * DefaultTableModel model = new DefaultTableModel(rowData,
+				 * columnNames); Action delete = new AbstractAction() { public
+				 * void actionPerformed(ActionEvent e) { JTable table = (JTable)
+				 * e.getSource(); int modelRow =
+				 * Integer.valueOf(e.getActionCommand());
+				 * JOptionPane.showMessageDialog(null, "Deleted"); // / //
+				 * ((DefaultTableModel)table.getModel()).removeRow(modelRow); }
+				 * }; Action view = new AbstractAction() { public void
+				 * actionPerformed(ActionEvent e) { JTable table = (JTable)
+				 * e.getSource(); int modelRow =
+				 * Integer.valueOf(e.getActionCommand());
+				 * JOptionPane.showMessageDialog(null, modelRow); // / //
+				 * ((DefaultTableModel)table.getModel()).removeRow(modelRow); }
+				 * };
+				 */
 
 				JButton btnGoBack = new JButton("Close");
 				btnGoBack.addActionListener(new ActionListener() {
@@ -1210,7 +1255,7 @@ public class Main {
 
 				JPanel panel3 = new JPanel();
 				panel3.setBackground(SystemColor.window);
-				panel3.setBounds(50, 107,320, 307);
+				panel3.setBounds(50, 107, 320, 307);
 				article.getContentPane().add(panel3);
 				panel3.setLayout(null);
 				panel3.setAutoscrolls(true);
@@ -1230,7 +1275,7 @@ public class Main {
 				JLabel lblNewLabel_1 = new JLabel("Abstract");
 				lblNewLabel_1.setBounds(16, 6, 61, 16);
 				panel3.add(lblNewLabel_1);
-			
+
 				JTextArea lblAbstract = new JTextArea("abstract");
 				lblAbstract.setEditable(false);
 				lblAbstract.setBounds(16, 28, 400, 180);
@@ -1242,7 +1287,7 @@ public class Main {
 
 				JPanel panel6 = new JPanel();
 				panel6.setBackground(SystemColor.window);
-				panel6.setBounds(50, 107, 180*2, 307);
+				panel6.setBounds(50, 107, 180 * 2, 307);
 				article.getContentPane().add(panel6);
 				panel6.setLayout(null);
 				panel6.setAutoscrolls(true);
@@ -1255,7 +1300,8 @@ public class Main {
 				panel8.setBackground(new Color(153, 102, 51));
 				panel8.setBounds(0, 110, width_small, 5);
 				article.getContentPane().add(panel8);
-				panel6.setPreferredSize(new Dimension(210*2, settings_height)); // scrollable size
+				panel6.setPreferredSize(new Dimension(210 * 2, settings_height)); // scrollable
+																					// size
 				JScrollPane authorSection = new JScrollPane(panel6);
 				panel6.setAutoscrolls(true);
 
@@ -1263,12 +1309,13 @@ public class Main {
 				lblNewLabel_3.setBounds(6, 6, 156, 16);
 				panel6.add(lblNewLabel_3);
 
-				JTextArea lblAuthorInfo = new JTextArea( "First Name: Pete\tFirst Name: Bob 2 \nLast Name: User\tLast Name: User 2 \n ");
+				JTextArea lblAuthorInfo = new JTextArea(
+						"First Name: Pete\tFirst Name: Bob 2 \nLast Name: User\tLast Name: User 2 \n ");
 				lblAuthorInfo.setEditable(false);
-				lblAuthorInfo.setBounds(16, 34, 205*2, 175); // white box
+				lblAuthorInfo.setBounds(16, 34, 205 * 2, 175); // white box
 				panel6.add(lblAuthorInfo);
-				
-				authorSection.setPreferredSize(new Dimension(220*2, 200));
+
+				authorSection.setPreferredSize(new Dimension(220 * 2, 200));
 				authorSection.setBounds(width_small / 2 - 40, 132 + height_small / 2 - 130, width_small / 2,
 						height_small / 2 - 150);
 				// scrollSettings.setViewportView(scrollFrame);
@@ -1279,8 +1326,6 @@ public class Main {
 				panel.add(lblIssues);
 				lblIssues.setFont(new Font("Dialog", Font.BOLD, 14));
 				lblIssues.setForeground(Color.BLACK);
-
-	
 
 				JLabel lblIssue = new JLabel("Issue:");
 				lblIssue.setBounds(24, 48, 94, 30);
@@ -1303,14 +1348,14 @@ public class Main {
 				Date current = new Date();
 
 				SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
-				
+
 				JLabel lblDate = new JLabel(sdf.format(current));
 				lblDate.setVerticalAlignment(SwingConstants.TOP);
 				lblDate.setForeground(Color.BLACK);
 				lblDate.setFont(new Font("Dialog", Font.BOLD, 14));
 				lblDate.setBounds(160, 203, 125, 30);
 				panel.add(lblDate);
-				
+
 				JLabel lblArticleId = new JLabel("1");
 				lblArticleId.setBounds(160, 19, 94, 30);
 				panel.add(lblArticleId);
@@ -1336,7 +1381,7 @@ public class Main {
 				lblTitle.setFont(new Font("Dialog", Font.BOLD, 14));
 				lblTitle.setBounds(24, 115, 94, 30);
 				panel.add(lblTitle);
-				
+
 				Panel panel9 = new Panel();
 				panel9.setBackground(new Color(153, 102, 51));
 				panel9.setBounds(85, 118, 180, 80);
@@ -1346,7 +1391,7 @@ public class Main {
 				lblTitleText.setFont(new Font("Dialog", Font.BOLD, 14));
 				panel9.add(lblTitleText);
 				JScrollPane titleSection = new JScrollPane(lblTitleText);
-				titleSection.setPreferredSize(new Dimension(300*2, 200));
+				titleSection.setPreferredSize(new Dimension(300 * 2, 200));
 				titleSection.setBounds(85, 113, 225, 50);
 				titleSection.add(panel9);
 				titleSection.createHorizontalScrollBar();
