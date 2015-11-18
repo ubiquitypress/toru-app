@@ -1496,45 +1496,14 @@ public class Main {
 				lblNewLabel_3.setBounds(6, 6, 156, 16);
 				panel6.add(lblNewLabel_3);
 				
-				ArrayList<Author> authors = current_article.getAuthors();
-				int author_x=16;
-				int author_y=34;
-				int separation_horizontal=205;
-				int separation_vertical=30;
-				int label_field_separation=4;
-				for(int i=0;i<authors.size();i++){
-					separation_horizontal=205*i;
-					author_x=author_x+separation_horizontal;
-					Author author=authors.get(i);
-					JLabel field_label = new JLabel("First name:");
-					field_label.setBounds(author_x, author_y, 75, 30); // white box
-					field_label.setOpaque(true);
-					panel6.add(field_label);
-					JLabel field = new JLabel(author.getFirst_name());
-					field.setBounds(author_x+75+label_field_separation, author_y, 100, 30); // white box
-					field.setOpaque(true);
-					panel6.add(field);
-					author_y=author_y+separation_vertical;
-					field_label = new JLabel("Last name:");
-					field_label.setBounds(author_x, author_y, 75, 30); // white box
-					field_label.setOpaque(true);
-					panel6.add(field_label);
-					field = new JLabel(author.getLast_name());
-					field.setBounds(author_x+75+label_field_separation, author_y, 100, 30); // white box
-					field.setOpaque(true);
-					panel6.add(field);
-					author_y=author_y+separation_vertical;
-					author_y=34;
-					author_x=16;
-					
-				}			
-				/*JTextArea lblAuthorInfo = new JTextArea(
+				
+				JTextArea lblAuthorInfo = new JTextArea(
 						"First Name: Pete\tFirst Name: Bob 2 \nLast Name: User\tLast Name: User 2 \n ");
 				lblAuthorInfo.setEditable(false);
 				lblAuthorInfo.setBounds(16, 34, 205 * 2, 175); // white box
 				lblAuthorInfo.setOpaque(true);
 				lblAuthorInfo.setBackground(SystemColor.window);
-				panel6.add(lblAuthorInfo);*/
+				panel6.add(lblAuthorInfo);
 
 				authorSection.setPreferredSize(new Dimension(220 * 2, 200));
 				authorSection.setBounds(width_small / 2 - 40, 132 + height_small / 2 - 130, width_small / 2,
@@ -1982,9 +1951,7 @@ public class Main {
 						for(int i=0;i<updated_authors.size();i++){
 						Author author = updated_authors.get(i);
 						HashMap<Integer,JTextField> a_fields=author_fields.get(updated_authors.get(i).getId());
-						author.setFirst_name(a_fields.get(1).getText());
-						author.setLast_name(a_fields.get(2).getText());
-						updated_authors.set(i, author);
+						author.setFirst_name(a_fields.get(1));
 						}
 						a.setAuthors(updated_authors);
 						issue_storage.get(issue_id).update_article(a.getId(),a);

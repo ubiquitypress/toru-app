@@ -1505,6 +1505,7 @@ public class Main {
 				for(int i=0;i<authors.size();i++){
 					separation_horizontal=205*i;
 					author_x=author_x+separation_horizontal;
+					HashMap<Integer,JTextField> author_components = new 	HashMap<Integer,JTextField>();
 					Author author=authors.get(i);
 					JLabel field_label = new JLabel("First name:");
 					field_label.setBounds(author_x, author_y, 75, 30); // white box

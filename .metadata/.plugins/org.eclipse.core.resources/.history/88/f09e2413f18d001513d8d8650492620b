@@ -37,7 +37,7 @@ public class Article {
 	public int getId() {
 		return id;
 	}
-	public void setAuthors(ArrayList<Author> authors) {
+	public ArrayList<Author> setAuthors(ArrayList<Author> authors) {
 		this.authors=authors;
 	}
 	public ArrayList<Author> getAuthors() {

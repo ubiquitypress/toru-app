@@ -1496,6 +1496,7 @@ public class Main {
 				lblNewLabel_3.setBounds(6, 6, 156, 16);
 				panel6.add(lblNewLabel_3);
 				
+				final HashMap<Integer,HashMap<Integer,JTextField>> author_fields= new HashMap<Integer,HashMap<Integer,JTextField>> ();
 				ArrayList<Author> authors = current_article.getAuthors();
 				int author_x=16;
 				int author_y=34;
@@ -1505,6 +1506,7 @@ public class Main {
 				for(int i=0;i<authors.size();i++){
 					separation_horizontal=205*i;
 					author_x=author_x+separation_horizontal;
+					HashMap<Integer,JTextField> author_components = new 	HashMap<Integer,JTextField>();
 					Author author=authors.get(i);
 					JLabel field_label = new JLabel("First name:");
 					field_label.setBounds(author_x, author_y, 75, 30); // white box
@@ -1523,6 +1525,7 @@ public class Main {
 					field.setBounds(author_x+75+label_field_separation, author_y, 100, 30); // white box
 					field.setOpaque(true);
 					panel6.add(field);
+					author_fields.put(author.getId(),author_components);
 					author_y=author_y+separation_vertical;
 					author_y=34;
 					author_x=16;
