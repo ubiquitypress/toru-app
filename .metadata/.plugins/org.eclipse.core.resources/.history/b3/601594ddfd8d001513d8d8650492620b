@@ -1047,14 +1047,6 @@ public class Main {
 				Action actionSubmit = new AbstractAction() {
 					@Override
 					public void actionPerformed(ActionEvent e) {
-						current_issue.setTitle(title.getText());
-						current_issue.setVolume(Integer.parseInt(volume.getText()));
-						current_issue.setNumber(Integer.parseInt(number.getText()));
-						current_issue.setYear(Integer.parseInt(year.getText()));
-						current_issue.setDate_published(datePicker.getDate());
-						edit_issue.dispose();
-						issue_storage.put(issue_id, current_issue);
-						issues.dispose();
 						dashboard();
 							
 		
@@ -1063,8 +1055,6 @@ public class Main {
 				title.addActionListener(actionSubmit);
 				volume.addActionListener(actionSubmit);
 				number.addActionListener(actionSubmit);
-				year.addActionListener(actionSubmit);
-				datePicker.addActionListener(actionSubmit);
 				btnSubmit.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
 							current_issue.setTitle(title.getText());

@@ -60,7 +60,7 @@ public class Main {
 	private int width = 800;
 	private int height = 600;
 	private Boolean logged_in = true;
-	private static int i_id = 0;
+	private static int i_id = 1;
 
 	/*
 	 * Initial setup test
@@ -640,13 +640,15 @@ public class Main {
 
 			if (issues == null || !issues.isVisible()) {
 				Date date = new Date();
-			//	Issue issue = new Issue(i_id, "title", 1, 1, 2015, "title", 1, 1, 2015, date);
+				Issue issue = new Issue(i_id, "title", 1, 1, 2015, "title", 1, 1, 2015, date);
 				// Issue Table [title, volume, number, year, show_title,
 				// show_volume,
 				// show_number, show_year, date_published]
 				issues = new JFrame();
 				issues.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-				
+				list_issues.put(i_id, 1);
+				issue_storage.put(1, issue);
+				issue_screens.put(1, new JFrame());
 				if (height >= 480 && width >= 640) {
 					issues.setSize(width, height);
 				} else {
@@ -674,27 +676,28 @@ public class Main {
 				for (int id : issue_keys) {
 					Issue row_issue=issue_storage.get(id);
 					ArrayList<Object> data = new ArrayList<Object>();
-					issue_screens.put(id, new JFrame());
-					article_screens.put(id, new HashMap<Integer, JFrame>());
-					
+					issue_articles.put(id, new JFrame());
 
-					data.add(Integer.toString(row_issue.getId()));
-					data.add(row_issue.getTitle());
-					data.add(Integer.toString(row_issue.getVolume()));
-					data.add(Integer.toString(row_issue.getNumber()));
-					data.add(Integer.toString(row_issue.getYear()));
-				    data.add(sdf.format(row_issue.getDate_published()));
+					data.add(Integer.toString(current_articles.get(id).getId()));
+					data.add(Integer.toString(current_articles.get(id).getIssue_fk().getId()));
+					data.add(Integer.toString((current_articles.get(id).getSection_id())));
+					data.add(current_articles.get(id).getTitle());
+					data.add(Integer.toString(current_articles.get(id).getPages()));
+					data.add(current_articles.get(id).getAbstract_text());
+					data.add(sdf.format(current));
 					data.add("View");
 					data.add("Edit");
 					data.add("Delete");
-					Object[] row = { row_issue.getId(),row_issue.getTitle(), row_issue.getVolume(),
-							row_issue.getNumber(),row_issue.getYear(),
-							sdf.format(row_issue.getDate_published()), "View", "Edit", "Delete" };
+					Object[] row = { current_articles.get(id).getId(), current_articles.get(id).getIssue_fk().getId(),
+							current_articles.get(id).getSection_id(), current_articles.get(id).getTitle(),
+							current_articles.get(id).getPages(), current_articles.get(id).getAbstract_text(),
+							sdf.format(current), "View", "Edit", "Delete" };
 					rows[i] = row;
 					i++;
 					rowData.add(data);
 
 				}
+				article_screens.put(issue_id, issue_articles);
 				Object columnNames[] = { "ID", "Title", "Volume", "Number", "Year", "Date Published", "", "", "" };
 				issues.getContentPane().setLayout(null);
 
@@ -707,7 +710,7 @@ public class Main {
 				scrollPane.setBounds(20, 140, width - 40, height - 285);
 				issues.getContentPane().add(scrollPane);
 
-				DefaultTableModel dtm = new DefaultTableModel(rows, columnNames);
+				DefaultTableModel dtm = new DefaultTableModel(rowData, columnNames);
 
 				issues_table = new JTable(dtm) {
 					// **** Source:
@@ -770,7 +773,7 @@ public class Main {
 					}
 				};
 				new Timer(delay, taskPerformer1).start();
-				DefaultTableModel model = new DefaultTableModel(rows, columnNames);
+				DefaultTableModel model = new DefaultTableModel(rowData, columnNames);
 				Action delete = new AbstractAction() {
 					public void actionPerformed(ActionEvent e) {
 						JTable table = (JTable) e.getSource();
@@ -949,7 +952,7 @@ public class Main {
 				}
 
 				height_small = (int) (640 - (640* (5 / 100)));
-				final JFrame edit_issue = new JFrame();
+				JFrame edit_issue = new JFrame();
 				issue_screens.put(issue_id, edit_issue);
 				edit_issue.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 				edit_issue.getContentPane().setBackground(new Color(128, 128, 128));
@@ -1009,52 +1012,12 @@ public class Main {
 				lblnumber.setForeground(new Color(245, 255, 250));
 				lblnumber.setBounds(80, 300, width_small - 161, 16);
 				edit_issue.getContentPane().add(lblnumber);
-				
-				final JTextField year = new JTextField();
-				year.setColumns(10);
-				year.setText(Integer.toString(current_issue.getYear()));
-				year.setBounds(100, 364, width_small - 200, 26);
-				edit_issue.getContentPane().add(year);
-				JLabel lblyear = new JLabel("Year");
-				lblyear.setHorizontalAlignment(SwingConstants.CENTER);
-				lblyear.setForeground(new Color(245, 255, 250));
-				lblyear.setBounds(80, 347, width_small - 161, 16);
-				edit_issue.getContentPane().add(lblyear);
-				
-				SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
-				JLabel lblDatePublished = new JLabel("Date Published");
-				lblDatePublished.setHorizontalAlignment(SwingConstants.CENTER);
-				lblDatePublished.setForeground(new Color(245, 255, 250));
-				lblDatePublished.setBounds(80, 394, width_small - 161, 16);
-				edit_issue.add(lblDatePublished);
-				
-				final JXDatePicker datePicker = new JXDatePicker();
-				datePicker.setFormats(sdf);
-			
-				datePicker.addActionListener(new ActionListener() {
-					public void actionPerformed(ActionEvent e) {
-						System.out.println(datePicker.getDate());
-					}
-				});;
-				datePicker.setDate(current_issue.getDate_published());
-				datePicker.setBounds(100, 410, width_small - 200, 30);
-				// panel.add(label);
-				edit_issue.add(datePicker);
-				
-				
+
 				JButton btnSubmit = new JButton("Save");
 			
 				Action actionSubmit = new AbstractAction() {
 					@Override
 					public void actionPerformed(ActionEvent e) {
-						current_issue.setTitle(title.getText());
-						current_issue.setVolume(Integer.parseInt(volume.getText()));
-						current_issue.setNumber(Integer.parseInt(number.getText()));
-						current_issue.setYear(Integer.parseInt(year.getText()));
-						current_issue.setDate_published(datePicker.getDate());
-						edit_issue.dispose();
-						issue_storage.put(issue_id, current_issue);
-						issues.dispose();
 						dashboard();
 							
 		
@@ -1063,16 +1026,11 @@ public class Main {
 				title.addActionListener(actionSubmit);
 				volume.addActionListener(actionSubmit);
 				number.addActionListener(actionSubmit);
-				year.addActionListener(actionSubmit);
-				datePicker.addActionListener(actionSubmit);
 				btnSubmit.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
 							current_issue.setTitle(title.getText());
 							current_issue.setVolume(Integer.parseInt(volume.getText()));
 							current_issue.setNumber(Integer.parseInt(number.getText()));
-							current_issue.setYear(Integer.parseInt(year.getText()));
-							current_issue.setDate_published(datePicker.getDate());
-							edit_issue.dispose();
 							issue_storage.put(issue_id, current_issue);
 							issues.dispose();
 							dashboard();
@@ -1474,10 +1432,7 @@ public class Main {
 				 * 80, 16); panel3.add(lblDateText);
 				 */
 				Date date = new Date();
-				Issue row_issue = issue_storage.get(issue_id);
-				Object issue_rowData[][] = { { row_issue.getId(),row_issue.getTitle(), row_issue.getVolume(),
-					row_issue.getNumber(),row_issue.getYear(),
-					sdf.format(row_issue.getDate_published()) } };
+				Object issue_rowData[][] = { { 1, "title", 1, 1, 2015, sdf.format(date) } };
 				Object issue_columnNames[] = { "ID", "Title", "Volume", "Number", "Year", "Date Published" };
 
 				DefaultTableModel issue_dtm = new DefaultTableModel(issue_rowData, issue_columnNames);

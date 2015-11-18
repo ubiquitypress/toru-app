@@ -949,7 +949,7 @@ public class Main {
 				}
 
 				height_small = (int) (640 - (640* (5 / 100)));
-				final JFrame edit_issue = new JFrame();
+				JFrame edit_issue = new JFrame();
 				issue_screens.put(issue_id, edit_issue);
 				edit_issue.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 				edit_issue.getContentPane().setBackground(new Color(128, 128, 128));
@@ -1047,14 +1047,6 @@ public class Main {
 				Action actionSubmit = new AbstractAction() {
 					@Override
 					public void actionPerformed(ActionEvent e) {
-						current_issue.setTitle(title.getText());
-						current_issue.setVolume(Integer.parseInt(volume.getText()));
-						current_issue.setNumber(Integer.parseInt(number.getText()));
-						current_issue.setYear(Integer.parseInt(year.getText()));
-						current_issue.setDate_published(datePicker.getDate());
-						edit_issue.dispose();
-						issue_storage.put(issue_id, current_issue);
-						issues.dispose();
 						dashboard();
 							
 		
@@ -1063,8 +1055,6 @@ public class Main {
 				title.addActionListener(actionSubmit);
 				volume.addActionListener(actionSubmit);
 				number.addActionListener(actionSubmit);
-				year.addActionListener(actionSubmit);
-				datePicker.addActionListener(actionSubmit);
 				btnSubmit.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
 							current_issue.setTitle(title.getText());
@@ -1072,7 +1062,7 @@ public class Main {
 							current_issue.setNumber(Integer.parseInt(number.getText()));
 							current_issue.setYear(Integer.parseInt(year.getText()));
 							current_issue.setDate_published(datePicker.getDate());
-							edit_issue.dispose();
+							
 							issue_storage.put(issue_id, current_issue);
 							issues.dispose();
 							dashboard();

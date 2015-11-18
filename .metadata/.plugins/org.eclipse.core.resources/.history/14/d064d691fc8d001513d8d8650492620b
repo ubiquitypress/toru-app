@@ -949,7 +949,7 @@ public class Main {
 				}
 
 				height_small = (int) (640 - (640* (5 / 100)));
-				final JFrame edit_issue = new JFrame();
+				JFrame edit_issue = new JFrame();
 				issue_screens.put(issue_id, edit_issue);
 				edit_issue.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 				edit_issue.getContentPane().setBackground(new Color(128, 128, 128));
@@ -1009,52 +1009,12 @@ public class Main {
 				lblnumber.setForeground(new Color(245, 255, 250));
 				lblnumber.setBounds(80, 300, width_small - 161, 16);
 				edit_issue.getContentPane().add(lblnumber);
-				
-				final JTextField year = new JTextField();
-				year.setColumns(10);
-				year.setText(Integer.toString(current_issue.getYear()));
-				year.setBounds(100, 364, width_small - 200, 26);
-				edit_issue.getContentPane().add(year);
-				JLabel lblyear = new JLabel("Year");
-				lblyear.setHorizontalAlignment(SwingConstants.CENTER);
-				lblyear.setForeground(new Color(245, 255, 250));
-				lblyear.setBounds(80, 347, width_small - 161, 16);
-				edit_issue.getContentPane().add(lblyear);
-				
-				SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
-				JLabel lblDatePublished = new JLabel("Date Published");
-				lblDatePublished.setHorizontalAlignment(SwingConstants.CENTER);
-				lblDatePublished.setForeground(new Color(245, 255, 250));
-				lblDatePublished.setBounds(80, 394, width_small - 161, 16);
-				edit_issue.add(lblDatePublished);
-				
-				final JXDatePicker datePicker = new JXDatePicker();
-				datePicker.setFormats(sdf);
-			
-				datePicker.addActionListener(new ActionListener() {
-					public void actionPerformed(ActionEvent e) {
-						System.out.println(datePicker.getDate());
-					}
-				});;
-				datePicker.setDate(current_issue.getDate_published());
-				datePicker.setBounds(100, 410, width_small - 200, 30);
-				// panel.add(label);
-				edit_issue.add(datePicker);
-				
-				
+
 				JButton btnSubmit = new JButton("Save");
 			
 				Action actionSubmit = new AbstractAction() {
 					@Override
 					public void actionPerformed(ActionEvent e) {
-						current_issue.setTitle(title.getText());
-						current_issue.setVolume(Integer.parseInt(volume.getText()));
-						current_issue.setNumber(Integer.parseInt(number.getText()));
-						current_issue.setYear(Integer.parseInt(year.getText()));
-						current_issue.setDate_published(datePicker.getDate());
-						edit_issue.dispose();
-						issue_storage.put(issue_id, current_issue);
-						issues.dispose();
 						dashboard();
 							
 		
@@ -1063,16 +1023,11 @@ public class Main {
 				title.addActionListener(actionSubmit);
 				volume.addActionListener(actionSubmit);
 				number.addActionListener(actionSubmit);
-				year.addActionListener(actionSubmit);
-				datePicker.addActionListener(actionSubmit);
 				btnSubmit.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
 							current_issue.setTitle(title.getText());
 							current_issue.setVolume(Integer.parseInt(volume.getText()));
 							current_issue.setNumber(Integer.parseInt(number.getText()));
-							current_issue.setYear(Integer.parseInt(year.getText()));
-							current_issue.setDate_published(datePicker.getDate());
-							edit_issue.dispose();
 							issue_storage.put(issue_id, current_issue);
 							issues.dispose();
 							dashboard();
