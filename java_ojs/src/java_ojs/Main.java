@@ -920,9 +920,7 @@ public class Main {
 					articles.setSize(640, 480);
 				}
 				HashMap<Integer, JFrame> issue_articles = new HashMap<Integer, JFrame>();
-				issue_articles.put(1, new JFrame());
-				article_screens.put(1, issue_articles);
-				articles.getContentPane().setBackground(new Color(128, 128, 128));
+			articles.getContentPane().setBackground(new Color(128, 128, 128));
 				articles.setVisible(true);
 				articles.setTitle("Issue <" + Integer.toString(issue_id) + ">");
 				articles.addWindowListener(new WindowAdapter() {
@@ -942,7 +940,9 @@ public class Main {
 				int i=0;
 				for (int id : art_keys) {
 					 ArrayList<Object> data = new ArrayList<Object>();
-			
+						issue_articles.put(id, new JFrame());
+						
+						
 					data.add(Integer.toString(current_articles.get(id).getId()));
 					data.add(Integer.toString(current_articles.get(id).getIssue_fk().getId()));
 					data.add(Integer.toString((current_articles.get(id).getSection_id())));
@@ -959,7 +959,7 @@ public class Main {
 					rowData.add(data);
 
 				}
-			
+				article_screens.put(issue_id, issue_articles);
 				Object columnNames[] = { "ID", "Issue", "Section", "Title", "Pages", "Abstract", "Date Published", "",
 						"", "" };
 
@@ -1053,6 +1053,9 @@ public class Main {
 							Issue current_issue=issue_storage.get(issue_id);
 							current_issue.remove_article(selected_article);
 						    issue_storage.put(issue_id, current_issue);
+						    System.out.println("Article ID: "+selected_article+" "+article_screens.get(issue_id).containsKey(selected_article));
+						    System.out.println(article_screens.get(issue_id).size());
+							 
 						    if(article_screens.get(issue_id).get(selected_article).isVisible()){
 							article_screens.get(issue_id).get(selected_article).dispose();}
 							((DefaultTableModel) table.getModel()).removeRow(modelRow);
@@ -1196,8 +1199,10 @@ public class Main {
 						Object[] new_row = { artID, issue_id, 1, "title", 1, "abstract", sdf.format(current), "View",
 								"Edit", "Delete" };
 						HashMap<Integer, JFrame> issue_articles = article_screens.get(issue_id);
+						System.out.println(artID);
 						issue_articles.put(artID, new JFrame());
 						article_screens.put(issue_id, issue_articles);
+						System.out.println(article_screens.get(issue_id).containsKey(artID));
 						((DefaultTableModel) article_table.getModel()).addRow(new_row);
 						article_table.repaint();
 					}
@@ -1293,7 +1298,7 @@ public class Main {
 				lblIssueDetails.setBackground(new Color(128, 128, 128));
 				lblIssueDetails.setFont(new Font("Dialog", Font.BOLD, 26));
 				lblIssueDetails.setForeground(new Color(240, 255, 255));
-				lblIssueDetails.setBounds((width - 95) / 2, 118, 95, 30);
+				lblIssueDetails.setBounds((width - 95) / 2, 118, 125, 30);
 				lblIssueDetails.setOpaque(true);
 				articles.getContentPane().add(lblIssueDetails);
 			}
