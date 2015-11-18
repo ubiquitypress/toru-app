@@ -1968,9 +1968,9 @@ public class Main {
 				panel.add(lblSectionId);
 				final JLabel label = new JLabel();
 				label.setText("Choose Date by selecting below.");
-				final JXDatePicker datePicker = new JXDatePicker();
+				final JXDatePicker datePicker = new JXDatePicker(current_article.getDate_published());
 				datePicker.setFormats(sdf);
-			
+				datePicker.setDate();
 				datePicker.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
 						label.setText(datePicker.getDate().toString());
@@ -1978,7 +1978,7 @@ public class Main {
 					}
 				});
 				label.setBounds(160, 250, 100, 25);
-				datePicker.setDate(current_article.getDate_published());
+				datePicker.setDate(current);
 				datePicker.setBounds(156, 198, 160, 30);
 				// panel.add(label);
 				panel.add(datePicker);

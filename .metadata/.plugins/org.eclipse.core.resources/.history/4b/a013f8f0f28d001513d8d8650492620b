@@ -7,7 +7,6 @@ import java.awt.event.ActionListener;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.sql.*;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -922,7 +921,7 @@ public class Main {
 					articles.setSize(640, 480);
 				}
 				HashMap<Integer, JFrame> issue_articles = new HashMap<Integer, JFrame>();
-				articles.getContentPane().setBackground(new Color(128, 128, 128));
+			articles.getContentPane().setBackground(new Color(128, 128, 128));
 				articles.setVisible(true);
 				articles.setTitle("Issue <" + Integer.toString(issue_id) + ">");
 				articles.addWindowListener(new WindowAdapter() {
@@ -937,13 +936,14 @@ public class Main {
 				Issue current_issue = issue_storage.get(issue_id);
 				HashMap<Integer, Article> current_articles = current_issue.getArticles_list();
 				Set<Integer> art_keys = current_articles.keySet();
-				ArrayList<List<Object>> rowData = new ArrayList<List<Object>>();
+				ArrayList<List<Object>> rowData = new ArrayList<List<Object>>() ;
 				Object[][] rows = new Object[art_keys.size()][10];
-				int i = 0;
+				int i=0;
 				for (int id : art_keys) {
-					ArrayList<Object> data = new ArrayList<Object>();
-					issue_articles.put(id, new JFrame());
-
+					 ArrayList<Object> data = new ArrayList<Object>();
+						issue_articles.put(id, new JFrame());
+						
+						
 					data.add(Integer.toString(current_articles.get(id).getId()));
 					data.add(Integer.toString(current_articles.get(id).getIssue_fk().getId()));
 					data.add(Integer.toString((current_articles.get(id).getSection_id())));
@@ -954,11 +954,8 @@ public class Main {
 					data.add("View");
 					data.add("Edit");
 					data.add("Delete");
-					Object[] row = { current_articles.get(id).getId(), current_articles.get(id).getIssue_fk().getId(),
-							current_articles.get(id).getSection_id(), current_articles.get(id).getTitle(),
-							current_articles.get(id).getPages(), current_articles.get(id).getAbstract_text(),
-							sdf.format(current), "View", "Edit", "Delete" };
-					rows[i] = row;
+					Object[] row = {current_articles.get(id).getId(),current_articles.get(id).getIssue_fk().getId(),current_articles.get(id).getSection_id(),current_articles.get(id).getTitle(),current_articles.get(id).getPages(),current_articles.get(id).getAbstract_text(),sdf.format(current),"View","Edit","Delete"};
+					rows[i]=row;
 					i++;
 					rowData.add(data);
 
@@ -1054,16 +1051,14 @@ public class Main {
 							Object selectedObject = (Object) table.getModel().getValueAt(article_row,
 									selectedColumnIndex);
 							int selected_article = (int) selectedObject;
-							Issue current_issue = issue_storage.get(issue_id);
+							Issue current_issue=issue_storage.get(issue_id);
 							current_issue.remove_article(selected_article);
-							issue_storage.put(issue_id, current_issue);
-							System.out.println("Article ID: " + selected_article + " "
-									+ article_screens.get(issue_id).containsKey(selected_article));
-							System.out.println(article_screens.get(issue_id).size());
-
-							if (article_screens.get(issue_id).get(selected_article).isVisible()) {
-								article_screens.get(issue_id).get(selected_article).dispose();
-							}
+						    issue_storage.put(issue_id, current_issue);
+						    System.out.println("Article ID: "+selected_article+" "+article_screens.get(issue_id).containsKey(selected_article));
+						    System.out.println(article_screens.get(issue_id).size());
+							 
+						    if(article_screens.get(issue_id).get(selected_article).isVisible()){
+							article_screens.get(issue_id).get(selected_article).dispose();}
 							((DefaultTableModel) table.getModel()).removeRow(modelRow);
 							table.repaint();
 						}
@@ -1198,12 +1193,13 @@ public class Main {
 						Date current = new Date();
 						SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
 						Issue current_issue = issue_storage.get(issue_id);
-						int artID = current_issue.getCurrent_aricle_id();
-						current_issue.add_article(new Article("title", 1, 1, "abstract", current, current_issue));
-						current_issue.add_author(artID, new Author(1, "Peter", "M.", "FakeAuthor",
-								"fake_author@fakeaddress.com", "affiliation", "bio", "orcid", "testing", "gb"));
-						current_issue.add_author(artID, new Author(2, "Paul", "C.", "FakeAuthor",
-								"fake_author@fakeaddress.com", "affiliation", "bio", "orcid", "testing", "gb"));
+						int artID=current_issue.getCurrent_aricle_id();
+						current_issue.add_article(new Article("title", 1, 1,
+								"abstract", current, current_issue));
+						current_issue.add_author(artID, new Author(1, "Peter", "M.","FakeAuthor","fake_author@fakeaddress.com", "affiliation", "bio",
+			"orcid", "testing", "gb"));
+						current_issue.add_author(artID, new Author(2, "Paul", "C.","FakeAuthor","fake_author@fakeaddress.com", "affiliation", "bio",
+								"orcid", "testing", "gb"));
 						issue_storage.put(issue_id, current_issue);
 						Object[] new_row = { artID, issue_id, 1, "title", 1, "abstract", sdf.format(current), "View",
 								"Edit", "Delete" };
@@ -1318,10 +1314,10 @@ public class Main {
 	}
 
 	public void article(final int issue_id, final int article_id) {
-		if (logged_in) {
+	if (logged_in) {
 			if (article_screens.containsKey(issue_id) && article_screens.get(issue_id).containsKey(article_id)
 					&& !article_screens.get(issue_id).get(article_id).isVisible()) {
-				Article current_article = issue_storage.get(issue_id).getArticles_list().get(article_id);
+				Article current_article=issue_storage.get(issue_id).getArticles_list().get(article_id);
 				int width_small = 0;
 				int height_small = 0;
 				if (height >= 768 && width >= 640) {
@@ -1499,52 +1495,46 @@ public class Main {
 				JLabel lblNewLabel_3 = new JLabel("Author Information");
 				lblNewLabel_3.setBounds(6, 6, 156, 16);
 				panel6.add(lblNewLabel_3);
-
+				
 				ArrayList<Author> authors = current_article.getAuthors();
-				int author_x = 16;
-				int author_y = 34;
-				int separation_horizontal = 205;
-				int separation_vertical = 30;
-				int label_field_separation = 4;
-				for (int i = 0; i < authors.size(); i++) {
-					separation_horizontal = 205 * i;
-					author_x = author_x + separation_horizontal;
-					Author author = authors.get(i);
+				int author_x=16;
+				int author_y=34;
+				int separation_horizontal=205;
+				int separation_vertical=30;
+				int label_field_separation=4;
+				for(int i=0;i<authors.size();i++){
+					separation_horizontal=205*i;
+					author_x=author_x+separation_horizontal;
+					Author author=authors.get(i);
 					JLabel field_label = new JLabel("First name:");
-					field_label.setBounds(author_x, author_y, 75, 30); // white
-																		// box
+					field_label.setBounds(author_x, author_y, 75, 30); // white box
 					field_label.setOpaque(true);
 					panel6.add(field_label);
 					JLabel field = new JLabel(author.getFirst_name());
-					field.setBounds(author_x + 75 + label_field_separation, author_y, 100, 30); // white
-																								// box
+					field.setBounds(author_x+75+label_field_separation, author_y, 100, 30); // white box
 					field.setOpaque(true);
 					panel6.add(field);
-					author_y = author_y + separation_vertical;
+					author_y=author_y+separation_vertical;
 					field_label = new JLabel("Last name:");
-					field_label.setBounds(author_x, author_y, 75, 30); // white
-																		// box
+					field_label.setBounds(author_x, author_y, 75, 30); // white box
 					field_label.setOpaque(true);
 					panel6.add(field_label);
 					field = new JLabel(author.getLast_name());
-					field.setBounds(author_x + 75 + label_field_separation, author_y, 100, 30); // white
-																								// box
+					field.setBounds(author_x+75+label_field_separation, author_y, 100, 30); // white box
 					field.setOpaque(true);
 					panel6.add(field);
-					author_y = author_y + separation_vertical;
-					author_y = 34;
-					author_x = 16;
-
-				}
-				/*
-				 * JTextArea lblAuthorInfo = new JTextArea(
-				 * "First Name: Pete\tFirst Name: Bob 2 \nLast Name: User\tLast Name: User 2 \n "
-				 * ); lblAuthorInfo.setEditable(false);
-				 * lblAuthorInfo.setBounds(16, 34, 205 * 2, 175); // white box
-				 * lblAuthorInfo.setOpaque(true);
-				 * lblAuthorInfo.setBackground(SystemColor.window);
-				 * panel6.add(lblAuthorInfo);
-				 */
+					author_y=author_y+separation_vertical;
+					author_y=34;
+					author_x=16;
+					
+				}			
+				/*JTextArea lblAuthorInfo = new JTextArea(
+						"First Name: Pete\tFirst Name: Bob 2 \nLast Name: User\tLast Name: User 2 \n ");
+				lblAuthorInfo.setEditable(false);
+				lblAuthorInfo.setBounds(16, 34, 205 * 2, 175); // white box
+				lblAuthorInfo.setOpaque(true);
+				lblAuthorInfo.setBackground(SystemColor.window);
+				panel6.add(lblAuthorInfo);*/
 
 				authorSection.setPreferredSize(new Dimension(220 * 2, 200));
 				authorSection.setBounds(width_small / 2 - 40, 132 + height_small / 2 - 130, width_small / 2,
@@ -1580,14 +1570,14 @@ public class Main {
 
 				SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
 
-				JLabel lblDate = new JLabel(sdf.format(current_article.getDate_published()));
+				JLabel lblDate = new JLabel(sdf.format(current));
 				lblDate.setVerticalAlignment(SwingConstants.TOP);
 				lblDate.setForeground(Color.BLACK);
 				lblDate.setFont(new Font("Dialog", Font.BOLD, 14));
 				lblDate.setBounds(160, 203, 125, 30);
 				panel.add(lblDate);
 
-				JLabel lblArticleId = new JLabel(Integer.toString(current_article.getId()));
+				JLabel lblArticleId = new JLabel("1");
 				lblArticleId.setBounds(160, 19, 94, 30);
 				panel.add(lblArticleId);
 				lblArticleId.setForeground(Color.BLACK);
@@ -1600,7 +1590,7 @@ public class Main {
 				lblPages.setBounds(24, 165, 94, 30);
 				panel.add(lblPages);
 
-				JLabel lblPageNum = new JLabel(Integer.toString(current_article.getPages()));
+				JLabel lblPageNum = new JLabel("1");
 				lblPageNum.setVerticalAlignment(SwingConstants.TOP);
 				lblPageNum.setForeground(Color.BLACK);
 				lblPageNum.setFont(new Font("Dialog", Font.BOLD, 14));
@@ -1616,7 +1606,7 @@ public class Main {
 				Panel panel9 = new Panel();
 				panel9.setBackground(new Color(153, 102, 51));
 				panel9.setBounds(85, 118, 180, 80);
-				JTextArea lblTitleText = new JTextArea(current_article.getTitle());
+				JTextArea lblTitleText = new JTextArea("title");
 				lblTitleText.setEditable(false);
 				lblTitleText.setOpaque(true);
 				lblTitleText.setBackground(SystemColor.window);
@@ -1631,7 +1621,7 @@ public class Main {
 				titleSection.createHorizontalScrollBar();
 				panel.add(titleSection);
 
-				JLabel lblSectionId = new JLabel(Integer.toString(current_article.getSection_id()));
+				JLabel lblSectionId = new JLabel("1");
 				lblSectionId.setForeground(Color.BLACK);
 				lblSectionId.setFont(new Font("Dialog", Font.BOLD, 14));
 				lblSectionId.setBounds(160, 81, 94, 30);
@@ -1658,8 +1648,8 @@ public class Main {
 		if (logged_in) {
 			if (article_screens.containsKey(issue_id) && article_screens.get(issue_id).containsKey(article_id)
 					&& !article_screens.get(issue_id).get(article_id).isVisible()) {
-				Article current_article = issue_storage.get(issue_id).getArticles_list().get(article_id);
-
+				Article current_article=issue_storage.get(issue_id).getArticles_list().get(article_id);
+				
 				int width_small = 0;
 				int height_small = 0;
 				if (height >= 768 && width >= 640) {
@@ -1802,7 +1792,7 @@ public class Main {
 				lblNewLabel_1.setBounds(16, 6, 61, 16);
 				panel3.add(lblNewLabel_1);
 
-				final JTextArea lblAbstract = new JTextArea(current_article.getAbstract_text());
+				JTextArea lblAbstract = new JTextArea("abstract");
 				lblAbstract.setEditable(true);
 				lblAbstract.setBounds(16, 28, 400, 180);
 				lblAbstract.setOpaque(true);
@@ -1827,55 +1817,50 @@ public class Main {
 				JLabel lblNewLabel_3 = new JLabel("Author Information");
 				lblNewLabel_3.setBounds(6, 6, 156, 16);
 				panel6.add(lblNewLabel_3);
-				final HashMap<Integer, HashMap<Integer, JTextField>> author_fields = new HashMap<Integer, HashMap<Integer, JTextField>>();
+				final HashMap<Integer,HashMap<Integer,JTextField>> author_fields= new HashMap<Integer,HashMap<Integer,JTextField>> ();
 				ArrayList<Author> authors = current_article.getAuthors();
-				int author_x = 16;
-				int author_y = 34;
-				int separation_horizontal = 205;
-				int separation_vertical = 30;
-				int label_field_separation = 4;
-				for (int i = 0; i < authors.size(); i++) {
-					separation_horizontal = 205 * i;
-					author_x = author_x + separation_horizontal;
-					HashMap<Integer, JTextField> author_components = new HashMap<Integer, JTextField>();
-					Author author = authors.get(i);
+				int author_x=16;
+				int author_y=34;
+				int separation_horizontal=205;
+				int separation_vertical=30;
+				int label_field_separation=4;
+				for(int i=0;i<authors.size();i++){
+					separation_horizontal=205*i;
+					author_x=author_x+separation_horizontal;
+					HashMap<Integer,JTextField> author_components = new 	HashMap<Integer,JTextField>();
+					Author author=authors.get(i);
 					JLabel field_label = new JLabel("First name:");
-					field_label.setBounds(author_x, author_y, 75, 30); // white
-																		// box
+					field_label.setBounds(author_x, author_y, 75, 30); // white box
 					field_label.setOpaque(true);
 					panel6.add(field_label);
 					JTextField field = new JTextField(author.getFirst_name());
-					field.setBounds(author_x + 75 + label_field_separation, author_y, 100, 30); // white
-																								// box
+					field.setBounds(author_x+75+label_field_separation, author_y, 100, 30); // white box
 					field.setOpaque(true);
 					panel6.add(field);
 					author_components.put(1, field);
-					author_y = author_y + separation_vertical;
+					author_y=author_y+separation_vertical;
 					field_label = new JLabel("Last name:");
-					field_label.setBounds(author_x, author_y, 75, 30); // white
-																		// box
+					field_label.setBounds(author_x, author_y, 75, 30); // white box
 					field_label.setOpaque(true);
 					panel6.add(field_label);
 					field = new JTextField(author.getLast_name());
-					field.setBounds(author_x + 75 + label_field_separation, author_y, 100, 30); // white
-																								// box
+					field.setBounds(author_x+75+label_field_separation, author_y, 100, 30); // white box
 					field.setOpaque(true);
 					panel6.add(field);
 					author_components.put(2, field);
-					author_fields.put(author.getId(), author_components);
-					author_y = author_y + separation_vertical;
-					author_y = 34;
-					author_x = 16;
-
-				}
+					author_fields.put(author.getId(),author_components);
+					author_y=author_y+separation_vertical;
+					author_y=34;
+					author_x=16;
+					
+				}			
 				System.out.println(author_fields.size());
-				/*
-				 * JTextArea lblAuthorInfo = new JTextArea(
-				 * "First Name: Pete\tFirst Name: Bob 2 \nLast Name: User\tLast Name: User 2 \n "
-				 * ); lblAuthorInfo.setEditable(true);
-				 * lblAuthorInfo.setBounds(16, 34, 205 * 2, 175); // white box
-				 * lblAuthorInfo.setOpaque(true); panel6.add(lblAuthorInfo)
-				 */
+				/*JTextArea lblAuthorInfo = new JTextArea(
+						"First Name: Pete\tFirst Name: Bob 2 \nLast Name: User\tLast Name: User 2 \n ");
+				lblAuthorInfo.setEditable(true);
+				lblAuthorInfo.setBounds(16, 34, 205 * 2, 175); // white box
+				lblAuthorInfo.setOpaque(true);
+				panel6.add(lblAuthorInfo)*/
 
 				authorSection.setPreferredSize(new Dimension(220 * 2, 200));
 				authorSection.setBounds(width_small / 2 - 40, 132 + height_small / 2 - 130, width_small / 2,
@@ -1909,7 +1894,7 @@ public class Main {
 				panel.add(lblDatePublished);
 				Date current = new Date();
 
-				final SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
+				SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
 
 				/*
 				 * JLabel lblDate = new JLabel(sdf.format(current));
@@ -1932,7 +1917,7 @@ public class Main {
 				lblPages.setBounds(24, 165, 94, 30);
 				panel.add(lblPages);
 
-				final JTextField lblPageNum = new JTextField(Integer.toString(current_article.getPages()));
+				JTextField lblPageNum = new JTextField(Integer.toString(current_article.getPages()));
 				lblPageNum.setForeground(Color.BLACK);
 				lblPageNum.setFont(new Font("Dialog", Font.BOLD, 14));
 				lblPageNum.setBounds(156, 171, 125, 30);
@@ -1961,7 +1946,7 @@ public class Main {
 				titleSection.createHorizontalScrollBar();
 				panel.add(titleSection);
 
-				final JTextField lblSectionId = new JTextField(Integer.toString(current_article.getSection_id()));
+				JTextField lblSectionId = new JTextField(Integer.toString(current_article.getSection_id()));
 				lblSectionId.setForeground(Color.BLACK);
 				lblSectionId.setFont(new Font("Dialog", Font.BOLD, 14));
 				lblSectionId.setBounds(156, 81, 94, 30);
@@ -1969,8 +1954,6 @@ public class Main {
 				final JLabel label = new JLabel();
 				label.setText("Choose Date by selecting below.");
 				final JXDatePicker datePicker = new JXDatePicker();
-				datePicker.setFormats(sdf);
-			
 				datePicker.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
 						label.setText(datePicker.getDate().toString());
@@ -1978,7 +1961,7 @@ public class Main {
 					}
 				});
 				label.setBounds(160, 250, 100, 25);
-				datePicker.setDate(current_article.getDate_published());
+				datePicker.setDate(current);
 				datePicker.setBounds(156, 198, 160, 30);
 				// panel.add(label);
 				panel.add(datePicker);
@@ -1993,23 +1976,20 @@ public class Main {
 				btnSave.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent arg0) {
 						article.dispose();
-						Article a = issue_storage.get(issue_id).getArticles_list().get(article_id);
+						Article a=issue_storage.get(issue_id).getArticles_list().get(article_id);
 						a.setTitle(lblTitleText.getText());
-						ArrayList<Author> updated_authors = a.getAuthors();
-						for (int i = 0; i < updated_authors.size(); i++) {
-							Author author = updated_authors.get(i);
-							HashMap<Integer, JTextField> a_fields = author_fields.get(updated_authors.get(i).getId());
-							author.setFirst_name(a_fields.get(1).getText());
-							author.setLast_name(a_fields.get(2).getText());
-							updated_authors.set(i, author);
+						ArrayList<Author> updated_authors=a.getAuthors();
+						for(int i=0;i<updated_authors.size();i++){
+						Author author = updated_authors.get(i);
+						HashMap<Integer,JTextField> a_fields=author_fields.get(updated_authors.get(i).getId());
+						author.setFirst_name(a_fields.get(1).getText());
+						author.setLast_name(a_fields.get(2).getText());
+						updated_authors.set(i, author);
 						}
 						a.setAuthors(updated_authors);
 						a.setAbstract_text(lblAbstract.getText());
-						a.setSection_id(Integer.parseInt(lblSectionId.getText()));
-						a.setPages(Integer.parseInt(lblPageNum.getText()));
-						a.setDate_published(datePicker.getDate());
-
-						issue_storage.get(issue_id).update_article(a.getId(), a);
+						a.setDate_published(Date.parse(lblDatePublished.getText()));
+						issue_storage.get(issue_id).update_article(a.getId(),a);
 						article(issue_id, article_id);
 					}
 				});

@@ -1802,7 +1802,7 @@ public class Main {
 				lblNewLabel_1.setBounds(16, 6, 61, 16);
 				panel3.add(lblNewLabel_1);
 
-				final JTextArea lblAbstract = new JTextArea(current_article.getAbstract_text());
+				final JTextArea lblAbstract = new JTextArea("abstract");
 				lblAbstract.setEditable(true);
 				lblAbstract.setBounds(16, 28, 400, 180);
 				lblAbstract.setOpaque(true);
@@ -1970,7 +1970,7 @@ public class Main {
 				label.setText("Choose Date by selecting below.");
 				final JXDatePicker datePicker = new JXDatePicker();
 				datePicker.setFormats(sdf);
-			
+				datePicker.setDate(current_article.getDate_published());
 				datePicker.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
 						label.setText(datePicker.getDate().toString());
@@ -1978,7 +1978,7 @@ public class Main {
 					}
 				});
 				label.setBounds(160, 250, 100, 25);
-				datePicker.setDate(current_article.getDate_published());
+				datePicker.setDate(current);
 				datePicker.setBounds(156, 198, 160, 30);
 				// panel.add(label);
 				panel.add(datePicker);

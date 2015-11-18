@@ -1587,7 +1587,7 @@ public class Main {
 				lblDate.setBounds(160, 203, 125, 30);
 				panel.add(lblDate);
 
-				JLabel lblArticleId = new JLabel(Integer.toString(current_article.getId()));
+				JLabel lblArticleId = new JLabel("1");
 				lblArticleId.setBounds(160, 19, 94, 30);
 				panel.add(lblArticleId);
 				lblArticleId.setForeground(Color.BLACK);
@@ -1600,7 +1600,7 @@ public class Main {
 				lblPages.setBounds(24, 165, 94, 30);
 				panel.add(lblPages);
 
-				JLabel lblPageNum = new JLabel(Integer.toString(current_article.getPages()));
+				JLabel lblPageNum = new JLabel("1");
 				lblPageNum.setVerticalAlignment(SwingConstants.TOP);
 				lblPageNum.setForeground(Color.BLACK);
 				lblPageNum.setFont(new Font("Dialog", Font.BOLD, 14));
@@ -1616,7 +1616,7 @@ public class Main {
 				Panel panel9 = new Panel();
 				panel9.setBackground(new Color(153, 102, 51));
 				panel9.setBounds(85, 118, 180, 80);
-				JTextArea lblTitleText = new JTextArea(current_article.getTitle());
+				JTextArea lblTitleText = new JTextArea("title");
 				lblTitleText.setEditable(false);
 				lblTitleText.setOpaque(true);
 				lblTitleText.setBackground(SystemColor.window);
@@ -1631,7 +1631,7 @@ public class Main {
 				titleSection.createHorizontalScrollBar();
 				panel.add(titleSection);
 
-				JLabel lblSectionId = new JLabel(Integer.toString(current_article.getSection_id()));
+				JLabel lblSectionId = new JLabel("1");
 				lblSectionId.setForeground(Color.BLACK);
 				lblSectionId.setFont(new Font("Dialog", Font.BOLD, 14));
 				lblSectionId.setBounds(160, 81, 94, 30);
@@ -1802,7 +1802,7 @@ public class Main {
 				lblNewLabel_1.setBounds(16, 6, 61, 16);
 				panel3.add(lblNewLabel_1);
 
-				final JTextArea lblAbstract = new JTextArea(current_article.getAbstract_text());
+				final JTextArea lblAbstract = new JTextArea("abstract");
 				lblAbstract.setEditable(true);
 				lblAbstract.setBounds(16, 28, 400, 180);
 				lblAbstract.setOpaque(true);
@@ -1932,7 +1932,7 @@ public class Main {
 				lblPages.setBounds(24, 165, 94, 30);
 				panel.add(lblPages);
 
-				final JTextField lblPageNum = new JTextField(Integer.toString(current_article.getPages()));
+				JTextField lblPageNum = new JTextField(Integer.toString(current_article.getPages()));
 				lblPageNum.setForeground(Color.BLACK);
 				lblPageNum.setFont(new Font("Dialog", Font.BOLD, 14));
 				lblPageNum.setBounds(156, 171, 125, 30);
@@ -1961,7 +1961,7 @@ public class Main {
 				titleSection.createHorizontalScrollBar();
 				panel.add(titleSection);
 
-				final JTextField lblSectionId = new JTextField(Integer.toString(current_article.getSection_id()));
+				JTextField lblSectionId = new JTextField(Integer.toString(current_article.getSection_id()));
 				lblSectionId.setForeground(Color.BLACK);
 				lblSectionId.setFont(new Font("Dialog", Font.BOLD, 14));
 				lblSectionId.setBounds(156, 81, 94, 30);
@@ -1970,7 +1970,6 @@ public class Main {
 				label.setText("Choose Date by selecting below.");
 				final JXDatePicker datePicker = new JXDatePicker();
 				datePicker.setFormats(sdf);
-			
 				datePicker.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
 						label.setText(datePicker.getDate().toString());
@@ -1978,7 +1977,7 @@ public class Main {
 					}
 				});
 				label.setBounds(160, 250, 100, 25);
-				datePicker.setDate(current_article.getDate_published());
+				datePicker.setDate(current);
 				datePicker.setBounds(156, 198, 160, 30);
 				// panel.add(label);
 				panel.add(datePicker);
@@ -2005,8 +2004,7 @@ public class Main {
 						}
 						a.setAuthors(updated_authors);
 						a.setAbstract_text(lblAbstract.getText());
-						a.setSection_id(Integer.parseInt(lblSectionId.getText()));
-						a.setPages(Integer.parseInt(lblPageNum.getText()));
+
 						a.setDate_published(datePicker.getDate());
 
 						issue_storage.get(issue_id).update_article(a.getId(), a);
