@@ -1084,8 +1084,12 @@ public class Main {
 	
 				btnSubmit.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
-						i_id++;
 					
+						if (current_id==i_id+1){
+								i_id=current_id;}
+						else if (current_id==i_id){
+							i_id++;
+						}
 						Issue issue =new Issue(i_id,title.getText(),Integer.parseInt(volume.getText()),Integer.parseInt(number.getText()),Integer.parseInt(year.getText()),datePicker.getDate());
 					// JOptionPane.showMessageDialog(null, "Deleted");
 						SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
@@ -1113,7 +1117,7 @@ public class Main {
 				edit_issue.getContentPane().add(btnSubmit);
 
 				JLabel lblApiInformation = new JLabel("Issue Details");
-				lblApiInformation.setBackground(new Color(218, 207,2));
+				lblApiInformation.setBackground(new Color(2, 216, 138));
 				lblApiInformation.setHorizontalAlignment(SwingConstants.CENTER);
 				lblApiInformation.setForeground(new Color(255, 255, 255));
 				lblApiInformation.setFont(new Font("Dialog", Font.BOLD, 20));
@@ -1132,11 +1136,11 @@ public class Main {
 				edit_issue.repaint();
 				issue_screens.put(i_id, edit_issue);
 				Panel panel_2 = new Panel();
-				panel_2.setBackground(new Color(192, 183,3));
+				panel_2.setBackground(new Color(6, 141, 91));
 				panel_2.setBounds(0, 150, width_small, 5);
 				edit_issue.getContentPane().add(panel_2);
 				Panel panel_1 = new Panel();
-				panel_1.setBackground(new Color(218, 207,2));
+				panel_1.setBackground(new Color(2, 216, 138));
 				panel_1.setBounds(0, 105, width_small, 45);
 				edit_issue.getContentPane().add(panel_1);
 			

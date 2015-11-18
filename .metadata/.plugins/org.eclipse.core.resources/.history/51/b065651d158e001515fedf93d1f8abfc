@@ -1113,7 +1113,7 @@ public class Main {
 				edit_issue.getContentPane().add(btnSubmit);
 
 				JLabel lblApiInformation = new JLabel("Issue Details");
-				lblApiInformation.setBackground(new Color(218, 207,2));
+				lblApiInformation.setBackground(new Color(2, 216, 138));
 				lblApiInformation.setHorizontalAlignment(SwingConstants.CENTER);
 				lblApiInformation.setForeground(new Color(255, 255, 255));
 				lblApiInformation.setFont(new Font("Dialog", Font.BOLD, 20));
