@@ -28,6 +28,7 @@ import javax.swing.table.DefaultTableModel;
 import org.jdesktop.swingx.JXDatePicker;
 
 import models.Article;
+import models.Author;
 import models.Issue;
 
 import java.awt.Label;
@@ -1195,6 +1196,10 @@ public class Main {
 						int artID=current_issue.getCurrent_aricle_id();
 						current_issue.add_article(new Article("title", 1, 1,
 								"abstract", current, current_issue));
+						current_issue.add_author(artID, new Author(1, "Peter", "M.","FakeAuthor","fake_author@fakeaddress.com", "affiliation", "bio",
+			"orcid", "testing", "gb"));
+						current_issue.add_author(artID, new Author(2, "Paul", "C.","FakeAuthor","fake_author@fakeaddress.com", "affiliation", "bio",
+								"orcid", "testing", "gb"));
 						issue_storage.put(issue_id, current_issue);
 						Object[] new_row = { artID, issue_id, 1, "title", 1, "abstract", sdf.format(current), "View",
 								"Edit", "Delete" };
@@ -1309,9 +1314,10 @@ public class Main {
 	}
 
 	public void article(final int issue_id, final int article_id) {
-		if (logged_in) {
+	if (logged_in) {
 			if (article_screens.containsKey(issue_id) && article_screens.get(issue_id).containsKey(article_id)
 					&& !article_screens.get(issue_id).get(article_id).isVisible()) {
+				Article current_article=issue_storage.get(issue_id).getArticles_list().get(article_id);
 				int width_small = 0;
 				int height_small = 0;
 				if (height >= 768 && width >= 640) {
@@ -1463,7 +1469,7 @@ public class Main {
 				lblNewLabel_1.setBounds(16, 6, 61, 16);
 				panel3.add(lblNewLabel_1);
 
-				JTextArea lblAbstract = new JTextArea("abstract");
+				JTextArea lblAbstract = new JTextArea(current_article.getAbstract_text());
 				lblAbstract.setEditable(false);
 				lblAbstract.setBounds(16, 28, 400, 180);
 				lblAbstract.setOpaque(true);
@@ -1489,7 +1495,8 @@ public class Main {
 				JLabel lblNewLabel_3 = new JLabel("Author Information");
 				lblNewLabel_3.setBounds(6, 6, 156, 16);
 				panel6.add(lblNewLabel_3);
-
+				
+				
 				JTextArea lblAuthorInfo = new JTextArea(
 						"First Name: Pete\tFirst Name: Bob 2 \nLast Name: User\tLast Name: User 2 \n ");
 				lblAuthorInfo.setEditable(false);
@@ -1516,7 +1523,7 @@ public class Main {
 				lblIssue.setForeground(Color.BLACK);
 				lblIssue.setFont(new Font("Dialog", Font.BOLD, 14));
 
-				JLabel lblIssueId = new JLabel("34");
+				JLabel lblIssueId = new JLabel(Integer.toString(issue_id));
 				lblIssueId.setBounds(160, 48, 94, 30);
 				panel.add(lblIssueId);
 				lblIssueId.setForeground(Color.BLACK);
@@ -1610,6 +1617,8 @@ public class Main {
 		if (logged_in) {
 			if (article_screens.containsKey(issue_id) && article_screens.get(issue_id).containsKey(article_id)
 					&& !article_screens.get(issue_id).get(article_id).isVisible()) {
+				Article current_article=issue_storage.get(issue_id).getArticles_list().get(article_id);
+				
 				int width_small = 0;
 				int height_small = 0;
 				if (height >= 768 && width >= 640) {
@@ -1777,13 +1786,40 @@ public class Main {
 				JLabel lblNewLabel_3 = new JLabel("Author Information");
 				lblNewLabel_3.setBounds(6, 6, 156, 16);
 				panel6.add(lblNewLabel_3);
-
-				JTextArea lblAuthorInfo = new JTextArea(
+				HashMap<Integer,HashMap<Integer,JTextField>> author_fields= new HashMap<Integer,HashMap<Integer,JTextField>> ();
+				ArrayList<Author> authors = current_article.getAuthors();
+				int author_x=16;
+				int author_y=34;
+				int separation_horizontal=205;
+				int separation_vertical=20;
+				int label_field_separation=4;
+				for(int i=0;i<authors.size();i++){
+					separation_horizontal=205*i;
+					author_x=author_x+separation_horizontal;
+					HashMap<Integer,JTextField> author_components = new 	HashMap<Integer,JTextField>();
+					Author author=authors.get(i);
+					JLabel field_label = new JLabel("First name:");
+					field_label.setBounds(author_x, author_y, 75, 30); // white box
+					field_label.setOpaque(true);
+					panel6.add(field_label);
+					JTextField field = new JTextField(author.getFirst_name());
+					field.setBounds(author_x+75+label_field_separation, author_y, 100, 30); // white box
+					field.setOpaque(true);
+					panel6.add(field);
+					author_components.put(1, field);
+					author_fields.put(i+1,author_components);
+					author_y=author_y+separation_vertical;
+					author_y=34;
+					author_x=16;
+					
+				}			
+				System.out.println(author_fields.size());
+				/*JTextArea lblAuthorInfo = new JTextArea(
 						"First Name: Pete\tFirst Name: Bob 2 \nLast Name: User\tLast Name: User 2 \n ");
 				lblAuthorInfo.setEditable(true);
 				lblAuthorInfo.setBounds(16, 34, 205 * 2, 175); // white box
 				lblAuthorInfo.setOpaque(true);
-				panel6.add(lblAuthorInfo);
+				panel6.add(lblAuthorInfo)*/
 
 				authorSection.setPreferredSize(new Dimension(220 * 2, 200));
 				authorSection.setBounds(width_small / 2 - 40, 132 + height_small / 2 - 130, width_small / 2,
@@ -1803,7 +1839,7 @@ public class Main {
 				lblIssue.setForeground(Color.BLACK);
 				lblIssue.setFont(new Font("Dialog", Font.BOLD, 14));
 
-				JLabel lblIssueId = new JLabel("34");
+				JLabel lblIssueId = new JLabel(Integer.toString(issue_id));
 				lblIssueId.setBounds(160, 48, 94, 30);
 				panel.add(lblIssueId);
 				lblIssueId.setForeground(Color.BLACK);
@@ -1855,7 +1891,7 @@ public class Main {
 				Panel panel9 = new Panel();
 				panel9.setBackground(new Color(153, 102, 51));
 				panel9.setBounds(85, 118, 180, 80);
-				JTextArea lblTitleText = new JTextArea("title");
+				final JTextArea lblTitleText = new JTextArea("title");
 				lblTitleText.setEditable(true);
 				lblTitleText.setOpaque(true);
 				lblTitleText.setForeground(Color.BLACK);
@@ -1899,6 +1935,8 @@ public class Main {
 				btnSave.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent arg0) {
 						article.dispose();
+						Article a=issue_storage.get(issue_id).getArticles_list().get(article_id);
+						a.setTitle(lblTitleText.getText());
 						article(issue_id, article_id);
 					}
 				});

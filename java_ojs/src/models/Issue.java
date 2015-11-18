@@ -138,6 +138,12 @@ public class Issue {
 		articles_list.put(current_article_id,a);
 		current_article_id++;
 	}
+	public void add_author(int article_id,Author a){
+		Article updated=articles_list.get(article_id);
+		updated.add_author(a);		
+		articles_list.put(article_id,updated);
+		current_article_id++;
+	}
 	public void remove_article(int id){
 		articles_list.remove(id);
 	}
