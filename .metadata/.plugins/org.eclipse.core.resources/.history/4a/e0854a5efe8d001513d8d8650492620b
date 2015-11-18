@@ -1088,7 +1088,7 @@ public class Main {
 				edit_issue.getContentPane().add(btnSubmit);
 
 				JLabel lblApiInformation = new JLabel("Issue Details");
-				lblApiInformation.setBackground(new Color(2, 216, 138));
+				lblApiInformation.setBackground(new Color(51, 102, 204));
 				lblApiInformation.setHorizontalAlignment(SwingConstants.CENTER);
 				lblApiInformation.setForeground(new Color(255, 255, 255));
 				lblApiInformation.setFont(new Font("Dialog", Font.BOLD, 20));
@@ -1105,13 +1105,12 @@ public class Main {
 			
 				edit_issue.setVisible(true);// making the frame visible
 
-				
 				Panel panel_2 = new Panel();
-				panel_2.setBackground(new Color(6, 141, 91));
+				panel_2.setBackground(new Color(51, 51, 204));
 				panel_2.setBounds(0, 150, width_small, 5);
 				edit_issue.getContentPane().add(panel_2);
 				Panel panel_1 = new Panel();
-				panel_1.setBackground(new Color(2, 216, 138));
+				panel_1.setBackground(new Color(51, 102, 204));
 				panel_1.setBounds(0, 105, width_small, 45);
 				edit_issue.getContentPane().add(panel_1);
 			}
