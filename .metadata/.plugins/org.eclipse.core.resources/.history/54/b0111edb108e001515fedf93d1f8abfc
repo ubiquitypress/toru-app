@@ -1260,9 +1260,9 @@ public class Main {
 		       
 		        final JButton search = new JButton("Search");
 		        final JButton clear = new JButton("Clear");
-		        search.setBounds(268, height / 16 * 7 - 27, 90, 25);
+		        search.setBounds(290, height / 16 * 7 - 27, 90, 25);
 			       
-		        clear.setBounds(355, height / 16 * 7 - 27, 90, 25);
+		        clear.setBounds(381, height / 16 * 7 - 27, 90, 25);
 			       ;
 		        articles.getContentPane().add(filter);
 		        articles.getContentPane().add(search);

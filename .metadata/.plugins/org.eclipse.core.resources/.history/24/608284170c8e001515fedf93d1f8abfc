@@ -27,9 +27,6 @@ import javax.swing.border.BevelBorder;
 import javax.swing.table.DefaultTableModel;
 
 import org.jdesktop.swingx.JXDatePicker;
-import org.jdesktop.swingx.JXTable;
-import org.jdesktop.swingx.search.Searchable;
-import org.jdesktop.swingx.sort.RowFilters;
 
 import models.Article;
 import models.Author;
@@ -45,7 +42,7 @@ import java.awt.SystemColor;
 public class Main {
 	JFrame login, api, issues, settings;
 	private JTextField access_key, api_url, username;
-	private JXTable issues_table;
+	private JTable issues_table;
 	private int delay = 2000; // milliseconds
 	private static String source_api = "";
 	private static String source_access_key = "";
@@ -733,42 +730,6 @@ public class Main {
 						return tip;
 					}
 				};
-				// reference: https://svn.java.net/svn/swinglabs-demos~svn/trunk/src/java/org/jdesktop/demo/sample/  
-		        final JTextField filter = new JTextField("");
-		        filter.setBounds(50,110,120,25);
-		       
-		        final JButton search = new JButton("Search");
-		        final JButton clear = new JButton("Clear");
-		        search.setBounds(170,110,90,25);
-		        clear.setBounds(258,110,65,25);
-		        issues.getContentPane().add(filter);
-		        issues.getContentPane().add(search);
-		        issues.getContentPane().add(clear);
-		        filter.setAction(new AbstractAction("Search") {
-		            public void actionPerformed(ActionEvent e) {
-		                
-		                String searchString = filter.getText().trim();
-		                if ( searchString.length() > 0 ) {
-		                    issues_table.setRowFilter(RowFilters.regexFilter(0, searchString));
-		                } else {
-		                	issues_table.setRowFilter(null);
-		                }
-		            }
-		        });
-		        search.setAction(new AbstractAction("Search") {
-		            public void actionPerformed(ActionEvent e) {
-		                
-		                String searchString = filter.getText().trim();
-		                if ( searchString.length() > 0 ) {
-		                    issues_table.setRowFilter(RowFilters.regexFilter(0, searchString));
-		                } 
-		            }
-		        });
-		        clear.setAction(new AbstractAction("Clear") {
-		            public void actionPerformed(ActionEvent e) {
-		                	issues_table.setRowFilter(null);
-		            }
-		        });
 				scrollPane.setViewportView(issues_table);
 				issues_table.setColumnSelectionAllowed(true);
 				issues_table.getColumnModel().getColumn(5).setMinWidth(95);
@@ -779,7 +740,7 @@ public class Main {
 				issues_table.setCellSelectionEnabled(true);
 				issues_table.setRowHeight(23);
 				issues_table.setAutoCreateRowSorter(true);
-				 
+
 				final Label internetCheck = new Label("ONLINE");
 				internetCheck.setFont(new Font("Dialog", Font.BOLD | Font.ITALIC, 12));
 				internetCheck.setBackground(Color.GREEN);
@@ -1233,7 +1194,7 @@ public class Main {
 
 				DefaultTableModel dtm = new DefaultTableModel(rows, columnNames);
 
-				final JXTable article_table = new JXTable(dtm) {
+				final JTable article_table = new JTable(dtm) {
 					// **** Source:
 					// http://stackoverflow.com/questions/9467093/how-to-add-a-tooltip-to-a-cell-in-a-jtable
 					// ****//
@@ -1254,44 +1215,6 @@ public class Main {
 						return tip;
 					}
 				};
-				// reference: https://svn.java.net/svn/swinglabs-demos~svn/trunk/src/java/org/jdesktop/demo/sample/  
-		        final JTextField filter = new JTextField("");
-		        filter.setBounds(150, height / 16 * 7 - 27, 117, 25);
-		       
-		        final JButton search = new JButton("Search");
-		        final JButton clear = new JButton("Clear");
-		        search.setBounds(268, height / 16 * 7 - 27, 90, 25);
-			       
-		        clear.setBounds(355, height / 16 * 7 - 27, 90, 25);
-			       ;
-		        articles.getContentPane().add(filter);
-		        articles.getContentPane().add(search);
-		        articles.getContentPane().add(clear);
-		        filter.setAction(new AbstractAction("Search") {
-		            public void actionPerformed(ActionEvent e) {
-		                
-		                String searchString = filter.getText().trim();
-		                if ( searchString.length() > 0 ) {
-		                	article_table.setRowFilter(RowFilters.regexFilter(0, searchString));
-		                } else {
-		                	article_table.setRowFilter(null);
-		                }
-		            }
-		        });
-		        search.setAction(new AbstractAction("Search") {
-		            public void actionPerformed(ActionEvent e) {
-		                
-		                String searchString = filter.getText().trim();
-		                if ( searchString.length() > 0 ) {
-		                	article_table.setRowFilter(RowFilters.regexFilter(0, searchString));
-		                } 
-		            }
-		        });
-		        clear.setAction(new AbstractAction("Clear") {
-		            public void actionPerformed(ActionEvent e) {
-		            	article_table.setRowFilter(null);
-		            }
-		        });
 				article_table.setAutoCreateRowSorter(true);
 				scrollPane.setViewportView(article_table);
 				article_table.getColumnModel().getColumn(6).setMinWidth(50);

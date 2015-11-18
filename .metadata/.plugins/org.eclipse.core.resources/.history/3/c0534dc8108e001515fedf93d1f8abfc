@@ -1256,13 +1256,13 @@ public class Main {
 				};
 				// reference: https://svn.java.net/svn/swinglabs-demos~svn/trunk/src/java/org/jdesktop/demo/sample/  
 		        final JTextField filter = new JTextField("");
-		        filter.setBounds(150, height / 16 * 7 - 27, 117, 25);
+		        filter.setBounds(210, height / 16 * 7 - 27, 117, 25);
 		       
 		        final JButton search = new JButton("Search");
 		        final JButton clear = new JButton("Clear");
-		        search.setBounds(268, height / 16 * 7 - 27, 90, 25);
+		        search.setBounds(330, height / 16 * 7 - 27, 90, 25);
 			       
-		        clear.setBounds(355, height / 16 * 7 - 27, 90, 25);
+		        clear.setBounds(410, height / 16 * 7 - 27, 90, 25);
 			       ;
 		        articles.getContentPane().add(filter);
 		        articles.getContentPane().add(search);
