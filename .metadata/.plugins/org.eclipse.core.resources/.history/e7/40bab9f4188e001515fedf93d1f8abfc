@@ -1377,7 +1377,7 @@ public class Main {
 					Object[] row = { current_articles.get(id).getId(), current_articles.get(id).getIssue_fk().getId(),
 							current_articles.get(id).getSection_id(), current_articles.get(id).getTitle(),
 							current_articles.get(id).getPages(), current_articles.get(id).getAbstract_text(),
-							sdf.format(current_articles.get(id).getDate_published()), "View", "Edit", "Delete" };
+							sdf.format(current), "View", "Edit", "Delete" };
 					rows[i] = row;
 					i++;
 					rowData.add(data);
@@ -2197,12 +2197,15 @@ public class Main {
 
 						if (issue_screens.get(issue_id) == null) {
 							article.dispose();
+							article(issue_id,article_id);
 							issue(issue_id);
 						} else if (!issue_screens.get(issue_id).isVisible()) {
 							article.dispose();
+							article(issue_id,article_id);
 							issue_screens.get(issue_id).setVisible(true);
 						} else {
 							article.dispose();
+							article(issue_id,article_id);
 						}
 					}
 				});
@@ -2516,7 +2519,7 @@ public class Main {
 				lblArticleDetails.setHorizontalAlignment(SwingConstants.CENTER);
 				lblArticleDetails.setFont(new Font("Dialog", Font.BOLD, 20));
 				lblArticleDetails.setForeground(new Color(255, 255, 255));
-				lblArticleDetails.setBackground(new Color(218, 207,2));
+				lblArticleDetails.setBackground(new Color(218, 207,2))
 				lblArticleDetails.setBounds(width_small / 4, 65, width_small / 2, 40);
 				lblArticleDetails.setOpaque(true);
 				article.getContentPane().add(lblArticleDetails);
@@ -2822,11 +2825,11 @@ public class Main {
 				lblSection.setBounds(24, 80, 94, 30);
 				panel.add(lblSection);
 
-				JButton btnSave = new JButton("Create");
+				JButton btnSave = new JButton("Save");
 				btnSave.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent arg0) {
 						issue_screens.get(issue_id).dispose();
-						article.dispose();
+						
 						int a_id = list_issues.get(issue_id) + 1;
 						list_issues.replace(issue_id, a_id);
 						Date current = new Date();

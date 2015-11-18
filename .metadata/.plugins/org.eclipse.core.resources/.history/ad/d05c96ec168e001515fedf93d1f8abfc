@@ -1377,7 +1377,7 @@ public class Main {
 					Object[] row = { current_articles.get(id).getId(), current_articles.get(id).getIssue_fk().getId(),
 							current_articles.get(id).getSection_id(), current_articles.get(id).getTitle(),
 							current_articles.get(id).getPages(), current_articles.get(id).getAbstract_text(),
-							sdf.format(current_articles.get(id).getDate_published()), "View", "Edit", "Delete" };
+							sdf.format(current), "View", "Edit", "Delete" };
 					rows[i] = row;
 					i++;
 					rowData.add(data);
@@ -1650,8 +1650,36 @@ public class Main {
 				JButton btnAdd = new JButton("Add");
 				btnAdd.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
-							add_article(issue_id);
-							
+						int issue_id = Integer.parseInt(lblIssueId.getText());
+						int a_id = list_issues.get(issue_id) + 1;
+						list_issues.replace(issue_id, a_id);
+						Date current = new Date();
+						SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
+						Issue current_issue = issue_storage.get(issue_id);
+						int artID = current_issue.getCurrent_aricle_id();
+						current_issue.add_article(new Article("title", 1, 1, "abstract", current, current_issue));
+						current_issue.add_author(artID, new Author(1, "Peter", "M.", "FakeAuthor",
+								"fake_author@fakeaddress.com", "affiliation", "bio", "orcid", "testing", "gb"));
+						current_issue.add_author(artID, new Author(2, "Paul", "C.", "FakeAuthor",
+								"fake_author@fakeaddress.com", "affiliation", "bio", "orcid", "testing", "gb"));
+						current_issue.add_author(artID, new Author(3, "Celia", "C.", "FakeAuthor",
+								"fake_author@fakeaddress.com", "affiliation", "bio", "orcid", "testing", "gb"));
+						current_issue.add_author(artID, new Author(4, "Sen", "C.", "FakeAuthor",
+								"fake_author@fakeaddress.com", "affiliation", "bio", "orcid", "testing", "gb"));
+						current_issue.add_author(artID, new Author(5, "Chihiro", "C.", "FakeAuthor",
+								"fake_author@fakeaddress.com", "affiliation", "bio", "orcid", "testing", "gb"));
+						current_issue.add_author(artID, new Author(6, "Morty", "C.", "FakeAuthor",
+								"fake_author@fakeaddress.com", "affiliation", "bio", "orcid", "testing", "gb"));
+						issue_storage.put(issue_id, current_issue);
+						Object[] new_row = { artID, issue_id, 1, "title", 1, "abstract", sdf.format(current), "View",
+								"Edit", "Delete" };
+						HashMap<Integer, JFrame> issue_articles = article_screens.get(issue_id);
+						System.out.println(artID);
+						issue_articles.put(artID, new JFrame());
+						article_screens.put(issue_id, issue_articles);
+						System.out.println(article_screens.get(issue_id).containsKey(artID));
+						((DefaultTableModel) article_table.getModel()).addRow(new_row);
+						article_table.repaint();
 					}
 				});
 				btnAdd.setBounds(width - 150, height / 16 * 7 - 27, 117, 25);
@@ -2197,12 +2225,15 @@ public class Main {
 
 						if (issue_screens.get(issue_id) == null) {
 							article.dispose();
+							article(issue_id,article_id);
 							issue(issue_id);
 						} else if (!issue_screens.get(issue_id).isVisible()) {
 							article.dispose();
+							article(issue_id,article_id);
 							issue_screens.get(issue_id).setVisible(true);
 						} else {
 							article.dispose();
+							article(issue_id,article_id);
 						}
 					}
 				});
@@ -2510,13 +2541,17 @@ public class Main {
 						// database_save();
 					}
 				});
+				Object rowData[][] = { { article_id, "Row1-Column1", "Row1-Column2", "View", "Delete" }, };
+
+				Object columnNames[] = { "ID", "Issue", "Section", "Title", "Pages", "Abstract", "Date Published", "",
+						"" };
 				article.getContentPane().setLayout(null);
 
 				JLabel lblArticleDetails = new JLabel("Article Details");
 				lblArticleDetails.setHorizontalAlignment(SwingConstants.CENTER);
 				lblArticleDetails.setFont(new Font("Dialog", Font.BOLD, 20));
 				lblArticleDetails.setForeground(new Color(255, 255, 255));
-				lblArticleDetails.setBackground(new Color(218, 207,2));
+				lblArticleDetails.setBackground(new Color(2, 216, 138));
 				lblArticleDetails.setBounds(width_small / 4, 65, width_small / 2, 40);
 				lblArticleDetails.setOpaque(true);
 				article.getContentPane().add(lblArticleDetails);
@@ -2570,12 +2605,15 @@ public class Main {
 
 						if (issue_screens.get(issue_id) == null) {
 							article.dispose();
+							article(issue_id,article_id);
 							issue(issue_id);
 						} else if (!issue_screens.get(issue_id).isVisible()) {
 							article.dispose();
+							article(issue_id,article_id);
 							issue_screens.get(issue_id).setVisible(true);
 						} else {
 							article.dispose();
+							article(issue_id,article_id);
 						}
 					}
 				});
@@ -2595,15 +2633,13 @@ public class Main {
 				int settings_height = 210 + 30 * (fields - 8);
 
 				Panel panel_1 = new Panel();
-				panel_1.setBackground(new Color(218, 207,2));
+				panel_1.setBackground(new Color(2, 216, 138));
 				panel_1.setBounds(0, 65, width_small, 45);
 				article.getContentPane().add(panel_1);
 
 				Panel panel_2 = new Panel();
-				panel_2.setBackground(new Color(192, 183,3));
+				panel_2.setBackground(new Color(6, 141, 91));
 				panel_2.setBounds(0, 110, width_small, 5);
-				
-				
 				article.getContentPane().add(panel_2);
 				panel.setPreferredSize(new Dimension(320, settings_height));
 				JScrollPane articleSection = new JScrollPane(panel);
@@ -2628,7 +2664,7 @@ public class Main {
 				lblNewLabel_1.setBounds(16, 6, 61, 16);
 				panel3.add(lblNewLabel_1);
 
-				final JTextArea lblAbstract = new JTextArea();
+				final JTextArea lblAbstract = new JTextArea(current_article.getAbstract_text());
 				lblAbstract.setEditable(true);
 				lblAbstract.setBounds(16, 28, 400, 180);
 				lblAbstract.setOpaque(true);
@@ -2653,7 +2689,7 @@ public class Main {
 				lblNewLabel_3.setBounds(15, 6, 156, 16);
 				panel6.add(lblNewLabel_3);
 				final HashMap<Integer, HashMap<Integer, JTextField>> author_fields = new HashMap<Integer, HashMap<Integer, JTextField>>();
-			/*	ArrayList<Author> authors = current_article.getAuthors();
+				ArrayList<Author> authors = current_article.getAuthors();
 				
 				int author_x = 16;
 				int author_y = 60;
@@ -2701,7 +2737,7 @@ public class Main {
 
 				}
 				panel6.setPreferredSize(new Dimension(210 * authors.size(),500)); // scrollable
-				*/
+				
 				System.out.println(author_fields.size());
 				/*
 				 * JTextArea lblAuthorInfo = new JTextArea(
@@ -2711,17 +2747,17 @@ public class Main {
 				 * lblAuthorInfo.setOpaque(true); panel6.add(lblAuthorInfo)
 				 */
 
-				authorSection.setPreferredSize(new Dimension(220 * 1, 200));
+				authorSection.setPreferredSize(new Dimension(220 * authors.size(), 200));
 				authorSection.setBounds(width_small / 2 - 40, 132 + height_small / 2 - 130, width_small / 2,
 						height_small / 2 - 150);
 				// scrollSettings.setViewportView(scrollFrame);
 				article.getContentPane().add(authorSection);
 
-				/*JLabel lblIssues = new JLabel("Article:");
+				JLabel lblIssues = new JLabel("Article:");
 				lblIssues.setBounds(24, 18, 110, 30);
 				panel.add(lblIssues);
 				lblIssues.setFont(new Font("Dialog", Font.BOLD, 14));
-				lblIssues.setForeground(Color.BLACK);*/
+				lblIssues.setForeground(Color.BLACK);
 
 				JLabel lblIssue = new JLabel("Issue:");
 				lblIssue.setBounds(24, 48, 94, 30);
@@ -2751,14 +2787,14 @@ public class Main {
 				 * lblDate.setForeground(Color.BLACK); lblDate.setFont(new
 				 * Font("Dialog", Font.BOLD, 14)); lblDate.setBounds(160, 203,
 				 * 125, 30); panel.add(lblDate);
-				 
+				 */
 
 				JLabel lblArticleId = new JLabel("1");
 				lblArticleId.setBounds(160, 19, 94, 30);
 				panel.add(lblArticleId);
 				lblArticleId.setForeground(Color.BLACK);
 				lblArticleId.setFont(new Font("Dialog", Font.BOLD, 14));
-				lblArticleId.setText(Integer.toString(article_id));*/
+				lblArticleId.setText(Integer.toString(article_id));
 
 				JLabel lblPages = new JLabel("Pages:");
 				lblPages.setForeground(Color.BLACK);
@@ -2766,7 +2802,7 @@ public class Main {
 				lblPages.setBounds(24, 165, 94, 30);
 				panel.add(lblPages);
 
-				final JTextField lblPageNum = new JTextField();
+				final JTextField lblPageNum = new JTextField(Integer.toString(current_article.getPages()));
 				lblPageNum.setForeground(Color.BLACK);
 				lblPageNum.setFont(new Font("Dialog", Font.BOLD, 14));
 				lblPageNum.setBounds(156, 171, 125, 30);
@@ -2781,7 +2817,7 @@ public class Main {
 				Panel panel9 = new Panel();
 				panel9.setBackground(new Color(153, 102, 51));
 				panel9.setBounds(85, 118, 180, 80);
-				final JTextArea lblTitleText = new JTextArea();
+				final JTextArea lblTitleText = new JTextArea(current_article.getTitle());
 				lblTitleText.setEditable(true);
 				lblTitleText.setOpaque(true);
 				lblTitleText.setForeground(Color.BLACK);
@@ -2795,7 +2831,7 @@ public class Main {
 				titleSection.createHorizontalScrollBar();
 				panel.add(titleSection);
 
-				final JTextField lblSectionId = new JTextField();
+				final JTextField lblSectionId = new JTextField(Integer.toString(current_article.getSection_id()));
 				lblSectionId.setForeground(Color.BLACK);
 				lblSectionId.setFont(new Font("Dialog", Font.BOLD, 14));
 				lblSectionId.setBounds(156, 81, 94, 30);
@@ -2812,6 +2848,7 @@ public class Main {
 					}
 				});
 				label.setBounds(160, 250, 100, 25);
+				datePicker.setDate(current_article.getDate_published());
 				datePicker.setBounds(156, 198, 160, 30);
 				// panel.add(label);
 				panel.add(datePicker);
@@ -2822,42 +2859,10 @@ public class Main {
 				lblSection.setBounds(24, 80, 94, 30);
 				panel.add(lblSection);
 
-				JButton btnSave = new JButton("Create");
+				JButton btnSave = new JButton("Save");
 				btnSave.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent arg0) {
-						issue_screens.get(issue_id).dispose();
 						article.dispose();
-						int a_id = list_issues.get(issue_id) + 1;
-						list_issues.replace(issue_id, a_id);
-						Date current = new Date();
-						SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
-						Issue current_issue = issue_storage.get(issue_id);
-						int artID = current_issue.getCurrent_aricle_id();
-						
-						current_issue.add_article(new Article(lblTitleText.getText(), Integer.parseInt(lblSectionId.getText()),  Integer.parseInt(lblPageNum.getText()), lblAbstract.getText(), datePicker.getDate(), current_issue));
-						current_issue.add_author(artID, new Author(1, "Peter", "M.", "FakeAuthor",
-								"fake_author@fakeaddress.com", "affiliation", "bio", "orcid", "testing", "gb"));
-						current_issue.add_author(artID, new Author(2, "Paul", "C.", "FakeAuthor",
-								"fake_author@fakeaddress.com", "affiliation", "bio", "orcid", "testing", "gb"));
-						current_issue.add_author(artID, new Author(3, "Celia", "C.", "FakeAuthor",
-								"fake_author@fakeaddress.com", "affiliation", "bio", "orcid", "testing", "gb"));
-						current_issue.add_author(artID, new Author(4, "Sen", "C.", "FakeAuthor",
-								"fake_author@fakeaddress.com", "affiliation", "bio", "orcid", "testing", "gb"));
-						current_issue.add_author(artID, new Author(5, "Chihiro", "C.", "FakeAuthor",
-								"fake_author@fakeaddress.com", "affiliation", "bio", "orcid", "testing", "gb"));
-						current_issue.add_author(artID, new Author(6, "Morty", "C.", "FakeAuthor",
-								"fake_author@fakeaddress.com", "affiliation", "bio", "orcid", "testing", "gb"));
-						issue_storage.put(issue_id, current_issue);
-						Object[] new_row = { artID, issue_id, 1, "title", 1, "abstract", sdf.format(current), "View",
-								"Edit", "Delete" };
-						HashMap<Integer, JFrame> issue_articles = article_screens.get(issue_id);
-						System.out.println(artID);
-						issue_articles.put(artID, new JFrame());
-						article_screens.put(issue_id, issue_articles);
-						System.out.println(article_screens.get(issue_id).containsKey(artID));
-						
-						issue(issue_id);
-						/*
 						Article a = issue_storage.get(issue_id).getArticles_list().get(article_id);
 						a.setTitle(lblTitleText.getText());
 						ArrayList<Author> updated_authors = a.getAuthors();
@@ -2868,7 +2873,6 @@ public class Main {
 							author.setLast_name(a_fields.get(2).getText());
 							updated_authors.set(i, author);
 						}
-						a.setTitle(lblTitleText.getText());
 						a.setAuthors(updated_authors);
 						a.setAbstract_text(lblAbstract.getText());
 						a.setSection_id(Integer.parseInt(lblSectionId.getText()));
@@ -2876,17 +2880,17 @@ public class Main {
 						a.setDate_published(datePicker.getDate());
 
 						issue_storage.get(issue_id).update_article(a.getId(), a);
-						article(issue_id, article_id);*/
+						article(issue_id, article_id);
 					}
 				});
 				btnSave.setBounds((width_small - 200) / 2, height_small - 100, 200, 30);
 				article.getContentPane().add(btnSave);
 				if (article_screens.containsKey(issue_id)) {
 					HashMap<Integer, JFrame> issue_articles = article_screens.get(issue_id);
-					issue_articles.put(issue_storage.get(issue_id).getCurrent_aricle_id(), article);
+					issue_articles.put(article_id, article);
 					article_screens.put(issue_id, issue_articles);
 				}
-			
+			}
 
 		} else {
 			login("dashboard");
