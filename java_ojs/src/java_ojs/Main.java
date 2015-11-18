@@ -930,6 +930,8 @@ public class Main {
 				buttonColumn.setMnemonic(KeyEvent.VK_D);
 				buttonColumn2.setMnemonic(KeyEvent.VK_D);
 				buttonColumn3.setMnemonic(KeyEvent.VK_D);
+				issues.setVisible(true);
+				issues.repaint();
 			}
 		} else {
 			login("dashboard");
@@ -1104,8 +1106,8 @@ public class Main {
 
 			
 				edit_issue.setVisible(true);// making the frame visible
-
-				
+				edit_issue.repaint();
+				issue_screens.put(issue_id, edit_issue);
 				Panel panel_2 = new Panel();
 				panel_2.setBackground(new Color(6, 141, 91));
 				panel_2.setBounds(0, 150, width_small, 5);
@@ -1135,7 +1137,7 @@ public class Main {
 				}
 				HashMap<Integer, JFrame> issue_articles = new HashMap<Integer, JFrame>();
 				articles.getContentPane().setBackground(new Color(128, 128, 128));
-				articles.setVisible(true);
+				
 				articles.setTitle("Issue <" + Integer.toString(issue_id) + ">");
 				articles.addWindowListener(new WindowAdapter() {
 					@Override
@@ -1416,6 +1418,14 @@ public class Main {
 								"fake_author@fakeaddress.com", "affiliation", "bio", "orcid", "testing", "gb"));
 						current_issue.add_author(artID, new Author(2, "Paul", "C.", "FakeAuthor",
 								"fake_author@fakeaddress.com", "affiliation", "bio", "orcid", "testing", "gb"));
+						current_issue.add_author(artID, new Author(3, "Celia", "C.", "FakeAuthor",
+								"fake_author@fakeaddress.com", "affiliation", "bio", "orcid", "testing", "gb"));
+						current_issue.add_author(artID, new Author(4, "Sen", "C.", "FakeAuthor",
+								"fake_author@fakeaddress.com", "affiliation", "bio", "orcid", "testing", "gb"));
+						current_issue.add_author(artID, new Author(5, "Chihiro", "C.", "FakeAuthor",
+								"fake_author@fakeaddress.com", "affiliation", "bio", "orcid", "testing", "gb"));
+						current_issue.add_author(artID, new Author(6, "Morty", "C.", "FakeAuthor",
+								"fake_author@fakeaddress.com", "affiliation", "bio", "orcid", "testing", "gb"));
 						issue_storage.put(issue_id, current_issue);
 						Object[] new_row = { artID, issue_id, 1, "title", 1, "abstract", sdf.format(current), "View",
 								"Edit", "Delete" };
@@ -1525,6 +1535,8 @@ public class Main {
 				lblIssueDetails.setBounds((width - 95) / 2, 118, 125, 30);
 				lblIssueDetails.setOpaque(true);
 				articles.getContentPane().add(lblIssueDetails);
+				articles.setVisible(true);
+				articles.repaint();
 			}
 
 		} else {
@@ -1701,23 +1713,23 @@ public class Main {
 
 				JPanel panel6 = new JPanel();
 				panel6.setBackground(SystemColor.window);
-				panel6.setBounds(50, 107, 180 * 2, 307);
+				panel6.setBounds(50, 107, 500 * 2, 307);
 				article.getContentPane().add(panel6);
 				panel6.setLayout(null);
 				panel6.setAutoscrolls(true);
 
-				panel6.setPreferredSize(new Dimension(210 * 2, settings_height)); // scrollable
-																					// size
+																						// size
 				JScrollPane authorSection = new JScrollPane(panel6);
 				panel6.setAutoscrolls(true);
-
+				authorSection.setHorizontalScrollBarPolicy(authorSection.HORIZONTAL_SCROLLBAR_ALWAYS);
 				JLabel lblNewLabel_3 = new JLabel("Author Information");
-				lblNewLabel_3.setBounds(6, 6, 156, 16);
+				lblNewLabel_3.setBounds(15, 6, 156, 16);
 				panel6.add(lblNewLabel_3);
 
 				ArrayList<Author> authors = current_article.getAuthors();
+			
 				int author_x = 16;
-				int author_y = 34;
+				int author_y = 60;
 				int separation_horizontal = 205;
 				int separation_vertical = 30;
 				int label_field_separation = 4;
@@ -1725,6 +1737,11 @@ public class Main {
 					separation_horizontal = 205 * i;
 					author_x = author_x + separation_horizontal;
 					Author author = authors.get(i);
+					
+					JLabel author_num = new JLabel(Integer.toString(i+1));
+					author_num.setBounds(87+author_x, 35, 156, 16);
+					panel6.add(author_num);
+					
 					JLabel field_label = new JLabel("First name:");
 					field_label.setBounds(author_x, author_y, 75, 30); // white
 																		// box
@@ -1747,10 +1764,12 @@ public class Main {
 					field.setOpaque(true);
 					panel6.add(field);
 					author_y = author_y + separation_vertical;
-					author_y = 34;
+					author_y = 60;
 					author_x = 16;
 
 				}
+				panel6.setPreferredSize(new Dimension(210 * authors.size(),500)); // scrollable
+				
 				/*
 				 * JTextArea lblAuthorInfo = new JTextArea(
 				 * "First Name: Pete\tFirst Name: Bob 2 \nLast Name: User\tLast Name: User 2 \n "
@@ -1760,8 +1779,9 @@ public class Main {
 				 * lblAuthorInfo.setBackground(SystemColor.window);
 				 * panel6.add(lblAuthorInfo);
 				 */
-
-				authorSection.setPreferredSize(new Dimension(220 * 2, 200));
+				authorSection.setHorizontalScrollBarPolicy(authorSection.HORIZONTAL_SCROLLBAR_ALWAYS);
+				
+				authorSection.setPreferredSize(new Dimension(600 * authors.size(), 8));
 				authorSection.setBounds(width_small / 2 - 40, 132 + height_small / 2 - 130, width_small / 2,
 						height_small / 2 - 150);
 				// scrollSettings.setViewportView(scrollFrame);
@@ -1961,12 +1981,15 @@ public class Main {
 
 						if (issue_screens.get(issue_id) == null) {
 							article.dispose();
+							article(issue_id,article_id);
 							issue(issue_id);
 						} else if (!issue_screens.get(issue_id).isVisible()) {
 							article.dispose();
+							article(issue_id,article_id);
 							issue_screens.get(issue_id).setVisible(true);
 						} else {
 							article.dispose();
+							article(issue_id,article_id);
 						}
 					}
 				});
@@ -2034,24 +2057,30 @@ public class Main {
 				panel6.setLayout(null);
 				panel6.setAutoscrolls(true);
 
-				panel6.setPreferredSize(new Dimension(210 * 2, settings_height)); // scrollable
 																					// size
 				JScrollPane authorSection = new JScrollPane(panel6);
 				panel6.setAutoscrolls(true);
 
 				JLabel lblNewLabel_3 = new JLabel("Author Information");
-				lblNewLabel_3.setBounds(6, 6, 156, 16);
+				lblNewLabel_3.setBounds(15, 6, 156, 16);
 				panel6.add(lblNewLabel_3);
 				final HashMap<Integer, HashMap<Integer, JTextField>> author_fields = new HashMap<Integer, HashMap<Integer, JTextField>>();
 				ArrayList<Author> authors = current_article.getAuthors();
+				
 				int author_x = 16;
-				int author_y = 34;
+				int author_y = 60;
 				int separation_horizontal = 205;
 				int separation_vertical = 30;
 				int label_field_separation = 4;
 				for (int i = 0; i < authors.size(); i++) {
+					
 					separation_horizontal = 205 * i;
 					author_x = author_x + separation_horizontal;
+					
+					JLabel author_num = new JLabel(Integer.toString(i+1));
+					author_num.setBounds(87+author_x, 35, 156, 16);
+					panel6.add(author_num);
+					
 					HashMap<Integer, JTextField> author_components = new HashMap<Integer, JTextField>();
 					Author author = authors.get(i);
 					JLabel field_label = new JLabel("First name:");
@@ -2079,10 +2108,12 @@ public class Main {
 					author_components.put(2, field);
 					author_fields.put(author.getId(), author_components);
 					author_y = author_y + separation_vertical;
-					author_y = 34;
+					author_y = 60;
 					author_x = 16;
 
 				}
+				panel6.setPreferredSize(new Dimension(210 * authors.size(),500)); // scrollable
+				
 				System.out.println(author_fields.size());
 				/*
 				 * JTextArea lblAuthorInfo = new JTextArea(
@@ -2092,7 +2123,7 @@ public class Main {
 				 * lblAuthorInfo.setOpaque(true); panel6.add(lblAuthorInfo)
 				 */
 
-				authorSection.setPreferredSize(new Dimension(220 * 2, 200));
+				authorSection.setPreferredSize(new Dimension(220 * authors.size(), 200));
 				authorSection.setBounds(width_small / 2 - 40, 132 + height_small / 2 - 130, width_small / 2,
 						height_small / 2 - 150);
 				// scrollSettings.setViewportView(scrollFrame);
