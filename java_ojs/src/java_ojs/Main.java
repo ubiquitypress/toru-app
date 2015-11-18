@@ -177,7 +177,7 @@ public class Main {
 			lblNewLabel.setBackground(new Color(230, 230, 250));
 			lblNewLabel.setFont(new Font("Trattatello", Font.BOLD, 24));
 			lblNewLabel.setToolTipText("Welcome\n");
-			lblNewLabel.setBounds((width_small / 2) - 34, 15, 70, 25);
+			lblNewLabel.setBounds((width_small / 2) - 34, 15, 95, 25);
 			login.getContentPane().add(lblNewLabel);
 			username = new JTextField();
 			username.setBounds(80, 220, width_small - 161, 26);
@@ -348,7 +348,7 @@ public class Main {
 				lblNewLabel.setFont(new Font("Trattatello", Font.BOLD, 24));
 				lblNewLabel.setToolTipText("Welcome\n");
 
-				lblNewLabel.setBounds((width_small / 2) - 34, 15, 70, 25);
+				lblNewLabel.setBounds((width_small / 2) - 34, 15, 95, 25);
 				settings.getContentPane().add(lblNewLabel);
 				JPanel title_background = new JPanel();
 				title_background.setBackground(new Color(0, 0, 0));
@@ -496,7 +496,7 @@ public class Main {
 				lblNewLabel.setFont(new Font("Trattatello", Font.BOLD, 24));
 				lblNewLabel.setToolTipText("Welcome\n");
 
-				lblNewLabel.setBounds((width_small / 2) - 34, 15, 70, 25);
+				lblNewLabel.setBounds((width_small / 2) - 34, 15, 95, 25);
 				api.getContentPane().add(lblNewLabel);
 				api_url = new JTextField();
 				api_url.setBounds(100, 218, width_small - 200, 26);
@@ -805,9 +805,9 @@ public class Main {
 						int selectedColumnIndex = 0;
 						Object selectedObject = (Object) table.getModel().getValueAt(issue_row, selectedColumnIndex);
 						int selected_issue = (int) selectedObject;
-						if (!issue_screens.get(selected_issue).isVisible()) {
-							issue(selected_issue);
-						}
+						
+							edit_issue(selected_issue);
+						
 						// /
 						// ((DefaultTableModel)table.getModel()).removeRow(modelRow);
 					}
@@ -909,9 +909,147 @@ public class Main {
 
 	}
 
+	public void edit_issue(final int issue_id) {
+		if (logged_in) {
+			if (issue_screens.containsKey(issue_id) && !issue_screens.get(issue_id).isVisible()) {
+				int width_small = 0;
+				int height_small = 0;
+				if (height >= 480 && width >= 640) {
+					width_small = (int) (900 - (900 * (37.5 / 100)));
+				} else {
+					width_small = (int) (640 - (640 * (37.5 / 100)));
+				}
+
+				height_small = (int) (480 - (480 * (5 / 100)));
+				JFrame edit_issue = new JFrame();
+				issue_screens.put(issue_id, edit_issue);
+				edit_issue.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+				edit_issue.getContentPane().setBackground(new Color(128, 128, 128));
+				edit_issue.setTitle("Issue Details - Editing");
+				edit_issue.addWindowListener(new WindowAdapter() {
+					@Override
+					public void windowClosing(WindowEvent e) {
+						// database_save();
+					}
+				});
+				edit_issue.setSize(width_small, height_small);// 400 width and 500
+														// height
+				edit_issue.getContentPane().setLayout(null);// using no layout managers
+				final Issue current_issue=issue_storage.get(issue_id);
+				JLabel lblNewLabel = new JLabel("TORU");
+				lblNewLabel.setForeground(new Color(255, 250, 250));
+				lblNewLabel.setBackground(new Color(230, 230, 250));
+				lblNewLabel.setFont(new Font("Trattatello", Font.BOLD, 24));
+				lblNewLabel.setToolTipText("Welcome\n");
+
+				lblNewLabel.setBounds((width_small / 2) - 34, 15, 95, 25);
+				edit_issue.getContentPane().add(lblNewLabel);
+				final JTextField title = new JTextField();
+				title.setBounds(100, 218, width_small - 200, 26);
+				title.setText(current_issue.getTitle());
+				edit_issue.getContentPane().add(title);
+				title.setColumns(10);
+
+				JLabel lblTitleText = new JLabel("Title");
+				lblTitleText.setForeground(new Color(245, 255, 250));
+				lblTitleText.setHorizontalAlignment(SwingConstants.CENTER);
+				lblTitleText.setBounds(74, 200, width_small - 151, 16);
+				edit_issue.getContentPane().add(lblTitleText);
+				JPanel title_background = new JPanel();
+				title_background.setBackground(new Color(0, 0, 0));
+				title_background.setBounds(-17, 0, width_small + 33, 54);
+				edit_issue.getContentPane().add(title_background);
+
+				final JTextField volume = new JTextField();
+				volume.setColumns(10);
+				volume.setText(Integer.toString(current_issue.getVolume()));
+				volume.setBounds(100, 270, width_small - 200, 26);
+				edit_issue.getContentPane().add(volume);
+				JLabel lblvolume = new JLabel("Volume");
+				lblvolume.setHorizontalAlignment(SwingConstants.CENTER);
+				lblvolume.setForeground(new Color(245, 255, 250));
+				lblvolume.setBounds(80, 250, width_small - 161, 16);
+				edit_issue.getContentPane().add(lblvolume);
+				
+				final JTextField number = new JTextField();
+				number.setColumns(10);
+				number.setText(Integer.toString(current_issue.getNumber()));
+				number.setBounds(100, 317, width_small - 200, 26);
+				edit_issue.getContentPane().add(number);
+				JLabel lblnumber = new JLabel("Number");
+				lblnumber.setHorizontalAlignment(SwingConstants.CENTER);
+				lblnumber.setForeground(new Color(245, 255, 250));
+				lblnumber.setBounds(80, 300, width_small - 161, 16);
+				edit_issue.getContentPane().add(lblnumber);
+
+				JButton btnSubmit = new JButton("Save");
+			
+				Action actionSubmit = new AbstractAction() {
+					@Override
+					public void actionPerformed(ActionEvent e) {
+						dashboard();
+							
+		
+					}
+				};
+				title.addActionListener(actionSubmit);
+				volume.addActionListener(actionSubmit);
+				number.addActionListener(actionSubmit);
+				btnSubmit.addActionListener(new ActionListener() {
+					public void actionPerformed(ActionEvent e) {
+							current_issue.setTitle(title.getText());
+							current_issue.setVolume(Integer.parseInt(volume.getText()));
+							current_issue.setNumber(Integer.parseInt(number.getText()));
+							issue_storage.put(issue_id, current_issue);
+							issues.dispose();
+							dashboard();
+						
+					}
+				});
+				if (height_small - 150 > 300) {
+					btnSubmit.setBounds(((width_small / 3) * 2) / 2, height_small - 100, width_small / 3, 29);
+				} else {
+					btnSubmit.setBounds(((width_small / 3) * 2) / 2, 350, width_small / 3, 29);
+				}
+
+				edit_issue.getContentPane().add(btnSubmit);
+
+				JLabel lblApiInformation = new JLabel("Issue Details");
+				lblApiInformation.setBackground(new Color(51, 102, 204));
+				lblApiInformation.setHorizontalAlignment(SwingConstants.CENTER);
+				lblApiInformation.setForeground(new Color(255, 255, 255));
+				lblApiInformation.setFont(new Font("Dialog", Font.BOLD, 20));
+				lblApiInformation.setBounds((width_small / 2) - 145, 108, 309, 40);
+				lblApiInformation.setOpaque(true);
+				edit_issue.getContentPane().add(lblApiInformation);
+		
+
+				Panel panel = new Panel();
+				panel.setBackground(new Color(204, 51, 51));
+				panel.setBounds(0, 54, width_small, 5);
+				edit_issue.getContentPane().add(panel);
+
+			
+				edit_issue.setVisible(true);// making the frame visible
+
+				Panel panel_2 = new Panel();
+				panel_2.setBackground(new Color(51, 51, 204));
+				panel_2.setBounds(0, 150, width_small, 5);
+				edit_issue.getContentPane().add(panel_2);
+				Panel panel_1 = new Panel();
+				panel_1.setBackground(new Color(51, 102, 204));
+				panel_1.setBounds(0, 105, width_small, 45);
+				edit_issue.getContentPane().add(panel_1);
+			}
+		} else {
+			login("dashboard");
+		}
+	}
+
 	public void issue(final int issue_id) {
 		if (logged_in) {
-			if (!issue_screens.get(issue_id).isVisible()) {
+			if (issue_screens.containsKey(issue_id) && !issue_screens.get(issue_id).isVisible()) {
+
 				final JFrame articles = new JFrame();
 				articles.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 				if (height >= 480 && width >= 640) {
@@ -2047,7 +2185,7 @@ public class Main {
 		} catch (IllegalAccessException e) {
 			// handle exception
 		}
-		login("dashboard");
+		dashboard();
 	}
 
 	public static void main(String[] args) {

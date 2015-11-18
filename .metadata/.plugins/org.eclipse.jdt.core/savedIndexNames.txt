@@ -2,7 +2,6 @@ INDEX VERSION 1.127+/home/ioannis/code/java/toru-app/.metadata/.plugins/org.ecli
 3881764920.index
 3721837726.index
 3888198363.index
-679027357.index
 527624335.index
 2982035129.index
 2841451250.index
