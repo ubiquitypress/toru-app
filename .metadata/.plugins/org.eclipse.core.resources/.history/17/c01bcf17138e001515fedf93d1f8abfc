@@ -1084,19 +1084,8 @@ public class Main {
 	
 				btnSubmit.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
+						issue_storage.put(i_id, new Issue(i_id,title.getText(),Integer.parseInt(volume.getText()),Integer.parseInt(number.getText()),Integer.parseInt(year.getText()),datePicker.getDate()));
 						i_id++;
-						Issue issue =new Issue(i_id,title.getText(),Integer.parseInt(volume.getText()),Integer.parseInt(number.getText()),Integer.parseInt(year.getText()),datePicker.getDate());
-					// JOptionPane.showMessageDialog(null, "Deleted");
-						SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
-			
-						list_issues.put(i_id, 1);
-						issue_screens.put(i_id, new JFrame());
-						article_screens.put(i_id, new HashMap<Integer, JFrame>());
-						issue_storage.put(i_id, issue);
-						Object[] new_row = { i_id,title.getText(),Integer.parseInt(volume.getText()),Integer.parseInt(number.getText()), sdf.format(datePicker.getDate()), "View", "Edit", "Delete" };
-
-						((DefaultTableModel) issues_table.getModel()).addRow(new_row);
-						issues_table.repaint();
 						edit_issue.dispose();
 						issues.dispose();
 						dashboard();

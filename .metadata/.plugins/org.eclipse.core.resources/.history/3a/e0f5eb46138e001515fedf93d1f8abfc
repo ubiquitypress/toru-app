@@ -1097,6 +1097,7 @@ public class Main {
 
 						((DefaultTableModel) issues_table.getModel()).addRow(new_row);
 						issues_table.repaint();
+						
 						edit_issue.dispose();
 						issues.dispose();
 						dashboard();

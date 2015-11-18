@@ -32,20 +32,6 @@ public class Issue {
 		this.date_published = date_published;
 		this.articles_list = new  HashMap<Integer, Article>();
 	}
-	public Issue(int id, String title, int volume, int number, int year, Date date_published) {
-		this.current_article_id=1;
-		this.title = title;
-		this.id = id;
-		this.volume = volume;
-		this.number = number;
-		this.year = year;
-		this.show_title = title;
-		this.show_volume = volume;
-		this.show_number = number;
-		this.show_year = year;
-		this.date_published = date_published;
-		this.articles_list = new  HashMap<Integer, Article>();
-	}
 	public Issue(int id, String title, int volume, int number, int year, String show_title, int show_volume, int show_number,
 			int show_year, Date date_published, int current_article_id) {
 		this.current_article_id=current_article_id;

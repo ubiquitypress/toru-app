@@ -948,8 +948,7 @@ public class Main {
 				JButton btnAdd = new JButton("Add");
 				btnAdd.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
-						add_issue();
-						/*i_id = i_id + 1;
+						i_id = i_id + 1;
 						
 						// JOptionPane.showMessageDialog(null, "Deleted");
 						Date date = new Date();
@@ -963,7 +962,7 @@ public class Main {
 						Object[] new_row = { i_id, "title", 1, 1, 2015, sdf.format(date), "View", "Edit", "Delete" };
 
 						((DefaultTableModel) issues_table.getModel()).addRow(new_row);
-						issues_table.repaint();*/
+						issues_table.repaint();
 					}
 				});
 				btnAdd.setBounds(width - 150, 112, 117, 25);
@@ -988,7 +987,7 @@ public class Main {
 				} else {
 					width_small = (int) (640 - (640 * (37.5 / 100)));
 				}
-				int current_id=i_id+1;
+				i_id = i_id + 1;
 				height_small = (int) (640 - (640* (5 / 100)));
 				final JFrame edit_issue = new JFrame();
 				issue_screens.put(i_id, edit_issue);
@@ -999,7 +998,6 @@ public class Main {
 					@Override
 					public void windowClosing(WindowEvent e) {
 						// database_save();
-						
 					}
 				});
 				edit_issue.setSize(width_small, height_small);// 400 width and 500
@@ -1081,25 +1079,39 @@ public class Main {
 				
 				JButton btnSubmit = new JButton("Create");
 			
-	
-				btnSubmit.addActionListener(new ActionListener() {
+				Action actionSubmit = new AbstractAction() {
+					@Override
 					public void actionPerformed(ActionEvent e) {
-						i_id++;
-						Issue issue =new Issue(i_id,title.getText(),Integer.parseInt(volume.getText()),Integer.parseInt(number.getText()),Integer.parseInt(year.getText()),datePicker.getDate());
-					// JOptionPane.showMessageDialog(null, "Deleted");
-						SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
-			
-						list_issues.put(i_id, 1);
-						issue_screens.put(i_id, new JFrame());
-						article_screens.put(i_id, new HashMap<Integer, JFrame>());
-						issue_storage.put(i_id, issue);
-						Object[] new_row = { i_id,title.getText(),Integer.parseInt(volume.getText()),Integer.parseInt(number.getText()), sdf.format(datePicker.getDate()), "View", "Edit", "Delete" };
-
-						((DefaultTableModel) issues_table.getModel()).addRow(new_row);
-						issues_table.repaint();
+						issue_storage.put(i_id, new Issue(i_id,title.getText(),Integer.parseInt(volume.getText()),Integer.parseInt(number.getText()),Integer.parseInt(year.getText()),datePicker.getDate()));
+						current_issue.setTitle();
+						current_issue.setVolume();
+						current_issue.setNumber(Integer.parseInt(number.getText()));
+						current_issue.setYear(Integer.parseInt(year.getText()));
+						current_issue.setDate_published(datePicker.getDate());
 						edit_issue.dispose();
+						issue_storage.put(issue_id, current_issue);
 						issues.dispose();
 						dashboard();
+							
+		
+					}
+				};
+				title.addActionListener(actionSubmit);
+				volume.addActionListener(actionSubmit);
+				number.addActionListener(actionSubmit);
+				year.addActionListener(actionSubmit);
+				datePicker.addActionListener(actionSubmit);
+				btnSubmit.addActionListener(new ActionListener() {
+					public void actionPerformed(ActionEvent e) {
+							current_issue.setTitle(title.getText());
+							current_issue.setVolume(Integer.parseInt(volume.getText()));
+							current_issue.setNumber(Integer.parseInt(number.getText()));
+							current_issue.setYear(Integer.parseInt(year.getText()));
+							current_issue.setDate_published(datePicker.getDate());
+							edit_issue.dispose();
+							issue_storage.put(issue_id, current_issue);
+							issues.dispose();
+							dashboard();
 						
 					}
 				});
@@ -1129,7 +1141,7 @@ public class Main {
 			
 				edit_issue.setVisible(true);// making the frame visible
 				edit_issue.repaint();
-				issue_screens.put(i_id, edit_issue);
+				issue_screens.put(issue_id, edit_issue);
 				Panel panel_2 = new Panel();
 				panel_2.setBackground(new Color(6, 141, 91));
 				panel_2.setBounds(0, 150, width_small, 5);

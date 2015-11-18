@@ -1084,7 +1084,6 @@ public class Main {
 	
 				btnSubmit.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
-						i_id++;
 						Issue issue =new Issue(i_id,title.getText(),Integer.parseInt(volume.getText()),Integer.parseInt(number.getText()),Integer.parseInt(year.getText()),datePicker.getDate());
 					// JOptionPane.showMessageDialog(null, "Deleted");
 						SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
@@ -1097,6 +1096,7 @@ public class Main {
 
 						((DefaultTableModel) issues_table.getModel()).addRow(new_row);
 						issues_table.repaint();
+						i_id++;
 						edit_issue.dispose();
 						issues.dispose();
 						dashboard();
