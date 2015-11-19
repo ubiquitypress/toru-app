@@ -5,7 +5,6 @@ import java.util.HashMap;
 
 public class Issue {
 	private int id;
-	private int current_article_id;
 	private String title; 
 	private int volume;  
 	private int number;
@@ -19,7 +18,6 @@ public class Issue {
 	
 	public Issue(int id, String title, int volume, int number, int year, String show_title, int show_volume, int show_number,
 			int show_year, Date date_published) {
-		this.current_article_id=1;
 		this.title = title;
 		this.id = id;
 		this.volume = volume;
@@ -33,7 +31,6 @@ public class Issue {
 		this.articles_list = new  HashMap<Integer, Article>();
 	}
 	public Issue(int id, String title, int volume, int number, int year, Date date_published) {
-		this.current_article_id=1;
 		this.title = title;
 		this.id = id;
 		this.volume = volume;
@@ -48,7 +45,6 @@ public class Issue {
 	}
 	public Issue(int id, String title, int volume, int number, int year, String show_title, int show_volume, int show_number,
 			int show_year, Date date_published, int current_article_id) {
-		this.current_article_id=current_article_id;
 		this.title = title;
 		this.id = id;
 		this.volume = volume;
@@ -106,9 +102,6 @@ public class Issue {
 		this.show_title = show_title;
 	}
 
-	public int getCurrent_aricle_id() {
-		return current_article_id;
-	}
 
 	public int getShow_volume() {
 		return show_volume;
@@ -146,11 +139,9 @@ public class Issue {
 	}
 	public void setArticles_list(HashMap<Integer, Article> articles_list) {
 		this.articles_list = articles_list;
-		this.current_article_id=articles_list.size();
 	}
-	public void add_article(Article a){
-		articles_list.put(current_article_id,a);
-		current_article_id++;
+	public void add_article(int article_id,Article a){
+		articles_list.put(article_id,a);
 	}
 	public void update_article(int article_id,Article a){
 		articles_list.put(article_id,a);

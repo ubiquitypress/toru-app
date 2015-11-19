@@ -13,16 +13,6 @@ public class Article {
 	private Issue issue_fk;
 	private ArrayList<Author> authors;
 	
-	public Article(String title, int section_id, int pages, String abstract_text, Date date_published, Issue issue_fk) {
-		this.authors=new ArrayList<Author>();
-		this.title = title;
-		this.id = issue_fk.getCurrent_aricle_id();
-		this.section_id = section_id;
-		this.pages = pages;
-		this.abstract_text = abstract_text;
-		this.date_published = date_published;
-		this.issue_fk = issue_fk;
-	}
 	public Article(int id,String title, int section_id, int pages, String abstract_text, Date date_published, Issue issue_fk) {
 		
 		this.title = title;

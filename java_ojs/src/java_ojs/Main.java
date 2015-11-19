@@ -64,6 +64,7 @@ public class Main {
 	private int height = 600;
 	private Boolean logged_in = true;
 	private static int i_id = 0;
+	private static int articles_id = 0;
 
 	/*
 	 * Initial setup test
@@ -1674,7 +1675,7 @@ public class Main {
 				});
 				btnAdd.setBounds(width - 150, height / 16 * 7 - 27, 117, 25);
 				articles.getContentPane().add(btnAdd);
-				issue_screens.put(i_id, articles);
+				issue_screens.put(issue_id, articles);
 
 				JPanel panel3 = new JPanel();
 				panel3.setBackground(SystemColor.window);
@@ -2515,7 +2516,7 @@ public class Main {
 				width_small = (int) (640 + (640 * (37.5 / 100)));
 				height_small = (int) (768 - (768 * (5 / 100)));
 			}
-
+			int current_id = articles_id+1;
 			final JFrame article = new JFrame();
 			article.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 			// article.setSize(width_small, height_small);
@@ -2833,40 +2834,38 @@ public class Main {
 						int entered_sectionID = Integer.parseInt(lblSectionId.getText());
 						int entered_pages = Integer.parseInt(lblPageNum.getText());
 						issue_screens.get(issue_id).dispose();
-
-						int a_id = list_issues.get(issue_id) + 1;
-						list_issues.replace(issue_id, a_id);
+						articles_id++;
+						list_issues.replace(issue_id, articles_id);
 						Date current = new Date();
 						SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
 						Issue current_issue = issue_storage.get(issue_id);
-						int artID = current_issue.getCurrent_aricle_id();
-
-						current_issue.add_article(new Article(lblTitleText.getText(), entered_sectionID, entered_pages,
+				
+						current_issue.add_article(articles_id,new Article(articles_id,lblTitleText.getText(), entered_sectionID, entered_pages,
 								lblAbstract.getText(), datePicker.getDate(), current_issue));
-						current_issue.add_author(artID, new Author(1, "Peter", "M.", "FakeAuthor",
+						current_issue.add_author(articles_id, new Author(1, "Peter", "M.", "FakeAuthor",
 								"fake_author@fakeaddress.com", "affiliation", "bio", "orcid", "testing", "gb"));
-						current_issue.add_author(artID, new Author(2, "Paul", "C.", "FakeAuthor",
+						current_issue.add_author(articles_id, new Author(2, "Paul", "C.", "FakeAuthor",
 								"fake_author@fakeaddress.com", "affiliation", "bio", "orcid", "testing", "gb"));
-						current_issue.add_author(artID, new Author(3, "Celia", "C.", "FakeAuthor",
+						current_issue.add_author(articles_id, new Author(3, "Celia", "C.", "FakeAuthor",
 								"fake_author@fakeaddress.com", "affiliation", "bio", "orcid", "testing", "gb"));
-						current_issue.add_author(artID, new Author(4, "Sen", "C.", "FakeAuthor",
+						current_issue.add_author(articles_id, new Author(4, "Sen", "C.", "FakeAuthor",
 								"fake_author@fakeaddress.com", "affiliation", "bio", "orcid", "testing", "gb"));
-						current_issue.add_author(artID, new Author(5, "Chihiro", "C.", "FakeAuthor",
+						current_issue.add_author(articles_id, new Author(5, "Chihiro", "C.", "FakeAuthor",
 								"fake_author@fakeaddress.com", "affiliation", "bio", "orcid", "testing", "gb"));
-						current_issue.add_author(artID, new Author(6, "Morty", "C.", "FakeAuthor",
+						current_issue.add_author(articles_id, new Author(6, "Morty", "C.", "FakeAuthor",
 								"fake_author@fakeaddress.com", "affiliation", "bio", "orcid", "testing", "gb"));
 						article.dispose();
 						issue_storage.put(issue_id, current_issue);
-						Object[] new_row = { artID, issue_id, 1, "title", 1, "abstract", sdf.format(current), "View",
+						Object[] new_row = { articles_id, issue_id, 1, "title", 1, "abstract", sdf.format(current), "View",
 								"Edit", "Delete" };
 						HashMap<Integer, JFrame> issue_articles = article_screens.get(issue_id);
-						System.out.println(artID);
-						issue_articles.put(artID, new JFrame());
+						System.out.println(articles_id);
+						issue_articles.put(articles_id, new JFrame());
 						article_screens.put(issue_id, issue_articles);
-						System.out.println(article_screens.get(issue_id).containsKey(artID));
+						System.out.println(article_screens.get(issue_id).containsKey(articles_id));
 
 						issue(issue_id);
-					} catch (Exception e) {
+					} catch (NumberFormatException e) {
 						JOptionPane.showMessageDialog(null, "Use only numbers in fields: Pages, Section ID ");
 					}
 
@@ -2898,7 +2897,7 @@ public class Main {
 			article.getContentPane().add(btnSave);
 			if (article_screens.containsKey(issue_id)) {
 				HashMap<Integer, JFrame> issue_articles = article_screens.get(issue_id);
-				issue_articles.put(issue_storage.get(issue_id).getCurrent_aricle_id(), article);
+				issue_articles.put(current_id, article);
 				article_screens.put(issue_id, issue_articles);
 			}
 
@@ -2931,9 +2930,14 @@ public class Main {
 	}
 
 	public static void main(String[] args) {
-
+		
 		database_setup();
 		populate_variables();
+		if (list_settings.isEmpty()){
+		list_settings.put("Setting 1",false);
+		setting_keys.add("Setting 1");
+		list_settings.put("Setting 2",false);
+		setting_keys.add("Setting 2");}
 		new Main();
 	}
 }
