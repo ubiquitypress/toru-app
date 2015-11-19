@@ -62,6 +62,7 @@ public class Main {
 	private static HashMap<Integer, Integer> list_issues;
 	private static HashMap<Integer, JFrame> issue_screens;
 	private static HashMap<Integer, Issue> issue_storage;
+	private static HashMap<Integer, Author> author_storage;
 	private static HashMap<Integer, HashMap<Integer, ArticleFile>> file_storage;
 	private static HashMap<Integer, HashMap<Integer, JFrame>> article_screens;
 	private static ArrayList<String> setting_keys = new ArrayList<String>();
@@ -75,6 +76,7 @@ public class Main {
 	private static int i_id = 0;
 	private static int articles_id = 0;
 	private static int file_id = 0;
+	private static int author_id=0;
 
 	/*
 	 * Initial setup test
@@ -115,6 +117,7 @@ public class Main {
 		issue_screens = new HashMap<Integer, JFrame>();
 		file_storage = new HashMap<Integer, HashMap<Integer, ArticleFile>>();
 		article_screens = new HashMap<Integer, HashMap<Integer, JFrame>>();
+		author_storage = new HashMap<Integer, Author>();
 		try {
 			ResultSet rs = stmt.executeQuery("SELECT * FROM API WHERE URL=" + "'api'" + ";");
 			while (rs.next()) {
@@ -2125,13 +2128,16 @@ public class Main {
 				Panel panel10 = new Panel();
 				panel10.setBackground(new Color(153, 102, 51));
 				panel10.setBounds(115, 280, 225, 190);
+			
 				String label_text = "";
+				System.out.println(file_storage.keySet().toString());
+				if ( file_storage.containsKey(article_id)){
 				HashMap<Integer, ArticleFile> files = file_storage.get(article_id);
 				Set<Integer> keys = files.keySet();
 				for (int key : keys) {
 					String path = files.get(key).getPath();
 					label_text = label_text + path.substring(path.lastIndexOf("/") + 1) + "\n";
-				}
+				}}
 				JTextArea lblFile = new JTextArea(label_text);
 				lblFile.setForeground(Color.WHITE);
 				lblFile.setEnabled(false);
@@ -2573,12 +2579,13 @@ public class Main {
 				panel10.setBackground(new Color(153, 102, 51));
 				panel10.setBounds(115, 280, 225, 190);
 				String label_text = "";
+				if (file_storage.containsKey(article_id)){
 				HashMap<Integer, ArticleFile> files = file_storage.get(article_id);
 				Set<Integer> keys = files.keySet();
 				for (int key : keys) {
 					String path = files.get(key).getPath();
 					label_text = label_text + path.substring(path.lastIndexOf("/") + 1) + "\n";
-				}
+				}}
 				JTextArea lblFile = new JTextArea("");
 				lblFile.setText(label_text);
 				lblFile.setForeground(Color.WHITE);
@@ -2606,13 +2613,15 @@ public class Main {
 						if (returnVal == JFileChooser.APPROVE_OPTION) {
 							File[] files = chooser.getSelectedFiles();
 							String label_text = "";
+							label_text=label_text+lblFile.getText()+"----Not Uploaded-----[\n";
 							String label_tooltip = "";
 							for (File f : files) {
 								uploaded_files.add(f);
 								label_text = label_text + f.getName() + "\n";
 							}
-
+							label_text = label_text + "]----Not Uploaded-----";
 							label_tooltip = files.length + " files";
+							
 							lblFile.setText(label_text);
 							lblFile.setToolTipText(label_tooltip);
 						}
@@ -2620,7 +2629,7 @@ public class Main {
 				});
 				select.setBounds(20, 240, 90, 30);
 				panel.add(select);
-				JButton upload = new JButton("Upload");
+				JButton upload = new JButton("Upload & Save");
 				upload.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
 						for (File f : uploaded_files) {
@@ -2630,9 +2639,19 @@ public class Main {
 						if (!uploaded_files.isEmpty()) {
 							select.setEnabled(false);
 						}
+						if(file_storage.containsKey(article_id)){
+							String label_text = "";
+						HashMap<Integer,ArticleFile> files_existing=file_storage.get(article_id);
+						Set<Integer> keys=files_existing.keySet();
+						for(int k:keys){
+							ArticleFile a_file=files_existing.get(k);
+							label_text=label_text+a_file.getPath().substring(a_file.getPath().lastIndexOf("/")+1)+"\n";
+						}
+						lblFile.setText(label_text);
+						}
 					}
 				});
-				upload.setBounds(150, 240, 90, 30);
+				upload.setBounds(150, 240, 140, 30);
 
 				panel.add(upload);
 				article.getContentPane().add(btnSave);
@@ -2724,6 +2743,7 @@ public class Main {
 			JButton btnGoBack = new JButton("Close");
 			btnGoBack.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent arg0) {
+					if(file_storage.containsKey(current_id)){
 					HashMap<Integer,ArticleFile> up_files=file_storage.get(current_id);
 					Set<Integer> keys=up_files.keySet();
 					file_id = initial_file_num;
@@ -2733,7 +2753,7 @@ public class Main {
 					}
 					File folder=new File(String.format("src/files/%d/", current_id));
 					folder.delete();
-					file_storage.remove(current_id);
+					file_storage.remove(current_id);}
 					// database_save();
 					if (issue_screens.get(issue_id) == null) {
 						article.dispose();
@@ -2806,8 +2826,8 @@ public class Main {
 
 			JPanel panel6 = new JPanel();
 			panel6.setBackground(SystemColor.window);
-			panel6.setBounds(50, 107, 180 * 2, 307);
-			article.getContentPane().add(panel6);
+			panel6.setBounds(50,515, 320,307);
+		
 			panel6.setLayout(null);
 			panel6.setAutoscrolls(true);
 
@@ -2815,8 +2835,8 @@ public class Main {
 			JScrollPane authorSection = new JScrollPane(panel6);
 			panel6.setAutoscrolls(true);
 
-			JLabel lblNewLabel_3 = new JLabel("Author Information");
-			lblNewLabel_3.setBounds(15, 6, 156, 16);
+			JLabel lblNewLabel_3 = new JLabel("Authors");
+			lblNewLabel_3.setBounds(15, 10, 280, 16);
 			panel6.add(lblNewLabel_3);
 			final HashMap<Integer, HashMap<Integer, JTextField>> author_fields = new HashMap<Integer, HashMap<Integer, JTextField>>();
 			/*
@@ -2864,13 +2884,33 @@ public class Main {
 			 * 34, 205 * 2, 175); // white box lblAuthorInfo.setOpaque(true);
 			 * panel6.add(lblAuthorInfo)
 			 */
+			Set<Integer> author_keys= author_storage.keySet();
+			ArrayList<Integer> author_list = new ArrayList<Integer>();
+			String	listData[] = new String[author_keys.size()];
+			int j=0;
+			for (int key:author_keys){
+				listData[j]=author_storage.get(key).getFull_name();
+				author_list.add(key);
+				j=j+1;
+				};
 
+				// Create a new listbox control
+			
+			JList listbox = new JList( listData );
+			listbox.setBounds(15,40,320,25*author_list.size());
+			listbox.setBackground(Color.white);
+			listbox.setVisible(true);
+			panel6.add(listbox);
+			
+			authorSection.add( panel6 );
+			authorSection.setViewportView(panel6);
 			authorSection.setPreferredSize(new Dimension(220 * 1, 200));
 			authorSection.setBounds(width_small / 2 - 40, 132 + height_small / 2 - 130, width_small / 2,
 					height_small / 2 - 150);
+			
 			// scrollSettings.setViewportView(scrollFrame);
 			article.getContentPane().add(authorSection);
-
+		
 			/*
 			 * JLabel lblIssues = new JLabel("Article:");
 			 * lblIssues.setBounds(24, 18, 110, 30); panel.add(lblIssues);
@@ -2993,18 +3033,9 @@ public class Main {
 						current_issue.add_article(articles_id,
 								new Article(articles_id, lblTitleText.getText(), entered_sectionID, entered_pages,
 										lblAbstract.getText(), datePicker.getDate(), current_issue));
-						current_issue.add_author(articles_id, new Author(1, "Peter", "M.", "FakeAuthor",
-								"fake_author@fakeaddress.com", "affiliation", "bio", "orcid", "testing", "gb"));
-						current_issue.add_author(articles_id, new Author(2, "Paul", "C.", "FakeAuthor",
-								"fake_author@fakeaddress.com", "affiliation", "bio", "orcid", "testing", "gb"));
-						current_issue.add_author(articles_id, new Author(3, "Celia", "C.", "FakeAuthor",
-								"fake_author@fakeaddress.com", "affiliation", "bio", "orcid", "testing", "gb"));
-						current_issue.add_author(articles_id, new Author(4, "Sen", "C.", "FakeAuthor",
-								"fake_author@fakeaddress.com", "affiliation", "bio", "orcid", "testing", "gb"));
-						current_issue.add_author(articles_id, new Author(5, "Chihiro", "C.", "FakeAuthor",
-								"fake_author@fakeaddress.com", "affiliation", "bio", "orcid", "testing", "gb"));
-						current_issue.add_author(articles_id, new Author(6, "Morty", "C.", "FakeAuthor",
-								"fake_author@fakeaddress.com", "affiliation", "bio", "orcid", "testing", "gb"));
+						int[] selections=listbox.getSelectedIndices();
+						for(int index:selections){
+							current_issue.add_author(articles_id,author_storage.get(author_list.get(index)));}
 						article.dispose();
 						issue_storage.put(issue_id, current_issue);
 						Object[] new_row = { articles_id, issue_id, 1, "title", 1, "abstract", sdf.format(current),
@@ -3012,7 +3043,7 @@ public class Main {
 						HashMap<Integer, JFrame> issue_articles = article_screens.get(issue_id);
 						System.out.println(articles_id);
 						issue_articles.put(articles_id, new JFrame());
-						file_storage.put(articles_id, new HashMap<Integer, ArticleFile>());
+						
 						article_screens.put(issue_id, issue_articles);
 						System.out.println(article_screens.get(issue_id).containsKey(articles_id));
 
@@ -3076,12 +3107,14 @@ public class Main {
 					if (returnVal == JFileChooser.APPROVE_OPTION) {
 						File[] files = chooser.getSelectedFiles();
 						String label_text = "";
+						label_text=label_text+lblFile.getText()+"----Not Uploaded-----[\n";
 						String label_tooltip = "";
 						for (File f : files) {
 							uploaded_files.add(f);
 							label_text = label_text + f.getName() + "\n";
 						}
-
+					
+						label_text = label_text + "]----Not Uploaded-----";
 						label_tooltip = files.length + " files";
 						lblFile.setText(label_text);
 						lblFile.setToolTipText(label_tooltip);
@@ -3093,12 +3126,23 @@ public class Main {
 			JButton upload = new JButton("Upload");
 			upload.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
+					file_storage.put(current_id, new HashMap<Integer, ArticleFile>());
 					for (File f : uploaded_files) {
 						file_copy(current_id, f.getPath().toString());
 						System.out.println(chooser.getSelectedFile().getPath().toString());
 					}
 					if (!uploaded_files.isEmpty()) {
 						select.setEnabled(false);
+					}
+					if(file_storage.containsKey(current_id)){
+						String label_text = "";
+					HashMap<Integer,ArticleFile> files_existing=file_storage.get(current_id);
+					Set<Integer> keys=files_existing.keySet();
+					for(int k:keys){
+						ArticleFile a_file=files_existing.get(k);
+						label_text=label_text+a_file.getPath().substring(a_file.getPath().lastIndexOf("/")+1)+"\n";
+					}
+					lblFile.setText(label_text);
 					}
 				}
 			});
@@ -3109,7 +3153,7 @@ public class Main {
 			article.addWindowListener(new WindowAdapter() {
 				@Override
 				public void windowClosing(WindowEvent e) {
-					if(file_storage.containsKey(current_id)){
+					if(file_storage.containsKey(current_id)  && current_id!=articles_id){
 					HashMap<Integer,ArticleFile> up_files=file_storage.get(current_id);
 					Set<Integer> keys=up_files.keySet();
 					file_id = initial_file_num;
@@ -3128,7 +3172,7 @@ public class Main {
 			article.addWindowListener(new WindowAdapter() {
 				@Override
 				public void windowClosed(WindowEvent e) {
-					if(file_storage.containsKey(current_id)){
+					if(file_storage.containsKey(current_id) && current_id!=articles_id){
 					HashMap<Integer,ArticleFile> up_files=file_storage.get(current_id);
 					Set<Integer> keys=up_files.keySet();
 					file_id = initial_file_num;
@@ -3142,7 +3186,7 @@ public class Main {
 					// database_save();
 				}
 			});
-			
+			article.repaint();panel6.repaint();
 			if (article_screens.containsKey(issue_id)) {
 				HashMap<Integer, JFrame> issue_articles = article_screens.get(issue_id);
 				issue_articles.put(current_id, article);
@@ -3174,6 +3218,20 @@ public class Main {
 		} catch (IllegalAccessException e) {
 			// handle exception
 		}
+		author_id=6;
+		author_storage.put(1, new Author(1, "Peter", "M.", "FakeAuthor",
+				"fake_author@fakeaddress.com", "affiliation", "bio", "orcid", "testing", "gb"));
+		author_storage.put(2, new Author(2, "Paul", "C.", "FakeAuthor",
+				"fake_author@fakeaddress.com", "affiliation", "bio", "orcid", "testing", "gb"));
+		author_storage.put(3, new Author(3, "Celia", "C.", "FakeAuthor",
+				"fake_author@fakeaddress.com", "affiliation", "bio", "orcid", "testing", "gb"));
+		author_storage.put(4, new Author(4, "Sen", "C.", "FakeAuthor",
+				"fake_author@fakeaddress.com", "affiliation", "bio", "orcid", "testing", "gb"));
+		author_storage.put(5, new Author(5, "Chihiro", "C.", "FakeAuthor",
+				"fake_author@fakeaddress.com", "affiliation", "bio", "orcid", "testing", "gb"));
+		author_storage.put(6, new Author(6, "Morty", "C.", "FakeAuthor",
+				"fake_author@fakeaddress.com", "affiliation", "bio", "orcid", "testing", "gb"));
+
 		dashboard();
 	}
 

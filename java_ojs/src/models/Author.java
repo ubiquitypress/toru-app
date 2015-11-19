@@ -28,7 +28,14 @@ public class Author {
 	public int getId() {
 		return id;
 	}
-	
+	public String getFull_name() {
+		String full_name=this.first_name+" ";
+		if(!this.middle_name.isEmpty()){
+			full_name=full_name+this.middle_name+" ";
+		}
+		full_name=full_name+this.last_name;
+		return first_name;
+	}
 	public String getFirst_name() {
 		return first_name;
 	}
