@@ -643,13 +643,14 @@ public class Main {
 
 			if (issues == null || !issues.isVisible()) {
 				Date date = new Date();
-			//	Issue issue = new Issue(i_id, "title", 1, 1, 2015, "title", 1, 1, 2015, date);
+				// Issue issue = new Issue(i_id, "title", 1, 1, 2015, "title",
+				// 1, 1, 2015, date);
 				// Issue Table [title, volume, number, year, show_title,
 				// show_volume,
 				// show_number, show_year, date_published]
 				issues = new JFrame();
 				issues.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-				
+
 				if (height >= 480 && width >= 640) {
 					issues.setSize(width, height);
 				} else {
@@ -667,32 +668,31 @@ public class Main {
 						// database_save();
 					}
 				});
-				//Object rowData[][] = { { 1, "title", 1, 1, 2015, sdf.format(date), "View", "Edit", "Delete" } };
-				
-				
+				// Object rowData[][] = { { 1, "title", 1, 1, 2015,
+				// sdf.format(date), "View", "Edit", "Delete" } };
+
 				Set<Integer> issue_keys = issue_storage.keySet();
 				ArrayList<List<Object>> rowData = new ArrayList<List<Object>>();
 				Object[][] rows = new Object[issue_keys.size()][6];
 				int i = 0;
 				for (int id : issue_keys) {
-					Issue row_issue=issue_storage.get(id);
+					Issue row_issue = issue_storage.get(id);
 					ArrayList<Object> data = new ArrayList<Object>();
 					issue_screens.put(id, new JFrame());
 					article_screens.put(id, new HashMap<Integer, JFrame>());
-					
 
 					data.add(Integer.toString(row_issue.getId()));
 					data.add(row_issue.getTitle());
 					data.add(Integer.toString(row_issue.getVolume()));
 					data.add(Integer.toString(row_issue.getNumber()));
 					data.add(Integer.toString(row_issue.getYear()));
-				    data.add(sdf.format(row_issue.getDate_published()));
+					data.add(sdf.format(row_issue.getDate_published()));
 					data.add("View");
 					data.add("Edit");
 					data.add("Delete");
-					Object[] row = { row_issue.getId(),row_issue.getTitle(), row_issue.getVolume(),
-							row_issue.getNumber(),row_issue.getYear(),
-							sdf.format(row_issue.getDate_published()), "View", "Edit", "Delete" };
+					Object[] row = { row_issue.getId(), row_issue.getTitle(), row_issue.getVolume(),
+							row_issue.getNumber(), row_issue.getYear(), sdf.format(row_issue.getDate_published()),
+							"View", "Edit", "Delete" };
 					rows[i] = row;
 					i++;
 					rowData.add(data);
@@ -733,42 +733,43 @@ public class Main {
 						return tip;
 					}
 				};
-				// reference: https://svn.java.net/svn/swinglabs-demos~svn/trunk/src/java/org/jdesktop/demo/sample/  
-		        final JTextField filter = new JTextField("");
-		        filter.setBounds(50,110,120,25);
-		       
-		        final JButton search = new JButton("Search");
-		        final JButton clear = new JButton("Clear");
-		        search.setBounds(170,110,90,25);
-		        clear.setBounds(258,110,65,25);
-		        issues.getContentPane().add(filter);
-		        issues.getContentPane().add(search);
-		        issues.getContentPane().add(clear);
-		        filter.setAction(new AbstractAction("Search") {
-		            public void actionPerformed(ActionEvent e) {
-		                
-		                String searchString = filter.getText().trim();
-		                if ( searchString.length() > 0 ) {
-		                    issues_table.setRowFilter(RowFilters.regexFilter(0, searchString));
-		                } else {
-		                	issues_table.setRowFilter(null);
-		                }
-		            }
-		        });
-		        search.setAction(new AbstractAction("Search") {
-		            public void actionPerformed(ActionEvent e) {
-		                
-		                String searchString = filter.getText().trim();
-		                if ( searchString.length() > 0 ) {
-		                    issues_table.setRowFilter(RowFilters.regexFilter(0, searchString));
-		                } 
-		            }
-		        });
-		        clear.setAction(new AbstractAction("Clear") {
-		            public void actionPerformed(ActionEvent e) {
-		                	issues_table.setRowFilter(null);
-		            }
-		        });
+				// reference:
+				// https://svn.java.net/svn/swinglabs-demos~svn/trunk/src/java/org/jdesktop/demo/sample/
+				final JTextField filter = new JTextField("");
+				filter.setBounds(50, 110, 120, 25);
+
+				final JButton search = new JButton("Search");
+				final JButton clear = new JButton("Clear");
+				search.setBounds(170, 110, 90, 25);
+				clear.setBounds(258, 110, 65, 25);
+				issues.getContentPane().add(filter);
+				issues.getContentPane().add(search);
+				issues.getContentPane().add(clear);
+				filter.setAction(new AbstractAction("Search") {
+					public void actionPerformed(ActionEvent e) {
+
+						String searchString = filter.getText().trim();
+						if (searchString.length() > 0) {
+							issues_table.setRowFilter(RowFilters.regexFilter(0, searchString));
+						} else {
+							issues_table.setRowFilter(null);
+						}
+					}
+				});
+				search.setAction(new AbstractAction("Search") {
+					public void actionPerformed(ActionEvent e) {
+
+						String searchString = filter.getText().trim();
+						if (searchString.length() > 0) {
+							issues_table.setRowFilter(RowFilters.regexFilter(0, searchString));
+						}
+					}
+				});
+				clear.setAction(new AbstractAction("Clear") {
+					public void actionPerformed(ActionEvent e) {
+						issues_table.setRowFilter(null);
+					}
+				});
 				scrollPane.setViewportView(issues_table);
 				issues_table.setColumnSelectionAllowed(true);
 				issues_table.getColumnModel().getColumn(5).setMinWidth(95);
@@ -779,7 +780,7 @@ public class Main {
 				issues_table.setCellSelectionEnabled(true);
 				issues_table.setRowHeight(23);
 				issues_table.setAutoCreateRowSorter(true);
-				 
+
 				final Label internetCheck = new Label("ONLINE");
 				internetCheck.setFont(new Font("Dialog", Font.BOLD | Font.ITALIC, 12));
 				internetCheck.setBackground(Color.GREEN);
@@ -872,9 +873,9 @@ public class Main {
 						int selectedColumnIndex = 0;
 						Object selectedObject = (Object) table.getModel().getValueAt(issue_row, selectedColumnIndex);
 						int selected_issue = (int) selectedObject;
-						
-							edit_issue(selected_issue);
-						
+
+						edit_issue(selected_issue);
+
 						// /
 						// ((DefaultTableModel)table.getModel()).removeRow(modelRow);
 					}
@@ -949,21 +950,25 @@ public class Main {
 				btnAdd.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
 						add_issue();
-						/*i_id = i_id + 1;
-						
-						// JOptionPane.showMessageDialog(null, "Deleted");
-						Date date = new Date();
-						SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
-						Issue issue = new Issue(i_id, "title", 1, 1, 2015, "title", 1, 1, 2015, date);
-
-						list_issues.put(i_id, 1);
-						issue_screens.put(i_id, new JFrame());
-						article_screens.put(i_id, new HashMap<Integer, JFrame>());
-						issue_storage.put(i_id, issue);
-						Object[] new_row = { i_id, "title", 1, 1, 2015, sdf.format(date), "View", "Edit", "Delete" };
-
-						((DefaultTableModel) issues_table.getModel()).addRow(new_row);
-						issues_table.repaint();*/
+						/*
+						 * i_id = i_id + 1;
+						 * 
+						 * // JOptionPane.showMessageDialog(null, "Deleted");
+						 * Date date = new Date(); SimpleDateFormat sdf = new
+						 * SimpleDateFormat("yyyy/MM/dd"); Issue issue = new
+						 * Issue(i_id, "title", 1, 1, 2015, "title", 1, 1, 2015,
+						 * date);
+						 * 
+						 * list_issues.put(i_id, 1); issue_screens.put(i_id, new
+						 * JFrame()); article_screens.put(i_id, new
+						 * HashMap<Integer, JFrame>()); issue_storage.put(i_id,
+						 * issue); Object[] new_row = { i_id, "title", 1, 1,
+						 * 2015, sdf.format(date), "View", "Edit", "Delete" };
+						 * 
+						 * ((DefaultTableModel)
+						 * issues_table.getModel()).addRow(new_row);
+						 * issues_table.repaint();
+						 */
 					}
 				});
 				btnAdd.setBounds(width - 150, 112, 117, 25);
@@ -979,167 +984,178 @@ public class Main {
 		}
 
 	}
+
 	public void add_issue() {
 		if (logged_in) {
-				int width_small = 0;
-				int height_small = 0;
-				if (height >= 480 && width >= 640) {
-					width_small = (int) (900 - (900 * (37.5 / 100)));
-				} else {
-					width_small = (int) (640 - (640 * (37.5 / 100)));
+			int width_small = 0;
+			int height_small = 0;
+			if (height >= 480 && width >= 640) {
+				width_small = (int) (900 - (900 * (37.5 / 100)));
+			} else {
+				width_small = (int) (640 - (640 * (37.5 / 100)));
+			}
+			final int current_id = i_id + 1;
+			height_small = (int) (640 - (640 * (5 / 100)));
+			final JFrame edit_issue = new JFrame();
+			issue_screens.put(i_id, edit_issue);
+			edit_issue.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+			edit_issue.getContentPane().setBackground(new Color(128, 128, 128));
+			edit_issue.setTitle("New Issue");
+			edit_issue.addWindowListener(new WindowAdapter() {
+				@Override
+				public void windowClosing(WindowEvent e) {
+					// database_save();
+
 				}
-				final int current_id=i_id+1;
-				height_small = (int) (640 - (640* (5 / 100)));
-				final JFrame edit_issue = new JFrame();
-				issue_screens.put(i_id, edit_issue);
-				edit_issue.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-				edit_issue.getContentPane().setBackground(new Color(128, 128, 128));
-				edit_issue.setTitle("New Issue");
-				edit_issue.addWindowListener(new WindowAdapter() {
-					@Override
-					public void windowClosing(WindowEvent e) {
-						// database_save();
-						
-					}
-				});
-				edit_issue.setSize(width_small, height_small);// 400 width and 500
-														// height
-				edit_issue.getContentPane().setLayout(null);// using no layout managers
-				
-				JLabel lblNewLabel = new JLabel("TORU");
-				lblNewLabel.setForeground(new Color(255, 250, 250));
-				lblNewLabel.setBackground(new Color(230, 230, 250));
-				lblNewLabel.setFont(new Font("Trattatello", Font.BOLD, 24));
-				lblNewLabel.setToolTipText("Welcome\n");
+			});
+			edit_issue.setSize(width_small, height_small);// 400 width and 500
+			// height
+			edit_issue.getContentPane().setLayout(null);// using no layout
+														// managers
 
-				lblNewLabel.setBounds((width_small / 2) - 34, 15, 95, 25);
-				edit_issue.getContentPane().add(lblNewLabel);
-				final JTextField title = new JTextField();
-				title.setBounds(100, 218, width_small - 200, 26);
-				edit_issue.getContentPane().add(title);
-				title.setColumns(10);
+			JLabel lblNewLabel = new JLabel("TORU");
+			lblNewLabel.setForeground(new Color(255, 250, 250));
+			lblNewLabel.setBackground(new Color(230, 230, 250));
+			lblNewLabel.setFont(new Font("Trattatello", Font.BOLD, 24));
+			lblNewLabel.setToolTipText("Welcome\n");
 
-				JLabel lblTitleText = new JLabel("Title");
-				lblTitleText.setForeground(new Color(245, 255, 250));
-				lblTitleText.setHorizontalAlignment(SwingConstants.CENTER);
-				lblTitleText.setBounds(74, 200, width_small - 151, 16);
-				edit_issue.getContentPane().add(lblTitleText);
-				JPanel title_background = new JPanel();
-				title_background.setBackground(new Color(0, 0, 0));
-				title_background.setBounds(-17, 0, width_small + 33, 54);
-				edit_issue.getContentPane().add(title_background);
+			lblNewLabel.setBounds((width_small / 2) - 34, 15, 95, 25);
+			edit_issue.getContentPane().add(lblNewLabel);
+			final JTextField title = new JTextField();
+			title.setBounds(100, 218, width_small - 200, 26);
+			edit_issue.getContentPane().add(title);
+			title.setColumns(10);
 
-				final JTextField volume = new JTextField();
-				volume.setColumns(10);
-				volume.setBounds(100, 270, width_small - 200, 26);
-				edit_issue.getContentPane().add(volume);
-				JLabel lblvolume = new JLabel("Volume");
-				lblvolume.setHorizontalAlignment(SwingConstants.CENTER);
-				lblvolume.setForeground(new Color(245, 255, 250));
-				lblvolume.setBounds(80, 250, width_small - 161, 16);
-				edit_issue.getContentPane().add(lblvolume);
-				
-				final JTextField number = new JTextField();
-				number.setColumns(10);
-				number.setBounds(100, 317, width_small - 200, 26);
-				edit_issue.getContentPane().add(number);
-				JLabel lblnumber = new JLabel("Number");
-				lblnumber.setHorizontalAlignment(SwingConstants.CENTER);
-				lblnumber.setForeground(new Color(245, 255, 250));
-				lblnumber.setBounds(80, 300, width_small - 161, 16);
-				edit_issue.getContentPane().add(lblnumber);
-				
-				final JTextField year = new JTextField();
-				year.setColumns(10);
-				year.setBounds(100, 364, width_small - 200, 26);
-				edit_issue.getContentPane().add(year);
-				JLabel lblyear = new JLabel("Year");
-				lblyear.setHorizontalAlignment(SwingConstants.CENTER);
-				lblyear.setForeground(new Color(245, 255, 250));
-				lblyear.setBounds(80, 347, width_small - 161, 16);
-				edit_issue.getContentPane().add(lblyear);
-				
-				SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
-				JLabel lblDatePublished = new JLabel("Date Published");
-				lblDatePublished.setHorizontalAlignment(SwingConstants.CENTER);
-				lblDatePublished.setForeground(new Color(245, 255, 250));
-				lblDatePublished.setBounds(80, 394, width_small - 161, 16);
-				edit_issue.add(lblDatePublished);
-				
-				final JXDatePicker datePicker = new JXDatePicker();
-				datePicker.setFormats(sdf);
-			
-				datePicker.addActionListener(new ActionListener() {
-					public void actionPerformed(ActionEvent e) {
-						System.out.println(datePicker.getDate());
-					}
-				});;
-				datePicker.setBounds(100, 410, width_small - 200, 30);
-				// panel.add(label);
-				edit_issue.add(datePicker);
-				
-				
-				JButton btnSubmit = new JButton("Create");
-			
-	
-				btnSubmit.addActionListener(new ActionListener() {
-					public void actionPerformed(ActionEvent e) {
+			JLabel lblTitleText = new JLabel("Title");
+			lblTitleText.setForeground(new Color(245, 255, 250));
+			lblTitleText.setHorizontalAlignment(SwingConstants.CENTER);
+			lblTitleText.setBounds(74, 200, width_small - 151, 16);
+			edit_issue.getContentPane().add(lblTitleText);
+			JPanel title_background = new JPanel();
+			title_background.setBackground(new Color(0, 0, 0));
+			title_background.setBounds(-17, 0, width_small + 33, 54);
+			edit_issue.getContentPane().add(title_background);
+
+			final JTextField volume = new JTextField();
+			volume.setColumns(10);
+			volume.setBounds(100, 270, width_small - 200, 26);
+			edit_issue.getContentPane().add(volume);
+			JLabel lblvolume = new JLabel("Volume");
+			lblvolume.setHorizontalAlignment(SwingConstants.CENTER);
+			lblvolume.setForeground(new Color(245, 255, 250));
+			lblvolume.setBounds(80, 250, width_small - 161, 16);
+			edit_issue.getContentPane().add(lblvolume);
+
+			final JTextField number = new JTextField();
+			number.setColumns(10);
+			number.setBounds(100, 317, width_small - 200, 26);
+			edit_issue.getContentPane().add(number);
+			JLabel lblnumber = new JLabel("Number");
+			lblnumber.setHorizontalAlignment(SwingConstants.CENTER);
+			lblnumber.setForeground(new Color(245, 255, 250));
+			lblnumber.setBounds(80, 300, width_small - 161, 16);
+			edit_issue.getContentPane().add(lblnumber);
+
+			final JTextField year = new JTextField();
+			year.setColumns(10);
+			year.setBounds(100, 364, width_small - 200, 26);
+			edit_issue.getContentPane().add(year);
+			JLabel lblyear = new JLabel("Year");
+			lblyear.setHorizontalAlignment(SwingConstants.CENTER);
+			lblyear.setForeground(new Color(245, 255, 250));
+			lblyear.setBounds(80, 347, width_small - 161, 16);
+			edit_issue.getContentPane().add(lblyear);
+
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
+			JLabel lblDatePublished = new JLabel("Date Published");
+			lblDatePublished.setHorizontalAlignment(SwingConstants.CENTER);
+			lblDatePublished.setForeground(new Color(245, 255, 250));
+			lblDatePublished.setBounds(80, 394, width_small - 161, 16);
+			edit_issue.add(lblDatePublished);
+
+			final JXDatePicker datePicker = new JXDatePicker();
+			datePicker.setFormats(sdf);
+
+			datePicker.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					System.out.println(datePicker.getDate());
+				}
+			});
+			;
+			datePicker.setBounds(100, 410, width_small - 200, 30);
+			// panel.add(label);
+			edit_issue.add(datePicker);
+
+			JButton btnSubmit = new JButton("Create");
+
+			btnSubmit.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					try {
+
+						int entered_volume = Integer.parseInt(volume.getText());
+						int entered_number = Integer.parseInt(number.getText());
+						int entered_year = Integer.parseInt(year.getText());
 						i_id++;
-					
-						Issue issue =new Issue(i_id,title.getText(),Integer.parseInt(volume.getText()),Integer.parseInt(number.getText()),Integer.parseInt(year.getText()),datePicker.getDate());
-					// JOptionPane.showMessageDialog(null, "Deleted");
+						Issue issue = new Issue(i_id, title.getText(), entered_volume, entered_number, entered_year,
+								datePicker.getDate());
+
+						// JOptionPane.showMessageDialog(null, "Deleted");
 						SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
-			
+
 						list_issues.put(i_id, 1);
 						issue_screens.put(i_id, new JFrame());
 						article_screens.put(i_id, new HashMap<Integer, JFrame>());
 						issue_storage.put(i_id, issue);
-						Object[] new_row = { i_id,title.getText(),Integer.parseInt(volume.getText()),Integer.parseInt(number.getText()), sdf.format(datePicker.getDate()), "View", "Edit", "Delete" };
+						Object[] new_row = { i_id, title.getText(), Integer.parseInt(volume.getText()),
+								Integer.parseInt(number.getText()), sdf.format(datePicker.getDate()), "View", "Edit",
+								"Delete" };
 
 						((DefaultTableModel) issues_table.getModel()).addRow(new_row);
 						issues_table.repaint();
 						edit_issue.dispose();
 						issues.dispose();
 						dashboard();
-						
+
+					} catch (Exception ex) {
+						JOptionPane.showMessageDialog(null, "Use only numbers in fields: Volume, Number, Year ");
 					}
-				});
-				if (height_small - 150 > 300) {
-					btnSubmit.setBounds(((width_small / 3) * 2) / 2, height_small - 100, width_small / 3, 29);
-				} else {
-					btnSubmit.setBounds(((width_small / 3) * 2) / 2, 350, width_small / 3, 29);
+
 				}
+			});
+			if (height_small - 150 > 300) {
+				btnSubmit.setBounds(((width_small / 3) * 2) / 2, height_small - 100, width_small / 3, 29);
+			} else {
+				btnSubmit.setBounds(((width_small / 3) * 2) / 2, 350, width_small / 3, 29);
+			}
 
-				edit_issue.getContentPane().add(btnSubmit);
+			edit_issue.getContentPane().add(btnSubmit);
 
-				JLabel lblApiInformation = new JLabel("Issue Details");
-				lblApiInformation.setBackground(new Color(218, 207,2));
-				lblApiInformation.setHorizontalAlignment(SwingConstants.CENTER);
-				lblApiInformation.setForeground(new Color(255, 255, 255));
-				lblApiInformation.setFont(new Font("Dialog", Font.BOLD, 20));
-				lblApiInformation.setBounds((width_small / 2) - 145, 108, 309, 40);
-				lblApiInformation.setOpaque(true);
-				edit_issue.getContentPane().add(lblApiInformation);
-		
+			JLabel lblApiInformation = new JLabel("Issue Details");
+			lblApiInformation.setBackground(new Color(218, 207, 2));
+			lblApiInformation.setHorizontalAlignment(SwingConstants.CENTER);
+			lblApiInformation.setForeground(new Color(255, 255, 255));
+			lblApiInformation.setFont(new Font("Dialog", Font.BOLD, 20));
+			lblApiInformation.setBounds((width_small / 2) - 145, 108, 309, 40);
+			lblApiInformation.setOpaque(true);
+			edit_issue.getContentPane().add(lblApiInformation);
 
-				Panel panel = new Panel();
-				panel.setBackground(new Color(204, 51, 51));
-				panel.setBounds(0, 54, width_small, 5);
-				edit_issue.getContentPane().add(panel);
+			Panel panel = new Panel();
+			panel.setBackground(new Color(204, 51, 51));
+			panel.setBounds(0, 54, width_small, 5);
+			edit_issue.getContentPane().add(panel);
 
-			
-				edit_issue.setVisible(true);// making the frame visible
-				edit_issue.repaint();
-				issue_screens.put(i_id, edit_issue);
-				Panel panel_2 = new Panel();
-				panel_2.setBackground(new Color(192, 183,3));
-				panel_2.setBounds(0, 150, width_small, 5);
-				edit_issue.getContentPane().add(panel_2);
-				Panel panel_1 = new Panel();
-				panel_1.setBackground(new Color(218, 207,2));
-				panel_1.setBounds(0, 105, width_small, 45);
-				edit_issue.getContentPane().add(panel_1);
-			
+			edit_issue.setVisible(true);// making the frame visible
+			edit_issue.repaint();
+			issue_screens.put(i_id, edit_issue);
+			Panel panel_2 = new Panel();
+			panel_2.setBackground(new Color(192, 183, 3));
+			panel_2.setBounds(0, 150, width_small, 5);
+			edit_issue.getContentPane().add(panel_2);
+			Panel panel_1 = new Panel();
+			panel_1.setBackground(new Color(218, 207, 2));
+			panel_1.setBounds(0, 105, width_small, 45);
+			edit_issue.getContentPane().add(panel_1);
+
 		} else {
 			login("dashboard");
 		}
@@ -1156,7 +1172,7 @@ public class Main {
 					width_small = (int) (640 - (640 * (37.5 / 100)));
 				}
 
-				height_small = (int) (640 - (640* (5 / 100)));
+				height_small = (int) (640 - (640 * (5 / 100)));
 				final JFrame edit_issue = new JFrame();
 				issue_screens.put(issue_id, edit_issue);
 				edit_issue.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -1168,10 +1184,12 @@ public class Main {
 						// database_save();
 					}
 				});
-				edit_issue.setSize(width_small, height_small);// 400 width and 500
-														// height
-				edit_issue.getContentPane().setLayout(null);// using no layout managers
-				final Issue current_issue=issue_storage.get(issue_id);
+				edit_issue.setSize(width_small, height_small);// 400 width and
+																// 500
+				// height
+				edit_issue.getContentPane().setLayout(null);// using no layout
+															// managers
+				final Issue current_issue = issue_storage.get(issue_id);
 				JLabel lblNewLabel = new JLabel("TORU");
 				lblNewLabel.setForeground(new Color(255, 250, 250));
 				lblNewLabel.setBackground(new Color(230, 230, 250));
@@ -1206,7 +1224,7 @@ public class Main {
 				lblvolume.setForeground(new Color(245, 255, 250));
 				lblvolume.setBounds(80, 250, width_small - 161, 16);
 				edit_issue.getContentPane().add(lblvolume);
-				
+
 				final JTextField number = new JTextField();
 				number.setColumns(10);
 				number.setText(Integer.toString(current_issue.getNumber()));
@@ -1217,7 +1235,7 @@ public class Main {
 				lblnumber.setForeground(new Color(245, 255, 250));
 				lblnumber.setBounds(80, 300, width_small - 161, 16);
 				edit_issue.getContentPane().add(lblnumber);
-				
+
 				final JTextField year = new JTextField();
 				year.setColumns(10);
 				year.setText(Integer.toString(current_issue.getYear()));
@@ -1228,30 +1246,30 @@ public class Main {
 				lblyear.setForeground(new Color(245, 255, 250));
 				lblyear.setBounds(80, 347, width_small - 161, 16);
 				edit_issue.getContentPane().add(lblyear);
-				
+
 				SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
 				JLabel lblDatePublished = new JLabel("Date Published");
 				lblDatePublished.setHorizontalAlignment(SwingConstants.CENTER);
 				lblDatePublished.setForeground(new Color(245, 255, 250));
 				lblDatePublished.setBounds(80, 394, width_small - 161, 16);
 				edit_issue.add(lblDatePublished);
-				
+
 				final JXDatePicker datePicker = new JXDatePicker();
 				datePicker.setFormats(sdf);
-			
+
 				datePicker.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
 						System.out.println(datePicker.getDate());
 					}
-				});;
+				});
+				;
 				datePicker.setDate(current_issue.getDate_published());
 				datePicker.setBounds(100, 410, width_small - 200, 30);
 				// panel.add(label);
 				edit_issue.add(datePicker);
-				
-				
+
 				JButton btnSubmit = new JButton("Save");
-			
+
 				Action actionSubmit = new AbstractAction() {
 					@Override
 					public void actionPerformed(ActionEvent e) {
@@ -1264,8 +1282,7 @@ public class Main {
 						issue_storage.put(issue_id, current_issue);
 						issues.dispose();
 						dashboard();
-							
-		
+
 					}
 				};
 				title.addActionListener(actionSubmit);
@@ -1275,16 +1292,16 @@ public class Main {
 				datePicker.addActionListener(actionSubmit);
 				btnSubmit.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
-							current_issue.setTitle(title.getText());
-							current_issue.setVolume(Integer.parseInt(volume.getText()));
-							current_issue.setNumber(Integer.parseInt(number.getText()));
-							current_issue.setYear(Integer.parseInt(year.getText()));
-							current_issue.setDate_published(datePicker.getDate());
-							edit_issue.dispose();
-							issue_storage.put(issue_id, current_issue);
-							issues.dispose();
-							dashboard();
-						
+						current_issue.setTitle(title.getText());
+						current_issue.setVolume(Integer.parseInt(volume.getText()));
+						current_issue.setNumber(Integer.parseInt(number.getText()));
+						current_issue.setYear(Integer.parseInt(year.getText()));
+						current_issue.setDate_published(datePicker.getDate());
+						edit_issue.dispose();
+						issue_storage.put(issue_id, current_issue);
+						issues.dispose();
+						dashboard();
+
 					}
 				});
 				if (height_small - 150 > 300) {
@@ -1303,14 +1320,12 @@ public class Main {
 				lblApiInformation.setBounds((width_small / 2) - 145, 108, 309, 40);
 				lblApiInformation.setOpaque(true);
 				edit_issue.getContentPane().add(lblApiInformation);
-		
 
 				Panel panel = new Panel();
 				panel.setBackground(new Color(204, 51, 51));
 				panel.setBounds(0, 54, width_small, 5);
 				edit_issue.getContentPane().add(panel);
 
-			
 				edit_issue.setVisible(true);// making the frame visible
 				edit_issue.repaint();
 				issue_screens.put(issue_id, edit_issue);
@@ -1343,7 +1358,7 @@ public class Main {
 				}
 				HashMap<Integer, JFrame> issue_articles = new HashMap<Integer, JFrame>();
 				articles.getContentPane().setBackground(new Color(128, 128, 128));
-				
+
 				articles.setTitle("Issue <" + Integer.toString(issue_id) + ">");
 				articles.addWindowListener(new WindowAdapter() {
 					@Override
@@ -1383,6 +1398,7 @@ public class Main {
 					rowData.add(data);
 
 				}
+
 				article_screens.put(issue_id, issue_articles);
 				Object columnNames[] = { "ID", "Issue", "Section", "Title", "Pages", "Abstract", "Date Published", "",
 						"", "" };
@@ -1421,44 +1437,45 @@ public class Main {
 						return tip;
 					}
 				};
-				// reference: https://svn.java.net/svn/swinglabs-demos~svn/trunk/src/java/org/jdesktop/demo/sample/  
-		        final JTextField filter = new JTextField("");
-		        filter.setBounds(150, height / 16 * 7 - 27, 117, 25);
-		       
-		        final JButton search = new JButton("Search");
-		        final JButton clear = new JButton("Clear");
-		        search.setBounds(268, height / 16 * 7 - 27, 90, 25);
-			       
-		        clear.setBounds(355, height / 16 * 7 - 27, 90, 25);
-			       ;
-		        articles.getContentPane().add(filter);
-		        articles.getContentPane().add(search);
-		        articles.getContentPane().add(clear);
-		        filter.setAction(new AbstractAction("Search") {
-		            public void actionPerformed(ActionEvent e) {
-		                
-		                String searchString = filter.getText().trim();
-		                if ( searchString.length() > 0 ) {
-		                	article_table.setRowFilter(RowFilters.regexFilter(0, searchString));
-		                } else {
-		                	article_table.setRowFilter(null);
-		                }
-		            }
-		        });
-		        search.setAction(new AbstractAction("Search") {
-		            public void actionPerformed(ActionEvent e) {
-		                
-		                String searchString = filter.getText().trim();
-		                if ( searchString.length() > 0 ) {
-		                	article_table.setRowFilter(RowFilters.regexFilter(0, searchString));
-		                } 
-		            }
-		        });
-		        clear.setAction(new AbstractAction("Clear") {
-		            public void actionPerformed(ActionEvent e) {
-		            	article_table.setRowFilter(null);
-		            }
-		        });
+				// reference:
+				// https://svn.java.net/svn/swinglabs-demos~svn/trunk/src/java/org/jdesktop/demo/sample/
+				final JTextField filter = new JTextField("");
+				filter.setBounds(150, height / 16 * 7 - 27, 117, 25);
+
+				final JButton search = new JButton("Search");
+				final JButton clear = new JButton("Clear");
+				search.setBounds(268, height / 16 * 7 - 27, 90, 25);
+
+				clear.setBounds(355, height / 16 * 7 - 27, 90, 25);
+				;
+				articles.getContentPane().add(filter);
+				articles.getContentPane().add(search);
+				articles.getContentPane().add(clear);
+				filter.setAction(new AbstractAction("Search") {
+					public void actionPerformed(ActionEvent e) {
+
+						String searchString = filter.getText().trim();
+						if (searchString.length() > 0) {
+							article_table.setRowFilter(RowFilters.regexFilter(0, searchString));
+						} else {
+							article_table.setRowFilter(null);
+						}
+					}
+				});
+				search.setAction(new AbstractAction("Search") {
+					public void actionPerformed(ActionEvent e) {
+
+						String searchString = filter.getText().trim();
+						if (searchString.length() > 0) {
+							article_table.setRowFilter(RowFilters.regexFilter(0, searchString));
+						}
+					}
+				});
+				clear.setAction(new AbstractAction("Clear") {
+					public void actionPerformed(ActionEvent e) {
+						article_table.setRowFilter(null);
+					}
+				});
 				article_table.setAutoCreateRowSorter(true);
 				scrollPane.setViewportView(article_table);
 				article_table.getColumnModel().getColumn(6).setMinWidth(50);
@@ -1650,9 +1667,9 @@ public class Main {
 				JButton btnAdd = new JButton("Add");
 				btnAdd.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
-						
-							add_article(issue_id);
-							
+
+						add_article(issue_id);
+
 					}
 				});
 				btnAdd.setBounds(width - 150, height / 16 * 7 - 27, 117, 25);
@@ -1703,9 +1720,8 @@ public class Main {
 				 */
 				Date date = new Date();
 				Issue row_issue = issue_storage.get(issue_id);
-				Object issue_rowData[][] = { { row_issue.getId(),row_issue.getTitle(), row_issue.getVolume(),
-					row_issue.getNumber(),row_issue.getYear(),
-					sdf.format(row_issue.getDate_published()) } };
+				Object issue_rowData[][] = { { row_issue.getId(), row_issue.getTitle(), row_issue.getVolume(),
+						row_issue.getNumber(), row_issue.getYear(), sdf.format(row_issue.getDate_published()) } };
 				Object issue_columnNames[] = { "ID", "Title", "Volume", "Number", "Year", "Date Published" };
 
 				DefaultTableModel issue_dtm = new DefaultTableModel(issue_rowData, issue_columnNames);
@@ -1935,7 +1951,7 @@ public class Main {
 				panel6.setLayout(null);
 				panel6.setAutoscrolls(true);
 
-																						// size
+				// size
 				JScrollPane authorSection = new JScrollPane(panel6);
 				panel6.setAutoscrolls(true);
 				authorSection.setHorizontalScrollBarPolicy(authorSection.HORIZONTAL_SCROLLBAR_ALWAYS);
@@ -1944,7 +1960,7 @@ public class Main {
 				panel6.add(lblNewLabel_3);
 
 				ArrayList<Author> authors = current_article.getAuthors();
-			
+
 				int author_x = 16;
 				int author_y = 60;
 				int separation_horizontal = 205;
@@ -1954,11 +1970,11 @@ public class Main {
 					separation_horizontal = 205 * i;
 					author_x = author_x + separation_horizontal;
 					Author author = authors.get(i);
-					
-					JLabel author_num = new JLabel(Integer.toString(i+1));
-					author_num.setBounds(87+author_x, 35, 156, 16);
+
+					JLabel author_num = new JLabel(Integer.toString(i + 1));
+					author_num.setBounds(87 + author_x, 35, 156, 16);
 					panel6.add(author_num);
-					
+
 					JLabel field_label = new JLabel("First name:");
 					field_label.setBounds(author_x, author_y, 75, 30); // white
 																		// box
@@ -1985,8 +2001,8 @@ public class Main {
 					author_x = 16;
 
 				}
-				panel6.setPreferredSize(new Dimension(210 * authors.size(),500)); // scrollable
-				
+				panel6.setPreferredSize(new Dimension(210 * authors.size(), 500)); // scrollable
+
 				/*
 				 * JTextArea lblAuthorInfo = new JTextArea(
 				 * "First Name: Pete\tFirst Name: Bob 2 \nLast Name: User\tLast Name: User 2 \n "
@@ -1997,7 +2013,7 @@ public class Main {
 				 * panel6.add(lblAuthorInfo);
 				 */
 				authorSection.setHorizontalScrollBarPolicy(authorSection.HORIZONTAL_SCROLLBAR_ALWAYS);
-				
+
 				authorSection.setPreferredSize(new Dimension(600 * authors.size(), 8));
 				authorSection.setBounds(width_small / 2 - 40, 132 + height_small / 2 - 130, width_small / 2,
 						height_small / 2 - 150);
@@ -2271,7 +2287,7 @@ public class Main {
 				panel6.setLayout(null);
 				panel6.setAutoscrolls(true);
 
-																					// size
+				// size
 				JScrollPane authorSection = new JScrollPane(panel6);
 				panel6.setAutoscrolls(true);
 
@@ -2280,21 +2296,21 @@ public class Main {
 				panel6.add(lblNewLabel_3);
 				final HashMap<Integer, HashMap<Integer, JTextField>> author_fields = new HashMap<Integer, HashMap<Integer, JTextField>>();
 				ArrayList<Author> authors = current_article.getAuthors();
-				
+
 				int author_x = 16;
 				int author_y = 60;
 				int separation_horizontal = 205;
 				int separation_vertical = 30;
 				int label_field_separation = 4;
 				for (int i = 0; i < authors.size(); i++) {
-					
+
 					separation_horizontal = 205 * i;
 					author_x = author_x + separation_horizontal;
-					
-					JLabel author_num = new JLabel(Integer.toString(i+1));
-					author_num.setBounds(87+author_x, 35, 156, 16);
+
+					JLabel author_num = new JLabel(Integer.toString(i + 1));
+					author_num.setBounds(87 + author_x, 35, 156, 16);
 					panel6.add(author_num);
-					
+
 					HashMap<Integer, JTextField> author_components = new HashMap<Integer, JTextField>();
 					Author author = authors.get(i);
 					JLabel field_label = new JLabel("First name:");
@@ -2326,8 +2342,8 @@ public class Main {
 					author_x = 16;
 
 				}
-				panel6.setPreferredSize(new Dimension(210 * authors.size(),500)); // scrollable
-				
+				panel6.setPreferredSize(new Dimension(210 * authors.size(), 500)); // scrollable
+
 				System.out.println(author_fields.size());
 				/*
 				 * JTextArea lblAuthorInfo = new JTextArea(
@@ -2430,7 +2446,7 @@ public class Main {
 				label.setText("Choose Date by selecting below.");
 				final JXDatePicker datePicker = new JXDatePicker();
 				datePicker.setFormats(sdf);
-			
+
 				datePicker.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
 						label.setText(datePicker.getDate().toString());
@@ -2486,357 +2502,347 @@ public class Main {
 			login("dashboard");
 		}
 	}
+
 	public void add_article(final int issue_id) {
 		if (logged_in) {
-		
-				int width_small = 0;
-				int height_small = 0;
-				if (height >= 768 && width >= 640) {
-					width_small = (int) (width - (width * (37.5 / 100)));
-					height_small = (int) (height - (height * (5 / 100)));
-				} else {
-					width_small = (int) (640 + (640 * (37.5 / 100)));
-					height_small = (int) (768 - (768 * (5 / 100)));
+			issue_screens.get(issue_id).dispose();
+			int width_small = 0;
+			int height_small = 0;
+			if (height >= 768 && width >= 640) {
+				width_small = (int) (width - (width * (37.5 / 100)));
+				height_small = (int) (height - (height * (5 / 100)));
+			} else {
+				width_small = (int) (640 + (640 * (37.5 / 100)));
+				height_small = (int) (768 - (768 * (5 / 100)));
+			}
+
+			final JFrame article = new JFrame();
+			article.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+			// article.setSize(width_small, height_small);
+			article.setSize(width_small, height_small);
+			article.setTitle("New Article");
+			article.getContentPane().setBackground(new Color(128, 128, 128));
+			article.setVisible(true);
+			article.addWindowListener(new WindowAdapter() {
+				@Override
+				public void windowClosing(WindowEvent e) {
+					// database_save();
 				}
-				
-				final JFrame article = new JFrame();
-				article.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-				// article.setSize(width_small, height_small);
-				article.setSize(width_small, height_small);
-				article.setTitle("New Article");
-				article.getContentPane().setBackground(new Color(128, 128, 128));
-				article.setVisible(true);
-				article.addWindowListener(new WindowAdapter() {
-					@Override
-					public void windowClosing(WindowEvent e) {
-						// database_save();
-					}
-				});
-				article.getContentPane().setLayout(null);
+			});
+			article.getContentPane().setLayout(null);
 
-				JLabel lblArticleDetails = new JLabel("Article Details");
-				lblArticleDetails.setHorizontalAlignment(SwingConstants.CENTER);
-				lblArticleDetails.setFont(new Font("Dialog", Font.BOLD, 20));
-				lblArticleDetails.setForeground(new Color(255, 255, 255));
-				lblArticleDetails.setBackground(new Color(218, 207,2));
-				lblArticleDetails.setBounds(width_small / 4, 65, width_small / 2, 40);
-				lblArticleDetails.setOpaque(true);
-				article.getContentPane().add(lblArticleDetails);
+			JLabel lblArticleDetails = new JLabel("Article Details");
+			lblArticleDetails.setHorizontalAlignment(SwingConstants.CENTER);
+			lblArticleDetails.setFont(new Font("Dialog", Font.BOLD, 20));
+			lblArticleDetails.setForeground(new Color(255, 255, 255));
+			lblArticleDetails.setBackground(new Color(218, 207, 2));
+			lblArticleDetails.setBounds(width_small / 4, 65, width_small / 2, 40);
+			lblArticleDetails.setOpaque(true);
+			article.getContentPane().add(lblArticleDetails);
 
-				/*
-				 * final JButton btnSync = new JButton("Sync");
-				 * btnSync.setBounds(width_small - 150, 21, 70, 24);
-				 * article.getContentPane().add(btnSync);
-				 * 
-				 * final Label internetCheck = new Label("  ONLINE");
-				 * internetCheck.setFont(new Font("Dialog", Font.BOLD |
-				 * Font.ITALIC, 12)); internetCheck.setBackground(Color.GREEN);
-				 * internetCheck.setAlignment(1);
-				 * internetCheck.setForeground(new Color(255, 255, 255));
-				 * internetCheck.setBounds(width_small - 80, 22, 65, 22);
-				 * article.getContentPane().add(internetCheck);
-				 * 
-				 * ActionListener taskPerformer1 = new ActionListener() { public
-				 * void actionPerformed(ActionEvent evt) { try { Socket sock =
-				 * new Socket(); InetSocketAddress addr = new
-				 * InetSocketAddress("www.google.com", 80);
-				 * sock.setSoTimeout(500); sock.connect(addr, 3000);
-				 * 
-				 * internetCheck.setBackground(Color.GREEN);
-				 * internetCheck.setText("ONLINE"); btnSync.setEnabled(true);
-				 * sock.close();
-				 * 
-				 * } catch (Exception e) {
-				 * internetCheck.setBackground(Color.RED);
-				 * internetCheck.setText("OFFLINE"); btnSync.setEnabled(false);
-				 * } } }; new Timer(delay, taskPerformer1).start();
-				 * DefaultTableModel model = new DefaultTableModel(rowData,
-				 * columnNames); Action delete = new AbstractAction() { public
-				 * void actionPerformed(ActionEvent e) { JTable table = (JTable)
-				 * e.getSource(); int modelRow =
-				 * Integer.valueOf(e.getActionCommand());
-				 * JOptionPane.showMessageDialog(null, "Deleted"); // / //
-				 * ((DefaultTableModel)table.getModel()).removeRow(modelRow); }
-				 * }; Action view = new AbstractAction() { public void
-				 * actionPerformed(ActionEvent e) { JTable table = (JTable)
-				 * e.getSource(); int modelRow =
-				 * Integer.valueOf(e.getActionCommand());
-				 * JOptionPane.showMessageDialog(null, modelRow); // / //
-				 * ((DefaultTableModel)table.getModel()).removeRow(modelRow); }
-				 * };
-				 */
+			/*
+			 * final JButton btnSync = new JButton("Sync");
+			 * btnSync.setBounds(width_small - 150, 21, 70, 24);
+			 * article.getContentPane().add(btnSync);
+			 * 
+			 * final Label internetCheck = new Label("  ONLINE");
+			 * internetCheck.setFont(new Font("Dialog", Font.BOLD | Font.ITALIC,
+			 * 12)); internetCheck.setBackground(Color.GREEN);
+			 * internetCheck.setAlignment(1); internetCheck.setForeground(new
+			 * Color(255, 255, 255)); internetCheck.setBounds(width_small - 80,
+			 * 22, 65, 22); article.getContentPane().add(internetCheck);
+			 * 
+			 * ActionListener taskPerformer1 = new ActionListener() { public
+			 * void actionPerformed(ActionEvent evt) { try { Socket sock = new
+			 * Socket(); InetSocketAddress addr = new
+			 * InetSocketAddress("www.google.com", 80); sock.setSoTimeout(500);
+			 * sock.connect(addr, 3000);
+			 * 
+			 * internetCheck.setBackground(Color.GREEN);
+			 * internetCheck.setText("ONLINE"); btnSync.setEnabled(true);
+			 * sock.close();
+			 * 
+			 * } catch (Exception e) { internetCheck.setBackground(Color.RED);
+			 * internetCheck.setText("OFFLINE"); btnSync.setEnabled(false); } }
+			 * }; new Timer(delay, taskPerformer1).start(); DefaultTableModel
+			 * model = new DefaultTableModel(rowData, columnNames); Action
+			 * delete = new AbstractAction() { public void
+			 * actionPerformed(ActionEvent e) { JTable table = (JTable)
+			 * e.getSource(); int modelRow =
+			 * Integer.valueOf(e.getActionCommand());
+			 * JOptionPane.showMessageDialog(null, "Deleted"); // / //
+			 * ((DefaultTableModel)table.getModel()).removeRow(modelRow); } };
+			 * Action view = new AbstractAction() { public void
+			 * actionPerformed(ActionEvent e) { JTable table = (JTable)
+			 * e.getSource(); int modelRow =
+			 * Integer.valueOf(e.getActionCommand());
+			 * JOptionPane.showMessageDialog(null, modelRow); // / //
+			 * ((DefaultTableModel)table.getModel()).removeRow(modelRow); } };
+			 */
 
-				JButton btnGoBack = new JButton("Close");
-				btnGoBack.addActionListener(new ActionListener() {
-					public void actionPerformed(ActionEvent arg0) {
+			JButton btnGoBack = new JButton("Close");
+			btnGoBack.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent arg0) {
 
-						if (issue_screens.get(issue_id) == null) {
-							article.dispose();
-							issue(issue_id);
-						} else if (!issue_screens.get(issue_id).isVisible()) {
-							article.dispose();
-							issue_screens.get(issue_id).setVisible(true);
-						} else {
-							article.dispose();
-						}
-					}
-				});
-				btnGoBack.setBounds(width_small - 150, 17, 117, 30);
-				article.getContentPane().add(btnGoBack);
-				JScrollPane scrollSettings = new JScrollPane();
-				scrollSettings.setBounds(40, 180, 320, 200);
-
-				JPanel panel = new JPanel();
-				panel.setBackground(SystemColor.window);
-				panel.setBounds(50, 107, 300, 307);
-				article.getContentPane().add(panel);
-				panel.setLayout(null);
-				panel.setAutoscrolls(true);
-				int y = 10;
-				int fields = 5;
-				int settings_height = 210 + 30 * (fields - 8);
-
-				Panel panel_1 = new Panel();
-				panel_1.setBackground(new Color(218, 207,2));
-				panel_1.setBounds(0, 65, width_small, 45);
-				article.getContentPane().add(panel_1);
-
-				Panel panel_2 = new Panel();
-				panel_2.setBackground(new Color(192, 183,3));
-				panel_2.setBounds(0, 110, width_small, 5);
-				
-				
-				article.getContentPane().add(panel_2);
-				panel.setPreferredSize(new Dimension(320, settings_height));
-				JScrollPane articleSection = new JScrollPane(panel);
-				panel.setAutoscrolls(true);
-				articleSection.setPreferredSize(new Dimension(320, 200));
-				articleSection.setBounds(40, 132, width_small / 2 - 100, height_small - 280);
-				// scrollSettings.setViewportView(scrollFrame);
-				article.getContentPane().add(articleSection);
-
-				JPanel panel3 = new JPanel();
-				panel3.setBackground(SystemColor.window);
-				panel3.setBounds(50, 107, 320, 307);
-				article.getContentPane().add(panel3);
-				panel3.setLayout(null);
-				panel3.setAutoscrolls(true);
-
-				panel3.setPreferredSize(new Dimension(320, settings_height));
-				JScrollPane abstractSection = new JScrollPane(panel3);
-				panel3.setAutoscrolls(true);
-
-				JLabel lblNewLabel_1 = new JLabel("Abstract");
-				lblNewLabel_1.setBounds(16, 6, 61, 16);
-				panel3.add(lblNewLabel_1);
-
-				final JTextArea lblAbstract = new JTextArea();
-				lblAbstract.setEditable(true);
-				lblAbstract.setBounds(16, 28, 400, 180);
-				lblAbstract.setOpaque(true);
-				panel3.add(lblAbstract);
-				abstractSection.setPreferredSize(new Dimension(320, 200));
-				abstractSection.setBounds(width_small / 2 - 40, 132, width_small / 2, height_small / 2 - 150);
-				// scrollSettings.setViewportView(scrollFrame);
-				article.getContentPane().add(abstractSection);
-
-				JPanel panel6 = new JPanel();
-				panel6.setBackground(SystemColor.window);
-				panel6.setBounds(50, 107, 180 * 2, 307);
-				article.getContentPane().add(panel6);
-				panel6.setLayout(null);
-				panel6.setAutoscrolls(true);
-
-																					// size
-				JScrollPane authorSection = new JScrollPane(panel6);
-				panel6.setAutoscrolls(true);
-
-				JLabel lblNewLabel_3 = new JLabel("Author Information");
-				lblNewLabel_3.setBounds(15, 6, 156, 16);
-				panel6.add(lblNewLabel_3);
-				final HashMap<Integer, HashMap<Integer, JTextField>> author_fields = new HashMap<Integer, HashMap<Integer, JTextField>>();
-			/*	ArrayList<Author> authors = current_article.getAuthors();
-				
-				int author_x = 16;
-				int author_y = 60;
-				int separation_horizontal = 205;
-				int separation_vertical = 30;
-				int label_field_separation = 4;
-				for (int i = 0; i < authors.size(); i++) {
-					
-					separation_horizontal = 205 * i;
-					author_x = author_x + separation_horizontal;
-					
-					JLabel author_num = new JLabel(Integer.toString(i+1));
-					author_num.setBounds(87+author_x, 35, 156, 16);
-					panel6.add(author_num);
-					
-					HashMap<Integer, JTextField> author_components = new HashMap<Integer, JTextField>();
-					Author author = authors.get(i);
-					JLabel field_label = new JLabel("First name:");
-					field_label.setBounds(author_x, author_y, 75, 30); // white
-																		// box
-					field_label.setOpaque(true);
-					panel6.add(field_label);
-					JTextField field = new JTextField(author.getFirst_name());
-					field.setBounds(author_x + 75 + label_field_separation, author_y, 100, 30); // white
-																								// box
-					field.setOpaque(true);
-					panel6.add(field);
-					author_components.put(1, field);
-					author_y = author_y + separation_vertical;
-					field_label = new JLabel("Last name:");
-					field_label.setBounds(author_x, author_y, 75, 30); // white
-																		// box
-					field_label.setOpaque(true);
-					panel6.add(field_label);
-					field = new JTextField(author.getLast_name());
-					field.setBounds(author_x + 75 + label_field_separation, author_y, 100, 30); // white
-																								// box
-					field.setOpaque(true);
-					panel6.add(field);
-					author_components.put(2, field);
-					author_fields.put(author.getId(), author_components);
-					author_y = author_y + separation_vertical;
-					author_y = 60;
-					author_x = 16;
-
-				}
-				panel6.setPreferredSize(new Dimension(210 * authors.size(),500)); // scrollable
-				*/
-				System.out.println(author_fields.size());
-				/*
-				 * JTextArea lblAuthorInfo = new JTextArea(
-				 * "First Name: Pete\tFirst Name: Bob 2 \nLast Name: User\tLast Name: User 2 \n "
-				 * ); lblAuthorInfo.setEditable(true);
-				 * lblAuthorInfo.setBounds(16, 34, 205 * 2, 175); // white box
-				 * lblAuthorInfo.setOpaque(true); panel6.add(lblAuthorInfo)
-				 */
-
-				authorSection.setPreferredSize(new Dimension(220 * 1, 200));
-				authorSection.setBounds(width_small / 2 - 40, 132 + height_small / 2 - 130, width_small / 2,
-						height_small / 2 - 150);
-				// scrollSettings.setViewportView(scrollFrame);
-				article.getContentPane().add(authorSection);
-
-				/*JLabel lblIssues = new JLabel("Article:");
-				lblIssues.setBounds(24, 18, 110, 30);
-				panel.add(lblIssues);
-				lblIssues.setFont(new Font("Dialog", Font.BOLD, 14));
-				lblIssues.setForeground(Color.BLACK);*/
-
-				JLabel lblIssue = new JLabel("Issue:");
-				lblIssue.setBounds(24, 48, 94, 30);
-				panel.add(lblIssue);
-				lblIssue.setForeground(Color.BLACK);
-				lblIssue.setFont(new Font("Dialog", Font.BOLD, 14));
-
-				JLabel lblIssueId = new JLabel(Integer.toString(issue_id));
-				lblIssueId.setBounds(160, 48, 94, 30);
-				panel.add(lblIssueId);
-				lblIssueId.setForeground(Color.BLACK);
-				lblIssueId.setFont(new Font("Dialog", Font.BOLD, 14));
-				lblIssueId.setText(Integer.toString(issue_id));
-
-				final JLabel lblDatePublished = new JLabel("Date Published:");
-				lblDatePublished.setForeground(Color.BLACK);
-				lblDatePublished.setFont(new Font("Dialog", Font.BOLD, 14));
-				lblDatePublished.setBounds(24, 195, 150, 30);
-				panel.add(lblDatePublished);
-				Date current = new Date();
-
-				final SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
-
-				/*
-				 * JLabel lblDate = new JLabel(sdf.format(current));
-				 * lblDate.setVerticalAlignment(SwingConstants.TOP);
-				 * lblDate.setForeground(Color.BLACK); lblDate.setFont(new
-				 * Font("Dialog", Font.BOLD, 14)); lblDate.setBounds(160, 203,
-				 * 125, 30); panel.add(lblDate);
-				 
-
-				JLabel lblArticleId = new JLabel("1");
-				lblArticleId.setBounds(160, 19, 94, 30);
-				panel.add(lblArticleId);
-				lblArticleId.setForeground(Color.BLACK);
-				lblArticleId.setFont(new Font("Dialog", Font.BOLD, 14));
-				lblArticleId.setText(Integer.toString(article_id));*/
-
-				JLabel lblPages = new JLabel("Pages:");
-				lblPages.setForeground(Color.BLACK);
-				lblPages.setFont(new Font("Dialog", Font.BOLD, 14));
-				lblPages.setBounds(24, 165, 94, 30);
-				panel.add(lblPages);
-
-				final JTextField lblPageNum = new JTextField();
-				lblPageNum.setForeground(Color.BLACK);
-				lblPageNum.setFont(new Font("Dialog", Font.BOLD, 14));
-				lblPageNum.setBounds(156, 171, 125, 30);
-				panel.add(lblPageNum);
-
-				JLabel lblTitle = new JLabel("Title:");
-				lblTitle.setForeground(Color.BLACK);
-				lblTitle.setFont(new Font("Dialog", Font.BOLD, 14));
-				lblTitle.setBounds(24, 115, 94, 30);
-				panel.add(lblTitle);
-
-				Panel panel9 = new Panel();
-				panel9.setBackground(new Color(153, 102, 51));
-				panel9.setBounds(85, 118, 180, 80);
-				final JTextArea lblTitleText = new JTextArea();
-				lblTitleText.setEditable(true);
-				lblTitleText.setOpaque(true);
-				lblTitleText.setForeground(Color.BLACK);
-				lblTitleText.setFont(new Font("Dialog", Font.BOLD, 14));
-
-				panel9.add(lblTitleText);
-				JScrollPane titleSection = new JScrollPane(lblTitleText);
-				titleSection.setPreferredSize(new Dimension(300 * 2, 200));
-				titleSection.setBounds(85, 113, 225, 50);
-				titleSection.add(panel9);
-				titleSection.createHorizontalScrollBar();
-				panel.add(titleSection);
-
-				final JTextField lblSectionId = new JTextField();
-				lblSectionId.setForeground(Color.BLACK);
-				lblSectionId.setFont(new Font("Dialog", Font.BOLD, 14));
-				lblSectionId.setBounds(156, 81, 94, 30);
-				panel.add(lblSectionId);
-				final JLabel label = new JLabel();
-				label.setText("Choose Date by selecting below.");
-				final JXDatePicker datePicker = new JXDatePicker();
-				datePicker.setFormats(sdf);
-			
-				datePicker.addActionListener(new ActionListener() {
-					public void actionPerformed(ActionEvent e) {
-						label.setText(datePicker.getDate().toString());
-						System.out.println(datePicker.getDate());
-					}
-				});
-				label.setBounds(160, 250, 100, 25);
-				datePicker.setBounds(156, 198, 160, 30);
-				// panel.add(label);
-				panel.add(datePicker);
-
-				JLabel lblSection = new JLabel("Section:");
-				lblSection.setForeground(Color.BLACK);
-				lblSection.setFont(new Font("Dialog", Font.BOLD, 14));
-				lblSection.setBounds(24, 80, 94, 30);
-				panel.add(lblSection);
-
-				JButton btnSave = new JButton("Create");
-				btnSave.addActionListener(new ActionListener() {
-					public void actionPerformed(ActionEvent arg0) {
-						issue_screens.get(issue_id).dispose();
+					if (issue_screens.get(issue_id) == null) {
 						article.dispose();
+						issue(issue_id);
+					} else if (!issue_screens.get(issue_id).isVisible()) {
+						article.dispose();
+						issue_screens.get(issue_id).setVisible(true);
+					} else {
+						article.dispose();
+					}
+				}
+			});
+			btnGoBack.setBounds(width_small - 150, 17, 117, 30);
+			article.getContentPane().add(btnGoBack);
+			JScrollPane scrollSettings = new JScrollPane();
+			scrollSettings.setBounds(40, 180, 320, 200);
+
+			JPanel panel = new JPanel();
+			panel.setBackground(SystemColor.window);
+			panel.setBounds(50, 107, 300, 307);
+			article.getContentPane().add(panel);
+			panel.setLayout(null);
+			panel.setAutoscrolls(true);
+			int y = 10;
+			int fields = 5;
+			int settings_height = 210 + 30 * (fields - 8);
+
+			Panel panel_1 = new Panel();
+			panel_1.setBackground(new Color(218, 207, 2));
+			panel_1.setBounds(0, 65, width_small, 45);
+			article.getContentPane().add(panel_1);
+
+			Panel panel_2 = new Panel();
+			panel_2.setBackground(new Color(192, 183, 3));
+			panel_2.setBounds(0, 110, width_small, 5);
+
+			article.getContentPane().add(panel_2);
+			panel.setPreferredSize(new Dimension(320, settings_height));
+			JScrollPane articleSection = new JScrollPane(panel);
+			panel.setAutoscrolls(true);
+			articleSection.setPreferredSize(new Dimension(320, 200));
+			articleSection.setBounds(40, 132, width_small / 2 - 100, height_small - 280);
+			// scrollSettings.setViewportView(scrollFrame);
+			article.getContentPane().add(articleSection);
+
+			JPanel panel3 = new JPanel();
+			panel3.setBackground(SystemColor.window);
+			panel3.setBounds(50, 107, 320, 307);
+			article.getContentPane().add(panel3);
+			panel3.setLayout(null);
+			panel3.setAutoscrolls(true);
+
+			panel3.setPreferredSize(new Dimension(320, settings_height));
+			JScrollPane abstractSection = new JScrollPane(panel3);
+			panel3.setAutoscrolls(true);
+
+			JLabel lblNewLabel_1 = new JLabel("Abstract");
+			lblNewLabel_1.setBounds(16, 6, 61, 16);
+			panel3.add(lblNewLabel_1);
+
+			final JTextArea lblAbstract = new JTextArea();
+			lblAbstract.setEditable(true);
+			lblAbstract.setBounds(16, 28, 400, 180);
+			lblAbstract.setOpaque(true);
+			panel3.add(lblAbstract);
+			abstractSection.setPreferredSize(new Dimension(320, 200));
+			abstractSection.setBounds(width_small / 2 - 40, 132, width_small / 2, height_small / 2 - 150);
+			// scrollSettings.setViewportView(scrollFrame);
+			article.getContentPane().add(abstractSection);
+
+			JPanel panel6 = new JPanel();
+			panel6.setBackground(SystemColor.window);
+			panel6.setBounds(50, 107, 180 * 2, 307);
+			article.getContentPane().add(panel6);
+			panel6.setLayout(null);
+			panel6.setAutoscrolls(true);
+
+			// size
+			JScrollPane authorSection = new JScrollPane(panel6);
+			panel6.setAutoscrolls(true);
+
+			JLabel lblNewLabel_3 = new JLabel("Author Information");
+			lblNewLabel_3.setBounds(15, 6, 156, 16);
+			panel6.add(lblNewLabel_3);
+			final HashMap<Integer, HashMap<Integer, JTextField>> author_fields = new HashMap<Integer, HashMap<Integer, JTextField>>();
+			/*
+			 * ArrayList<Author> authors = current_article.getAuthors();
+			 * 
+			 * int author_x = 16; int author_y = 60; int separation_horizontal =
+			 * 205; int separation_vertical = 30; int label_field_separation =
+			 * 4; for (int i = 0; i < authors.size(); i++) {
+			 * 
+			 * separation_horizontal = 205 * i; author_x = author_x +
+			 * separation_horizontal;
+			 * 
+			 * JLabel author_num = new JLabel(Integer.toString(i+1));
+			 * author_num.setBounds(87+author_x, 35, 156, 16);
+			 * panel6.add(author_num);
+			 * 
+			 * HashMap<Integer, JTextField> author_components = new
+			 * HashMap<Integer, JTextField>(); Author author = authors.get(i);
+			 * JLabel field_label = new JLabel("First name:");
+			 * field_label.setBounds(author_x, author_y, 75, 30); // white //
+			 * box field_label.setOpaque(true); panel6.add(field_label);
+			 * JTextField field = new JTextField(author.getFirst_name());
+			 * field.setBounds(author_x + 75 + label_field_separation, author_y,
+			 * 100, 30); // white // box field.setOpaque(true);
+			 * panel6.add(field); author_components.put(1, field); author_y =
+			 * author_y + separation_vertical; field_label = new JLabel(
+			 * "Last name:"); field_label.setBounds(author_x, author_y, 75, 30);
+			 * // white // box field_label.setOpaque(true);
+			 * panel6.add(field_label); field = new
+			 * JTextField(author.getLast_name()); field.setBounds(author_x + 75
+			 * + label_field_separation, author_y, 100, 30); // white // box
+			 * field.setOpaque(true); panel6.add(field);
+			 * author_components.put(2, field);
+			 * author_fields.put(author.getId(), author_components); author_y =
+			 * author_y + separation_vertical; author_y = 60; author_x = 16;
+			 * 
+			 * } panel6.setPreferredSize(new Dimension(210 *
+			 * authors.size(),500)); // scrollable
+			 */
+			System.out.println(author_fields.size());
+			/*
+			 * JTextArea lblAuthorInfo = new JTextArea(
+			 * "First Name: Pete\tFirst Name: Bob 2 \nLast Name: User\tLast Name: User 2 \n "
+			 * ); lblAuthorInfo.setEditable(true); lblAuthorInfo.setBounds(16,
+			 * 34, 205 * 2, 175); // white box lblAuthorInfo.setOpaque(true);
+			 * panel6.add(lblAuthorInfo)
+			 */
+
+			authorSection.setPreferredSize(new Dimension(220 * 1, 200));
+			authorSection.setBounds(width_small / 2 - 40, 132 + height_small / 2 - 130, width_small / 2,
+					height_small / 2 - 150);
+			// scrollSettings.setViewportView(scrollFrame);
+			article.getContentPane().add(authorSection);
+
+			/*
+			 * JLabel lblIssues = new JLabel("Article:");
+			 * lblIssues.setBounds(24, 18, 110, 30); panel.add(lblIssues);
+			 * lblIssues.setFont(new Font("Dialog", Font.BOLD, 14));
+			 * lblIssues.setForeground(Color.BLACK);
+			 */
+
+			JLabel lblIssue = new JLabel("Issue:");
+			lblIssue.setBounds(24, 48, 94, 30);
+			panel.add(lblIssue);
+			lblIssue.setForeground(Color.BLACK);
+			lblIssue.setFont(new Font("Dialog", Font.BOLD, 14));
+
+			JLabel lblIssueId = new JLabel(Integer.toString(issue_id));
+			lblIssueId.setBounds(160, 48, 94, 30);
+			panel.add(lblIssueId);
+			lblIssueId.setForeground(Color.BLACK);
+			lblIssueId.setFont(new Font("Dialog", Font.BOLD, 14));
+			lblIssueId.setText(Integer.toString(issue_id));
+
+			final JLabel lblDatePublished = new JLabel("Date Published:");
+			lblDatePublished.setForeground(Color.BLACK);
+			lblDatePublished.setFont(new Font("Dialog", Font.BOLD, 14));
+			lblDatePublished.setBounds(24, 195, 150, 30);
+			panel.add(lblDatePublished);
+			Date current = new Date();
+
+			final SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
+
+			/*
+			 * JLabel lblDate = new JLabel(sdf.format(current));
+			 * lblDate.setVerticalAlignment(SwingConstants.TOP);
+			 * lblDate.setForeground(Color.BLACK); lblDate.setFont(new
+			 * Font("Dialog", Font.BOLD, 14)); lblDate.setBounds(160, 203, 125,
+			 * 30); panel.add(lblDate);
+			 * 
+			 * 
+			 * JLabel lblArticleId = new JLabel("1");
+			 * lblArticleId.setBounds(160, 19, 94, 30); panel.add(lblArticleId);
+			 * lblArticleId.setForeground(Color.BLACK); lblArticleId.setFont(new
+			 * Font("Dialog", Font.BOLD, 14));
+			 * lblArticleId.setText(Integer.toString(article_id));
+			 */
+
+			JLabel lblPages = new JLabel("Pages:");
+			lblPages.setForeground(Color.BLACK);
+			lblPages.setFont(new Font("Dialog", Font.BOLD, 14));
+			lblPages.setBounds(24, 165, 94, 30);
+			panel.add(lblPages);
+
+			final JTextField lblPageNum = new JTextField();
+			lblPageNum.setForeground(Color.BLACK);
+			lblPageNum.setFont(new Font("Dialog", Font.BOLD, 14));
+			lblPageNum.setBounds(156, 171, 125, 30);
+			panel.add(lblPageNum);
+
+			JLabel lblTitle = new JLabel("Title:");
+			lblTitle.setForeground(Color.BLACK);
+			lblTitle.setFont(new Font("Dialog", Font.BOLD, 14));
+			lblTitle.setBounds(24, 115, 94, 30);
+			panel.add(lblTitle);
+
+			Panel panel9 = new Panel();
+			panel9.setBackground(new Color(153, 102, 51));
+			panel9.setBounds(85, 118, 180, 80);
+			final JTextArea lblTitleText = new JTextArea();
+			lblTitleText.setEditable(true);
+			lblTitleText.setOpaque(true);
+			lblTitleText.setForeground(Color.BLACK);
+			lblTitleText.setFont(new Font("Dialog", Font.BOLD, 14));
+
+			panel9.add(lblTitleText);
+			JScrollPane titleSection = new JScrollPane(lblTitleText);
+			titleSection.setPreferredSize(new Dimension(300 * 2, 200));
+			titleSection.setBounds(85, 113, 225, 50);
+			titleSection.add(panel9);
+			titleSection.createHorizontalScrollBar();
+			panel.add(titleSection);
+
+			final JTextField lblSectionId = new JTextField();
+			lblSectionId.setForeground(Color.BLACK);
+			lblSectionId.setFont(new Font("Dialog", Font.BOLD, 14));
+			lblSectionId.setBounds(156, 81, 94, 30);
+			panel.add(lblSectionId);
+			final JLabel label = new JLabel();
+			label.setText("Choose Date by selecting below.");
+			final JXDatePicker datePicker = new JXDatePicker();
+			datePicker.setFormats(sdf);
+
+			datePicker.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					label.setText(datePicker.getDate().toString());
+					System.out.println(datePicker.getDate());
+				}
+			});
+			label.setBounds(160, 250, 100, 25);
+			datePicker.setBounds(156, 198, 160, 30);
+			// panel.add(label);
+			panel.add(datePicker);
+
+			JLabel lblSection = new JLabel("Section:");
+			lblSection.setForeground(Color.BLACK);
+			lblSection.setFont(new Font("Dialog", Font.BOLD, 14));
+			lblSection.setBounds(24, 80, 94, 30);
+			panel.add(lblSection);
+
+			JButton btnSave = new JButton("Create");
+			btnSave.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent arg0) {
+					try {
+						int entered_sectionID = Integer.parseInt(lblSectionId.getText());
+						int entered_pages = Integer.parseInt(lblPageNum.getText());
+						issue_screens.get(issue_id).dispose();
+
 						int a_id = list_issues.get(issue_id) + 1;
 						list_issues.replace(issue_id, a_id);
 						Date current = new Date();
 						SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
 						Issue current_issue = issue_storage.get(issue_id);
 						int artID = current_issue.getCurrent_aricle_id();
-						
-						current_issue.add_article(new Article(lblTitleText.getText(), Integer.parseInt(lblSectionId.getText()),  Integer.parseInt(lblPageNum.getText()), lblAbstract.getText(), datePicker.getDate(), current_issue));
+
+						current_issue.add_article(new Article(lblTitleText.getText(), entered_sectionID, entered_pages,
+								lblAbstract.getText(), datePicker.getDate(), current_issue));
 						current_issue.add_author(artID, new Author(1, "Peter", "M.", "FakeAuthor",
 								"fake_author@fakeaddress.com", "affiliation", "bio", "orcid", "testing", "gb"));
 						current_issue.add_author(artID, new Author(2, "Paul", "C.", "FakeAuthor",
@@ -2849,6 +2855,7 @@ public class Main {
 								"fake_author@fakeaddress.com", "affiliation", "bio", "orcid", "testing", "gb"));
 						current_issue.add_author(artID, new Author(6, "Morty", "C.", "FakeAuthor",
 								"fake_author@fakeaddress.com", "affiliation", "bio", "orcid", "testing", "gb"));
+						article.dispose();
 						issue_storage.put(issue_id, current_issue);
 						Object[] new_row = { artID, issue_id, 1, "title", 1, "abstract", sdf.format(current), "View",
 								"Edit", "Delete" };
@@ -2857,43 +2864,49 @@ public class Main {
 						issue_articles.put(artID, new JFrame());
 						article_screens.put(issue_id, issue_articles);
 						System.out.println(article_screens.get(issue_id).containsKey(artID));
-						
-						issue(issue_id);
-						/*
-						Article a = issue_storage.get(issue_id).getArticles_list().get(article_id);
-						a.setTitle(lblTitleText.getText());
-						ArrayList<Author> updated_authors = a.getAuthors();
-						for (int i = 0; i < updated_authors.size(); i++) {
-							Author author = updated_authors.get(i);
-							HashMap<Integer, JTextField> a_fields = author_fields.get(updated_authors.get(i).getId());
-							author.setFirst_name(a_fields.get(1).getText());
-							author.setLast_name(a_fields.get(2).getText());
-							updated_authors.set(i, author);
-						}
-						a.setTitle(lblTitleText.getText());
-						a.setAuthors(updated_authors);
-						a.setAbstract_text(lblAbstract.getText());
-						a.setSection_id(Integer.parseInt(lblSectionId.getText()));
-						a.setPages(Integer.parseInt(lblPageNum.getText()));
-						a.setDate_published(datePicker.getDate());
 
-						issue_storage.get(issue_id).update_article(a.getId(), a);
-						article(issue_id, article_id);*/
+						issue(issue_id);
+					} catch (Exception e) {
+						JOptionPane.showMessageDialog(null, "Use only numbers in fields: Pages, Section ID ");
 					}
-				});
-				btnSave.setBounds((width_small - 200) / 2, height_small - 100, 200, 30);
-				article.getContentPane().add(btnSave);
-				if (article_screens.containsKey(issue_id)) {
-					HashMap<Integer, JFrame> issue_articles = article_screens.get(issue_id);
-					issue_articles.put(issue_storage.get(issue_id).getCurrent_aricle_id(), article);
-					article_screens.put(issue_id, issue_articles);
+
+					/*
+					 * Article a =
+					 * issue_storage.get(issue_id).getArticles_list().get(
+					 * article_id); a.setTitle(lblTitleText.getText());
+					 * ArrayList<Author> updated_authors = a.getAuthors(); for
+					 * (int i = 0; i < updated_authors.size(); i++) { Author
+					 * author = updated_authors.get(i); HashMap<Integer,
+					 * JTextField> a_fields =
+					 * author_fields.get(updated_authors.get(i).getId());
+					 * author.setFirst_name(a_fields.get(1).getText());
+					 * author.setLast_name(a_fields.get(2).getText());
+					 * updated_authors.set(i, author); }
+					 * a.setTitle(lblTitleText.getText());
+					 * a.setAuthors(updated_authors);
+					 * a.setAbstract_text(lblAbstract.getText());
+					 * a.setSection_id(Integer.parseInt(lblSectionId.getText()))
+					 * ; a.setPages(Integer.parseInt(lblPageNum.getText()));
+					 * a.setDate_published(datePicker.getDate());
+					 * 
+					 * issue_storage.get(issue_id).update_article(a.getId(), a);
+					 * article(issue_id, article_id);
+					 */
 				}
-			
+			});
+			btnSave.setBounds((width_small - 200) / 2, height_small - 100, 200, 30);
+			article.getContentPane().add(btnSave);
+			if (article_screens.containsKey(issue_id)) {
+				HashMap<Integer, JFrame> issue_articles = article_screens.get(issue_id);
+				issue_articles.put(issue_storage.get(issue_id).getCurrent_aricle_id(), article);
+				article_screens.put(issue_id, issue_articles);
+			}
 
 		} else {
 			login("dashboard");
 		}
 	}
+
 	/**
 	 * @wbp.parser.entryPoint
 	 */
