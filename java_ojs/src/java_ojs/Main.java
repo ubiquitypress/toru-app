@@ -27,6 +27,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.BorderLayout;
 import javax.swing.border.SoftBevelBorder;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.border.BevelBorder;
 import javax.swing.table.DefaultTableModel;
 
@@ -952,7 +953,10 @@ public class Main {
 				panel.setBackground(new Color(220, 20, 60));
 				panel.setBounds(0, 55, width, 40);
 				issues.getContentPane().add(panel);
+		
 
+			
+					
 				JButton btnAdd = new JButton("Add");
 				btnAdd.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
@@ -1616,7 +1620,40 @@ public class Main {
 				lblIssueId.setText(Integer.toString(issue_id));
 				lblIssueId.setOpaque(true);
 				articles.getContentPane().add(lblIssueId);
-
+				JTextField lblFile = new JTextField("");
+				lblFile.setForeground(Color.WHITE);
+				lblFile.setEnabled(false);
+				lblFile.setHorizontalAlignment(SwingConstants.CENTER);
+				lblFile.setBounds(width-185,106,100,30);
+				lblFile.setToolTipText("");
+				articles.getContentPane().add(lblFile);
+				 JFileChooser chooser = new JFileChooser();
+				    JButton select = new JButton("Browse");
+				    select.addActionListener(new ActionListener() {
+						public void actionPerformed(ActionEvent e) {
+							
+							    FileNameExtensionFilter file = new FileNameExtensionFilter(
+							        "PDF", "pdf");
+							    chooser.setFileFilter(file);
+							    int returnVal = chooser.showOpenDialog(articles);
+							    if(returnVal == JFileChooser.APPROVE_OPTION) {
+							    	lblFile.setText(chooser.getSelectedFile().getName());
+							    	lblFile.setToolTipText(chooser.getSelectedFile().getName());
+							    }
+						}
+					});
+				    select.setBounds(width-265,106,80,30);
+				    articles.getContentPane().add(select);
+				    JButton upload = new JButton("Upload");
+				    upload.addActionListener(new ActionListener() {
+						public void actionPerformed(ActionEvent e) {
+							file_copy(issue_id,chooser.getSelectedFile().getPath().toString());
+							System.out.println(chooser.getSelectedFile().getPath().toString());
+							select.setEnabled(false);}
+					});
+				    upload.setBounds(width-85,106,80,30);
+				    
+					articles.getContentPane().add(upload);
 				JButton btnClose = new JButton("Close");
 				btnClose.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent arg0) {
