@@ -1,5 +1,0 @@
-package models;
-
-public class Section {
-	section_id; title;
-}
