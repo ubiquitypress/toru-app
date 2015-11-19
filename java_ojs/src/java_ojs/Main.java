@@ -37,6 +37,7 @@ import org.jdesktop.swingx.search.Searchable;
 import org.jdesktop.swingx.sort.RowFilters;
 
 import models.Article;
+import models.ArticleFile;
 import models.Author;
 import models.Issue;
 
@@ -61,6 +62,7 @@ public class Main {
 	private static HashMap<Integer, Integer> list_issues;
 	private static HashMap<Integer, JFrame> issue_screens;
 	private static HashMap<Integer, Issue> issue_storage;
+	private static HashMap<Integer, ArticleFile> file_storage;
 	private static HashMap<Integer, HashMap<Integer, JFrame>> article_screens;
 	private static ArrayList<String> setting_keys = new ArrayList<String>();
 	private static Connection c = null;
@@ -72,6 +74,7 @@ public class Main {
 	private Boolean logged_in = true;
 	private static int i_id = 0;
 	private static int articles_id = 0;
+	private static int file_id = 0;
 
 	/*
 	 * Initial setup test
@@ -110,6 +113,7 @@ public class Main {
 		list_issues = new HashMap<Integer, Integer>();
 		issue_storage = new HashMap<Integer, Issue>();
 		issue_screens = new HashMap<Integer, JFrame>();
+		file_storage = new HashMap<Integer, ArticleFile>();
 		article_screens = new HashMap<Integer, HashMap<Integer, JFrame>>();
 		try {
 			ResultSet rs = stmt.executeQuery("SELECT * FROM API WHERE URL=" + "'api'" + ";");
@@ -2977,6 +2981,8 @@ public static void file_copy(int art_id,String source){
 		System.out.print(String.format("src/files/%d/%s",art_id,filename));
 		File dir = new File(String.format("src/files/%d/",art_id));
 		dir.mkdirs();
+		file_id++;
+		file_storage.put(file_id,new ArticleFile(file_id,art_id, String.format("src/files/%d/%s",art_id,filename)));
 		Files.copy(Paths.get(source), Paths.get(String.format("src/files/%d/%s",art_id,filename)), StandardCopyOption.REPLACE_EXISTING);
 	} catch (IOException e) {
 		// TODO Auto-generated catch block

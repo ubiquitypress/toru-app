@@ -1,11 +1,11 @@
 package models;
 
-public class File {
+public class ArticleFile {
 	private int id;
 	private int article_id;
 	private String path;
-	public File(int file_id,int article_id, String path) {
-		super();
+	public ArticleFile(int file_id,int article_id, String path) {
+	
 		this.id = file_id;
 		this.article_id = article_id;
 		this.path = path;
