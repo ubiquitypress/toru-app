@@ -1650,6 +1650,7 @@ public class Main {
 				JButton btnAdd = new JButton("Add");
 				btnAdd.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
+						
 							add_article(issue_id);
 							
 					}
@@ -2497,6 +2498,7 @@ public class Main {
 					width_small = (int) (640 + (640 * (37.5 / 100)));
 					height_small = (int) (768 - (768 * (5 / 100)));
 				}
+				
 				final JFrame article = new JFrame();
 				article.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 				// article.setSize(width_small, height_small);
