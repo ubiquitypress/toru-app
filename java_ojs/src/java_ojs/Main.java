@@ -2994,7 +2994,7 @@ public static void file_copy(int art_id,String source){
 		setting_keys.add("Setting 2");}
 
 		//file copy to use for file upload
-		file_copy(1,"src/lib/db_xxs.png");
+//		file_copy(1,"src/lib/db_xxs.png");
 		
 		new Main();
 	}
