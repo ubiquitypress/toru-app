@@ -1631,18 +1631,29 @@ public class Main {
 				lblFile.setBounds(width-185,106,100,30);
 				lblFile.setToolTipText("");
 				articles.getContentPane().add(lblFile);
+			ArrayList<File> uploaded_files = new ArrayList<File>();
 				 JFileChooser chooser = new JFileChooser();
 				    JButton select = new JButton("Browse");
 				    select.addActionListener(new ActionListener() {
 						public void actionPerformed(ActionEvent e) {
 							
 							    FileNameExtensionFilter file = new FileNameExtensionFilter(
-							        "PDF", "pdf");
+							        "Galleys (pdf,xml,html)", "pdf","xml","html");
 							    chooser.setFileFilter(file);
+							    chooser.setMultiSelectionEnabled(true);
 							    int returnVal = chooser.showOpenDialog(articles);
+	
 							    if(returnVal == JFileChooser.APPROVE_OPTION) {
-							    	lblFile.setText(chooser.getSelectedFile().getName());
-							    	lblFile.setToolTipText(chooser.getSelectedFile().getName());
+							    	 File[] files = chooser.getSelectedFiles();
+							    	String label_text="";
+							    	String label_tooltip=""	;	
+							    	for (File f : files){
+							    		uploaded_files.add(f);
+							    		label_text=label_text+f.getName()+", ";
+							    		label_tooltip=label_tooltip+f.getName()+"\n ";
+							    	}
+							    	lblFile.setText(label_text);
+							    	lblFile.setToolTipText(label_tooltip);
 							    }
 						}
 					});
@@ -1651,9 +1662,11 @@ public class Main {
 				    JButton upload = new JButton("Upload");
 				    upload.addActionListener(new ActionListener() {
 						public void actionPerformed(ActionEvent e) {
-							file_copy(issue_id,chooser.getSelectedFile().getPath().toString());
-							System.out.println(chooser.getSelectedFile().getPath().toString());
-							select.setEnabled(false);}
+							for (File f : uploaded_files){
+							file_copy(issue_id,f.getPath().toString());
+							System.out.println(chooser.getSelectedFile().getPath().toString());}
+							if (!uploaded_files.isEmpty()){
+							select.setEnabled(false);}}
 					});
 				    upload.setBounds(width-85,106,80,30);
 				    
