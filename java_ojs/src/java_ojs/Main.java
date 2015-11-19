@@ -6,6 +6,10 @@ import java.util.Date;
 import java.awt.event.ActionListener;
 import java.net.InetSocketAddress;
 import java.net.Socket;
+import java.nio.file.CopyOption;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.sql.*;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -39,6 +43,8 @@ import java.awt.Label;
 import java.util.List;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.io.File;
+import java.io.IOException;
 import java.awt.Panel;
 import java.awt.SystemColor;
 
@@ -2928,7 +2934,18 @@ public class Main {
 		}
 		dashboard();
 	}
-
+public static void file_copy(int art_id,String source){
+	try {
+		String filename=source.substring(source.lastIndexOf("/")+1);
+		System.out.print(String.format("src/files/%d/%s",art_id,filename));
+		File dir = new File(String.format("src/files/%d/",art_id));
+		dir.mkdirs();
+		Files.copy(Paths.get(source), Paths.get(String.format("src/files/%d/%s",art_id,filename)), StandardCopyOption.REPLACE_EXISTING);
+	} catch (IOException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	}
+}
 	public static void main(String[] args) {
 		
 		database_setup();
@@ -2938,6 +2955,10 @@ public class Main {
 		setting_keys.add("Setting 1");
 		list_settings.put("Setting 2",false);
 		setting_keys.add("Setting 2");}
+
+		//file copy to use for file upload
+		file_copy(1,"src/lib/db_xxs.png");
+		
 		new Main();
 	}
 }
