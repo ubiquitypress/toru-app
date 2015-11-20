@@ -2135,6 +2135,33 @@ public class Main {
 				HashMap<Integer, ArticleFile> files = file_storage.get(article_id);
 				Set<Integer> keys = files.keySet();
 				for (int key : keys) {
+					JFileChooser fileChooser = new JFileChooser();
+					fileChooser.setDialogTitle("Specify a file to save"); 
+					FileNameExtensionFilter file = new FileNameExtensionFilter("Galleys (pdf,xml,html) or Images(jpg,png)", "pdf",
+							"xml", "html","jpg","png");
+					fileChooser.setSelectedFile(new File(files.get(key).getPath().substring(files.get(key).getPath().lastIndexOf("/")+1)));
+					fileChooser.setFileFilter(file);
+		//			 File new_f=new File(files.get(key).getPath());
+					int userSelection = fileChooser.showSaveDialog(panel);
+				
+					//fileChooser.setSelectedFile(new File(files.get(key).getPath()));
+					if (userSelection == JFileChooser.APPROVE_OPTION) {
+				    System.out.println("Save as file: " +fileChooser.getCurrentDirectory().getPath()+files.get(key).getPath().substring(files.get(key).getPath().lastIndexOf("/")));
+					   String output_path= fileChooser.getCurrentDirectory().getPath()+"/"+fileChooser.getSelectedFile().getName();
+					   System.out.println(output_path);
+					   System.out.println(fileChooser.getSelectedFile().getName());
+					   //files.get(key).getPath().substring(files.get(key).getPath().lastIndexOf("/"));
+					
+					   try {
+						Files.copy(Paths.get(files.get(key).getPath()), Paths.get(output_path) ,
+									StandardCopyOption.REPLACE_EXISTING);
+					} catch (IOException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
+
+					    //  System.out.println("Save as file: " + fileToSave.getAbsolutePath());
+					}
 					String path = files.get(key).getPath();
 					label_text = label_text + path.substring(path.lastIndexOf("/") + 1) + "\n";
 				}}
@@ -2156,8 +2183,8 @@ public class Main {
 				select.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
 
-						FileNameExtensionFilter file = new FileNameExtensionFilter("Galleys (pdf,xml,html)", "pdf",
-								"xml", "html");
+						FileNameExtensionFilter file = new FileNameExtensionFilter("Galleys (pdf,xml,html) or Images(jpg,png)", "pdf",
+								"xml", "html","jpg","png");
 						chooser.setFileFilter(file);
 						chooser.setMultiSelectionEnabled(true);
 						int returnVal = chooser.showOpenDialog(article);
@@ -2604,8 +2631,8 @@ public class Main {
 				select.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
 
-						FileNameExtensionFilter file = new FileNameExtensionFilter("Galleys (pdf,xml,html)", "pdf",
-								"xml", "html");
+						FileNameExtensionFilter file = new FileNameExtensionFilter("Galleys (pdf,xml,html) or Images(jpg,png)", "pdf",
+								"xml", "html","jpg","png");
 						chooser.setFileFilter(file);
 						chooser.setMultiSelectionEnabled(true);
 						int returnVal = chooser.showOpenDialog(article);
@@ -3098,8 +3125,8 @@ public class Main {
 			select.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
 
-					FileNameExtensionFilter file = new FileNameExtensionFilter("Galleys (pdf,xml,html)", "pdf", "xml",
-							"html");
+					FileNameExtensionFilter file = new FileNameExtensionFilter("Galleys (pdf,xml,html) or Images(jpg,png)", "pdf",
+							"xml", "html","jpg","png");
 					chooser.setFileFilter(file);
 					chooser.setMultiSelectionEnabled(true);
 					int returnVal = chooser.showOpenDialog(article);
