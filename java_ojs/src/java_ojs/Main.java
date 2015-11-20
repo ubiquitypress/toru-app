@@ -747,128 +747,9 @@ public class Main {
 				
 				btnAddAuthor.setBounds(15, 15, 320, 25);
 				
-				JPanel panel6 = new JPanel();
-				panel6.setBackground(SystemColor.window);
-				panel6.setBounds(250, 350, 320, 307);
-
-				panel6.setLayout(null);
-				panel6.setAutoscrolls(true);
-				panel6.add(listbox);
-				panel6.add(btnAddAuthor);
-				issues.getContentPane().add(panel6);
-				JPanel panelAuthor = new JPanel();
-				panelAuthor.setBounds(0, 0, 480, 800);
-				panelAuthor.setLayout(null);
-				
-				JTextField txtFirstName = new JTextField();
-				txtFirstName.setBounds(90, 65, 300, 30);
-				panelAuthor.add(txtFirstName);
-				txtFirstName.setColumns(10);
-				
-				JLabel lblFirstName = new JLabel("First name");
-				lblFirstName.setHorizontalAlignment(SwingConstants.CENTER);
-				lblFirstName.setBounds(190, 40, 100, 20);
-				panelAuthor.add(lblFirstName);
-				
-				JLabel lblMiddleName = new JLabel("Middle name");
-				lblMiddleName.setHorizontalAlignment(SwingConstants.CENTER);
-				lblMiddleName.setBounds(190, 96, 100, 20);
-				panelAuthor.add(lblMiddleName);
-				
-				JTextField txtMiddleName = new JTextField();
-				txtMiddleName.setColumns(10);
-				txtMiddleName.setBounds(90, 117, 300, 30);
-				panelAuthor.add(txtMiddleName);
-			
-				JLabel lblLastName = new JLabel("Last name");
-				lblLastName.setHorizontalAlignment(SwingConstants.CENTER);
-				lblLastName.setBounds(190, 148, 100, 20);
-				panelAuthor.add(lblLastName);
-				
-				JTextField txtLastName = new JTextField();
-				txtLastName.setColumns(10);
-				txtLastName.setBounds(90, 169, 300, 30);
-				panelAuthor.add(txtLastName);
-				
-				JLabel lblEmail = new JLabel("Email");
-				lblEmail.setHorizontalAlignment(SwingConstants.CENTER);
-				lblEmail.setBounds(190, 200, 100, 20);
-				panelAuthor.add(lblEmail);
-				
-				JTextField txtEmail = new JTextField();
-				txtEmail.setColumns(10);
-				txtEmail.setBounds(90, 221, 300, 30);
-				panelAuthor.add(txtEmail);
-				
-				JLabel lblAffiliation = new JLabel("Affiliation");
-				lblAffiliation.setHorizontalAlignment(SwingConstants.CENTER);
-				lblAffiliation.setBounds(190, 252, 100, 20);
-				panelAuthor.add(lblAffiliation);
-				
-				JTextField txtAffiliation = new JTextField();
-				txtAffiliation.setColumns(10);
-				txtAffiliation.setBounds(90, 273, 300, 30);
-				panelAuthor.add(txtAffiliation);
-				
-				JLabel lblBio = new JLabel("Bio");
-				lblBio.setHorizontalAlignment(SwingConstants.CENTER);
-				lblBio.setBounds(190, 304, 100, 20);
-				panelAuthor.add(lblBio);
-				
-				JTextArea txtBio = new JTextArea();
-				txtBio.setColumns(10);
-				txtBio.setBounds(90, 325, 300, 60);
-				panelAuthor.add(txtBio);
-				
-				JLabel lblOrcID = new JLabel("OrcID");
-				lblOrcID.setHorizontalAlignment(SwingConstants.CENTER);
-				lblOrcID.setBounds(190, 386, 100, 20);
-				panelAuthor.add(lblOrcID);
-				
-				JTextField txtOrcID = new JTextField();
-				txtOrcID.setColumns(10);
-				txtOrcID.setBounds(90, 407, 300, 30);
-				panelAuthor.add(txtOrcID);
-				
-				JLabel lblDepartment = new JLabel("Department");
-				lblDepartment.setHorizontalAlignment(SwingConstants.CENTER);
-				lblDepartment.setBounds(190, 438, 100, 20);
-				panelAuthor.add(lblDepartment);
-				
-				JTextField txtDepartment = new JTextField();
-				txtDepartment.setColumns(10);
-				txtDepartment.setBounds(90, 459, 300, 30);
-				panelAuthor.add(txtDepartment);
-				
-				JLabel lblCountry = new JLabel("Country");
-				lblCountry.setHorizontalAlignment(SwingConstants.CENTER);
-				lblCountry.setBounds(190, 490, 100, 20);
-				panelAuthor.add(lblCountry);
-				
-				JTextField txtCountry = new JTextField();
-				txtCountry.setColumns(10);
-				txtCountry.setBounds(90, 511, 300, 30);
-				panelAuthor.add(txtCountry);
-				panelAuthor.setVisible(true);
-				panelAuthor.setSize(new Dimension(480,800));
-				panelAuthor.setPreferredSize(new Dimension(480,600));
-				panelAuthor.setVisible(true);
+		
 				JScrollPane scrollPane = new JScrollPane();
-				btnAddAuthor.addActionListener(new ActionListener() {
-					public void actionPerformed(ActionEvent e) {
-						panelAuthor.setVisible(true);
-						panelAuthor.setEnabled(true);
-					      int result = 	JOptionPane.showConfirmDialog(null,panelAuthor, "Add Author",JOptionPane.OK_CANCEL_OPTION);
-						if(result==JOptionPane.OK_OPTION){
-							author_id++;
-					      Author new_author = new  Author(author_id,txtFirstName.getText(), txtMiddleName.getText(), txtLastName.getText(),txtEmail.getText(), txtAffiliation.getText(), txtBio.getText(),
-					    		  txtOrcID.getText(),txtDepartment.getText(),txtCountry.getText());
-						author_storage.put(author_id, new_author);
-					      listModel.addElement(new_author.getFull_name());
-						listbox.repaint();}
-					}});
-			
-			
+				
 				scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
 				scrollPane.setBounds(20, 140, width - 40, height - 285);
 				issues.getContentPane().add(scrollPane);
@@ -3171,10 +3052,12 @@ public class Main {
 			 * panel6.add(lblAuthorInfo)
 			 */
 			Set<Integer> author_keys = author_storage.keySet();
+			DefaultListModel listModel = new DefaultListModel();
 			ArrayList<Integer> author_list = new ArrayList<Integer>();
 			String listData[] = new String[author_keys.size()];
 			int j = 0;
 			for (int key : author_keys) {
+				listModel.addElement(author_storage.get(key).getFull_name());
 				listData[j] = author_storage.get(key).getFull_name();
 				author_list.add(key);
 				j = j + 1;
@@ -3182,13 +3065,126 @@ public class Main {
 			;
 
 			// Create a new listbox control
-
-			JList listbox = new JList(listData);
+			JButton btnAddAuthor = new JButton("+ Add new Author");
+			btnAddAuthor.setBounds(156, 12, 180, 25);
+			panel6.add(btnAddAuthor);
+			JList listbox = new JList();
+			listbox.setModel(listModel);
 			listbox.setBounds(15, 40, 320, 25 * author_list.size());
 			listbox.setBackground(Color.white);
 			listbox.setVisible(true);
 			panel6.add(listbox);
-
+			JPanel panelAuthor = new JPanel();
+			panelAuthor.setBounds(0, 0, 480, 800);
+			panelAuthor.setLayout(null);
+			
+			JTextField txtFirstName = new JTextField();
+			txtFirstName.setBounds(90, 65, 300, 30);
+			panelAuthor.add(txtFirstName);
+			txtFirstName.setColumns(10);
+			
+			JLabel lblFirstName = new JLabel("First name");
+			lblFirstName.setHorizontalAlignment(SwingConstants.CENTER);
+			lblFirstName.setBounds(190, 40, 100, 20);
+			panelAuthor.add(lblFirstName);
+			
+			JLabel lblMiddleName = new JLabel("Middle name");
+			lblMiddleName.setHorizontalAlignment(SwingConstants.CENTER);
+			lblMiddleName.setBounds(190, 96, 100, 20);
+			panelAuthor.add(lblMiddleName);
+			
+			JTextField txtMiddleName = new JTextField();
+			txtMiddleName.setColumns(10);
+			txtMiddleName.setBounds(90, 117, 300, 30);
+			panelAuthor.add(txtMiddleName);
+		
+			JLabel lblLastName = new JLabel("Last name");
+			lblLastName.setHorizontalAlignment(SwingConstants.CENTER);
+			lblLastName.setBounds(190, 148, 100, 20);
+			panelAuthor.add(lblLastName);
+			
+			JTextField txtLastName = new JTextField();
+			txtLastName.setColumns(10);
+			txtLastName.setBounds(90, 169, 300, 30);
+			panelAuthor.add(txtLastName);
+			
+			JLabel lblEmail = new JLabel("Email");
+			lblEmail.setHorizontalAlignment(SwingConstants.CENTER);
+			lblEmail.setBounds(190, 200, 100, 20);
+			panelAuthor.add(lblEmail);
+			
+			JTextField txtEmail = new JTextField();
+			txtEmail.setColumns(10);
+			txtEmail.setBounds(90, 221, 300, 30);
+			panelAuthor.add(txtEmail);
+			
+			JLabel lblAffiliation = new JLabel("Affiliation");
+			lblAffiliation.setHorizontalAlignment(SwingConstants.CENTER);
+			lblAffiliation.setBounds(190, 252, 100, 20);
+			panelAuthor.add(lblAffiliation);
+			
+			JTextField txtAffiliation = new JTextField();
+			txtAffiliation.setColumns(10);
+			txtAffiliation.setBounds(90, 273, 300, 30);
+			panelAuthor.add(txtAffiliation);
+			
+			JLabel lblBio = new JLabel("Bio");
+			lblBio.setHorizontalAlignment(SwingConstants.CENTER);
+			lblBio.setBounds(190, 304, 100, 20);
+			panelAuthor.add(lblBio);
+			
+			JTextArea txtBio = new JTextArea();
+			txtBio.setColumns(10);
+			txtBio.setBounds(90, 325, 300, 60);
+			panelAuthor.add(txtBio);
+			
+			JLabel lblOrcID = new JLabel("OrcID");
+			lblOrcID.setHorizontalAlignment(SwingConstants.CENTER);
+			lblOrcID.setBounds(190, 386, 100, 20);
+			panelAuthor.add(lblOrcID);
+			
+			JTextField txtOrcID = new JTextField();
+			txtOrcID.setColumns(10);
+			txtOrcID.setBounds(90, 407, 300, 30);
+			panelAuthor.add(txtOrcID);
+			
+			JLabel lblDepartment = new JLabel("Department");
+			lblDepartment.setHorizontalAlignment(SwingConstants.CENTER);
+			lblDepartment.setBounds(190, 438, 100, 20);
+			panelAuthor.add(lblDepartment);
+			
+			JTextField txtDepartment = new JTextField();
+			txtDepartment.setColumns(10);
+			txtDepartment.setBounds(90, 459, 300, 30);
+			panelAuthor.add(txtDepartment);
+			
+			JLabel lblCountry = new JLabel("Country");
+			lblCountry.setHorizontalAlignment(SwingConstants.CENTER);
+			lblCountry.setBounds(190, 490, 100, 20);
+			panelAuthor.add(lblCountry);
+			
+			JTextField txtCountry = new JTextField();
+			txtCountry.setColumns(10);
+			txtCountry.setBounds(90, 511, 300, 30);
+			panelAuthor.add(txtCountry);
+			panelAuthor.setVisible(true);
+			panelAuthor.setSize(new Dimension(480,800));
+			panelAuthor.setPreferredSize(new Dimension(480,600));
+			panelAuthor.setVisible(true);
+			btnAddAuthor.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					panelAuthor.setVisible(true);
+					panelAuthor.setEnabled(true);
+				      int result = 	JOptionPane.showConfirmDialog(null,panelAuthor, "Add Author",JOptionPane.OK_CANCEL_OPTION);
+					if(result==JOptionPane.OK_OPTION){
+						author_id++;
+				      Author new_author = new  Author(author_id,txtFirstName.getText(), txtMiddleName.getText(), txtLastName.getText(),txtEmail.getText(), txtAffiliation.getText(), txtBio.getText(),
+				    		  txtOrcID.getText(),txtDepartment.getText(),txtCountry.getText());
+					author_storage.put(author_id, new_author);
+				      listModel.addElement(new_author.getFull_name());
+					listbox.repaint();}
+				}});
+		
 			authorSection.add(panel6);
 			authorSection.setViewportView(panel6);
 			authorSection.setPreferredSize(new Dimension(220 * 1, 200));
