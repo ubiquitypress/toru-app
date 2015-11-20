@@ -2303,7 +2303,7 @@ public class Main {
 			if (article_screens.containsKey(issue_id) && article_screens.get(issue_id).containsKey(article_id)
 					&& !article_screens.get(issue_id).get(article_id).isVisible()) {
 				Article current_article = issue_storage.get(issue_id).getArticles_list().get(article_id);
-
+				int initial_file_num=file_id;
 				int width_small = 0;
 				int height_small = 0;
 				if (height >= 768 && width >= 640) {
@@ -2692,7 +2692,17 @@ public class Main {
 				panel.add(fileSection);
 				ArrayList<File> uploaded_files = new ArrayList<File>();
 				JFileChooser chooser = new JFileChooser();
+				JButton btnClear = new JButton("Clear");
+				btnClear.setEnabled(false);
+				btnClear.setBounds(252, 285, 65, 30);
+				panel.add(btnClear);
 				JButton select = new JButton("Browse");
+				
+				select.setBounds(20, 240, 90, 30);
+				panel.add(select);
+				JButton upload = new JButton("Upload & Save");
+				upload.setEnabled(false);
+				btnClear.setEnabled(false);
 				select.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
 
@@ -2703,6 +2713,8 @@ public class Main {
 						int returnVal = chooser.showOpenDialog(article);
 
 						if (returnVal == JFileChooser.APPROVE_OPTION) {
+							upload.setEnabled(true);
+							btnClear.setEnabled(true);
 							File[] files = chooser.getSelectedFiles();
 							String label_text = "";
 							label_text = label_text + lblFile.getText() + "----Not Uploaded-----[\n";
@@ -2719,11 +2731,10 @@ public class Main {
 						}
 					}
 				});
-				select.setBounds(20, 240, 90, 30);
-				panel.add(select);
-				JButton upload = new JButton("Upload & Save");
 				upload.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
+						select.setEnabled(false);
+						btnClear.setEnabled(false);
 						for (File f : uploaded_files) {
 							file_copy(issue_id, f.getPath().toString());
 							System.out.println(chooser.getSelectedFile().getPath().toString());
@@ -2744,6 +2755,38 @@ public class Main {
 						}
 					}
 				});
+				btnClear.addActionListener(new ActionListener() {
+					public void actionPerformed(ActionEvent arg0) {
+						uploaded_files.clear();
+						if (file_storage.containsKey(article_id)) {
+							String label_text = "";
+							HashMap<Integer, ArticleFile> files_existing = file_storage.get(article_id);
+							Set<Integer> keys = files_existing.keySet();
+							for (int k : keys) {
+								ArticleFile a_file = files_existing.get(k);
+								label_text = label_text
+										+ a_file.getPath().substring(a_file.getPath().lastIndexOf("/") + 1) + "\n";
+							}
+							lblFile.setText(label_text);
+					/*	if (file_storage.containsKey(article_id)) {
+							HashMap<Integer, ArticleFile> up_files = file_storage.get(article_id);
+							Set<Integer> keys = up_files.keySet();
+							file_id = initial_file_num;
+							for (int key : keys) {
+								File f = new File(up_files.get(key).getPath());
+								f.delete();
+							}
+							
+							
+							
+						}*/
+						select.setEnabled(true);
+						upload.setEnabled(false);
+						btnClear.setEnabled(false);
+						lblFile.setToolTipText(label_text);
+						
+						}}
+					});
 				upload.setBounds(150, 240, 140, 30);
 
 				panel.add(upload);
@@ -2832,7 +2875,9 @@ public class Main {
 			 * JOptionPane.showMessageDialog(null, modelRow); // / //
 			 * ((DefaultTableModel)table.getModel()).removeRow(modelRow); } };
 			 */
+			JButton btnClear = new JButton("Clear");
 
+			
 			JButton btnGoBack = new JButton("Close");
 			btnGoBack.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent arg0) {
@@ -3191,9 +3236,14 @@ public class Main {
 			ArrayList<File> uploaded_files = new ArrayList<File>();
 			JFileChooser chooser = new JFileChooser();
 			JButton select = new JButton("Browse");
+			
+			select.setBounds(20, 240, 90, 30);
+			panel.add(select);
+			JButton upload = new JButton("Upload");
+			upload.setEnabled(false);
 			select.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
-
+					
 					FileNameExtensionFilter file = new FileNameExtensionFilter(
 							"Galleys (pdf,xml,html) or Images(jpg,png)", "pdf", "xml", "html", "jpg", "png");
 					chooser.setFileFilter(file);
@@ -3201,6 +3251,8 @@ public class Main {
 					int returnVal = chooser.showOpenDialog(article);
 
 					if (returnVal == JFileChooser.APPROVE_OPTION) {
+						upload.setEnabled(true);
+						btnClear.setEnabled(true);
 						File[] files = chooser.getSelectedFiles();
 						String label_text = "";
 						label_text = label_text + lblFile.getText() + "----Not Uploaded-----[\n";
@@ -3217,9 +3269,6 @@ public class Main {
 					}
 				}
 			});
-			select.setBounds(20, 240, 90, 30);
-			panel.add(select);
-			JButton upload = new JButton("Upload");
 			upload.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
 					file_storage.put(current_id, new HashMap<Integer, ArticleFile>());
@@ -3243,8 +3292,35 @@ public class Main {
 					}
 				}
 			});
-			upload.setBounds(150, 240, 90, 30);
-
+			
+			btnClear.setEnabled(false);
+			upload.setBounds(156, 240, 90, 30);
+			btnClear.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent arg0) {
+					if (file_storage.containsKey(current_id)) {
+						HashMap<Integer, ArticleFile> up_files = file_storage.get(current_id);
+						Set<Integer> keys = up_files.keySet();
+						file_id = initial_file_num;
+						for (int key : keys) {
+							File f = new File(up_files.get(key).getPath());
+							f.delete();
+						}
+						File folder = new File(String.format("src/files/%d/", current_id));
+						folder.delete();
+						file_storage.remove(current_id);
+						
+					}
+					select.setEnabled(true);
+					upload.setEnabled(false);
+					btnClear.setEnabled(false);
+					lblFile.setText("");
+					lblFile.setToolTipText("");
+					
+				}
+				});
+			
+			btnClear.setBounds(252, 285, 65, 30);
+			panel.add(btnClear);
 			panel.add(upload);
 
 			article.addWindowListener(new WindowAdapter() {
