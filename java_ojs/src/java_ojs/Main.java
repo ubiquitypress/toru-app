@@ -2727,7 +2727,7 @@ public class Main {
 																		// box
 					field_label.setOpaque(true);
 					panel6.add(field_label);
-					field = new JTextField(author.getEmail());
+					field = new JTextField(author.getAffiliation());
 					field.setBounds(author_x + 75 + label_field_separation, author_y, 100, 30); // white
 																								// box
 					field.setOpaque(true);
@@ -2741,7 +2741,7 @@ public class Main {
 																		// box
 					field_label.setOpaque(true);
 					panel6.add(field_label);
-					JTextArea field_area = new JTextArea(author.getEmail());
+					JTextArea field_area = new JTextArea(author.getBio());
 					field_area.setBounds(author_x + 75 + label_field_separation, author_y, 100, 60); // white
 																								// box
 					field_area.setOpaque(true);
@@ -2755,7 +2755,7 @@ public class Main {
 																		// box
 					field_label.setOpaque(true);
 					panel6.add(field_label);
-					field = new JTextField(author.getEmail());
+					field = new JTextField(author.getOrcid());
 					field.setBounds(author_x + 75 + label_field_separation, author_y, 100, 30); // white
 																								// box
 					field.setOpaque(true);
@@ -2769,7 +2769,7 @@ public class Main {
 																		// box
 					field_label.setOpaque(true);
 					panel6.add(field_label);
-					field = new JTextField(author.getEmail());
+					field = new JTextField(author.getDepartment());
 					field.setBounds(author_x + 75 + label_field_separation, author_y, 100, 30); // white
 																								// box
 					field.setOpaque(true);
@@ -2783,7 +2783,7 @@ public class Main {
 																		// box
 					field_label.setOpaque(true);
 					panel6.add(field_label);
-					field = new JTextField(author.getEmail());
+					field = new JTextField(author.getCountry());
 					field.setBounds(author_x + 75 + label_field_separation, author_y, 100, 30); // white
 																								// box
 					field.setOpaque(true);
