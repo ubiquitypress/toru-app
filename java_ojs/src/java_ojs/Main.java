@@ -50,6 +50,9 @@ import java.io.File;
 import java.io.IOException;
 import java.awt.Panel;
 import java.awt.SystemColor;
+import java.awt.GridBagLayout;
+import java.awt.GridLayout;
+import net.miginfocom.swing.MigLayout;
 
 public class Main {
 	JFrame login, api, issues, settings;
@@ -720,8 +723,152 @@ public class Main {
 				final JButton btnSync = new JButton("Sync");
 				btnSync.setBounds(width - 155, 21, 70, 24);
 				issues.getContentPane().add(btnSync);
+				Set<Integer> author_keys = author_storage.keySet();
+				ArrayList<Integer> author_list = new ArrayList<Integer>();
+				String listData[] = new String[author_keys.size()];
+				int j = 0;
+				 DefaultListModel listModel = new DefaultListModel();
+				for (int key : author_keys) {
+					listModel.addElement(author_storage.get(key).getFull_name());
+					listData[j] = author_storage.get(key).getFull_name();
+					author_list.add(key);
+					j = j + 1;
+				}
+				;
 
+				// Create a new listbox control
+
+				JList listbox = new JList();
+				listbox.setModel(listModel);
+				listbox.setBounds(15, 40, 320, 25 * author_list.size());
+				listbox.setBackground(Color.white);
+				listbox.setVisible(true);
+				JButton btnAddAuthor = new JButton("Add new Author");
+				
+				btnAddAuthor.setBounds(15, 15, 320, 25);
+				
+				JPanel panel6 = new JPanel();
+				panel6.setBackground(SystemColor.window);
+				panel6.setBounds(250, 350, 320, 307);
+
+				panel6.setLayout(null);
+				panel6.setAutoscrolls(true);
+				panel6.add(listbox);
+				panel6.add(btnAddAuthor);
+				issues.getContentPane().add(panel6);
+				JPanel panelAuthor = new JPanel();
+				panelAuthor.setBounds(0, 0, 480, 800);
+				panelAuthor.setLayout(null);
+				
+				JTextField txtFirstName = new JTextField();
+				txtFirstName.setBounds(90, 65, 300, 30);
+				panelAuthor.add(txtFirstName);
+				txtFirstName.setColumns(10);
+				
+				JLabel lblFirstName = new JLabel("First name");
+				lblFirstName.setHorizontalAlignment(SwingConstants.CENTER);
+				lblFirstName.setBounds(190, 40, 100, 20);
+				panelAuthor.add(lblFirstName);
+				
+				JLabel lblMiddleName = new JLabel("Middle name");
+				lblMiddleName.setHorizontalAlignment(SwingConstants.CENTER);
+				lblMiddleName.setBounds(190, 96, 100, 20);
+				panelAuthor.add(lblMiddleName);
+				
+				JTextField txtMiddleName = new JTextField();
+				txtMiddleName.setColumns(10);
+				txtMiddleName.setBounds(90, 117, 300, 30);
+				panelAuthor.add(txtMiddleName);
+			
+				JLabel lblLastName = new JLabel("Last name");
+				lblLastName.setHorizontalAlignment(SwingConstants.CENTER);
+				lblLastName.setBounds(190, 148, 100, 20);
+				panelAuthor.add(lblLastName);
+				
+				JTextField txtLastName = new JTextField();
+				txtLastName.setColumns(10);
+				txtLastName.setBounds(90, 169, 300, 30);
+				panelAuthor.add(txtLastName);
+				
+				JLabel lblEmail = new JLabel("Email");
+				lblEmail.setHorizontalAlignment(SwingConstants.CENTER);
+				lblEmail.setBounds(190, 200, 100, 20);
+				panelAuthor.add(lblEmail);
+				
+				JTextField txtEmail = new JTextField();
+				txtEmail.setColumns(10);
+				txtEmail.setBounds(90, 221, 300, 30);
+				panelAuthor.add(txtEmail);
+				
+				JLabel lblAffiliation = new JLabel("Affiliation");
+				lblAffiliation.setHorizontalAlignment(SwingConstants.CENTER);
+				lblAffiliation.setBounds(190, 252, 100, 20);
+				panelAuthor.add(lblAffiliation);
+				
+				JTextField txtAffiliation = new JTextField();
+				txtAffiliation.setColumns(10);
+				txtAffiliation.setBounds(90, 273, 300, 30);
+				panelAuthor.add(txtAffiliation);
+				
+				JLabel lblBio = new JLabel("Bio");
+				lblBio.setHorizontalAlignment(SwingConstants.CENTER);
+				lblBio.setBounds(190, 304, 100, 20);
+				panelAuthor.add(lblBio);
+				
+				JTextArea txtBio = new JTextArea();
+				txtBio.setColumns(10);
+				txtBio.setBounds(90, 325, 300, 60);
+				panelAuthor.add(txtBio);
+				
+				JLabel lblOrcID = new JLabel("OrcID");
+				lblOrcID.setHorizontalAlignment(SwingConstants.CENTER);
+				lblOrcID.setBounds(190, 386, 100, 20);
+				panelAuthor.add(lblOrcID);
+				
+				JTextField txtOrcID = new JTextField();
+				txtOrcID.setColumns(10);
+				txtOrcID.setBounds(90, 407, 300, 30);
+				panelAuthor.add(txtOrcID);
+				
+				JLabel lblDepartment = new JLabel("Department");
+				lblDepartment.setHorizontalAlignment(SwingConstants.CENTER);
+				lblDepartment.setBounds(190, 438, 100, 20);
+				panelAuthor.add(lblDepartment);
+				
+				JTextField txtDepartment = new JTextField();
+				txtDepartment.setColumns(10);
+				txtDepartment.setBounds(90, 459, 300, 30);
+				panelAuthor.add(txtDepartment);
+				
+				JLabel lblCountry = new JLabel("Country");
+				lblCountry.setHorizontalAlignment(SwingConstants.CENTER);
+				lblCountry.setBounds(190, 490, 100, 20);
+				panelAuthor.add(lblCountry);
+				
+				JTextField txtCountry = new JTextField();
+				txtCountry.setColumns(10);
+				txtCountry.setBounds(90, 511, 300, 30);
+				panelAuthor.add(txtCountry);
+				panelAuthor.setVisible(true);
+				panelAuthor.setSize(new Dimension(480,800));
+				panelAuthor.setPreferredSize(new Dimension(480,600));
+				panelAuthor.setVisible(true);
 				JScrollPane scrollPane = new JScrollPane();
+				btnAddAuthor.addActionListener(new ActionListener() {
+					public void actionPerformed(ActionEvent e) {
+						panelAuthor.setVisible(true);
+						panelAuthor.setEnabled(true);
+					      int result = 	JOptionPane.showConfirmDialog(null,panelAuthor, "Add Author",JOptionPane.OK_CANCEL_OPTION);
+						if(result==JOptionPane.OK_OPTION){
+							author_id++;
+					      Author new_author = new  Author(author_id,txtFirstName.getText(), txtMiddleName.getText(), txtLastName.getText(),txtEmail.getText(), txtAffiliation.getText(), txtBio.getText(),
+					    		  txtOrcID.getText(),txtDepartment.getText(),txtCountry.getText());
+						author_storage.put(author_id, new_author);
+					      listModel.addElement(new_author.getFull_name());
+						listbox.repaint();}
+					}});
+			
+			
 				scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
 				scrollPane.setBounds(20, 140, width - 40, height - 285);
 				issues.getContentPane().add(scrollPane);
@@ -1089,7 +1236,7 @@ public class Main {
 			lblDatePublished.setHorizontalAlignment(SwingConstants.CENTER);
 			lblDatePublished.setForeground(new Color(245, 255, 250));
 			lblDatePublished.setBounds(80, 394, width_small - 161, 16);
-			edit_issue.add(lblDatePublished);
+			edit_issue.getContentPane().add(lblDatePublished);
 
 			final JXDatePicker datePicker = new JXDatePicker();
 			datePicker.setFormats(sdf);
@@ -1102,7 +1249,7 @@ public class Main {
 			;
 			datePicker.setBounds(100, 410, width_small - 200, 30);
 			// panel.add(label);
-			edit_issue.add(datePicker);
+			edit_issue.getContentPane().add(datePicker);
 
 			JButton btnSubmit = new JButton("Create");
 
@@ -1270,7 +1417,7 @@ public class Main {
 				lblDatePublished.setHorizontalAlignment(SwingConstants.CENTER);
 				lblDatePublished.setForeground(new Color(245, 255, 250));
 				lblDatePublished.setBounds(80, 394, width_small - 161, 16);
-				edit_issue.add(lblDatePublished);
+				edit_issue.getContentPane().add(lblDatePublished);
 
 				final JXDatePicker datePicker = new JXDatePicker();
 				datePicker.setFormats(sdf);
@@ -1284,7 +1431,7 @@ public class Main {
 				datePicker.setDate(current_issue.getDate_published());
 				datePicker.setBounds(100, 410, width_small - 200, 30);
 				// panel.add(label);
-				edit_issue.add(datePicker);
+				edit_issue.getContentPane().add(datePicker);
 
 				JButton btnSubmit = new JButton("Save");
 
@@ -3410,6 +3557,131 @@ public class Main {
 		dashboard();
 	}
 
+	public void add_author() {
+		
+				api = new JFrame();
+				api.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+				api.getContentPane().setBackground(new Color(128, 128, 128));
+				api.setTitle("API Information");
+				api.addWindowListener(new WindowAdapter() {
+					@Override
+					public void windowClosing(WindowEvent e) {
+						// database_save();
+					}
+				});
+				api.setSize(480, 800);// 400 width and 500
+														// height
+				api.getContentPane().setLayout(null);// using no layout managers
+				api.setVisible(true);
+				JPanel panelAuthor = new JPanel();
+				panelAuthor.setBounds(0, 0, 480, 800);
+				panelAuthor.setLayout(null);
+				
+				JTextField txtFirstName = new JTextField();
+				txtFirstName.setBounds(90, 65, 300, 30);
+				panelAuthor.add(txtFirstName);
+				txtFirstName.setColumns(10);
+				
+				JLabel lblFirstName = new JLabel("First name");
+				lblFirstName.setHorizontalAlignment(SwingConstants.CENTER);
+				lblFirstName.setBounds(190, 40, 100, 20);
+				panelAuthor.add(lblFirstName);
+				
+				JLabel lblMiddleName = new JLabel("Middle name");
+				lblMiddleName.setHorizontalAlignment(SwingConstants.CENTER);
+				lblMiddleName.setBounds(190, 96, 100, 20);
+				panelAuthor.add(lblMiddleName);
+				
+				JTextField txtMiddleName = new JTextField();
+				txtMiddleName.setColumns(10);
+				txtMiddleName.setBounds(90, 117, 300, 30);
+				panelAuthor.add(txtMiddleName);
+			
+				JLabel lblLastName = new JLabel("Last name");
+				lblLastName.setHorizontalAlignment(SwingConstants.CENTER);
+				lblLastName.setBounds(190, 148, 100, 20);
+				panelAuthor.add(lblLastName);
+				
+				JTextField txtLastName = new JTextField();
+				txtLastName.setColumns(10);
+				txtLastName.setBounds(90, 169, 300, 30);
+				panelAuthor.add(txtLastName);
+				
+				JLabel lblEmail = new JLabel("Email");
+				lblEmail.setHorizontalAlignment(SwingConstants.CENTER);
+				lblEmail.setBounds(190, 200, 100, 20);
+				panelAuthor.add(lblEmail);
+				
+				JTextField txtEmail = new JTextField();
+				txtEmail.setColumns(10);
+				txtEmail.setBounds(90, 221, 300, 30);
+				panelAuthor.add(txtEmail);
+				
+				JLabel lblAffiliation = new JLabel("Affiliation");
+				lblAffiliation.setHorizontalAlignment(SwingConstants.CENTER);
+				lblAffiliation.setBounds(190, 252, 100, 20);
+				panelAuthor.add(lblAffiliation);
+				
+				JTextField txtAffiliation = new JTextField();
+				txtAffiliation.setColumns(10);
+				txtAffiliation.setBounds(90, 273, 300, 30);
+				panelAuthor.add(txtAffiliation);
+				
+				JLabel lblBio = new JLabel("Bio");
+				lblBio.setHorizontalAlignment(SwingConstants.CENTER);
+				lblBio.setBounds(190, 304, 100, 20);
+				panelAuthor.add(lblBio);
+				
+				JTextArea txtBio = new JTextArea();
+				txtBio.setColumns(10);
+				txtBio.setBounds(90, 325, 300, 60);
+				panelAuthor.add(txtBio);
+				
+				JLabel lblOrcID = new JLabel("OrcID");
+				lblOrcID.setHorizontalAlignment(SwingConstants.CENTER);
+				lblOrcID.setBounds(190, 386, 100, 20);
+				panelAuthor.add(lblOrcID);
+				
+				JTextField txtOrcID = new JTextField();
+				txtOrcID.setColumns(10);
+				txtOrcID.setBounds(90, 407, 300, 30);
+				panelAuthor.add(txtOrcID);
+				
+				JLabel lblDepartment = new JLabel("Department");
+				lblDepartment.setHorizontalAlignment(SwingConstants.CENTER);
+				lblDepartment.setBounds(190, 438, 100, 20);
+				panelAuthor.add(lblDepartment);
+				
+				JTextField txtDepartment = new JTextField();
+				txtDepartment.setColumns(10);
+				txtDepartment.setBounds(90, 459, 300, 30);
+				panelAuthor.add(txtDepartment);
+				
+				JLabel lblCountry = new JLabel("Country");
+				lblCountry.setHorizontalAlignment(SwingConstants.CENTER);
+				lblCountry.setBounds(190, 490, 100, 20);
+				panelAuthor.add(lblCountry);
+				
+				JTextField txtCountry = new JTextField();
+				txtCountry.setColumns(10);
+				txtCountry.setBounds(90, 511, 300, 30);
+				panelAuthor.add(txtCountry);
+				panelAuthor.setBounds(0, 0, 480, 800);
+				JOptionPane option = new JOptionPane();
+				option.add(lblCountry);
+				option.add(txtCountry);
+				option.setBounds(0,0,480,800);
+				option.setVisible(true);
+				panelAuthor.setSize(new Dimension(480,800));
+				panelAuthor.setPreferredSize(new Dimension(480,500));
+				option.showConfirmDialog(null,panelAuthor, "test",option.OK_CANCEL_OPTION);
+				panelAuthor.setVisible(true);
+				
+				//JOptionPane.showMessageDialog(api,panelAuthor,"Information",JOptionPane.INFORMATION_MESSAGE);
+	
+	}
+	
+	
 	public static void file_copy(int art_id, String source) {
 		try {
 			String filename = source.substring(source.lastIndexOf("/") + 1);
