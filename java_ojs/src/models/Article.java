@@ -34,7 +34,8 @@ public class Article {
 		return authors;
 	}
 	public void add_author(Author a){
-		this.authors.add(a);
+		if (!authors.contains(a)){
+		this.authors.add(a);}
 	}
 	public void remove_author(Author a){
 		this.authors.remove(a);

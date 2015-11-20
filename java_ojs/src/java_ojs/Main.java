@@ -2032,6 +2032,20 @@ public class Main {
 					field.setOpaque(true);
 					panel6.add(field);
 					author_y = author_y + separation_vertical;
+					
+
+					field_label = new JLabel("Middle name:");
+					field_label.setBounds(author_x, author_y, 75, 30); // white
+																		// box
+					field_label.setOpaque(true);
+					panel6.add(field_label);
+					field = new JLabel(author.getMiddle_name());
+					field.setBounds(author_x + 75 + label_field_separation, author_y, 100, 30); // white
+																								// box
+					field.setOpaque(true);
+					panel6.add(field);
+					author_y = author_y + separation_vertical;
+					
 					field_label = new JLabel("Last name:");
 					field_label.setBounds(author_x, author_y, 75, 30); // white
 																		// box
@@ -2043,6 +2057,81 @@ public class Main {
 					field.setOpaque(true);
 					panel6.add(field);
 					author_y = author_y + separation_vertical;
+					
+					field_label = new JLabel("Email:");
+					field_label.setBounds(author_x, author_y, 75, 30); // white
+																		// box
+					field_label.setOpaque(true);
+					panel6.add(field_label);
+					field = new JLabel(author.getEmail());
+					field.setBounds(author_x + 75 + label_field_separation, author_y, 100, 30); // white
+																								// box
+					field.setOpaque(true);
+					panel6.add(field);
+					author_y = author_y + separation_vertical;
+					
+					field_label = new JLabel("Affiliation:");
+					field_label.setBounds(author_x, author_y, 75, 30); // white
+																		// box
+					field_label.setOpaque(true);
+					panel6.add(field_label);
+					field = new JLabel(author.getEmail());
+					field.setBounds(author_x + 75 + label_field_separation, author_y, 100, 30); // white
+																								// box
+					field.setOpaque(true);
+					panel6.add(field);
+					author_y = author_y + separation_vertical;
+					
+					field_label = new JLabel("Bio:");
+					field_label.setBounds(author_x, author_y, 75, 30); // white
+																		// box
+					field_label.setOpaque(true);
+					panel6.add(field_label);
+					JTextArea	field_a = new JTextArea(author.getBio());
+					field_a.setBounds(author_x + 75 + label_field_separation, author_y, 100, 60); // white
+					field_a.setEditable(false);
+					field_a.setBackground(SystemColor.window);
+					field_a.setOpaque(true);
+					panel6.add(field_a);
+					author_y = author_y + separation_vertical+30;
+					
+					field_label = new JLabel("OrcID:");
+					field_label.setBounds(author_x, author_y, 75, 30); // white
+																		// box
+					field_label.setOpaque(true);
+					panel6.add(field_label);
+					field = new JLabel(author.getOrcid());
+					field.setBounds(author_x + 75 + label_field_separation, author_y, 100, 30); // white
+																								// box
+					field.setOpaque(true);
+					panel6.add(field);
+					author_y = author_y + separation_vertical;
+					
+					field_label = new JLabel("Department:");
+					field_label.setBounds(author_x, author_y, 75, 30); // white
+																		// box
+					field_label.setOpaque(true);
+					panel6.add(field_label);
+					field = new JLabel(author.getDepartment());
+					field.setBounds(author_x + 75 + label_field_separation, author_y, 100, 30); // white
+																								// box
+					field.setOpaque(true);
+					panel6.add(field);
+					author_y = author_y + separation_vertical;
+					
+					field_label = new JLabel("Country:");
+					field_label.setBounds(author_x, author_y, 75, 30); // white
+																		// box
+					field_label.setOpaque(true);
+					panel6.add(field_label);
+					field = new JLabel(author.getCountry());
+					field.setBounds(author_x + 75 + label_field_separation, author_y, 100, 30); // white
+																								// box
+					field.setOpaque(true);
+					panel6.add(field);
+					author_y = author_y + separation_vertical;
+					
+					
 					author_y = 60;
 					author_x = 16;
 
@@ -2490,6 +2579,10 @@ public class Main {
 				article.getContentPane().add(panel6);
 				panel6.setLayout(null);
 				panel6.setAutoscrolls(true);
+				
+				JPanel panel15 = new JPanel();
+				panel15.setBackground(SystemColor.window);
+				
 
 				// size
 				JScrollPane authorSection = new JScrollPane(panel6);
@@ -2498,6 +2591,63 @@ public class Main {
 				JLabel lblNewLabel_3 = new JLabel("Author Information");
 				lblNewLabel_3.setBounds(15, 6, 156, 16);
 				panel6.add(lblNewLabel_3);
+				JButton btnAddAuthors = new JButton("Add Authors");
+				btnAddAuthors.setBounds(165, 6, 125, 25);
+				panel6.add(btnAddAuthors);
+				
+				Set<Integer> author_keys = author_storage.keySet();
+				DefaultListModel listModel = new DefaultListModel();
+				ArrayList<Integer> author_list = new ArrayList<Integer>();
+				String listData[] = new String[author_keys.size()];
+				int j = 0;
+				int a=0;
+				int[] selected=new int[author_keys.size()];
+				for (int key : author_keys) {
+					listModel.addElement(author_storage.get(key).getFull_name());
+					listData[j] = author_storage.get(key).getFull_name();
+					author_list.add(key);
+					Article current_art=issue_storage.get(issue_id).getArticles_list().get(article_id);
+					if(current_art.getAuthors().contains(author_storage.get(key))){
+						
+						selected[a]=j;
+						a=a+1;
+					}
+					 
+					j = j + 1;
+				}
+				;
+				panel15.setBounds(50, 107, 180 * 2,  45 * author_keys.size());
+				panel15.setLayout(null);
+				panel15.setAutoscrolls(true);
+				panel15.setPreferredSize(new Dimension(320, 45 * author_keys.size()));
+				// Create a new listbox control
+				JList listbox = new JList();
+				listbox.setModel(listModel);
+				listbox.setSelectedIndices(selected);
+				listbox.setBounds(15, 40, 320, 25 * author_list.size());
+				listbox.setBackground(Color.white);
+				listbox.setVisible(true);
+				panel15.add(listbox);
+				
+				btnAddAuthors.addActionListener(new ActionListener() {
+					public void actionPerformed(ActionEvent e) {
+					      int result = 	JOptionPane.showConfirmDialog(null,panel15, "Add Authors",JOptionPane.OK_CANCEL_OPTION);
+						if(result==JOptionPane.OK_OPTION){
+							int[] selections = listbox.getSelectedIndices();
+							SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
+							Issue current_issue = issue_storage.get(issue_id);
+
+							
+							for (int index : selections) {
+								current_issue.add_author(article_id, author_storage.get(author_list.get(index)));
+							}	
+							issue_storage.put(issue_id, current_issue);
+							article.dispose();
+							edit_article(issue_id,article_id);
+							
+						}
+					}});
+				
 				final HashMap<Integer, HashMap<Integer, JTextField>> author_fields = new HashMap<Integer, HashMap<Integer, JTextField>>();
 				ArrayList<Author> authors = current_article.getAuthors();
 
@@ -2529,6 +2679,21 @@ public class Main {
 					panel6.add(field);
 					author_components.put(1, field);
 					author_y = author_y + separation_vertical;
+			
+					field_label = new JLabel("Middle name:");
+					field_label.setBounds(author_x, author_y, 75, 30); // white
+																		// box
+					field_label.setOpaque(true);
+					panel6.add(field_label);
+					field = new JTextField(author.getMiddle_name());
+					field.setBounds(author_x + 75 + label_field_separation, author_y, 100, 30); // white
+																								// box
+					field.setOpaque(true);
+					panel6.add(field);
+					author_components.put(2, field);
+					author_fields.put(author.getId(), author_components);
+					author_y = author_y + separation_vertical;
+					
 					field_label = new JLabel("Last name:");
 					field_label.setBounds(author_x, author_y, 75, 30); // white
 																		// box
@@ -2539,9 +2704,94 @@ public class Main {
 																								// box
 					field.setOpaque(true);
 					panel6.add(field);
-					author_components.put(2, field);
+					author_components.put(3, field);
 					author_fields.put(author.getId(), author_components);
 					author_y = author_y + separation_vertical;
+					
+					field_label = new JLabel("Email:");
+					field_label.setBounds(author_x, author_y, 75, 30); // white
+																		// box
+					field_label.setOpaque(true);
+					panel6.add(field_label);
+					field = new JTextField(author.getEmail());
+					field.setBounds(author_x + 75 + label_field_separation, author_y, 100, 30); // white
+																								// box
+					field.setOpaque(true);
+					panel6.add(field);
+					author_components.put(4, field);
+					author_fields.put(author.getId(), author_components);
+					author_y = author_y + separation_vertical;
+					
+					field_label = new JLabel("Affiliation:");
+					field_label.setBounds(author_x, author_y, 75, 30); // white
+																		// box
+					field_label.setOpaque(true);
+					panel6.add(field_label);
+					field = new JTextField(author.getEmail());
+					field.setBounds(author_x + 75 + label_field_separation, author_y, 100, 30); // white
+																								// box
+					field.setOpaque(true);
+					panel6.add(field);
+					author_components.put(5, field);
+					author_fields.put(author.getId(), author_components);
+					author_y = author_y + separation_vertical;
+					
+					field_label = new JLabel("Bio:");
+					field_label.setBounds(author_x, author_y, 75, 30); // white
+																		// box
+					field_label.setOpaque(true);
+					panel6.add(field_label);
+					JTextArea field_area = new JTextArea(author.getEmail());
+					field_area.setBounds(author_x + 75 + label_field_separation, author_y, 100, 60); // white
+																								// box
+					field_area.setOpaque(true);
+					panel6.add(field_area);
+					author_components.put(6, new JTextField(field_area.getText()));
+					author_fields.put(author.getId(), author_components);
+					author_y = author_y + separation_vertical+30;
+					
+					field_label = new JLabel("OrcID:");
+					field_label.setBounds(author_x, author_y, 75, 30); // white
+																		// box
+					field_label.setOpaque(true);
+					panel6.add(field_label);
+					field = new JTextField(author.getEmail());
+					field.setBounds(author_x + 75 + label_field_separation, author_y, 100, 30); // white
+																								// box
+					field.setOpaque(true);
+					panel6.add(field);
+					author_components.put(7, field);
+					author_fields.put(author.getId(), author_components);
+					author_y = author_y + separation_vertical;
+					
+					field_label = new JLabel("Department:");
+					field_label.setBounds(author_x, author_y, 75, 30); // white
+																		// box
+					field_label.setOpaque(true);
+					panel6.add(field_label);
+					field = new JTextField(author.getEmail());
+					field.setBounds(author_x + 75 + label_field_separation, author_y, 100, 30); // white
+																								// box
+					field.setOpaque(true);
+					panel6.add(field);
+					author_components.put(8, field);
+					author_fields.put(author.getId(), author_components);
+					author_y = author_y + separation_vertical;
+					
+					field_label = new JLabel("Country:");
+					field_label.setBounds(author_x, author_y, 75, 30); // white
+																		// box
+					field_label.setOpaque(true);
+					panel6.add(field_label);
+					field = new JTextField(author.getEmail());
+					field.setBounds(author_x + 75 + label_field_separation, author_y, 100, 30); // white
+																								// box
+					field.setOpaque(true);
+					panel6.add(field);
+					author_components.put(9, field);
+					author_fields.put(author.getId(), author_components);
+					author_y = author_y + separation_vertical;
+					
 					author_y = 60;
 					author_x = 16;
 
@@ -2680,7 +2930,14 @@ public class Main {
 							Author author = updated_authors.get(i);
 							HashMap<Integer, JTextField> a_fields = author_fields.get(updated_authors.get(i).getId());
 							author.setFirst_name(a_fields.get(1).getText());
-							author.setLast_name(a_fields.get(2).getText());
+							author.setMiddle_name(a_fields.get(2).getText());
+							author.setLast_name(a_fields.get(3).getText());
+							author.setEmail(a_fields.get(4).getText());
+							author.setAffiliation(a_fields.get(5).getText());
+							author.setBio(a_fields.get(6).getText());
+							author.setOrcid(a_fields.get(7).getText());
+							author.setDepartment(a_fields.get(8).getText());
+							author.setCountry(a_fields.get(9).getText());
 							updated_authors.set(i, author);
 						}
 						a.setAuthors(updated_authors);
