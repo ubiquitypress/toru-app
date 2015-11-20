@@ -2133,7 +2133,7 @@ public class Main {
 				panel10.setBounds(115, 280, 225, 190);
 				
 				JPanel panel11 = new JPanel();
-				panel11.setBounds(265, 285, 225, 190+20*file_storage.keySet().size());
+				panel11.setBounds(265, 285, 265, 190+20*file_storage.keySet().size());
 				panel11.setLayout(null);
 				panel11.setAutoscrolls(true);
 				panel11.setPreferredSize(new Dimension(250,190+40*file_storage.keySet().size()));
@@ -2145,16 +2145,21 @@ public class Main {
 					Set<Integer> keys = files.keySet();
 					int y_f = 23;
 					for (int key : keys) {
+						ImageIcon deleteicon = new ImageIcon("src/lib/remove_xs.png");
+						JButton btnDeleteFile = new JButton(deleteicon);
+						btnDeleteFile.setMargin(new Insets(0, 0, 0, 0));
+						btnDeleteFile.setBorder(null);
+						btnDeleteFile.setFont(new Font("Dialog", Font.BOLD, 12));
+						
+						btnDeleteFile.setBounds(195, y_f, 40, 24);
+						article.getContentPane().add(btnDeleteFile);
+						
 						ImageIcon saveicon = new ImageIcon("src/lib/save_xs.png");
 						JButton btnSaveFile = new JButton(saveicon);
 						btnSaveFile.setMargin(new Insets(0, 0, 0, 0));
 						btnSaveFile.setBorder(null);
 						btnSaveFile.setFont(new Font("Dialog", Font.BOLD, 12));
-						btnSaveFile.addActionListener(new ActionListener() {
-							public void actionPerformed(ActionEvent e) {
-								database_save();
-							}
-						});
+						
 						btnSaveFile.setBounds(150, y_f, 40, 24);
 						article.getContentPane().add(btnSaveFile);
 						JLabel file_l=new JLabel(files.get(key).getPath().substring(files.get(key).getPath().lastIndexOf("/")+1));
@@ -2201,8 +2206,24 @@ public class Main {
 								}
 							}
 						});
+						btnDeleteFile.setAction(new AbstractAction() {
+							public void actionPerformed(ActionEvent e) {
+								
+								
+								File f = new File(files.get(key).getPath());
+								f.delete();
+								HashMap<Integer,ArticleFile> deleted=file_storage.get(article_id);
+								deleted.remove(key);
+								file_storage.put(article_id,deleted);
+								article.dispose();
+								article(issue_id,article_id);
+								
+							}
+						});
+						btnDeleteFile.setIcon(deleteicon);
 						btnSaveFile.setIcon(saveicon);
 						panel11.add(btnSaveFile);
+						panel11.add(btnDeleteFile);
 						String path = files.get(key).getPath();
 						label_text = label_text + path.substring(path.lastIndexOf("/") + 1) + "\n";
 					}
@@ -2215,7 +2236,7 @@ public class Main {
 				JScrollPane fileSection = new JScrollPane(panel11);
 
 				fileSection.setPreferredSize(new Dimension(300 * 2, 200));
-				fileSection.setBounds(20, 280, 225, 190);
+				fileSection.setBounds(20, 280, 265, 190);
 				fileSection.add(panel10);
 				fileSection.createHorizontalScrollBar();
 				panel.add(fileSection);
