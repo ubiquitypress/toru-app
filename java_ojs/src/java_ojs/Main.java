@@ -41,6 +41,7 @@ import models.Article;
 import models.ArticleFile;
 import models.Author;
 import models.Issue;
+import models.Section;
 
 import java.awt.Label;
 import java.util.List;
@@ -65,6 +66,7 @@ public class Main {
 	private static HashMap<Integer, Integer> list_issues;
 	private static HashMap<Integer, JFrame> issue_screens;
 	private static HashMap<Integer, Issue> issue_storage;
+	private static HashMap<Integer, Section> section_storage;
 	private static HashMap<Integer, Author> author_storage;
 	private static HashMap<Integer, HashMap<Integer, ArticleFile>> file_storage;
 	private static HashMap<Integer, HashMap<Integer, JFrame>> article_screens;
@@ -80,6 +82,7 @@ public class Main {
 	private static int articles_id = 0;
 	private static int file_id = 0;
 	private static int author_id = 0;
+	private static int section_db_id = 0;
 
 	/*
 	 * Initial setup test
@@ -121,6 +124,7 @@ public class Main {
 		file_storage = new HashMap<Integer, HashMap<Integer, ArticleFile>>();
 		article_screens = new HashMap<Integer, HashMap<Integer, JFrame>>();
 		author_storage = new HashMap<Integer, Author>();
+		section_storage = new HashMap<Integer,Section>();
 		try {
 			ResultSet rs = stmt.executeQuery("SELECT * FROM API WHERE URL=" + "'api'" + ";");
 			while (rs.next()) {
@@ -2905,12 +2909,31 @@ public class Main {
 				titleSection.add(panel9);
 				titleSection.createHorizontalScrollBar();
 				panel.add(titleSection);
-
-				final JTextField lblSectionId = new JTextField(Integer.toString(current_article.getSection_id()));
+				
+				final JComboBox<String> lblSectionId = new JComboBox();
+				Set<Integer> section_keys=section_storage.keySet();
+				ArrayList<Section> sections = new ArrayList<Section>();
+				int selected_section=0;
+				int count=0;
+				for(int key:section_keys){
+				lblSectionId.addItem(section_storage.get(key).getTitle());
+				sections.add(section_storage.get(key));
+				System.out.println("Count: "+count+ " Section: "+current_article.getSection_id());
+				if(current_article.getSection_id()==section_storage.get(key).getId()){
+					selected_section=count;
+					System.out.println("selected section: "+selected_section);
+				}
+				count++;
+				}
+				lblSectionId.setSelectedIndex(selected_section);
+		//		final JTextField lblSectionId = new JTextField(Integer.toString(current_article.getSection_id()));
 				lblSectionId.setForeground(Color.BLACK);
-				lblSectionId.setFont(new Font("Dialog", Font.BOLD, 14));
-				lblSectionId.setBounds(156, 81, 94, 30);
+				lblSectionId.setFont(new Font("Dialog", Font.BOLD, 12));
+				lblSectionId.setBounds(95, 83, 140, 26);
 				panel.add(lblSectionId);
+				JButton btnAddSections = new JButton("+ Add");
+				btnAddSections.setBounds(236, 83, 85, 27);
+				panel.add(btnAddSections);
 				final JLabel label = new JLabel();
 				label.setText("Choose Date by selecting below.");
 				final JXDatePicker datePicker = new JXDatePicker();
@@ -2957,7 +2980,7 @@ public class Main {
 						}
 						a.setAuthors(updated_authors);
 						a.setAbstract_text(lblAbstract.getText());
-						a.setSection_id(Integer.parseInt(lblSectionId.getText()));
+						a.setSection_id( sections.get(lblSectionId.getSelectedIndex()).getId());
 						a.setPages(Integer.parseInt(lblPageNum.getText()));
 						a.setDate_published(datePicker.getDate());
 
@@ -3545,11 +3568,20 @@ public class Main {
 			titleSection.createHorizontalScrollBar();
 			panel.add(titleSection);
 
-			final JTextField lblSectionId = new JTextField();
+			final JComboBox<String> lblSectionId = new JComboBox();
+			Set<Integer> section_keys=section_storage.keySet();
+			ArrayList<Section> sections = new ArrayList<Section>();
+			for(int key:section_keys){
+			lblSectionId.addItem(section_storage.get(key).getTitle());
+			sections.add(section_storage.get(key));}
+			
 			lblSectionId.setForeground(Color.BLACK);
-			lblSectionId.setFont(new Font("Dialog", Font.BOLD, 14));
-			lblSectionId.setBounds(156, 81, 94, 30);
+			lblSectionId.setFont(new Font("Dialog", Font.BOLD, 12));
+			lblSectionId.setBounds(95, 83, 140, 26);
 			panel.add(lblSectionId);
+			JButton btnAddSections = new JButton("+ Add");
+			btnAddSections.setBounds(236, 83, 85, 27);
+			panel.add(btnAddSections);
 			final JLabel label = new JLabel();
 			label.setText("Choose Date by selecting below.");
 			final JXDatePicker datePicker = new JXDatePicker();
@@ -3576,7 +3608,7 @@ public class Main {
 			btnSave.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent arg0) {
 					try {
-						int entered_sectionID = Integer.parseInt(lblSectionId.getText());
+						int entered_sectionID = sections.get(lblSectionId.getSelectedIndex()).getId();
 						int entered_pages = Integer.parseInt(lblPageNum.getText());
 						issue_screens.get(issue_id).dispose();
 						articles_id++;
@@ -3821,7 +3853,9 @@ public class Main {
 				"bio", "orcid", "testing", "gb"));
 		author_storage.put(6, new Author(6, "Morty", "C.", "FakeAuthor", "fake_author@fakeaddress.com", "affiliation",
 				"bio", "orcid", "testing", "gb"));
-
+		section_db_id=2;
+		section_storage.put(1, new Section(1,"Section 1"));
+		section_storage.put(2, new Section(2,"Section 2"));
 		dashboard();
 	}
 
