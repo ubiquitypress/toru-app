@@ -52,7 +52,6 @@ import java.awt.Panel;
 import java.awt.SystemColor;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
-import net.miginfocom.swing.MigLayout;
 
 public class Main {
 	JFrame login, api, issues, settings;
@@ -2591,7 +2590,7 @@ public class Main {
 				JLabel lblNewLabel_3 = new JLabel("Author Information");
 				lblNewLabel_3.setBounds(15, 6, 156, 16);
 				panel6.add(lblNewLabel_3);
-				JButton btnAddAuthors = new JButton("Add Authors");
+				JButton btnAddAuthors = new JButton("Edit Authors");
 				btnAddAuthors.setBounds(165, 6, 125, 25);
 				panel6.add(btnAddAuthors);
 				
@@ -2601,14 +2600,26 @@ public class Main {
 				String listData[] = new String[author_keys.size()];
 				int j = 0;
 				int a=0;
-				int[] selected=new int[author_keys.size()];
+				int selections=0;
+			
 				for (int key : author_keys) {
 					listModel.addElement(author_storage.get(key).getFull_name());
 					listData[j] = author_storage.get(key).getFull_name();
 					author_list.add(key);
 					Article current_art=issue_storage.get(issue_id).getArticles_list().get(article_id);
 					if(current_art.getAuthors().contains(author_storage.get(key))){
-						
+						selections++;
+					}
+					 
+					j = j + 1;
+				}
+				;
+				j=0;
+				int[] selected=new int[selections];
+				for (int key : author_keys) {
+					Article current_art=issue_storage.get(issue_id).getArticles_list().get(article_id);
+					if(current_art.getAuthors().contains(author_storage.get(key))){
+						System.out.println(a+" - "+j);
 						selected[a]=j;
 						a=a+1;
 					}
@@ -2616,6 +2627,10 @@ public class Main {
 					j = j + 1;
 				}
 				;
+				for (int index : selected) {
+					System.out.println("Selected: "+index);
+				}
+				System.out.println(selected.toString());
 				panel15.setBounds(50, 107, 180 * 2,  45 * author_keys.size());
 				panel15.setLayout(null);
 				panel15.setAutoscrolls(true);
@@ -2637,7 +2652,7 @@ public class Main {
 							SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
 							Issue current_issue = issue_storage.get(issue_id);
 
-							
+							current_issue.reset_authors(article_id);
 							for (int index : selections) {
 								current_issue.add_author(article_id, author_storage.get(author_list.get(index)));
 							}	

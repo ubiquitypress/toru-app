@@ -151,6 +151,11 @@ public class Issue {
 		updated.add_author(a);		
 		articles_list.put(article_id,updated);
 	}
+	public void reset_authors(int article_id){
+		Article updated=articles_list.get(article_id);
+		updated.reset_authors();	
+		articles_list.put(article_id,updated);
+	}
 	public void remove_article(int id){
 		articles_list.remove(id);
 	}
