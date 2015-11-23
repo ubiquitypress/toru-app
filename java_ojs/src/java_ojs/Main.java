@@ -2650,7 +2650,7 @@ public class Main {
 				
 				btnAddAuthors.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
-					      int result = 	JOptionPane.showConfirmDialog(null,panel15, "Add Authors",JOptionPane.OK_CANCEL_OPTION);
+					      int result = 	JOptionPane.showConfirmDialog(null,panel15, "Edit Authors",JOptionPane.OK_CANCEL_OPTION);
 						if(result==JOptionPane.OK_OPTION){
 							int[] selections = listbox.getSelectedIndices();
 							SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
