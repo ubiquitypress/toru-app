@@ -140,6 +140,41 @@ public class Main {
 				System.out.println("Setting - " + name + " : " + value.toString());
 			}
 			rs.close();
+			rs = stmt.executeQuery("SELECT * FROM ISSUE ORDER BY id ASC;");
+			while (rs.next()) {
+				int id = rs.getInt("id");
+				String title = rs.getString("title");
+				int volume = rs.getInt("volume");
+				int number = rs.getInt("number");
+				int year = rs.getInt("year");
+				String show_title = rs.getString("title");
+				int show_volume = rs.getInt("volume");
+				int show_number = rs.getInt("number");
+				int show_year = rs.getInt("year");
+				String date = rs.getString("date_published");
+				Issue new_isse;
+				SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
+				Issue issue = null;
+				try {
+					issue = new Issue(id, title, volume, number, year,show_title, show_volume, show_number, show_year,
+							sdf.parse(date));
+				} catch (ParseException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+
+				// JOptionPane.showMessageDialog(null, "Deleted");
+				
+				list_issues.put(id, 1);
+				issue_screens.put(id, new JFrame());
+				article_screens.put(id, new HashMap<Integer, JFrame>());
+				issue_storage.put(id, issue);
+				i_id=id;
+			//	list_settings.put(name, value);
+				//setting_keys.add(name);
+			//	System.out.println("Setting - " + name + " : " + value.toString());
+			}
+			rs.close();
 
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
