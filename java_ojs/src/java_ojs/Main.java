@@ -41,6 +41,7 @@ import models.Article;
 import models.ArticleFile;
 import models.Author;
 import models.Issue;
+import models.Section;
 
 import java.awt.Label;
 import java.util.List;
@@ -52,7 +53,6 @@ import java.awt.Panel;
 import java.awt.SystemColor;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
-import net.miginfocom.swing.MigLayout;
 
 public class Main {
 	JFrame login, api, issues, settings;
@@ -66,6 +66,7 @@ public class Main {
 	private static HashMap<Integer, Integer> list_issues;
 	private static HashMap<Integer, JFrame> issue_screens;
 	private static HashMap<Integer, Issue> issue_storage;
+	private static HashMap<Integer, Section> section_storage;
 	private static HashMap<Integer, Author> author_storage;
 	private static HashMap<Integer, HashMap<Integer, ArticleFile>> file_storage;
 	private static HashMap<Integer, HashMap<Integer, JFrame>> article_screens;
@@ -81,6 +82,7 @@ public class Main {
 	private static int articles_id = 0;
 	private static int file_id = 0;
 	private static int author_id = 0;
+	private static int section_db_id = 0;
 
 	/*
 	 * Initial setup test
@@ -122,6 +124,7 @@ public class Main {
 		file_storage = new HashMap<Integer, HashMap<Integer, ArticleFile>>();
 		article_screens = new HashMap<Integer, HashMap<Integer, JFrame>>();
 		author_storage = new HashMap<Integer, Author>();
+		section_storage = new HashMap<Integer,Section>();
 		try {
 			ResultSet rs = stmt.executeQuery("SELECT * FROM API WHERE URL=" + "'api'" + ";");
 			while (rs.next()) {
@@ -2647,7 +2650,7 @@ public class Main {
 				JLabel lblNewLabel_3 = new JLabel("Author Information");
 				lblNewLabel_3.setBounds(15, 6, 156, 16);
 				panel6.add(lblNewLabel_3);
-				JButton btnAddAuthors = new JButton("Add Authors");
+				JButton btnAddAuthors = new JButton("Edit Authors");
 				btnAddAuthors.setBounds(165, 6, 125, 25);
 				panel6.add(btnAddAuthors);
 				
@@ -2657,14 +2660,26 @@ public class Main {
 				String listData[] = new String[author_keys.size()];
 				int j = 0;
 				int a=0;
-				int[] selected=new int[author_keys.size()];
+				int selections=0;
+			
 				for (int key : author_keys) {
 					listModel.addElement(author_storage.get(key).getFull_name());
 					listData[j] = author_storage.get(key).getFull_name();
 					author_list.add(key);
 					Article current_art=issue_storage.get(issue_id).getArticles_list().get(article_id);
 					if(current_art.getAuthors().contains(author_storage.get(key))){
-						
+						selections++;
+					}
+					 
+					j = j + 1;
+				}
+				;
+				j=0;
+				int[] selected=new int[selections];
+				for (int key : author_keys) {
+					Article current_art=issue_storage.get(issue_id).getArticles_list().get(article_id);
+					if(current_art.getAuthors().contains(author_storage.get(key))){
+						System.out.println(a+" - "+j);
 						selected[a]=j;
 						a=a+1;
 					}
@@ -2672,6 +2687,10 @@ public class Main {
 					j = j + 1;
 				}
 				;
+				for (int index : selected) {
+					System.out.println("Selected: "+index);
+				}
+				System.out.println(selected.toString());
 				panel15.setBounds(50, 107, 180 * 2,  45 * author_keys.size());
 				panel15.setLayout(null);
 				panel15.setAutoscrolls(true);
@@ -2687,13 +2706,13 @@ public class Main {
 				
 				btnAddAuthors.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
-					      int result = 	JOptionPane.showConfirmDialog(null,panel15, "Add Authors",JOptionPane.OK_CANCEL_OPTION);
+					      int result = 	JOptionPane.showConfirmDialog(null,panel15, "Edit Authors",JOptionPane.OK_CANCEL_OPTION);
 						if(result==JOptionPane.OK_OPTION){
 							int[] selections = listbox.getSelectedIndices();
 							SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
 							Issue current_issue = issue_storage.get(issue_id);
 
-							
+							current_issue.reset_authors(article_id);
 							for (int index : selections) {
 								current_issue.add_author(article_id, author_storage.get(author_list.get(index)));
 							}	
@@ -2946,12 +2965,64 @@ public class Main {
 				titleSection.add(panel9);
 				titleSection.createHorizontalScrollBar();
 				panel.add(titleSection);
-
-				final JTextField lblSectionId = new JTextField(Integer.toString(current_article.getSection_id()));
+				
+				final JComboBox<String> lblSectionId = new JComboBox();
+				Set<Integer> section_keys=section_storage.keySet();
+				ArrayList<Section> sections = new ArrayList<Section>();
+				int selected_section=0;
+				int count=0;
+				for(int key:section_keys){
+				lblSectionId.addItem(section_storage.get(key).getTitle());
+				sections.add(section_storage.get(key));
+				System.out.println("Count: "+count+ " Section: "+current_article.getSection_id());
+				if(current_article.getSection_id()==section_storage.get(key).getId()){
+					selected_section=count;
+					System.out.println("selected section: "+selected_section);
+				}
+				count++;
+				}
+				lblSectionId.setSelectedIndex(selected_section);
+		//		final JTextField lblSectionId = new JTextField(Integer.toString(current_article.getSection_id()));
 				lblSectionId.setForeground(Color.BLACK);
-				lblSectionId.setFont(new Font("Dialog", Font.BOLD, 14));
-				lblSectionId.setBounds(156, 81, 94, 30);
+				lblSectionId.setFont(new Font("Dialog", Font.BOLD, 12));
+				lblSectionId.setBounds(95, 83, 140, 26);
 				panel.add(lblSectionId);
+				JButton btnAddSections = new JButton("+ Add");
+				btnAddSections.setBounds(236, 83, 85, 27);
+				panel.add(btnAddSections);
+				
+				
+				JPanel panelSection = new JPanel();
+				panelSection.setBounds(0, 0, 480, 150);
+				panelSection.setLayout(null);
+				
+				JTextField txtSectionTitle = new JTextField();
+				txtSectionTitle.setBounds(90, 65, 300, 30);
+				panelSection.add(txtSectionTitle);
+				txtSectionTitle.setColumns(10);
+				
+				JLabel lblTitleSection = new JLabel("Title");
+				lblTitleSection.setHorizontalAlignment(SwingConstants.CENTER);
+				lblTitleSection.setBounds(190, 40, 100, 20);
+				panelSection.add(lblTitleSection);
+				panelSection.setBounds(0, 0, 480, 150);
+				panelSection.setSize(new Dimension(480,150));
+				panelSection.setPreferredSize(new Dimension(480,150));
+				panelSection.setVisible(true);
+				btnAddSections.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					panelSection.setVisible(true);
+					panelSection.setEnabled(true);
+				      int result = 	JOptionPane.showConfirmDialog(null,panelSection, "Add Section",JOptionPane.OK_CANCEL_OPTION);
+					if(result==JOptionPane.OK_OPTION){
+						section_db_id++;
+				      Section new_section = new  Section(section_db_id,txtSectionTitle.getText());
+					section_storage.put(section_db_id, new_section);
+					lblSectionId.addItem(new_section.getTitle());
+					sections.add(new_section);
+					lblSectionId.repaint();}
+				}});
+				
 				final JLabel label = new JLabel();
 				label.setText("Choose Date by selecting below.");
 				final JXDatePicker datePicker = new JXDatePicker();
@@ -2998,7 +3069,7 @@ public class Main {
 						}
 						a.setAuthors(updated_authors);
 						a.setAbstract_text(lblAbstract.getText());
-						a.setSection_id(Integer.parseInt(lblSectionId.getText()));
+						a.setSection_id( sections.get(lblSectionId.getSelectedIndex()).getId());
 						a.setPages(Integer.parseInt(lblPageNum.getText()));
 						a.setDate_published(datePicker.getDate());
 
@@ -3586,11 +3657,52 @@ public class Main {
 			titleSection.createHorizontalScrollBar();
 			panel.add(titleSection);
 
-			final JTextField lblSectionId = new JTextField();
+			final JComboBox<String> lblSectionId = new JComboBox();
+			Set<Integer> section_keys=section_storage.keySet();
+			ArrayList<Section> sections = new ArrayList<Section>();
+			for(int key:section_keys){
+			lblSectionId.addItem(section_storage.get(key).getTitle());
+			sections.add(section_storage.get(key));}
+			
 			lblSectionId.setForeground(Color.BLACK);
-			lblSectionId.setFont(new Font("Dialog", Font.BOLD, 14));
-			lblSectionId.setBounds(156, 81, 94, 30);
+			lblSectionId.setFont(new Font("Dialog", Font.BOLD, 12));
+			lblSectionId.setBounds(95, 83, 140, 26);
 			panel.add(lblSectionId);
+			JButton btnAddSections = new JButton("+ Add");
+			btnAddSections.setBounds(236, 83, 85, 27);
+			panel.add(btnAddSections);
+			
+			JPanel panelSection = new JPanel();
+			panelSection.setBounds(0, 0, 480, 150);
+			panelSection.setLayout(null);
+			
+			JTextField txtSectionTitle = new JTextField();
+			txtSectionTitle.setBounds(90, 65, 300, 30);
+			panelSection.add(txtSectionTitle);
+			txtSectionTitle.setColumns(10);
+			
+			JLabel lblTitleSection = new JLabel("Title");
+			lblTitleSection.setHorizontalAlignment(SwingConstants.CENTER);
+			lblTitleSection.setBounds(190, 40, 100, 20);
+			panelSection.add(lblTitleSection);
+			panelSection.setBounds(0, 0, 480, 150);
+			panelSection.setSize(new Dimension(480,150));
+			panelSection.setPreferredSize(new Dimension(480,150));
+			panelSection.setVisible(true);
+			btnAddSections.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				panelSection.setVisible(true);
+				panelSection.setEnabled(true);
+			      int result = 	JOptionPane.showConfirmDialog(null,panelSection, "Add Section",JOptionPane.OK_CANCEL_OPTION);
+				if(result==JOptionPane.OK_OPTION){
+					section_db_id++;
+			      Section new_section = new  Section(section_db_id,txtSectionTitle.getText());
+				section_storage.put(section_db_id, new_section);
+				sections.add(new_section);
+				lblSectionId.addItem(new_section.getTitle());
+				lblSectionId.repaint();}
+			}});
+			
 			final JLabel label = new JLabel();
 			label.setText("Choose Date by selecting below.");
 			final JXDatePicker datePicker = new JXDatePicker();
@@ -3617,7 +3729,7 @@ public class Main {
 			btnSave.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent arg0) {
 					try {
-						int entered_sectionID = Integer.parseInt(lblSectionId.getText());
+						int entered_sectionID = sections.get(lblSectionId.getSelectedIndex()).getId();
 						int entered_pages = Integer.parseInt(lblPageNum.getText());
 						issue_screens.get(issue_id).dispose();
 						articles_id++;
@@ -3862,7 +3974,9 @@ public class Main {
 				"bio", "orcid", "testing", "gb"));
 		author_storage.put(6, new Author(6, "Morty", "C.", "FakeAuthor", "fake_author@fakeaddress.com", "affiliation",
 				"bio", "orcid", "testing", "gb"));
-
+		section_db_id=2;
+		section_storage.put(1, new Section(1,"Section 1"));
+		section_storage.put(2, new Section(2,"Section 2"));
 		dashboard();
 	}
 
@@ -3882,109 +3996,107 @@ public class Main {
 														// height
 				api.getContentPane().setLayout(null);// using no layout managers
 				api.setVisible(true);
-				JPanel panelAuthor = new JPanel();
-				panelAuthor.setBounds(0, 0, 480, 800);
-				panelAuthor.setLayout(null);
+				JPanel panelSection = new JPanel();
+				panelSection.setBounds(0, 0, 480, 150);
+				panelSection.setLayout(null);
 				
-				JTextField txtFirstName = new JTextField();
-				txtFirstName.setBounds(90, 65, 300, 30);
-				panelAuthor.add(txtFirstName);
-				txtFirstName.setColumns(10);
+				JTextField txtSectionTitle = new JTextField();
+				txtSectionTitle.setBounds(90, 65, 300, 30);
+				panelSection.add(txtSectionTitle);
+				txtSectionTitle.setColumns(10);
 				
-				JLabel lblFirstName = new JLabel("First name");
-				lblFirstName.setHorizontalAlignment(SwingConstants.CENTER);
-				lblFirstName.setBounds(190, 40, 100, 20);
-				panelAuthor.add(lblFirstName);
-				
+				JLabel lblTitle = new JLabel("Title");
+				lblTitle.setHorizontalAlignment(SwingConstants.CENTER);
+				lblTitle.setBounds(190, 40, 100, 20);
+				panelSection.add(lblTitle);
+				panelSection.setBounds(0, 0, 480, 150);
+				panelSection.setSize(new Dimension(480,150));
+				panelSection.setPreferredSize(new Dimension(480,150));
+				panelSection.setVisible(true);
+				/*
 				JLabel lblMiddleName = new JLabel("Middle name");
 				lblMiddleName.setHorizontalAlignment(SwingConstants.CENTER);
 				lblMiddleName.setBounds(190, 96, 100, 20);
-				panelAuthor.add(lblMiddleName);
+				panelSection.add(lblMiddleName);
 				
 				JTextField txtMiddleName = new JTextField();
 				txtMiddleName.setColumns(10);
 				txtMiddleName.setBounds(90, 117, 300, 30);
-				panelAuthor.add(txtMiddleName);
+				panelSection.add(txtMiddleName);
 			
 				JLabel lblLastName = new JLabel("Last name");
 				lblLastName.setHorizontalAlignment(SwingConstants.CENTER);
 				lblLastName.setBounds(190, 148, 100, 20);
-				panelAuthor.add(lblLastName);
+				panelSection.add(lblLastName);
 				
 				JTextField txtLastName = new JTextField();
 				txtLastName.setColumns(10);
 				txtLastName.setBounds(90, 169, 300, 30);
-				panelAuthor.add(txtLastName);
+				panelSection.add(txtLastName);
 				
 				JLabel lblEmail = new JLabel("Email");
 				lblEmail.setHorizontalAlignment(SwingConstants.CENTER);
 				lblEmail.setBounds(190, 200, 100, 20);
-				panelAuthor.add(lblEmail);
+				panelSection.add(lblEmail);
 				
 				JTextField txtEmail = new JTextField();
 				txtEmail.setColumns(10);
 				txtEmail.setBounds(90, 221, 300, 30);
-				panelAuthor.add(txtEmail);
+				panelSection.add(txtEmail);
 				
 				JLabel lblAffiliation = new JLabel("Affiliation");
 				lblAffiliation.setHorizontalAlignment(SwingConstants.CENTER);
 				lblAffiliation.setBounds(190, 252, 100, 20);
-				panelAuthor.add(lblAffiliation);
+				panelSection.add(lblAffiliation);
 				
 				JTextField txtAffiliation = new JTextField();
 				txtAffiliation.setColumns(10);
 				txtAffiliation.setBounds(90, 273, 300, 30);
-				panelAuthor.add(txtAffiliation);
+				panelSection.add(txtAffiliation);
 				
 				JLabel lblBio = new JLabel("Bio");
 				lblBio.setHorizontalAlignment(SwingConstants.CENTER);
 				lblBio.setBounds(190, 304, 100, 20);
-				panelAuthor.add(lblBio);
+				panelSection.add(lblBio);
 				
 				JTextArea txtBio = new JTextArea();
 				txtBio.setColumns(10);
 				txtBio.setBounds(90, 325, 300, 60);
-				panelAuthor.add(txtBio);
+				panelSection.add(txtBio);
 				
 				JLabel lblOrcID = new JLabel("OrcID");
 				lblOrcID.setHorizontalAlignment(SwingConstants.CENTER);
 				lblOrcID.setBounds(190, 386, 100, 20);
-				panelAuthor.add(lblOrcID);
+				panelSection.add(lblOrcID);
 				
 				JTextField txtOrcID = new JTextField();
 				txtOrcID.setColumns(10);
 				txtOrcID.setBounds(90, 407, 300, 30);
-				panelAuthor.add(txtOrcID);
+				panelSection.add(txtOrcID);
 				
 				JLabel lblDepartment = new JLabel("Department");
 				lblDepartment.setHorizontalAlignment(SwingConstants.CENTER);
 				lblDepartment.setBounds(190, 438, 100, 20);
-				panelAuthor.add(lblDepartment);
+				panelSection.add(lblDepartment);
 				
 				JTextField txtDepartment = new JTextField();
 				txtDepartment.setColumns(10);
 				txtDepartment.setBounds(90, 459, 300, 30);
-				panelAuthor.add(txtDepartment);
+				panelSection.add(txtDepartment);
 				
 				JLabel lblCountry = new JLabel("Country");
 				lblCountry.setHorizontalAlignment(SwingConstants.CENTER);
 				lblCountry.setBounds(190, 490, 100, 20);
-				panelAuthor.add(lblCountry);
+				panelSection.add(lblCountry);
 				
 				JTextField txtCountry = new JTextField();
 				txtCountry.setColumns(10);
 				txtCountry.setBounds(90, 511, 300, 30);
-				panelAuthor.add(txtCountry);
-				panelAuthor.setBounds(0, 0, 480, 800);
-				JOptionPane option = new JOptionPane();
-				option.add(lblCountry);
-				option.add(txtCountry);
-				option.setBounds(0,0,480,800);
-				option.setVisible(true);
-				panelAuthor.setSize(new Dimension(480,800));
-				panelAuthor.setPreferredSize(new Dimension(480,500));
-				option.showConfirmDialog(null,panelAuthor, "test",option.OK_CANCEL_OPTION);
-				panelAuthor.setVisible(true);
+				panelSection.add(txtCountry);
+				panelSection.setBounds(0, 0, 480, 150);
+				panelSection.setSize(new Dimension(480,150));
+				panelSection.setPreferredSize(new Dimension(480,150));
+				panelSection.setVisible(true);*/
 				
 				//JOptionPane.showMessageDialog(api,panelAuthor,"Information",JOptionPane.INFORMATION_MESSAGE);
 	
