@@ -102,6 +102,15 @@ public class Main {
 				c = DriverManager.getConnection("jdbc:sqlite:local_datatabse.db");
 				stmt = c.createStatement();
 			}
+
+			stmt.executeUpdate("DELETE FROM ISSUE_ARTICLE");
+			stmt.executeUpdate("DELETE FROM ARTICLE_AUTHOR");
+			stmt.executeUpdate("DELETE FROM AUTHOR");
+			stmt.executeUpdate("DELETE FROM ARTICLE");
+			stmt.executeUpdate("DELETE FROM SECTION");
+			stmt.executeUpdate("DELETE FROM ISSUE");
+			stmt.executeUpdate("DELETE FROM SETTING");
+			stmt.executeUpdate("DELETE FROM API");
 			PreparedStatement prep = c.prepareStatement(api_insert_or_replace_statement);
 			prep.setString(1, source_api);
 			prep.setString(2, source_access_key);
@@ -123,7 +132,6 @@ public class Main {
 				section_prep.setString(2,save_section.getTitle());
 				section_prep.executeUpdate();
 				}
-			stmt.executeUpdate("DELETE FROM ISSUE");
 			Set<Integer> issue_keys = issue_storage.keySet();
 			for (int key: issue_keys) {
 				Issue save_issue=issue_storage.get(key);
@@ -197,6 +205,8 @@ public class Main {
 		}
 
 		System.out.println("Done.");
+		JOptionPane.showMessageDialog (null, "Successfully updated database", "Save to Database", JOptionPane.INFORMATION_MESSAGE);
+
 	}
 
 	public static void populate_variables() {
@@ -269,7 +279,7 @@ public class Main {
 		}
 
 		System.out.println("Done.");
-	}
+		}
 
 	public static void database_setup() {
 
