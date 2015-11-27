@@ -75,6 +75,7 @@ public class Main {
 	private static Statement stmt = null;
 	private String api_insert_or_replace_statement = "INSERT OR REPLACE INTO API(URL,ACCESS_KEY) VALUES (?,?)";
 	private String settings_insert_or_replace_statement = "INSERT OR REPLACE INTO SETTING(NAME,VALUE) VALUES (?,?)";
+	private String issue_insert_or_replace_statement = "INSERT OR REPLACE INTO ISSUE(id,title,volume,number,year,show_title,show_volume,show_number,show_year,date_published) VALUES (?,?,?,?,?,?,?,?,?,?)";
 	private int width = 800;
 	private int height = 600;
 	private Boolean logged_in = true;
@@ -105,6 +106,25 @@ public class Main {
 				setting_prep.setBoolean(2, list_settings.get(setting_keys.get(i)));
 				setting_prep.executeUpdate();
 			}
+
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
+			Set<Integer> issue_keys = issue_storage.keySet();
+			for (int key: issue_keys) {
+				Issue save_issue=issue_storage.get(key);
+				PreparedStatement issue_prep = c.prepareStatement(issue_insert_or_replace_statement);
+				issue_prep.setInt(1, save_issue.getId());
+				issue_prep.setString(2,save_issue.getTitle());
+				issue_prep.setInt(3, save_issue.getVolume());
+				issue_prep.setInt(4, save_issue.getNumber());
+				issue_prep.setInt(5, save_issue.getYear());
+				issue_prep.setString(6,save_issue.getShow_title());
+				issue_prep.setInt(7, save_issue.getShow_volume());
+				issue_prep.setInt(8, save_issue.getShow_number());
+				issue_prep.setInt(9, save_issue.getShow_year());
+				issue_prep.setString(10,sdf.format(save_issue.getDate_published()));
+				issue_prep.executeUpdate();
+			}
+			
 			stmt.close();
 			c.close();
 		} catch (SQLException e) {
