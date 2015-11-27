@@ -132,6 +132,24 @@ public class Main {
 				section_prep.setString(2, save_section.getTitle());
 				section_prep.executeUpdate();
 			}
+
+			Set<Integer> author_keys = author_storage.keySet();
+			for (int key : author_keys) {
+				Author save_author = author_storage.get(key);
+				PreparedStatement author_prep = c.prepareStatement(author_insert_or_replace_statement);
+				author_prep.setInt(1, save_author.getId());
+				author_prep.setString(2, save_author.getFirst_name());
+				author_prep.setString(3, save_author.getMiddle_name());
+				author_prep.setString(4, save_author.getLast_name());
+				author_prep.setString(5, save_author.getEmail());
+				author_prep.setString(6, save_author.getAffiliation());
+				author_prep.setString(7, save_author.getBio());
+				author_prep.setString(8, save_author.getOrcid());
+				author_prep.setString(9, save_author.getDepartment());
+				author_prep.setString(10, save_author.getCountry());
+				author_prep.executeUpdate();
+
+			}
 			Set<Integer> issue_keys = issue_storage.keySet();
 			for (int key : issue_keys) {
 				Issue save_issue = issue_storage.get(key);
@@ -182,23 +200,6 @@ public class Main {
 				}
 			}
 
-			Set<Integer> author_keys = author_storage.keySet();
-			for (int key : author_keys) {
-				Author save_author = author_storage.get(key);
-				PreparedStatement author_prep = c.prepareStatement(author_insert_or_replace_statement);
-				author_prep.setInt(1, save_author.getId());
-				author_prep.setString(2, save_author.getFirst_name());
-				author_prep.setString(3, save_author.getMiddle_name());
-				author_prep.setString(4, save_author.getLast_name());
-				author_prep.setString(5, save_author.getEmail());
-				author_prep.setString(6, save_author.getAffiliation());
-				author_prep.setString(7, save_author.getBio());
-				author_prep.setString(8, save_author.getOrcid());
-				author_prep.setString(9, save_author.getDepartment());
-				author_prep.setString(10, save_author.getCountry());
-				author_prep.executeUpdate();
-
-			}
 			c.close();
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
@@ -326,49 +327,54 @@ public class Main {
 				String orcid = authors_s.getString("orcid");
 				String department = authors_s.getString("department");
 				String country = authors_s.getString("country");
-			
+
 				Author author = null;
 				author = new Author(id, first_name, middle_name, last_name, email, affiliation, bio, orcid, department,
 						country);
 
-			
-				
 				author_storage.put(id, author);
 				System.out.println(author_storage.size());
 			}
 			authors_s.close();
 			Set<Integer> author_keys = author_storage.keySet();
-			for (int key :author_keys) {
-				Author author = author_storage.get(key);
-try{			
-			ResultSet rs_author = c.createStatement().executeQuery(
-					"SELECT article_id FROM ARTICLE_AUTHOR WHERE 'author_id'=" + author.getId() + ";");
-			int article_id = rs_author.getInt("article_id");
-		rs_author.close();
-			ResultSet rs_new_issue = c.createStatement().executeQuery(
-					"SELECT issue_id FROM ISSUE_ARTICLE WHERE 'article_id'=" + author.getId() + ";");
-			int issue_id = rs_new_issue.getInt("issue_id");
-rs_new_issue.close();
-			Issue update_issue = issue_storage.get(issue_id);
-			update_issue.add_author(article_id, author);
-			issue_storage.put(issue_id, update_issue);
-}catch(SQLException e){
-	e.printStackTrace();
-	
-	
-}}
-			// JOptionPane.showMessageDialog(null, "Dele
+			for (int key_author : author_keys) {
+				Author author = author_storage.get(key_author);
+				try {
+					PreparedStatement prep = c
+							.prepareStatement("SELECT author_id,article_id FROM ARTICLE_AUTHOR");
+				
 
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		try {
+					ResultSet rs_author = prep.executeQuery();
+					while(rs_author.next()){
+					int author_id = rs_author.getInt(1);
+
+					int article_id = rs_author.getInt(2);
+					System.out.println(author_id + " - "+author.getId() );
+					if (author_id==author.getId()){
+					System.out.println(author.getFull_name() + " " + Integer.toString(article_id));
+					
+					ResultSet rs_new_issue = c.createStatement()
+							.executeQuery("SELECT issue_id FROM ISSUE_ARTICLE;");
+					while(rs_new_issue.next()){
+					int issue_id = rs_new_issue.getInt("issue_id");
+					Issue update_issue = issue_storage.get(issue_id);
+					if(update_issue.getArticles_list().containsKey(article_id)){
+					update_issue.add_author(article_id, author);
+					issue_storage.put(issue_id, update_issue);}
+
+					rs_new_issue.close();}}}
+					} catch (SQLException e) {
+					e.printStackTrace();
+
+				}
+			}
+			// JOptionPane.showMessageDialog(null, "Dele
 			c.close();
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+	
 		System.out.println("Done.");
 	}
 
