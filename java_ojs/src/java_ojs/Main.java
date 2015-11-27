@@ -79,8 +79,10 @@ public class Main {
 	private String section_insert_or_replace_statement = "INSERT OR REPLACE INTO SECTION(id,title) VALUES (?,?)";
 	private String author_insert_or_replace_statement = "INSERT OR REPLACE INTO AUTHOR(id,first_name,middle_name,last_name,email,affiliation,bio,orcid,department,country) VALUES (?,?,?,?,?,?,?,?,?,?)";
 	private String article_insert_or_replace_statement = "INSERT OR REPLACE INTO ARTICLE(id,title,section_id,pages,abstract,date_published) VALUES (?,?,?,?,?,?)";
-	
-	private int width = 800;
+	private String article_author_insert_or_replace_statement = "INSERT OR REPLACE INTO ARTICLE_AUTHOR(id,article_id,author_id) VALUES (?,?,?)";
+	private String issue_article_insert_or_replace_statement = "INSERT OR REPLACE INTO ISSUE_ARTICLE(id,article_id,issue_id) VALUES (?,?,?)";
+
+	int width = 800;
 	private int height = 600;
 	private Boolean logged_in = true;
 	private static int i_id = 0;
@@ -118,7 +120,9 @@ public class Main {
 				Section save_section=section_storage.get(key);
 				PreparedStatement section_prep = c.prepareStatement(section_insert_or_replace_statement);
 				section_prep.setInt(1, save_section.getId());
-				section_prep.setString(2,save_section.getTitle());}
+				section_prep.setString(2,save_section.getTitle());
+				section_prep.executeUpdate();
+				}
 			Set<Integer> issue_keys = issue_storage.keySet();
 			for (int key: issue_keys) {
 				Issue save_issue=issue_storage.get(key);
@@ -136,6 +140,8 @@ public class Main {
 				issue_prep.setInt(9, save_issue.getShow_year());
 				issue_prep.setString(10,sdf.format(save_issue.getDate_published()));
 				issue_prep.executeUpdate();
+				int i =1 ;
+				int j= 1 ;
 				for (int art_key: article_keys) {
 					Article save_article = articles.get(art_key);
 					PreparedStatement article_prep = c.prepareStatement(article_insert_or_replace_statement);
@@ -145,6 +151,23 @@ public class Main {
 					article_prep.setInt(4, save_article.getPages());
 					article_prep.setString(5, save_article.getAbstract_text());
 					article_prep.setString(6,sdf.format(save_article.getDate_published()));
+					article_prep.executeUpdate();
+					PreparedStatement issue_article_prep = c.prepareStatement(issue_article_insert_or_replace_statement);
+					issue_article_prep.setInt(1, i);
+					issue_article_prep.setInt(2,save_article.getId());
+					issue_article_prep.setInt(3, save_issue.getId());
+					issue_article_prep.executeUpdate();
+					ArrayList<Author> authors=save_article.getAuthors();
+					for(int b=0;b<authors.size();b++){
+					Author author=authors.get(b);
+					PreparedStatement article_author_prep = c.prepareStatement(article_author_insert_or_replace_statement);
+					article_author_prep.setInt(1, j);
+					article_author_prep.setInt(2,save_article.getId());
+					article_author_prep.setInt(3, author.getId());
+					article_author_prep.executeUpdate();
+					j=j+1;
+					}
+					i=i+1;
 				}
 			}
 
@@ -162,6 +185,8 @@ public class Main {
 				author_prep.setString(8,save_author.getOrcid());
 				author_prep.setString(9,save_author.getDepartment());
 				author_prep.setString(10,save_author.getCountry());
+				author_prep.executeUpdate();
+				
 				}
 			stmt.close();
 			c.close();
