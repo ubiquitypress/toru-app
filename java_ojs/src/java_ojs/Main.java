@@ -237,6 +237,8 @@ public class Main {
 				System.out.println("Setting - " + name + " : " + value.toString());
 			}
 			rs.close();
+
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
 			rs = stmt.executeQuery("SELECT * FROM ISSUE ORDER BY id ASC;");
 			while (rs.next()) {
 				int id = rs.getInt("id");
@@ -249,8 +251,6 @@ public class Main {
 				int show_number = rs.getInt("number");
 				int show_year = rs.getInt("year");
 				String date = rs.getString("date_published");
-				Issue new_isse;
-				SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
 				Issue issue = null;
 				try {
 					issue = new Issue(id, title, volume, number, year,show_title, show_volume, show_number, show_year,
@@ -267,6 +267,46 @@ public class Main {
 				article_screens.put(id, new HashMap<Integer, JFrame>());
 				issue_storage.put(id, issue);
 				i_id=id;
+			}
+			ResultSet sect_s = stmt.executeQuery("SELECT * FROM SECTION ORDER BY id ASC;");
+			while (sect_s.next()) {
+				int id = sect_s.getInt("id");
+				String title = sect_s.getNString("title");
+				Section new_section = new Section(id,title);
+				section_storage.put(id, new_section);
+				section_db_id = id;
+			}
+			ResultSet art_s = c.createStatement().executeQuery("SELECT * FROM ARTICLE ORDER BY id ASC;");
+			ResultSetMetaData rsmd = art_s.getMetaData();
+			System.out.println(rsmd.getColumnName(2));	
+			while (art_s.next()) {
+					int id = art_s.getInt("id");
+					String title = art_s.getString("title");
+					int section_id = art_s.getInt("section_id");
+					int pages = art_s.getInt(rsmd.getColumnName(4));
+					String abstract_text = art_s.getString(rsmd.getColumnName(5));
+	
+					String date = art_s.getString(rsmd.getColumnName(6));
+					Article article = null;
+					try {
+						article = new Article(id, title, section_id, pages, abstract_text,sdf.parse(date));
+					} catch (ParseException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					ResultSet rs_issue = stmt.executeQuery("SELECT issue_id FROM ISSUE_ARTICLE WHERE article_id=" + Integer.toString(id) + ";");
+					int issue_id = rs_issue.getInt("issue_id");
+					Issue update_issue=issue_storage.get(issue_id);
+					update_issue.add_article(id, article);
+					issue_storage.put(issue_id,update_issue);
+					articles_id=id;
+					// JOptionPane.showMessageDialog(null, "Deleted");
+					
+					HashMap<Integer, JFrame> issue_articles = article_screens.get(issue_id);
+
+					issue_articles.put(id, new JFrame());
+
+					article_screens.put(issue_id, issue_articles);
 			//	list_settings.put(name, value);
 				//setting_keys.add(name);
 			//	System.out.println("Setting - " + name + " : " + value.toString());
@@ -1580,7 +1620,7 @@ public class Main {
 					issue_articles.put(id, new JFrame());
 
 					data.add(Integer.toString(current_articles.get(id).getId()));
-					data.add(Integer.toString(current_articles.get(id).getIssue_fk().getId()));
+					data.add(Integer.toString(issue_id));
 					data.add(Integer.toString((current_articles.get(id).getSection_id())));
 					data.add(current_articles.get(id).getTitle());
 					data.add(Integer.toString(current_articles.get(id).getPages()));
@@ -1589,7 +1629,7 @@ public class Main {
 					data.add("View");
 					data.add("Edit");
 					data.add("Delete");
-					Object[] row = { current_articles.get(id).getId(), current_articles.get(id).getIssue_fk().getId(),
+					Object[] row = { current_articles.get(id).getId(), issue_id,
 							current_articles.get(id).getSection_id(), current_articles.get(id).getTitle(),
 							current_articles.get(id).getPages(), current_articles.get(id).getAbstract_text(),
 							sdf.format(current_articles.get(id).getDate_published()), "View", "Edit", "Delete" };

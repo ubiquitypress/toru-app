@@ -25,6 +25,17 @@ public class Article {
 		this.issue_fk = issue_fk;
 		this.authors = new ArrayList<Author>();
 	}
+	public Article(int id, String title, int section_id, int pages, String abstract_text, Date date_published) {
+
+		this.title = title;
+		this.id = id;
+		this.section_id = section_id;
+		this.pages = pages;
+		this.abstract_text = abstract_text;
+		this.date_published = date_published;
+		this.issue_fk = null;
+		this.authors = new ArrayList<Author>();
+	}
 
 	public int getId() {
 		return id;
