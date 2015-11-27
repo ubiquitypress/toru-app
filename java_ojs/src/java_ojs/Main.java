@@ -161,6 +161,27 @@ public class Main {
 			sql = "CREATE TABLE IF NOT EXISTS API" + "(URL CHAR(250) PRIMARY KEY NOT NULL,"
 					+ " ACCESS_KEY CHAR(100) NOT NULL)";
 			stmt.executeUpdate(sql);
+			sql = "CREATE TABLE IF NOT EXISTS ISSUE" + "(id INTEGER PRIMARY KEY,"
+					+ " title CHAR(500) NOT NULL,"+"volume INTEGER,"+"number INTEGER,"+"year INTEGER,"+ " show_title CHAR(500) NOT NULL,"+"show_volume INTEGER,"+"show_number INTEGER,"+"show_year INTEGER,"+"date_published CHAR(50))";
+			stmt.executeUpdate(sql);
+				sql = "CREATE TABLE IF NOT EXISTS SECTION" + "(id INTEGER PRIMARY KEY,"
+					+ " title CHAR(250) NOT NULL)";
+			stmt.executeUpdate(sql);
+			sql = "CREATE TABLE IF NOT EXISTS AUTHOR" + "(id INTEGER PRIMARY KEY,"
+					+ " first_name CHAR(200) NOT NULL,"+ " middle_name CHAR(200) NOT NULL,"+ " last_name CHAR(200) NOT NULL,"+ " email CHAR(400) NOT NULL,"+ " affiliation CHAR(500) NOT NULL,"+ " bio CHAR(800),"+ " orcid CHAR(100),"+ " department CHAR(300) NOT NULL,"+ " country CHAR(300) NOT NULL"+")";
+			stmt.executeUpdate(sql);
+			sql = "CREATE TABLE IF NOT EXISTS ARTICLE" + "(id INTEGER PRIMARY KEY,"
+					+ " title CHAR(500) NOT NULL,"+"section_id INTEGER,"+"pages INTEGER,"+ " abstract CHAR(2000),"+"date_published CHAR(50),"+"FOREIGN KEY (section_id) REFERENCES SECTION(id)"+")";
+			stmt.executeUpdate(sql);
+			sql = "CREATE TABLE IF NOT EXISTS FILE" + "(id INTEGER PRIMARY KEY,"
+					+ " article_id INTEGER,"+"path CHAR(1000) NOT NULL,"+"FOREIGN KEY (article_id) REFERENCES ARTICLE(id)"+")";
+			stmt.executeUpdate(sql);
+			sql = "CREATE TABLE IF NOT EXISTS ISSUE_ARTICLE" + "(id INTEGER PRIMARY KEY,"
+					+ " article_id INTEGER,"+ " issue_id INTEGER,"+"FOREIGN KEY (article_id) REFERENCES ARTICLE(id),"+"FOREIGN KEY (issue_id) REFERENCES ISSUE(id)"+")";
+			stmt.executeUpdate(sql);
+			sql = "CREATE TABLE IF NOT EXISTS ARTICLE_AUTHOR" + "(id INTEGER PRIMARY KEY,"
+					+ " article_id INTEGER,"+ " author_id INTEGER,"+"FOREIGN KEY (article_id) REFERENCES ARTICLE(id),"+"FOREIGN KEY (author_id) REFERENCES AUTHOR(id)"+")";
+			stmt.executeUpdate(sql);
 		} catch (Exception e) {
 			System.err.println(e.getClass().getName() + ": " + e.getMessage());
 			System.exit(0);
