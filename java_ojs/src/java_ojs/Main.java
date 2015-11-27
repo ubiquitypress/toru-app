@@ -81,7 +81,7 @@ public class Main {
 	private String article_insert_or_replace_statement = "INSERT OR REPLACE INTO ARTICLE(id,title,section_id,pages,abstract,date_published) VALUES (?,?,?,?,?,?)";
 	private String article_author_insert_or_replace_statement = "INSERT OR REPLACE INTO ARTICLE_AUTHOR(id,article_id,author_id) VALUES (?,?,?)";
 	private String issue_article_insert_or_replace_statement = "INSERT OR REPLACE INTO ISSUE_ARTICLE(id,article_id,issue_id) VALUES (?,?,?)";
-
+	private String delete_issue_statement = "DELETE FROM ISSUE WHERE id=?";
 	int width = 800;
 	private int height = 600;
 	private Boolean logged_in = true;
@@ -123,6 +123,7 @@ public class Main {
 				section_prep.setString(2,save_section.getTitle());
 				section_prep.executeUpdate();
 				}
+			stmt.executeUpdate("DELETE FROM ISSUE");
 			Set<Integer> issue_keys = issue_storage.keySet();
 			for (int key: issue_keys) {
 				Issue save_issue=issue_storage.get(key);
@@ -1023,6 +1024,7 @@ public class Main {
 										art_window.dispose();
 									}
 								}
+								issue_storage.remove(selected_issue);
 								article_screens.remove(selected_issue);
 								issue_screens.get(selected_issue).dispose();
 								System.out.println(issue_screens.get(selected_issue) == null);
