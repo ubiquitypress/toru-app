@@ -123,81 +123,82 @@ public class Main {
 			}
 
 			SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
-			
+
 			Set<Integer> section_keys = section_storage.keySet();
-			for (int key: section_keys) {
-				Section save_section=section_storage.get(key);
+			for (int key : section_keys) {
+				Section save_section = section_storage.get(key);
 				PreparedStatement section_prep = c.prepareStatement(section_insert_or_replace_statement);
 				section_prep.setInt(1, save_section.getId());
-				section_prep.setString(2,save_section.getTitle());
+				section_prep.setString(2, save_section.getTitle());
 				section_prep.executeUpdate();
-				}
+			}
 			Set<Integer> issue_keys = issue_storage.keySet();
-			for (int key: issue_keys) {
-				Issue save_issue=issue_storage.get(key);
-				HashMap<Integer, Article> articles=save_issue.getArticles_list();
+			for (int key : issue_keys) {
+				Issue save_issue = issue_storage.get(key);
+				HashMap<Integer, Article> articles = save_issue.getArticles_list();
 				Set<Integer> article_keys = articles.keySet();
 				PreparedStatement issue_prep = c.prepareStatement(issue_insert_or_replace_statement);
 				issue_prep.setInt(1, save_issue.getId());
-				issue_prep.setString(2,save_issue.getTitle());
+				issue_prep.setString(2, save_issue.getTitle());
 				issue_prep.setInt(3, save_issue.getVolume());
 				issue_prep.setInt(4, save_issue.getNumber());
 				issue_prep.setInt(5, save_issue.getYear());
-				issue_prep.setString(6,save_issue.getShow_title());
+				issue_prep.setString(6, save_issue.getShow_title());
 				issue_prep.setInt(7, save_issue.getShow_volume());
 				issue_prep.setInt(8, save_issue.getShow_number());
 				issue_prep.setInt(9, save_issue.getShow_year());
-				issue_prep.setString(10,sdf.format(save_issue.getDate_published()));
+				issue_prep.setString(10, sdf.format(save_issue.getDate_published()));
 				issue_prep.executeUpdate();
-				int i =1 ;
-				int j= 1 ;
-				for (int art_key: article_keys) {
+				int i = 1;
+				int j = 1;
+				for (int art_key : article_keys) {
 					Article save_article = articles.get(art_key);
 					PreparedStatement article_prep = c.prepareStatement(article_insert_or_replace_statement);
 					article_prep.setInt(1, save_article.getId());
-					article_prep.setString(2,save_article.getTitle());
+					article_prep.setString(2, save_article.getTitle());
 					article_prep.setInt(3, save_article.getSection_id());
 					article_prep.setInt(4, save_article.getPages());
 					article_prep.setString(5, save_article.getAbstract_text());
-					article_prep.setString(6,sdf.format(save_article.getDate_published()));
+					article_prep.setString(6, sdf.format(save_article.getDate_published()));
 					article_prep.executeUpdate();
-					PreparedStatement issue_article_prep = c.prepareStatement(issue_article_insert_or_replace_statement);
+					PreparedStatement issue_article_prep = c
+							.prepareStatement(issue_article_insert_or_replace_statement);
 					issue_article_prep.setInt(1, i);
-					issue_article_prep.setInt(2,save_article.getId());
+					issue_article_prep.setInt(2, save_article.getId());
 					issue_article_prep.setInt(3, save_issue.getId());
 					issue_article_prep.executeUpdate();
-					ArrayList<Author> authors=save_article.getAuthors();
-					for(int b=0;b<authors.size();b++){
-					Author author=authors.get(b);
-					PreparedStatement article_author_prep = c.prepareStatement(article_author_insert_or_replace_statement);
-					article_author_prep.setInt(1, j);
-					article_author_prep.setInt(2,save_article.getId());
-					article_author_prep.setInt(3, author.getId());
-					article_author_prep.executeUpdate();
-					j=j+1;
+					ArrayList<Author> authors = save_article.getAuthors();
+					for (int b = 0; b < authors.size(); b++) {
+						Author author = authors.get(b);
+						PreparedStatement article_author_prep = c
+								.prepareStatement(article_author_insert_or_replace_statement);
+						article_author_prep.setInt(1, j);
+						article_author_prep.setInt(2, save_article.getId());
+						article_author_prep.setInt(3, author.getId());
+						article_author_prep.executeUpdate();
+						j = j + 1;
 					}
-					i=i+1;
+					i = i + 1;
 				}
 			}
 
 			Set<Integer> author_keys = author_storage.keySet();
-			for (int key: author_keys) {
-				Author save_author=author_storage.get(key);
+			for (int key : author_keys) {
+				Author save_author = author_storage.get(key);
 				PreparedStatement author_prep = c.prepareStatement(author_insert_or_replace_statement);
 				author_prep.setInt(1, save_author.getId());
-				author_prep.setString(2,save_author.getFirst_name());
-				author_prep.setString(3,save_author.getMiddle_name());
-				author_prep.setString(4,save_author.getLast_name());
-				author_prep.setString(5,save_author.getEmail());
-				author_prep.setString(6,save_author.getAffiliation());
-				author_prep.setString(7,save_author.getBio());
-				author_prep.setString(8,save_author.getOrcid());
-				author_prep.setString(9,save_author.getDepartment());
-				author_prep.setString(10,save_author.getCountry());
+				author_prep.setString(2, save_author.getFirst_name());
+				author_prep.setString(3, save_author.getMiddle_name());
+				author_prep.setString(4, save_author.getLast_name());
+				author_prep.setString(5, save_author.getEmail());
+				author_prep.setString(6, save_author.getAffiliation());
+				author_prep.setString(7, save_author.getBio());
+				author_prep.setString(8, save_author.getOrcid());
+				author_prep.setString(9, save_author.getDepartment());
+				author_prep.setString(10, save_author.getCountry());
 				author_prep.executeUpdate();
-				
-				}
-			stmt.close();
+
+			}
 			c.close();
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
@@ -205,7 +206,8 @@ public class Main {
 		}
 
 		System.out.println("Done.");
-		JOptionPane.showMessageDialog (null, "Successfully updated database", "Save to Database", JOptionPane.INFORMATION_MESSAGE);
+		JOptionPane.showMessageDialog(null, "Successfully updated database", "Save to Database",
+				JOptionPane.INFORMATION_MESSAGE);
 
 	}
 
@@ -218,17 +220,16 @@ public class Main {
 		file_storage = new HashMap<Integer, HashMap<Integer, ArticleFile>>();
 		article_screens = new HashMap<Integer, HashMap<Integer, JFrame>>();
 		author_storage = new HashMap<Integer, Author>();
-		section_storage = new HashMap<Integer,Section>();
+		section_storage = new HashMap<Integer, Section>();
 		try {
-			ResultSet rs = stmt.executeQuery("SELECT * FROM API WHERE URL=" + "'api'" + ";");
+			ResultSet rs = c.createStatement().executeQuery("SELECT * FROM API WHERE URL=" + "'api'" + ";");
 			while (rs.next()) {
 				source_api = rs.getString("url");
 				source_access_key = rs.getString("access_key");
 				System.out.println("URL: " + source_api);
 				System.out.println("ACCESS KEY: " + source_access_key);
 			}
-			rs.close();
-			rs = stmt.executeQuery("SELECT * FROM SETTING ;");
+			rs = c.createStatement().executeQuery("SELECT * FROM SETTING ;");
 			while (rs.next()) {
 				String name = rs.getString("name");
 				Boolean value = rs.getBoolean("value");
@@ -236,10 +237,9 @@ public class Main {
 				setting_keys.add(name);
 				System.out.println("Setting - " + name + " : " + value.toString());
 			}
-			rs.close();
 
 			SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
-			rs = stmt.executeQuery("SELECT * FROM ISSUE ORDER BY id ASC;");
+			rs = c.createStatement().executeQuery("SELECT * FROM ISSUE ORDER BY id ASC;");
 			while (rs.next()) {
 				int id = rs.getInt("id");
 				String title = rs.getString("title");
@@ -253,7 +253,7 @@ public class Main {
 				String date = rs.getString("date_published");
 				Issue issue = null;
 				try {
-					issue = new Issue(id, title, volume, number, year,show_title, show_volume, show_number, show_year,
+					issue = new Issue(id, title, volume, number, year, show_title, show_volume, show_number, show_year,
 							sdf.parse(date));
 				} catch (ParseException e) {
 					// TODO Auto-generated catch block
@@ -261,65 +261,116 @@ public class Main {
 				}
 
 				// JOptionPane.showMessageDialog(null, "Deleted");
-				
+
 				list_issues.put(id, 1);
 				issue_screens.put(id, new JFrame());
 				article_screens.put(id, new HashMap<Integer, JFrame>());
 				issue_storage.put(id, issue);
-				i_id=id;
+				i_id = id;
 			}
-			ResultSet sect_s = stmt.executeQuery("SELECT * FROM SECTION ORDER BY id ASC;");
+			rs.close();
+			ResultSet sect_s = c.createStatement().executeQuery("SELECT * FROM SECTION ORDER BY id ASC;");
 			while (sect_s.next()) {
 				int id = sect_s.getInt("id");
 				String title = sect_s.getNString("title");
-				Section new_section = new Section(id,title);
+				Section new_section = new Section(id, title);
 				section_storage.put(id, new_section);
 				section_db_id = id;
 			}
+			sect_s.close();
 			ResultSet art_s = c.createStatement().executeQuery("SELECT * FROM ARTICLE ORDER BY id ASC;");
 			ResultSetMetaData rsmd = art_s.getMetaData();
-			System.out.println(rsmd.getColumnName(2));	
+			System.out.println(rsmd.getColumnName(2));
 			while (art_s.next()) {
-					int id = art_s.getInt("id");
-					String title = art_s.getString("title");
-					int section_id = art_s.getInt("section_id");
-					int pages = art_s.getInt(rsmd.getColumnName(4));
-					String abstract_text = art_s.getString(rsmd.getColumnName(5));
-	
-					String date = art_s.getString(rsmd.getColumnName(6));
-					Article article = null;
-					try {
-						article = new Article(id, title, section_id, pages, abstract_text,sdf.parse(date));
-					} catch (ParseException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-					ResultSet rs_issue = stmt.executeQuery("SELECT issue_id FROM ISSUE_ARTICLE WHERE article_id=" + Integer.toString(id) + ";");
-					int issue_id = rs_issue.getInt("issue_id");
-					Issue update_issue=issue_storage.get(issue_id);
-					update_issue.add_article(id, article);
-					issue_storage.put(issue_id,update_issue);
-					articles_id=id;
-					// JOptionPane.showMessageDialog(null, "Deleted");
-					
-					HashMap<Integer, JFrame> issue_articles = article_screens.get(issue_id);
+				int id = art_s.getInt("id");
+				String title = art_s.getString("title");
+				int section_id = art_s.getInt("section_id");
+				int pages = art_s.getInt(rsmd.getColumnName(4));
+				String abstract_text = art_s.getString(rsmd.getColumnName(5));
 
-					issue_articles.put(id, new JFrame());
+				String date = art_s.getString(rsmd.getColumnName(6));
+				Article article = null;
+				try {
+					article = new Article(id, title, section_id, pages, abstract_text, sdf.parse(date));
+				} catch (ParseException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				ResultSet rs_issue = c.createStatement().executeQuery(
+						"SELECT issue_id FROM ISSUE_ARTICLE WHERE article_id=" + Integer.toString(id) + ";");
+				int issue_id = rs_issue.getInt("issue_id");
+				Issue update_issue = issue_storage.get(issue_id);
+				update_issue.add_article(id, article);
+				issue_storage.put(issue_id, update_issue);
+				articles_id = id;
+				// JOptionPane.showMessageDialog(null, "Deleted");
 
-					article_screens.put(issue_id, issue_articles);
-			//	list_settings.put(name, value);
-				//setting_keys.add(name);
-			//	System.out.println("Setting - " + name + " : " + value.toString());
+				HashMap<Integer, JFrame> issue_articles = article_screens.get(issue_id);
+
+				issue_articles.put(id, new JFrame());
+
+				article_screens.put(issue_id, issue_articles);
+				rs_issue.close();
 			}
-			rs.close();
+			art_s.close();
+			ResultSet authors_s = c.createStatement().executeQuery("SELECT * FROM AUTHOR ORDER BY id ASC;");
+			ResultSetMetaData author_rsmd = authors_s.getMetaData();
+			while (authors_s.next()) {
+				int id = authors_s.getInt("id");
+				String first_name = authors_s.getString("first_name");
+				String middle_name = authors_s.getString("middle_name");
+				String last_name = authors_s.getString("last_name");
+				String email = authors_s.getString("email");
+				String affiliation = authors_s.getString("affiliation");
+				String bio = authors_s.getString("bio");
+				String orcid = authors_s.getString("orcid");
+				String department = authors_s.getString("department");
+				String country = authors_s.getString("country");
+			
+				Author author = null;
+				author = new Author(id, first_name, middle_name, last_name, email, affiliation, bio, orcid, department,
+						country);
+
+			
+				
+				author_storage.put(id, author);
+				System.out.println(author_storage.size());
+			}
+			authors_s.close();
+			Set<Integer> author_keys = author_storage.keySet();
+			for (int key :author_keys) {
+				Author author = author_storage.get(key);
+try{			
+			ResultSet rs_author = c.createStatement().executeQuery(
+					"SELECT article_id FROM ARTICLE_AUTHOR WHERE 'author_id'=" + author.getId() + ";");
+			int article_id = rs_author.getInt("article_id");
+		rs_author.close();
+			ResultSet rs_new_issue = c.createStatement().executeQuery(
+					"SELECT issue_id FROM ISSUE_ARTICLE WHERE 'article_id'=" + author.getId() + ";");
+			int issue_id = rs_new_issue.getInt("issue_id");
+rs_new_issue.close();
+			Issue update_issue = issue_storage.get(issue_id);
+			update_issue.add_author(article_id, author);
+			issue_storage.put(issue_id, update_issue);
+}catch(SQLException e){
+	e.printStackTrace();
+	
+	
+}}
+			// JOptionPane.showMessageDialog(null, "Dele
 
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-
-		System.out.println("Done.");
+		try {
+			c.close();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
+		System.out.println("Done.");
+	}
 
 	public static void database_setup() {
 
@@ -333,26 +384,32 @@ public class Main {
 			sql = "CREATE TABLE IF NOT EXISTS API" + "(URL CHAR(250) PRIMARY KEY NOT NULL,"
 					+ " ACCESS_KEY CHAR(100) NOT NULL)";
 			stmt.executeUpdate(sql);
-			sql = "CREATE TABLE IF NOT EXISTS ISSUE" + "(id INTEGER PRIMARY KEY,"
-					+ " title CHAR(500) NOT NULL,"+"volume INTEGER,"+"number INTEGER,"+"year INTEGER,"+ " show_title CHAR(500) NOT NULL,"+"show_volume INTEGER,"+"show_number INTEGER,"+"show_year INTEGER,"+"date_published CHAR(50))";
+			sql = "CREATE TABLE IF NOT EXISTS ISSUE" + "(id INTEGER PRIMARY KEY," + " title CHAR(500) NOT NULL,"
+					+ "volume INTEGER," + "number INTEGER," + "year INTEGER," + " show_title CHAR(500) NOT NULL,"
+					+ "show_volume INTEGER," + "show_number INTEGER," + "show_year INTEGER,"
+					+ "date_published CHAR(50))";
 			stmt.executeUpdate(sql);
-				sql = "CREATE TABLE IF NOT EXISTS SECTION" + "(id INTEGER PRIMARY KEY,"
-					+ " title CHAR(250) NOT NULL)";
+			sql = "CREATE TABLE IF NOT EXISTS SECTION" + "(id INTEGER PRIMARY KEY," + " title CHAR(250) NOT NULL)";
 			stmt.executeUpdate(sql);
-			sql = "CREATE TABLE IF NOT EXISTS AUTHOR" + "(id INTEGER PRIMARY KEY,"
-					+ " first_name CHAR(200) NOT NULL,"+ " middle_name CHAR(200) NOT NULL,"+ " last_name CHAR(200) NOT NULL,"+ " email CHAR(400) NOT NULL,"+ " affiliation CHAR(500) NOT NULL,"+ " bio CHAR(800),"+ " orcid CHAR(100),"+ " department CHAR(300) NOT NULL,"+ " country CHAR(300) NOT NULL"+")";
+			sql = "CREATE TABLE IF NOT EXISTS AUTHOR" + "(id INTEGER PRIMARY KEY," + " first_name CHAR(200) NOT NULL,"
+					+ " middle_name CHAR(200) NOT NULL," + " last_name CHAR(200) NOT NULL,"
+					+ " email CHAR(400) NOT NULL," + " affiliation CHAR(500) NOT NULL," + " bio CHAR(800),"
+					+ " orcid CHAR(100)," + " department CHAR(300) NOT NULL," + " country CHAR(300) NOT NULL" + ")";
 			stmt.executeUpdate(sql);
-			sql = "CREATE TABLE IF NOT EXISTS ARTICLE" + "(id INTEGER PRIMARY KEY,"
-					+ " title CHAR(500) NOT NULL,"+"section_id INTEGER,"+"pages INTEGER,"+ " abstract CHAR(2000),"+"date_published CHAR(50),"+"FOREIGN KEY (section_id) REFERENCES SECTION(id)"+")";
+			sql = "CREATE TABLE IF NOT EXISTS ARTICLE" + "(id INTEGER PRIMARY KEY," + " title CHAR(500) NOT NULL,"
+					+ "section_id INTEGER," + "pages INTEGER," + " abstract CHAR(2000)," + "date_published CHAR(50),"
+					+ "FOREIGN KEY (section_id) REFERENCES SECTION(id)" + ")";
 			stmt.executeUpdate(sql);
-			sql = "CREATE TABLE IF NOT EXISTS FILE" + "(id INTEGER PRIMARY KEY,"
-					+ " article_id INTEGER,"+"path CHAR(1000) NOT NULL,"+"FOREIGN KEY (article_id) REFERENCES ARTICLE(id)"+")";
+			sql = "CREATE TABLE IF NOT EXISTS FILE" + "(id INTEGER PRIMARY KEY," + " article_id INTEGER,"
+					+ "path CHAR(1000) NOT NULL," + "FOREIGN KEY (article_id) REFERENCES ARTICLE(id)" + ")";
 			stmt.executeUpdate(sql);
-			sql = "CREATE TABLE IF NOT EXISTS ISSUE_ARTICLE" + "(id INTEGER PRIMARY KEY,"
-					+ " article_id INTEGER,"+ " issue_id INTEGER,"+"FOREIGN KEY (article_id) REFERENCES ARTICLE(id),"+"FOREIGN KEY (issue_id) REFERENCES ISSUE(id)"+")";
+			sql = "CREATE TABLE IF NOT EXISTS ISSUE_ARTICLE" + "(id INTEGER PRIMARY KEY," + " article_id INTEGER,"
+					+ " issue_id INTEGER," + "FOREIGN KEY (article_id) REFERENCES ARTICLE(id),"
+					+ "FOREIGN KEY (issue_id) REFERENCES ISSUE(id)" + ")";
 			stmt.executeUpdate(sql);
-			sql = "CREATE TABLE IF NOT EXISTS ARTICLE_AUTHOR" + "(id INTEGER PRIMARY KEY,"
-					+ " article_id INTEGER,"+ " author_id INTEGER,"+"FOREIGN KEY (article_id) REFERENCES ARTICLE(id),"+"FOREIGN KEY (author_id) REFERENCES AUTHOR(id)"+")";
+			sql = "CREATE TABLE IF NOT EXISTS ARTICLE_AUTHOR" + "(id INTEGER PRIMARY KEY," + " article_id INTEGER,"
+					+ " author_id INTEGER," + "FOREIGN KEY (article_id) REFERENCES ARTICLE(id),"
+					+ "FOREIGN KEY (author_id) REFERENCES AUTHOR(id)" + ")";
 			stmt.executeUpdate(sql);
 		} catch (Exception e) {
 			System.err.println(e.getClass().getName() + ": " + e.getMessage());
@@ -855,7 +912,7 @@ public class Main {
 
 			if (issues == null || !issues.isVisible()) {
 				Date date = new Date();
-			
+
 				// Issue issue = new Issue(i_id, "title", 1, 1, 2015, "title",
 				// 1, 1, 2015, date);
 				// Issue Table [title, volume, number, year, show_title,
@@ -882,7 +939,7 @@ public class Main {
 				});
 				// Object rowData[][] = { { 1, "title", 1, 1, 2015,
 				// sdf.format(date), "View", "Edit", "Delete" } };
-			
+
 				Set<Integer> issue_keys = issue_storage.keySet();
 				ArrayList<List<Object>> rowData = new ArrayList<List<Object>>();
 				Object[][] rows = new Object[issue_keys.size()][6];
@@ -920,7 +977,7 @@ public class Main {
 				ArrayList<Integer> author_list = new ArrayList<Integer>();
 				String listData[] = new String[author_keys.size()];
 				int j = 0;
-				 DefaultListModel listModel = new DefaultListModel();
+				DefaultListModel listModel = new DefaultListModel();
 				for (int key : author_keys) {
 					listModel.addElement(author_storage.get(key).getFull_name());
 					listData[j] = author_storage.get(key).getFull_name();
@@ -937,12 +994,11 @@ public class Main {
 				listbox.setBackground(Color.white);
 				listbox.setVisible(true);
 				JButton btnAddAuthor = new JButton("Add new Author");
-				
+
 				btnAddAuthor.setBounds(15, 15, 320, 25);
-				
-		
+
 				JScrollPane scrollPane = new JScrollPane();
-				
+
 				scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
 				scrollPane.setBounds(20, 140, width - 40, height - 285);
 				issues.getContentPane().add(scrollPane);
@@ -2226,7 +2282,6 @@ public class Main {
 					field.setOpaque(true);
 					panel6.add(field);
 					author_y = author_y + separation_vertical;
-					
 
 					field_label = new JLabel("Middle name:");
 					field_label.setBounds(author_x, author_y, 75, 30); // white
@@ -2239,7 +2294,7 @@ public class Main {
 					field.setOpaque(true);
 					panel6.add(field);
 					author_y = author_y + separation_vertical;
-					
+
 					field_label = new JLabel("Last name:");
 					field_label.setBounds(author_x, author_y, 75, 30); // white
 																		// box
@@ -2251,7 +2306,7 @@ public class Main {
 					field.setOpaque(true);
 					panel6.add(field);
 					author_y = author_y + separation_vertical;
-					
+
 					field_label = new JLabel("Email:");
 					field_label.setBounds(author_x, author_y, 75, 30); // white
 																		// box
@@ -2263,7 +2318,7 @@ public class Main {
 					field.setOpaque(true);
 					panel6.add(field);
 					author_y = author_y + separation_vertical;
-					
+
 					field_label = new JLabel("Affiliation:");
 					field_label.setBounds(author_x, author_y, 75, 30); // white
 																		// box
@@ -2275,20 +2330,20 @@ public class Main {
 					field.setOpaque(true);
 					panel6.add(field);
 					author_y = author_y + separation_vertical;
-					
+
 					field_label = new JLabel("Bio:");
 					field_label.setBounds(author_x, author_y, 75, 30); // white
 																		// box
 					field_label.setOpaque(true);
 					panel6.add(field_label);
-					JTextArea	field_a = new JTextArea(author.getBio());
+					JTextArea field_a = new JTextArea(author.getBio());
 					field_a.setBounds(author_x + 75 + label_field_separation, author_y, 100, 60); // white
 					field_a.setEditable(false);
 					field_a.setBackground(SystemColor.window);
 					field_a.setOpaque(true);
 					panel6.add(field_a);
-					author_y = author_y + separation_vertical+30;
-					
+					author_y = author_y + separation_vertical + 30;
+
 					field_label = new JLabel("OrcID:");
 					field_label.setBounds(author_x, author_y, 75, 30); // white
 																		// box
@@ -2300,7 +2355,7 @@ public class Main {
 					field.setOpaque(true);
 					panel6.add(field);
 					author_y = author_y + separation_vertical;
-					
+
 					field_label = new JLabel("Department:");
 					field_label.setBounds(author_x, author_y, 75, 30); // white
 																		// box
@@ -2312,7 +2367,7 @@ public class Main {
 					field.setOpaque(true);
 					panel6.add(field);
 					author_y = author_y + separation_vertical;
-					
+
 					field_label = new JLabel("Country:");
 					field_label.setBounds(author_x, author_y, 75, 30); // white
 																		// box
@@ -2324,8 +2379,7 @@ public class Main {
 					field.setOpaque(true);
 					panel6.add(field);
 					author_y = author_y + separation_vertical;
-					
-					
+
 					author_y = 60;
 					author_x = 16;
 
@@ -2442,12 +2496,12 @@ public class Main {
 				Panel panel10 = new Panel();
 				panel10.setBackground(new Color(153, 102, 51));
 				panel10.setBounds(115, 280, 225, 190);
-				
+
 				JPanel panel11 = new JPanel();
-				panel11.setBounds(265, 285, 265, 190+20*file_storage.keySet().size());
+				panel11.setBounds(265, 285, 265, 190 + 20 * file_storage.keySet().size());
 				panel11.setLayout(null);
 				panel11.setAutoscrolls(true);
-				panel11.setPreferredSize(new Dimension(250,190+40*file_storage.keySet().size()));
+				panel11.setPreferredSize(new Dimension(250, 190 + 40 * file_storage.keySet().size()));
 				article.getContentPane().add(panel11);
 				String label_text = "";
 				System.out.println(file_storage.keySet().toString());
@@ -2461,21 +2515,22 @@ public class Main {
 						btnDeleteFile.setMargin(new Insets(0, 0, 0, 0));
 						btnDeleteFile.setBorder(null);
 						btnDeleteFile.setFont(new Font("Dialog", Font.BOLD, 12));
-						
+
 						btnDeleteFile.setBounds(195, y_f, 40, 24);
 						article.getContentPane().add(btnDeleteFile);
-						
+
 						ImageIcon saveicon = new ImageIcon("src/lib/save_xs.png");
 						JButton btnSaveFile = new JButton(saveicon);
 						btnSaveFile.setMargin(new Insets(0, 0, 0, 0));
 						btnSaveFile.setBorder(null);
 						btnSaveFile.setFont(new Font("Dialog", Font.BOLD, 12));
-						
+
 						btnSaveFile.setBounds(150, y_f, 40, 24);
 						article.getContentPane().add(btnSaveFile);
-						JLabel file_l=new JLabel(files.get(key).getPath().substring(files.get(key).getPath().lastIndexOf("/")+1));
+						JLabel file_l = new JLabel(
+								files.get(key).getPath().substring(files.get(key).getPath().lastIndexOf("/") + 1));
 						file_l.setBounds(10, y_f, 120, 24);
-					panel11.add(file_l);
+						panel11.add(file_l);
 						y_f = y_f + 20;
 						btnSaveFile.setAction(new AbstractAction() {
 							public void actionPerformed(ActionEvent e) {
@@ -2519,16 +2574,15 @@ public class Main {
 						});
 						btnDeleteFile.setAction(new AbstractAction() {
 							public void actionPerformed(ActionEvent e) {
-								
-								
+
 								File f = new File(files.get(key).getPath());
 								f.delete();
-								HashMap<Integer,ArticleFile> deleted=file_storage.get(article_id);
+								HashMap<Integer, ArticleFile> deleted = file_storage.get(article_id);
 								deleted.remove(key);
-								file_storage.put(article_id,deleted);
+								file_storage.put(article_id, deleted);
 								article.dispose();
-								article(issue_id,article_id);
-								
+								article(issue_id, article_id);
+
 							}
 						});
 						btnDeleteFile.setIcon(deleteicon);
@@ -2614,7 +2668,7 @@ public class Main {
 			if (article_screens.containsKey(issue_id) && article_screens.get(issue_id).containsKey(article_id)
 					&& !article_screens.get(issue_id).get(article_id).isVisible()) {
 				Article current_article = issue_storage.get(issue_id).getArticles_list().get(article_id);
-				int initial_file_num=file_id;
+				int initial_file_num = file_id;
 				int width_small = 0;
 				int height_small = 0;
 				if (height >= 768 && width >= 640) {
@@ -2773,10 +2827,9 @@ public class Main {
 				article.getContentPane().add(panel6);
 				panel6.setLayout(null);
 				panel6.setAutoscrolls(true);
-				
+
 				JPanel panel15 = new JPanel();
 				panel15.setBackground(SystemColor.window);
-				
 
 				// size
 				JScrollPane authorSection = new JScrollPane(panel6);
@@ -2788,45 +2841,45 @@ public class Main {
 				JButton btnAddAuthors = new JButton("Edit Authors");
 				btnAddAuthors.setBounds(165, 6, 125, 25);
 				panel6.add(btnAddAuthors);
-				
+
 				Set<Integer> author_keys = author_storage.keySet();
 				DefaultListModel listModel = new DefaultListModel();
 				ArrayList<Integer> author_list = new ArrayList<Integer>();
 				String listData[] = new String[author_keys.size()];
 				int j = 0;
-				int a=0;
-				int selections=0;
-			
+				int a = 0;
+				int selections = 0;
+
 				for (int key : author_keys) {
 					listModel.addElement(author_storage.get(key).getFull_name());
 					listData[j] = author_storage.get(key).getFull_name();
 					author_list.add(key);
-					Article current_art=issue_storage.get(issue_id).getArticles_list().get(article_id);
-					if(current_art.getAuthors().contains(author_storage.get(key))){
+					Article current_art = issue_storage.get(issue_id).getArticles_list().get(article_id);
+					if (current_art.getAuthors().contains(author_storage.get(key))) {
 						selections++;
 					}
-					 
+
 					j = j + 1;
 				}
 				;
-				j=0;
-				int[] selected=new int[selections];
+				j = 0;
+				int[] selected = new int[selections];
 				for (int key : author_keys) {
-					Article current_art=issue_storage.get(issue_id).getArticles_list().get(article_id);
-					if(current_art.getAuthors().contains(author_storage.get(key))){
-						System.out.println(a+" - "+j);
-						selected[a]=j;
-						a=a+1;
+					Article current_art = issue_storage.get(issue_id).getArticles_list().get(article_id);
+					if (current_art.getAuthors().contains(author_storage.get(key))) {
+						System.out.println(a + " - " + j);
+						selected[a] = j;
+						a = a + 1;
 					}
-					 
+
 					j = j + 1;
 				}
 				;
 				for (int index : selected) {
-					System.out.println("Selected: "+index);
+					System.out.println("Selected: " + index);
 				}
 				System.out.println(selected.toString());
-				panel15.setBounds(50, 107, 180 * 2,  45 * author_keys.size());
+				panel15.setBounds(50, 107, 180 * 2, 45 * author_keys.size());
 				panel15.setLayout(null);
 				panel15.setAutoscrolls(true);
 				panel15.setPreferredSize(new Dimension(320, 45 * author_keys.size()));
@@ -2838,11 +2891,12 @@ public class Main {
 				listbox.setBackground(Color.white);
 				listbox.setVisible(true);
 				panel15.add(listbox);
-				
+
 				btnAddAuthors.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
-					      int result = 	JOptionPane.showConfirmDialog(null,panel15, "Edit Authors",JOptionPane.OK_CANCEL_OPTION);
-						if(result==JOptionPane.OK_OPTION){
+						int result = JOptionPane.showConfirmDialog(null, panel15, "Edit Authors",
+								JOptionPane.OK_CANCEL_OPTION);
+						if (result == JOptionPane.OK_OPTION) {
 							int[] selections = listbox.getSelectedIndices();
 							SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
 							Issue current_issue = issue_storage.get(issue_id);
@@ -2850,14 +2904,15 @@ public class Main {
 							current_issue.reset_authors(article_id);
 							for (int index : selections) {
 								current_issue.add_author(article_id, author_storage.get(author_list.get(index)));
-							}	
+							}
 							issue_storage.put(issue_id, current_issue);
 							article.dispose();
-							edit_article(issue_id,article_id);
-							
+							edit_article(issue_id, article_id);
+
 						}
-					}});
-				
+					}
+				});
+
 				final HashMap<Integer, HashMap<Integer, JTextField>> author_fields = new HashMap<Integer, HashMap<Integer, JTextField>>();
 				ArrayList<Author> authors = current_article.getAuthors();
 
@@ -2889,7 +2944,7 @@ public class Main {
 					panel6.add(field);
 					author_components.put(1, field);
 					author_y = author_y + separation_vertical;
-			
+
 					field_label = new JLabel("Middle name:");
 					field_label.setBounds(author_x, author_y, 75, 30); // white
 																		// box
@@ -2903,7 +2958,7 @@ public class Main {
 					author_components.put(2, field);
 					author_fields.put(author.getId(), author_components);
 					author_y = author_y + separation_vertical;
-					
+
 					field_label = new JLabel("Last name:");
 					field_label.setBounds(author_x, author_y, 75, 30); // white
 																		// box
@@ -2917,7 +2972,7 @@ public class Main {
 					author_components.put(3, field);
 					author_fields.put(author.getId(), author_components);
 					author_y = author_y + separation_vertical;
-					
+
 					field_label = new JLabel("Email:");
 					field_label.setBounds(author_x, author_y, 75, 30); // white
 																		// box
@@ -2931,7 +2986,7 @@ public class Main {
 					author_components.put(4, field);
 					author_fields.put(author.getId(), author_components);
 					author_y = author_y + separation_vertical;
-					
+
 					field_label = new JLabel("Affiliation:");
 					field_label.setBounds(author_x, author_y, 75, 30); // white
 																		// box
@@ -2945,7 +3000,7 @@ public class Main {
 					author_components.put(5, field);
 					author_fields.put(author.getId(), author_components);
 					author_y = author_y + separation_vertical;
-					
+
 					field_label = new JLabel("Bio:");
 					field_label.setBounds(author_x, author_y, 75, 30); // white
 																		// box
@@ -2953,13 +3008,13 @@ public class Main {
 					panel6.add(field_label);
 					JTextArea field_area = new JTextArea(author.getBio());
 					field_area.setBounds(author_x + 75 + label_field_separation, author_y, 100, 60); // white
-																								// box
+					// box
 					field_area.setOpaque(true);
 					panel6.add(field_area);
 					author_components.put(6, new JTextField(field_area.getText()));
 					author_fields.put(author.getId(), author_components);
-					author_y = author_y + separation_vertical+30;
-					
+					author_y = author_y + separation_vertical + 30;
+
 					field_label = new JLabel("OrcID:");
 					field_label.setBounds(author_x, author_y, 75, 30); // white
 																		// box
@@ -2973,7 +3028,7 @@ public class Main {
 					author_components.put(7, field);
 					author_fields.put(author.getId(), author_components);
 					author_y = author_y + separation_vertical;
-					
+
 					field_label = new JLabel("Department:");
 					field_label.setBounds(author_x, author_y, 75, 30); // white
 																		// box
@@ -2987,7 +3042,7 @@ public class Main {
 					author_components.put(8, field);
 					author_fields.put(author.getId(), author_components);
 					author_y = author_y + separation_vertical;
-					
+
 					field_label = new JLabel("Country:");
 					field_label.setBounds(author_x, author_y, 75, 30); // white
 																		// box
@@ -3001,7 +3056,7 @@ public class Main {
 					author_components.put(9, field);
 					author_fields.put(author.getId(), author_components);
 					author_y = author_y + separation_vertical;
-					
+
 					author_y = 60;
 					author_x = 16;
 
@@ -3100,24 +3155,25 @@ public class Main {
 				titleSection.add(panel9);
 				titleSection.createHorizontalScrollBar();
 				panel.add(titleSection);
-				
+
 				final JComboBox<String> lblSectionId = new JComboBox();
-				Set<Integer> section_keys=section_storage.keySet();
+				Set<Integer> section_keys = section_storage.keySet();
 				ArrayList<Section> sections = new ArrayList<Section>();
-				int selected_section=0;
-				int count=0;
-				for(int key:section_keys){
-				lblSectionId.addItem(section_storage.get(key).getTitle());
-				sections.add(section_storage.get(key));
-				System.out.println("Count: "+count+ " Section: "+current_article.getSection_id());
-				if(current_article.getSection_id()==section_storage.get(key).getId()){
-					selected_section=count;
-					System.out.println("selected section: "+selected_section);
-				}
-				count++;
+				int selected_section = 0;
+				int count = 0;
+				for (int key : section_keys) {
+					lblSectionId.addItem(section_storage.get(key).getTitle());
+					sections.add(section_storage.get(key));
+					System.out.println("Count: " + count + " Section: " + current_article.getSection_id());
+					if (current_article.getSection_id() == section_storage.get(key).getId()) {
+						selected_section = count;
+						System.out.println("selected section: " + selected_section);
+					}
+					count++;
 				}
 				lblSectionId.setSelectedIndex(selected_section);
-		//		final JTextField lblSectionId = new JTextField(Integer.toString(current_article.getSection_id()));
+				// final JTextField lblSectionId = new
+				// JTextField(Integer.toString(current_article.getSection_id()));
 				lblSectionId.setForeground(Color.BLACK);
 				lblSectionId.setFont(new Font("Dialog", Font.BOLD, 12));
 				lblSectionId.setBounds(95, 83, 140, 26);
@@ -3125,39 +3181,41 @@ public class Main {
 				JButton btnAddSections = new JButton("+ Add");
 				btnAddSections.setBounds(236, 83, 85, 27);
 				panel.add(btnAddSections);
-				
-				
+
 				JPanel panelSection = new JPanel();
 				panelSection.setBounds(0, 0, 480, 150);
 				panelSection.setLayout(null);
-				
+
 				JTextField txtSectionTitle = new JTextField();
 				txtSectionTitle.setBounds(90, 65, 300, 30);
 				panelSection.add(txtSectionTitle);
 				txtSectionTitle.setColumns(10);
-				
+
 				JLabel lblTitleSection = new JLabel("Title");
 				lblTitleSection.setHorizontalAlignment(SwingConstants.CENTER);
 				lblTitleSection.setBounds(190, 40, 100, 20);
 				panelSection.add(lblTitleSection);
 				panelSection.setBounds(0, 0, 480, 150);
-				panelSection.setSize(new Dimension(480,150));
-				panelSection.setPreferredSize(new Dimension(480,150));
+				panelSection.setSize(new Dimension(480, 150));
+				panelSection.setPreferredSize(new Dimension(480, 150));
 				panelSection.setVisible(true);
 				btnAddSections.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent e) {
-					panelSection.setVisible(true);
-					panelSection.setEnabled(true);
-				      int result = 	JOptionPane.showConfirmDialog(null,panelSection, "Add Section",JOptionPane.OK_CANCEL_OPTION);
-					if(result==JOptionPane.OK_OPTION){
-						section_db_id++;
-				      Section new_section = new  Section(section_db_id,txtSectionTitle.getText());
-					section_storage.put(section_db_id, new_section);
-					lblSectionId.addItem(new_section.getTitle());
-					sections.add(new_section);
-					lblSectionId.repaint();}
-				}});
-				
+					public void actionPerformed(ActionEvent e) {
+						panelSection.setVisible(true);
+						panelSection.setEnabled(true);
+						int result = JOptionPane.showConfirmDialog(null, panelSection, "Add Section",
+								JOptionPane.OK_CANCEL_OPTION);
+						if (result == JOptionPane.OK_OPTION) {
+							section_db_id++;
+							Section new_section = new Section(section_db_id, txtSectionTitle.getText());
+							section_storage.put(section_db_id, new_section);
+							lblSectionId.addItem(new_section.getTitle());
+							sections.add(new_section);
+							lblSectionId.repaint();
+						}
+					}
+				});
+
 				final JLabel label = new JLabel();
 				label.setText("Choose Date by selecting below.");
 				final JXDatePicker datePicker = new JXDatePicker();
@@ -3204,7 +3262,7 @@ public class Main {
 						}
 						a.setAuthors(updated_authors);
 						a.setAbstract_text(lblAbstract.getText());
-						a.setSection_id( sections.get(lblSectionId.getSelectedIndex()).getId());
+						a.setSection_id(sections.get(lblSectionId.getSelectedIndex()).getId());
 						a.setPages(Integer.parseInt(lblPageNum.getText()));
 						a.setDate_published(datePicker.getDate());
 
@@ -3244,7 +3302,7 @@ public class Main {
 				btnClear.setBounds(252, 285, 65, 30);
 				panel.add(btnClear);
 				JButton select = new JButton("Browse");
-				
+
 				select.setBounds(20, 240, 90, 30);
 				panel.add(select);
 				JButton upload = new JButton("Upload & Save");
@@ -3315,25 +3373,26 @@ public class Main {
 										+ a_file.getPath().substring(a_file.getPath().lastIndexOf("/") + 1) + "\n";
 							}
 							lblFile.setText(label_text);
-					/*	if (file_storage.containsKey(article_id)) {
-							HashMap<Integer, ArticleFile> up_files = file_storage.get(article_id);
-							Set<Integer> keys = up_files.keySet();
-							file_id = initial_file_num;
-							for (int key : keys) {
-								File f = new File(up_files.get(key).getPath());
-								f.delete();
-							}
-							
-							
-							
-						}*/
-						select.setEnabled(true);
-						upload.setEnabled(false);
-						btnClear.setEnabled(false);
-						lblFile.setToolTipText(label_text);
-						
-						}}
-					});
+							/*
+							 * if (file_storage.containsKey(article_id)) {
+							 * HashMap<Integer, ArticleFile> up_files =
+							 * file_storage.get(article_id); Set<Integer> keys =
+							 * up_files.keySet(); file_id = initial_file_num;
+							 * for (int key : keys) { File f = new
+							 * File(up_files.get(key).getPath()); f.delete(); }
+							 * 
+							 * 
+							 * 
+							 * }
+							 */
+							select.setEnabled(true);
+							upload.setEnabled(false);
+							btnClear.setEnabled(false);
+							lblFile.setToolTipText(label_text);
+
+						}
+					}
+				});
 				upload.setBounds(150, 240, 140, 30);
 
 				panel.add(upload);
@@ -3424,7 +3483,6 @@ public class Main {
 			 */
 			JButton btnClear = new JButton("Clear");
 
-			
 			JButton btnGoBack = new JButton("Close");
 			btnGoBack.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent arg0) {
@@ -3596,114 +3654,118 @@ public class Main {
 			JPanel panelAuthor = new JPanel();
 			panelAuthor.setBounds(0, 0, 480, 800);
 			panelAuthor.setLayout(null);
-			
+
 			JTextField txtFirstName = new JTextField();
 			txtFirstName.setBounds(90, 65, 300, 30);
 			panelAuthor.add(txtFirstName);
 			txtFirstName.setColumns(10);
-			
+
 			JLabel lblFirstName = new JLabel("First name");
 			lblFirstName.setHorizontalAlignment(SwingConstants.CENTER);
 			lblFirstName.setBounds(190, 40, 100, 20);
 			panelAuthor.add(lblFirstName);
-			
+
 			JLabel lblMiddleName = new JLabel("Middle name");
 			lblMiddleName.setHorizontalAlignment(SwingConstants.CENTER);
 			lblMiddleName.setBounds(190, 96, 100, 20);
 			panelAuthor.add(lblMiddleName);
-			
+
 			JTextField txtMiddleName = new JTextField();
 			txtMiddleName.setColumns(10);
 			txtMiddleName.setBounds(90, 117, 300, 30);
 			panelAuthor.add(txtMiddleName);
-		
+
 			JLabel lblLastName = new JLabel("Last name");
 			lblLastName.setHorizontalAlignment(SwingConstants.CENTER);
 			lblLastName.setBounds(190, 148, 100, 20);
 			panelAuthor.add(lblLastName);
-			
+
 			JTextField txtLastName = new JTextField();
 			txtLastName.setColumns(10);
 			txtLastName.setBounds(90, 169, 300, 30);
 			panelAuthor.add(txtLastName);
-			
+
 			JLabel lblEmail = new JLabel("Email");
 			lblEmail.setHorizontalAlignment(SwingConstants.CENTER);
 			lblEmail.setBounds(190, 200, 100, 20);
 			panelAuthor.add(lblEmail);
-			
+
 			JTextField txtEmail = new JTextField();
 			txtEmail.setColumns(10);
 			txtEmail.setBounds(90, 221, 300, 30);
 			panelAuthor.add(txtEmail);
-			
+
 			JLabel lblAffiliation = new JLabel("Affiliation");
 			lblAffiliation.setHorizontalAlignment(SwingConstants.CENTER);
 			lblAffiliation.setBounds(190, 252, 100, 20);
 			panelAuthor.add(lblAffiliation);
-			
+
 			JTextField txtAffiliation = new JTextField();
 			txtAffiliation.setColumns(10);
 			txtAffiliation.setBounds(90, 273, 300, 30);
 			panelAuthor.add(txtAffiliation);
-			
+
 			JLabel lblBio = new JLabel("Bio");
 			lblBio.setHorizontalAlignment(SwingConstants.CENTER);
 			lblBio.setBounds(190, 304, 100, 20);
 			panelAuthor.add(lblBio);
-			
+
 			JTextArea txtBio = new JTextArea();
 			txtBio.setColumns(10);
 			txtBio.setBounds(90, 325, 300, 60);
 			panelAuthor.add(txtBio);
-			
+
 			JLabel lblOrcID = new JLabel("OrcID");
 			lblOrcID.setHorizontalAlignment(SwingConstants.CENTER);
 			lblOrcID.setBounds(190, 386, 100, 20);
 			panelAuthor.add(lblOrcID);
-			
+
 			JTextField txtOrcID = new JTextField();
 			txtOrcID.setColumns(10);
 			txtOrcID.setBounds(90, 407, 300, 30);
 			panelAuthor.add(txtOrcID);
-			
+
 			JLabel lblDepartment = new JLabel("Department");
 			lblDepartment.setHorizontalAlignment(SwingConstants.CENTER);
 			lblDepartment.setBounds(190, 438, 100, 20);
 			panelAuthor.add(lblDepartment);
-			
+
 			JTextField txtDepartment = new JTextField();
 			txtDepartment.setColumns(10);
 			txtDepartment.setBounds(90, 459, 300, 30);
 			panelAuthor.add(txtDepartment);
-			
+
 			JLabel lblCountry = new JLabel("Country");
 			lblCountry.setHorizontalAlignment(SwingConstants.CENTER);
 			lblCountry.setBounds(190, 490, 100, 20);
 			panelAuthor.add(lblCountry);
-			
+
 			JTextField txtCountry = new JTextField();
 			txtCountry.setColumns(10);
 			txtCountry.setBounds(90, 511, 300, 30);
 			panelAuthor.add(txtCountry);
 			panelAuthor.setVisible(true);
-			panelAuthor.setSize(new Dimension(480,800));
-			panelAuthor.setPreferredSize(new Dimension(480,600));
+			panelAuthor.setSize(new Dimension(480, 800));
+			panelAuthor.setPreferredSize(new Dimension(480, 600));
 			panelAuthor.setVisible(true);
 			btnAddAuthor.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
 					panelAuthor.setVisible(true);
 					panelAuthor.setEnabled(true);
-				      int result = 	JOptionPane.showConfirmDialog(null,panelAuthor, "Add Author",JOptionPane.OK_CANCEL_OPTION);
-					if(result==JOptionPane.OK_OPTION){
+					int result = JOptionPane.showConfirmDialog(null, panelAuthor, "Add Author",
+							JOptionPane.OK_CANCEL_OPTION);
+					if (result == JOptionPane.OK_OPTION) {
 						author_id++;
-				      Author new_author = new  Author(author_id,txtFirstName.getText(), txtMiddleName.getText(), txtLastName.getText(),txtEmail.getText(), txtAffiliation.getText(), txtBio.getText(),
-				    		  txtOrcID.getText(),txtDepartment.getText(),txtCountry.getText());
-					author_storage.put(author_id, new_author);
-				      listModel.addElement(new_author.getFull_name());
-					listbox.repaint();}
-				}});
-		
+						Author new_author = new Author(author_id, txtFirstName.getText(), txtMiddleName.getText(),
+								txtLastName.getText(), txtEmail.getText(), txtAffiliation.getText(), txtBio.getText(),
+								txtOrcID.getText(), txtDepartment.getText(), txtCountry.getText());
+						author_storage.put(author_id, new_author);
+						listModel.addElement(new_author.getFull_name());
+						listbox.repaint();
+					}
+				}
+			});
+
 			authorSection.add(panel6);
 			authorSection.setViewportView(panel6);
 			authorSection.setPreferredSize(new Dimension(220 * 1, 200));
@@ -3793,12 +3855,13 @@ public class Main {
 			panel.add(titleSection);
 
 			final JComboBox<String> lblSectionId = new JComboBox();
-			Set<Integer> section_keys=section_storage.keySet();
+			Set<Integer> section_keys = section_storage.keySet();
 			ArrayList<Section> sections = new ArrayList<Section>();
-			for(int key:section_keys){
-			lblSectionId.addItem(section_storage.get(key).getTitle());
-			sections.add(section_storage.get(key));}
-			
+			for (int key : section_keys) {
+				lblSectionId.addItem(section_storage.get(key).getTitle());
+				sections.add(section_storage.get(key));
+			}
+
 			lblSectionId.setForeground(Color.BLACK);
 			lblSectionId.setFont(new Font("Dialog", Font.BOLD, 12));
 			lblSectionId.setBounds(95, 83, 140, 26);
@@ -3806,38 +3869,41 @@ public class Main {
 			JButton btnAddSections = new JButton("+ Add");
 			btnAddSections.setBounds(236, 83, 85, 27);
 			panel.add(btnAddSections);
-			
+
 			JPanel panelSection = new JPanel();
 			panelSection.setBounds(0, 0, 480, 150);
 			panelSection.setLayout(null);
-			
+
 			JTextField txtSectionTitle = new JTextField();
 			txtSectionTitle.setBounds(90, 65, 300, 30);
 			panelSection.add(txtSectionTitle);
 			txtSectionTitle.setColumns(10);
-			
+
 			JLabel lblTitleSection = new JLabel("Title");
 			lblTitleSection.setHorizontalAlignment(SwingConstants.CENTER);
 			lblTitleSection.setBounds(190, 40, 100, 20);
 			panelSection.add(lblTitleSection);
 			panelSection.setBounds(0, 0, 480, 150);
-			panelSection.setSize(new Dimension(480,150));
-			panelSection.setPreferredSize(new Dimension(480,150));
+			panelSection.setSize(new Dimension(480, 150));
+			panelSection.setPreferredSize(new Dimension(480, 150));
 			panelSection.setVisible(true);
 			btnAddSections.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				panelSection.setVisible(true);
-				panelSection.setEnabled(true);
-			      int result = 	JOptionPane.showConfirmDialog(null,panelSection, "Add Section",JOptionPane.OK_CANCEL_OPTION);
-				if(result==JOptionPane.OK_OPTION){
-					section_db_id++;
-			      Section new_section = new  Section(section_db_id,txtSectionTitle.getText());
-				section_storage.put(section_db_id, new_section);
-				sections.add(new_section);
-				lblSectionId.addItem(new_section.getTitle());
-				lblSectionId.repaint();}
-			}});
-			
+				public void actionPerformed(ActionEvent e) {
+					panelSection.setVisible(true);
+					panelSection.setEnabled(true);
+					int result = JOptionPane.showConfirmDialog(null, panelSection, "Add Section",
+							JOptionPane.OK_CANCEL_OPTION);
+					if (result == JOptionPane.OK_OPTION) {
+						section_db_id++;
+						Section new_section = new Section(section_db_id, txtSectionTitle.getText());
+						section_storage.put(section_db_id, new_section);
+						sections.add(new_section);
+						lblSectionId.addItem(new_section.getTitle());
+						lblSectionId.repaint();
+					}
+				}
+			});
+
 			final JLabel label = new JLabel();
 			label.setText("Choose Date by selecting below.");
 			final JXDatePicker datePicker = new JXDatePicker();
@@ -3939,14 +4005,14 @@ public class Main {
 			ArrayList<File> uploaded_files = new ArrayList<File>();
 			JFileChooser chooser = new JFileChooser();
 			JButton select = new JButton("Browse");
-			
+
 			select.setBounds(20, 240, 90, 30);
 			panel.add(select);
 			JButton upload = new JButton("Upload");
 			upload.setEnabled(false);
 			select.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
-					
+
 					FileNameExtensionFilter file = new FileNameExtensionFilter(
 							"Galleys (pdf,xml,html) or Images(jpg,png)", "pdf", "xml", "html", "jpg", "png");
 					chooser.setFileFilter(file);
@@ -3995,7 +4061,7 @@ public class Main {
 					}
 				}
 			});
-			
+
 			btnClear.setEnabled(false);
 			upload.setBounds(156, 240, 90, 30);
 			btnClear.addActionListener(new ActionListener() {
@@ -4011,17 +4077,17 @@ public class Main {
 						File folder = new File(String.format("src/files/%d/", current_id));
 						folder.delete();
 						file_storage.remove(current_id);
-						
+
 					}
 					select.setEnabled(true);
 					upload.setEnabled(false);
 					btnClear.setEnabled(false);
 					lblFile.setText("");
 					lblFile.setToolTipText("");
-					
+
 				}
-				});
-			
+			});
+
 			btnClear.setBounds(252, 285, 65, 30);
 			panel.add(btnClear);
 			panel.add(upload);
@@ -4109,135 +4175,119 @@ public class Main {
 				"bio", "orcid", "testing", "gb"));
 		author_storage.put(6, new Author(6, "Morty", "C.", "FakeAuthor", "fake_author@fakeaddress.com", "affiliation",
 				"bio", "orcid", "testing", "gb"));
-		section_db_id=2;
-		section_storage.put(1, new Section(1,"Section 1"));
-		section_storage.put(2, new Section(2,"Section 2"));
+		section_db_id = 2;
+		section_storage.put(1, new Section(1, "Section 1"));
+		section_storage.put(2, new Section(2, "Section 2"));
 		dashboard();
 	}
 
 	public void add_author() {
-		
-				api = new JFrame();
-				api.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-				api.getContentPane().setBackground(new Color(128, 128, 128));
-				api.setTitle("API Information");
-				api.addWindowListener(new WindowAdapter() {
-					@Override
-					public void windowClosing(WindowEvent e) {
-						// database_save();
-					}
-				});
-				api.setSize(480, 800);// 400 width and 500
-														// height
-				api.getContentPane().setLayout(null);// using no layout managers
-				api.setVisible(true);
-				JPanel panelSection = new JPanel();
-				panelSection.setBounds(0, 0, 480, 150);
-				panelSection.setLayout(null);
-				
-				JTextField txtSectionTitle = new JTextField();
-				txtSectionTitle.setBounds(90, 65, 300, 30);
-				panelSection.add(txtSectionTitle);
-				txtSectionTitle.setColumns(10);
-				
-				JLabel lblTitle = new JLabel("Title");
-				lblTitle.setHorizontalAlignment(SwingConstants.CENTER);
-				lblTitle.setBounds(190, 40, 100, 20);
-				panelSection.add(lblTitle);
-				panelSection.setBounds(0, 0, 480, 150);
-				panelSection.setSize(new Dimension(480,150));
-				panelSection.setPreferredSize(new Dimension(480,150));
-				panelSection.setVisible(true);
-				/*
-				JLabel lblMiddleName = new JLabel("Middle name");
-				lblMiddleName.setHorizontalAlignment(SwingConstants.CENTER);
-				lblMiddleName.setBounds(190, 96, 100, 20);
-				panelSection.add(lblMiddleName);
-				
-				JTextField txtMiddleName = new JTextField();
-				txtMiddleName.setColumns(10);
-				txtMiddleName.setBounds(90, 117, 300, 30);
-				panelSection.add(txtMiddleName);
-			
-				JLabel lblLastName = new JLabel("Last name");
-				lblLastName.setHorizontalAlignment(SwingConstants.CENTER);
-				lblLastName.setBounds(190, 148, 100, 20);
-				panelSection.add(lblLastName);
-				
-				JTextField txtLastName = new JTextField();
-				txtLastName.setColumns(10);
-				txtLastName.setBounds(90, 169, 300, 30);
-				panelSection.add(txtLastName);
-				
-				JLabel lblEmail = new JLabel("Email");
-				lblEmail.setHorizontalAlignment(SwingConstants.CENTER);
-				lblEmail.setBounds(190, 200, 100, 20);
-				panelSection.add(lblEmail);
-				
-				JTextField txtEmail = new JTextField();
-				txtEmail.setColumns(10);
-				txtEmail.setBounds(90, 221, 300, 30);
-				panelSection.add(txtEmail);
-				
-				JLabel lblAffiliation = new JLabel("Affiliation");
-				lblAffiliation.setHorizontalAlignment(SwingConstants.CENTER);
-				lblAffiliation.setBounds(190, 252, 100, 20);
-				panelSection.add(lblAffiliation);
-				
-				JTextField txtAffiliation = new JTextField();
-				txtAffiliation.setColumns(10);
-				txtAffiliation.setBounds(90, 273, 300, 30);
-				panelSection.add(txtAffiliation);
-				
-				JLabel lblBio = new JLabel("Bio");
-				lblBio.setHorizontalAlignment(SwingConstants.CENTER);
-				lblBio.setBounds(190, 304, 100, 20);
-				panelSection.add(lblBio);
-				
-				JTextArea txtBio = new JTextArea();
-				txtBio.setColumns(10);
-				txtBio.setBounds(90, 325, 300, 60);
-				panelSection.add(txtBio);
-				
-				JLabel lblOrcID = new JLabel("OrcID");
-				lblOrcID.setHorizontalAlignment(SwingConstants.CENTER);
-				lblOrcID.setBounds(190, 386, 100, 20);
-				panelSection.add(lblOrcID);
-				
-				JTextField txtOrcID = new JTextField();
-				txtOrcID.setColumns(10);
-				txtOrcID.setBounds(90, 407, 300, 30);
-				panelSection.add(txtOrcID);
-				
-				JLabel lblDepartment = new JLabel("Department");
-				lblDepartment.setHorizontalAlignment(SwingConstants.CENTER);
-				lblDepartment.setBounds(190, 438, 100, 20);
-				panelSection.add(lblDepartment);
-				
-				JTextField txtDepartment = new JTextField();
-				txtDepartment.setColumns(10);
-				txtDepartment.setBounds(90, 459, 300, 30);
-				panelSection.add(txtDepartment);
-				
-				JLabel lblCountry = new JLabel("Country");
-				lblCountry.setHorizontalAlignment(SwingConstants.CENTER);
-				lblCountry.setBounds(190, 490, 100, 20);
-				panelSection.add(lblCountry);
-				
-				JTextField txtCountry = new JTextField();
-				txtCountry.setColumns(10);
-				txtCountry.setBounds(90, 511, 300, 30);
-				panelSection.add(txtCountry);
-				panelSection.setBounds(0, 0, 480, 150);
-				panelSection.setSize(new Dimension(480,150));
-				panelSection.setPreferredSize(new Dimension(480,150));
-				panelSection.setVisible(true);*/
-				
-				//JOptionPane.showMessageDialog(api,panelAuthor,"Information",JOptionPane.INFORMATION_MESSAGE);
-	
+
+		api = new JFrame();
+		api.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+		api.getContentPane().setBackground(new Color(128, 128, 128));
+		api.setTitle("API Information");
+		api.addWindowListener(new WindowAdapter() {
+			@Override
+			public void windowClosing(WindowEvent e) {
+				// database_save();
+			}
+		});
+		api.setSize(480, 800);// 400 width and 500
+								// height
+		api.getContentPane().setLayout(null);// using no layout managers
+		api.setVisible(true);
+		JPanel panelSection = new JPanel();
+		panelSection.setBounds(0, 0, 480, 150);
+		panelSection.setLayout(null);
+
+		JTextField txtSectionTitle = new JTextField();
+		txtSectionTitle.setBounds(90, 65, 300, 30);
+		panelSection.add(txtSectionTitle);
+		txtSectionTitle.setColumns(10);
+
+		JLabel lblTitle = new JLabel("Title");
+		lblTitle.setHorizontalAlignment(SwingConstants.CENTER);
+		lblTitle.setBounds(190, 40, 100, 20);
+		panelSection.add(lblTitle);
+		panelSection.setBounds(0, 0, 480, 150);
+		panelSection.setSize(new Dimension(480, 150));
+		panelSection.setPreferredSize(new Dimension(480, 150));
+		panelSection.setVisible(true);
+		/*
+		 * JLabel lblMiddleName = new JLabel("Middle name");
+		 * lblMiddleName.setHorizontalAlignment(SwingConstants.CENTER);
+		 * lblMiddleName.setBounds(190, 96, 100, 20);
+		 * panelSection.add(lblMiddleName);
+		 * 
+		 * JTextField txtMiddleName = new JTextField();
+		 * txtMiddleName.setColumns(10); txtMiddleName.setBounds(90, 117, 300,
+		 * 30); panelSection.add(txtMiddleName);
+		 * 
+		 * JLabel lblLastName = new JLabel("Last name");
+		 * lblLastName.setHorizontalAlignment(SwingConstants.CENTER);
+		 * lblLastName.setBounds(190, 148, 100, 20);
+		 * panelSection.add(lblLastName);
+		 * 
+		 * JTextField txtLastName = new JTextField();
+		 * txtLastName.setColumns(10); txtLastName.setBounds(90, 169, 300, 30);
+		 * panelSection.add(txtLastName);
+		 * 
+		 * JLabel lblEmail = new JLabel("Email");
+		 * lblEmail.setHorizontalAlignment(SwingConstants.CENTER);
+		 * lblEmail.setBounds(190, 200, 100, 20); panelSection.add(lblEmail);
+		 * 
+		 * JTextField txtEmail = new JTextField(); txtEmail.setColumns(10);
+		 * txtEmail.setBounds(90, 221, 300, 30); panelSection.add(txtEmail);
+		 * 
+		 * JLabel lblAffiliation = new JLabel("Affiliation");
+		 * lblAffiliation.setHorizontalAlignment(SwingConstants.CENTER);
+		 * lblAffiliation.setBounds(190, 252, 100, 20);
+		 * panelSection.add(lblAffiliation);
+		 * 
+		 * JTextField txtAffiliation = new JTextField();
+		 * txtAffiliation.setColumns(10); txtAffiliation.setBounds(90, 273, 300,
+		 * 30); panelSection.add(txtAffiliation);
+		 * 
+		 * JLabel lblBio = new JLabel("Bio");
+		 * lblBio.setHorizontalAlignment(SwingConstants.CENTER);
+		 * lblBio.setBounds(190, 304, 100, 20); panelSection.add(lblBio);
+		 * 
+		 * JTextArea txtBio = new JTextArea(); txtBio.setColumns(10);
+		 * txtBio.setBounds(90, 325, 300, 60); panelSection.add(txtBio);
+		 * 
+		 * JLabel lblOrcID = new JLabel("OrcID");
+		 * lblOrcID.setHorizontalAlignment(SwingConstants.CENTER);
+		 * lblOrcID.setBounds(190, 386, 100, 20); panelSection.add(lblOrcID);
+		 * 
+		 * JTextField txtOrcID = new JTextField(); txtOrcID.setColumns(10);
+		 * txtOrcID.setBounds(90, 407, 300, 30); panelSection.add(txtOrcID);
+		 * 
+		 * JLabel lblDepartment = new JLabel("Department");
+		 * lblDepartment.setHorizontalAlignment(SwingConstants.CENTER);
+		 * lblDepartment.setBounds(190, 438, 100, 20);
+		 * panelSection.add(lblDepartment);
+		 * 
+		 * JTextField txtDepartment = new JTextField();
+		 * txtDepartment.setColumns(10); txtDepartment.setBounds(90, 459, 300,
+		 * 30); panelSection.add(txtDepartment);
+		 * 
+		 * JLabel lblCountry = new JLabel("Country");
+		 * lblCountry.setHorizontalAlignment(SwingConstants.CENTER);
+		 * lblCountry.setBounds(190, 490, 100, 20);
+		 * panelSection.add(lblCountry);
+		 * 
+		 * JTextField txtCountry = new JTextField(); txtCountry.setColumns(10);
+		 * txtCountry.setBounds(90, 511, 300, 30); panelSection.add(txtCountry);
+		 * panelSection.setBounds(0, 0, 480, 150); panelSection.setSize(new
+		 * Dimension(480,150)); panelSection.setPreferredSize(new
+		 * Dimension(480,150)); panelSection.setVisible(true);
+		 */
+
+		// JOptionPane.showMessageDialog(api,panelAuthor,"Information",JOptionPane.INFORMATION_MESSAGE);
+
 	}
-	
-	
+
 	public static void file_copy(int art_id, String source) {
 		try {
 			String filename = source.substring(source.lastIndexOf("/") + 1);
