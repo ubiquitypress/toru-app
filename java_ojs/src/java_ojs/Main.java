@@ -360,6 +360,7 @@ public class Main {
 					Issue update_issue = issue_storage.get(issue_id);
 					if(update_issue.getArticles_list().containsKey(article_id)){
 					update_issue.add_author(article_id, author);
+					System.out.println("Author size: "+update_issue.getArticles_list().get(article_id).getAuthors().size());
 					issue_storage.put(issue_id, update_issue);}
 
 					rs_new_issue.close();}}}
@@ -2861,8 +2862,11 @@ public class Main {
 					listData[j] = author_storage.get(key).getFull_name();
 					author_list.add(key);
 					Article current_art = issue_storage.get(issue_id).getArticles_list().get(article_id);
-					if (current_art.getAuthors().contains(author_storage.get(key))) {
+					ArrayList<Author> current_athors=current_art.getAuthors();
+					for (int b=0;b<current_athors.size();b++){
+					if (author_storage.get(key).getId()==current_art.getAuthors().get(b).getId()) {
 						selections++;
+					}
 					}
 
 					j = j + 1;
@@ -2872,15 +2876,18 @@ public class Main {
 				int[] selected = new int[selections];
 				for (int key : author_keys) {
 					Article current_art = issue_storage.get(issue_id).getArticles_list().get(article_id);
-					if (current_art.getAuthors().contains(author_storage.get(key))) {
+					ArrayList<Author> current_athors=current_art.getAuthors();
+					for (int b=0;b<current_athors.size();b++){
+					if (author_storage.get(key).getId()==current_art.getAuthors().get(b).getId()) {
 						System.out.println(a + " - " + j);
 						selected[a] = j;
 						a = a + 1;
 					}
+					}
 
 					j = j + 1;
-				}
-				;
+				};
+				System.out.println("authors: "+ selected);
 				for (int index : selected) {
 					System.out.println("Selected: " + index);
 				}
