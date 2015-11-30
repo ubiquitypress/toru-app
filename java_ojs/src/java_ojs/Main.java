@@ -1,61 +1,83 @@
 package java_ojs;
 
-import javax.swing.*;
-import javax.swing.UIManager.LookAndFeelInfo;
-import java.util.Date;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.Insets;
+import java.awt.Label;
+import java.awt.Panel;
+import java.awt.SystemColor;
+import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.MouseEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.io.File;
+import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.Socket;
-import java.nio.file.CopyOption;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
-import java.sql.*;
-import java.text.ParseException;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
-import java.awt.event.ActionEvent;
-import java.awt.Font;
-import java.awt.Insets;
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Button;
-import java.awt.event.FocusAdapter;
-import java.awt.event.FocusEvent;
-import java.awt.event.KeyEvent;
-import java.awt.event.MouseEvent;
-import java.awt.BorderLayout;
-import javax.swing.border.SoftBevelBorder;
+
+import javax.swing.AbstractAction;
+import javax.swing.Action;
+import javax.swing.DefaultListModel;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
+import javax.swing.JFileChooser;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JList;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JPasswordField;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.JTextArea;
+import javax.swing.JTextField;
+import javax.swing.ScrollPaneConstants;
+import javax.swing.SwingConstants;
+import javax.swing.Timer;
+import javax.swing.UIManager;
+import javax.swing.UIManager.LookAndFeelInfo;
+import javax.swing.UnsupportedLookAndFeelException;
+import javax.swing.border.BevelBorder;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.filechooser.FileNameExtensionFilter;
-import javax.swing.border.BevelBorder;
 import javax.swing.table.DefaultTableModel;
-import javax.swing.text.BadLocationException;
 
 import org.jdesktop.swingx.JXDatePicker;
 import org.jdesktop.swingx.JXTable;
-import org.jdesktop.swingx.search.Searchable;
 import org.jdesktop.swingx.sort.RowFilters;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 
 import models.Article;
 import models.ArticleFile;
 import models.Author;
 import models.Issue;
 import models.Section;
-
-import java.awt.Label;
-import java.util.List;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
-import java.io.File;
-import java.io.IOException;
-import java.awt.Panel;
-import java.awt.SystemColor;
-import java.awt.GridBagLayout;
-import java.awt.GridLayout;
 
 public class Main {
 	JFrame login, api, issues, settings;
@@ -232,7 +254,7 @@ public class Main {
 
 	}
 
-	public static void populate_variables() {
+	public static void populate_variables() throws ParseException, java.text.ParseException {
 		System.out.println("Retrieving data from local database");
 		list_settings = new HashMap<String, String>();
 		list_issues = new HashMap<Integer, Integer>();
@@ -273,13 +295,8 @@ public class Main {
 				int show_year = rs.getInt("year");
 				String date = rs.getString("date_published");
 				Issue issue = null;
-				try {
-					issue = new Issue(id, title, volume, number, year, show_title, show_volume, show_number, show_year,
-							sdf.parse(date));
-				} catch (ParseException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
+				issue = new Issue(id, title, volume, number, year, show_title, show_volume, show_number, show_year,
+						sdf.parse(date));
 
 				// JOptionPane.showMessageDialog(null, "Deleted");
 
@@ -314,12 +331,7 @@ public class Main {
 
 				String date = art_s.getString(rsmd.getColumnName(6));
 				Article article = null;
-				try {
-					article = new Article(id, title, section_id, pages, abstract_text, sdf.parse(date));
-				} catch (ParseException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
+				article = new Article(id, title, section_id, pages, abstract_text, sdf.parse(date));
 				ResultSet rs_issue = c.createStatement().executeQuery(
 						"SELECT issue_id FROM ISSUE_ARTICLE WHERE article_id=" + Integer.toString(id) + ";");
 				int issue_id = rs_issue.getInt("issue_id");
@@ -706,86 +718,91 @@ public class Main {
 				settings.getContentPane().add(scrollFrame);
 				for (int i = 0; i < setting_keys.size(); i++) {
 					String value = list_settings.get(setting_keys.get(i));
-					boolean done=false;
-					if (value.compareTo("true")==0 ||value.compareTo("false")==0 ){
-					Boolean processed=Boolean.parseBoolean(value);
-					final JCheckBox chckbxSampleSetting = new JCheckBox(setting_keys.get(i));
-					final int s = i;
-					chckbxSampleSetting.setName(Integer.toString(i));
-					chckbxSampleSetting.setBounds(81, y, 150, 23);
-					chckbxSampleSetting.setSelected(processed);
-					chckbxSampleSetting.addActionListener(new ActionListener() {
-						public void actionPerformed(ActionEvent e) {
-							list_settings.remove(setting_keys.get(s));
-							list_settings.put(setting_keys.get(s), Boolean.toString(chckbxSampleSetting.isSelected()));
-						}
-					});
-					done=true;
-					panelSettings.add(chckbxSampleSetting);
-					y = y + 25;
+					boolean done = false;
+					if (value.compareTo("true") == 0 || value.compareTo("false") == 0) {
+						Boolean processed = Boolean.parseBoolean(value);
+						final JCheckBox chckbxSampleSetting = new JCheckBox(setting_keys.get(i));
+						final int s = i;
+						chckbxSampleSetting.setName(Integer.toString(i));
+						chckbxSampleSetting.setBounds(81, y, 150, 23);
+						chckbxSampleSetting.setSelected(processed);
+						chckbxSampleSetting.addActionListener(new ActionListener() {
+							public void actionPerformed(ActionEvent e) {
+								list_settings.remove(setting_keys.get(s));
+								list_settings.put(setting_keys.get(s),
+										Boolean.toString(chckbxSampleSetting.isSelected()));
+							}
+						});
+						done = true;
+						panelSettings.add(chckbxSampleSetting);
+						y = y + 25;
 					}
-					if (!done){
-						try{
-							int processed=Integer.parseInt(value);
+					if (!done) {
+						try {
+							int processed = Integer.parseInt(value);
 							final JLabel intSampleSettinglbl = new JLabel(setting_keys.get(i));
 							intSampleSettinglbl.setBounds(81, y, 150, 23);
-							final JTextField intSampleSetting = new JTextField( list_settings.get(setting_keys.get(i)));
+							final JTextField intSampleSetting = new JTextField(list_settings.get(setting_keys.get(i)));
 							final int s = i;
 							intSampleSetting.setName(Integer.toString(i));
-							intSampleSetting.setBounds(81, y+25, 150, 23);
+							intSampleSetting.setBounds(81, y + 25, 150, 23);
 							intSampleSetting.getDocument().addDocumentListener(new DocumentListener() {
 
 								@Override
 								public void insertUpdate(DocumentEvent de) {
-									try{
-										int processed=Integer.parseInt( intSampleSetting.getText());
+									try {
+										int processed = Integer.parseInt(intSampleSetting.getText());
 										list_settings.remove(setting_keys.get(s));
 										list_settings.put(setting_keys.get(s), intSampleSetting.getText());
-										}catch(Exception ex){
-											JOptionPane.showMessageDialog(null, "Use only numbers in field: " + setting_keys.get(s));
-											
-										}
+									} catch (Exception ex) {
+										JOptionPane.showMessageDialog(null,
+												"Use only numbers in field: " + setting_keys.get(s));
+
+									}
 								}
 
 								@Override
 								public void removeUpdate(DocumentEvent de) {
-									try{
-										int processed=Integer.parseInt( intSampleSetting.getText());
+									try {
+										int processed = Integer.parseInt(intSampleSetting.getText());
 										list_settings.remove(setting_keys.get(s));
 										list_settings.put(setting_keys.get(s), intSampleSetting.getText());
-										}catch(Exception ex){
-											JOptionPane.showMessageDialog(null, "Use only numbers in field: " + setting_keys.get(s));
-											
-										}
+									} catch (Exception ex) {
+										JOptionPane.showMessageDialog(null,
+												"Use only numbers in field: " + setting_keys.get(s));
+
+									}
 								}
 
 								@Override
 								public void changedUpdate(DocumentEvent de) {
-									try{
-										int processed=Integer.parseInt( intSampleSetting.getText());
+									try {
+										int processed = Integer.parseInt(intSampleSetting.getText());
 										list_settings.remove(setting_keys.get(s));
 										list_settings.put(setting_keys.get(s), intSampleSetting.getText());
-										}catch(Exception ex){
-											JOptionPane.showMessageDialog(null, "Use only numbers in field: " + setting_keys.get(s));
-											
-										}
+									} catch (Exception ex) {
+										JOptionPane.showMessageDialog(null,
+												"Use only numbers in field: " + setting_keys.get(s));
+
+									}
 								}
 							});
-						
+
 							y = y + 60;
 
-							done=true;
+							done = true;
 							panelSettings.add(intSampleSettinglbl);
 							panelSettings.add(intSampleSetting);
-						}catch(Exception e){
-							
+						} catch (Exception e) {
+
 							final JLabel stringSampleSettinglbl = new JLabel(setting_keys.get(i));
 							stringSampleSettinglbl.setBounds(81, y, 150, 23);
-							final JTextField stringSampleSetting = new JTextField( list_settings.get(setting_keys.get(i)));
+							final JTextField stringSampleSetting = new JTextField(
+									list_settings.get(setting_keys.get(i)));
 							final int s = i;
 							stringSampleSetting.setName(Integer.toString(i));
-							stringSampleSetting.setBounds(81, y+25, 150, 23);
-							
+							stringSampleSetting.setBounds(81, y + 25, 150, 23);
+
 							stringSampleSetting.getDocument().addDocumentListener(new DocumentListener() {
 
 								@Override
@@ -806,15 +823,14 @@ public class Main {
 									list_settings.put(setting_keys.get(s), stringSampleSetting.getText());
 								}
 							});
-							
+
 							y = y + 60;
 
 							panelSettings.add(stringSampleSettinglbl);
 							panelSettings.add(stringSampleSetting);
 						}
 					}
-					
-					
+
 				}
 				JButton btnSave = new JButton("Save");
 				btnSave.addActionListener(new ActionListener() {
@@ -2169,7 +2185,7 @@ public class Main {
 						}
 					}
 				};
-				new Timer(delay*2, taskPerformer1).start();
+				new Timer(delay * 2, taskPerformer1).start();
 				DefaultTableModel model = new DefaultTableModel(rows, columnNames);
 				Action delete = new AbstractAction() {
 					public void actionPerformed(ActionEvent e) {
@@ -2452,7 +2468,6 @@ public class Main {
 				// article.setSize(width_small, height_small);
 				article.setSize(width_small, height_small);
 				article.getContentPane().setBackground(new Color(128, 128, 128));
-				
 
 				article.setLocationRelativeTo(null);
 				article.setTitle("Article <" + article_id + "> Details");
@@ -2706,9 +2721,9 @@ public class Main {
 					field_a.setEditable(false);
 					field_a.setBackground(SystemColor.window);
 					field_a.setOpaque(true);
-					JScrollPane scroll_bio = new JScrollPane(field_a); 
+					JScrollPane scroll_bio = new JScrollPane(field_a);
 					scroll_bio.setBounds(author_x + 75 + label_field_separation, author_y, 100, 60);
-					scroll_bio.setPreferredSize(new Dimension(250,200));
+					scroll_bio.setPreferredSize(new Dimension(250, 200));
 					panel6.add(scroll_bio);
 					author_y = author_y + separation_vertical + 30;
 
@@ -3296,7 +3311,7 @@ public class Main {
 
 				final HashMap<Integer, HashMap<Integer, JTextField>> author_fields = new HashMap<Integer, HashMap<Integer, JTextField>>();
 				final HashMap<Integer, JTextArea> authors_bio = new HashMap<Integer, JTextArea>();
-				
+
 				ArrayList<Author> authors = current_article.getAuthors();
 
 				int author_x = 16;
@@ -3390,15 +3405,15 @@ public class Main {
 					field_label.setOpaque(true);
 					panel6.add(field_label);
 					JTextArea field_area = new JTextArea(author.getBio());
-					
+
 					field_area.setBounds(author_x + 75 + label_field_separation, author_y, 100, 60); // white
 					// box
 					field_area.setOpaque(true);
-					JScrollPane scroll_bio = new JScrollPane(field_area); 
+					JScrollPane scroll_bio = new JScrollPane(field_area);
 					scroll_bio.setBounds(author_x + 75 + label_field_separation, author_y, 100, 60);
-					scroll_bio.setPreferredSize(new Dimension(250,200));
+					scroll_bio.setPreferredSize(new Dimension(250, 200));
 					panel6.add(scroll_bio);
-					authors_bio.put(author.getId(),field_area);
+					authors_bio.put(author.getId(), field_area);
 					author_fields.put(author.getId(), author_components);
 					author_y = author_y + separation_vertical + 30;
 
@@ -3653,7 +3668,7 @@ public class Main {
 						a.setSection_id(sections.get(lblSectionId.getSelectedIndex()).getId());
 						a.setPages(Integer.parseInt(lblPageNum.getText()));
 						a.setDate_published(datePicker.getDate());
-						Issue current_issue=issue_storage.get(issue_id);
+						Issue current_issue = issue_storage.get(issue_id);
 						issue_storage.get(issue_id).update_article(article_id, a);
 						issue_storage.put(issue_id, current_issue);
 						issue(issue_id);
@@ -4721,25 +4736,54 @@ public class Main {
 		}
 	}
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws ParseException, java.text.ParseException {
 
 		database_setup();
 		populate_variables();
+		String j = "{\"balance\": 1000.21, \"num\":100, \"is_vip\":true, \"name\":\"foo\"}";
+		JSONParser parser = new JSONParser();
+		try {
+			Object obj = parser.parse(j);
+			JSONObject array = (JSONObject) obj;
+
+			System.out.println("The 2nd element of array");
+			Set<Map> keys = array.keySet();
+			Object jsn_keys[] = keys.toArray();
+			for (Object k : jsn_keys) {
+				String setting_name = k.toString();
+
+				String value = array.get(k).toString();
+				System.out.println(setting_name + " " + value);
+			}
+		} catch (ParseException pe) {
+
+			System.out.println("position: " + pe.getPosition());
+			System.out.println(pe);
+		}
 		if (list_settings.isEmpty()) {
-			list_settings.put("Setting 1", "false");
-			setting_keys.add("Setting 1");
-			list_settings.put("Setting 2", "false");
-			setting_keys.add("Setting 2");
-			list_settings.put("Setting 3", "This is text");
-			setting_keys.add("Setting 3");
+			try {
+				Object obj = parser.parse(j);
+				JSONObject array = (JSONObject) obj;
 
-			list_settings.put("Setting 4", "false");
-			setting_keys.add("Setting 4");
-			list_settings.put("Setting 5", "1234");
-			setting_keys.add("Setting 5");
+				System.out.println("The 2nd element of array");
+				Set<Map> keys = array.keySet();
+				Object jsn_keys[] = keys.toArray();
+				for (Object k : jsn_keys) {
+					String setting_name = k.toString();
 
-			list_settings.put("Setting 6", "true");
-			setting_keys.add("Setting 6");
+					String value = array.get(k).toString();
+					System.out.println(setting_name + " " + value);
+
+					list_settings.put(setting_name, value);
+					setting_keys.add(setting_name);
+
+				}
+
+			} catch (ParseException pe) {
+
+				System.out.println("position: " + pe.getPosition());
+				System.out.println(pe);
+			}
 		}
 
 		// file copy to use for file upload
