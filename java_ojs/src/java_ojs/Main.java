@@ -65,7 +65,7 @@ public class Main {
 	private static String source_api = "";
 	private static String source_access_key = "";
 	private JPasswordField passwordField;
-	private static HashMap<String, Boolean> list_settings;
+	private static HashMap<String, String> list_settings;
 	private static HashMap<Integer, Integer> list_issues;
 	private static HashMap<Integer, JFrame> issue_screens;
 	private static HashMap<Integer, Issue> issue_storage;
@@ -124,7 +124,7 @@ public class Main {
 			for (int i = 0; i < list_settings.size(); i++) {
 				PreparedStatement setting_prep = c.prepareStatement(settings_insert_or_replace_statement);
 				setting_prep.setString(1, setting_keys.get(i));
-				setting_prep.setBoolean(2, list_settings.get(setting_keys.get(i)));
+				setting_prep.setString(2, list_settings.get(setting_keys.get(i)));
 				setting_prep.executeUpdate();
 			}
 
@@ -234,7 +234,7 @@ public class Main {
 
 	public static void populate_variables() {
 		System.out.println("Retrieving data from local database");
-		list_settings = new HashMap<String, Boolean>();
+		list_settings = new HashMap<String, String>();
 		list_issues = new HashMap<Integer, Integer>();
 		issue_storage = new HashMap<Integer, Issue>();
 		issue_screens = new HashMap<Integer, JFrame>();
@@ -253,7 +253,7 @@ public class Main {
 			rs = c.createStatement().executeQuery("SELECT * FROM SETTING ;");
 			while (rs.next()) {
 				String name = rs.getString("name");
-				Boolean value = rs.getBoolean("value");
+				String value = rs.getString("value");
 				list_settings.put(name, value);
 				setting_keys.add(name);
 				System.out.println("Setting - " + name + " : " + value.toString());
@@ -427,7 +427,7 @@ public class Main {
 			c = DriverManager.getConnection("jdbc:sqlite:local_datatabse.db");
 			stmt = c.createStatement();
 			String sql = "CREATE TABLE IF NOT EXISTS SETTING" + "(NAME CHAR(100) PRIMARY KEY NOT NULL,"
-					+ " VALUE BOOLEAN DEFAULT FALSE)";
+					+ " VALUE CHAR(150) NOT NULL)";
 			stmt.executeUpdate(sql);
 			sql = "CREATE TABLE IF NOT EXISTS API" + "(URL CHAR(250) PRIMARY KEY NOT NULL,"
 					+ " ACCESS_KEY CHAR(100) NOT NULL)";
@@ -705,19 +705,116 @@ public class Main {
 				// scrollSettings.setViewportView(scrollFrame);
 				settings.getContentPane().add(scrollFrame);
 				for (int i = 0; i < setting_keys.size(); i++) {
+					String value = list_settings.get(setting_keys.get(i));
+					boolean done=false;
+					if (value.compareTo("true")==0 ||value.compareTo("false")==0 ){
+					Boolean processed=Boolean.parseBoolean(value);
 					final JCheckBox chckbxSampleSetting = new JCheckBox(setting_keys.get(i));
 					final int s = i;
 					chckbxSampleSetting.setName(Integer.toString(i));
 					chckbxSampleSetting.setBounds(81, y, 150, 23);
-					chckbxSampleSetting.setSelected(list_settings.get(setting_keys.get(i)));
+					chckbxSampleSetting.setSelected(processed);
 					chckbxSampleSetting.addActionListener(new ActionListener() {
 						public void actionPerformed(ActionEvent e) {
 							list_settings.remove(setting_keys.get(s));
-							list_settings.put(setting_keys.get(s), chckbxSampleSetting.isSelected());
+							list_settings.put(setting_keys.get(s), Boolean.toString(chckbxSampleSetting.isSelected()));
 						}
 					});
-					y = y + 25;
+					done=true;
 					panelSettings.add(chckbxSampleSetting);
+					y = y + 25;
+					}
+					if (!done){
+						try{
+							int processed=Integer.parseInt(value);
+							final JLabel intSampleSettinglbl = new JLabel(setting_keys.get(i));
+							intSampleSettinglbl.setBounds(81, y, 150, 23);
+							final JTextField intSampleSetting = new JTextField( list_settings.get(setting_keys.get(i)));
+							final int s = i;
+							intSampleSetting.setName(Integer.toString(i));
+							intSampleSetting.setBounds(81, y+25, 150, 23);
+							intSampleSetting.getDocument().addDocumentListener(new DocumentListener() {
+
+								@Override
+								public void insertUpdate(DocumentEvent de) {
+									try{
+										int processed=Integer.parseInt( intSampleSetting.getText());
+										list_settings.remove(setting_keys.get(s));
+										list_settings.put(setting_keys.get(s), intSampleSetting.getText());
+										}catch(Exception ex){
+											JOptionPane.showMessageDialog(null, "Use only numbers in field: " + setting_keys.get(s));
+											
+										}
+								}
+
+								@Override
+								public void removeUpdate(DocumentEvent de) {
+									try{
+										int processed=Integer.parseInt( intSampleSetting.getText());
+										list_settings.remove(setting_keys.get(s));
+										list_settings.put(setting_keys.get(s), intSampleSetting.getText());
+										}catch(Exception ex){
+											JOptionPane.showMessageDialog(null, "Use only numbers in field: " + setting_keys.get(s));
+											
+										}
+								}
+
+								@Override
+								public void changedUpdate(DocumentEvent de) {
+									try{
+										int processed=Integer.parseInt( intSampleSetting.getText());
+										list_settings.remove(setting_keys.get(s));
+										list_settings.put(setting_keys.get(s), intSampleSetting.getText());
+										}catch(Exception ex){
+											JOptionPane.showMessageDialog(null, "Use only numbers in field: " + setting_keys.get(s));
+											
+										}
+								}
+							});
+						
+							y = y + 60;
+
+							done=true;
+							panelSettings.add(intSampleSettinglbl);
+							panelSettings.add(intSampleSetting);
+						}catch(Exception e){
+							
+							final JLabel stringSampleSettinglbl = new JLabel(setting_keys.get(i));
+							stringSampleSettinglbl.setBounds(81, y, 150, 23);
+							final JTextField stringSampleSetting = new JTextField( list_settings.get(setting_keys.get(i)));
+							final int s = i;
+							stringSampleSetting.setName(Integer.toString(i));
+							stringSampleSetting.setBounds(81, y+25, 150, 23);
+							
+							stringSampleSetting.getDocument().addDocumentListener(new DocumentListener() {
+
+								@Override
+								public void insertUpdate(DocumentEvent de) {
+									list_settings.remove(setting_keys.get(s));
+									list_settings.put(setting_keys.get(s), stringSampleSetting.getText());
+								}
+
+								@Override
+								public void removeUpdate(DocumentEvent de) {
+									list_settings.remove(setting_keys.get(s));
+									list_settings.put(setting_keys.get(s), stringSampleSetting.getText());
+								}
+
+								@Override
+								public void changedUpdate(DocumentEvent de) {
+									list_settings.remove(setting_keys.get(s));
+									list_settings.put(setting_keys.get(s), stringSampleSetting.getText());
+								}
+							});
+							
+							y = y + 60;
+
+							panelSettings.add(stringSampleSettinglbl);
+							panelSettings.add(stringSampleSetting);
+						}
+					}
+					
+					
 				}
 				JButton btnSave = new JButton("Save");
 				btnSave.addActionListener(new ActionListener() {
@@ -4629,10 +4726,20 @@ public class Main {
 		database_setup();
 		populate_variables();
 		if (list_settings.isEmpty()) {
-			list_settings.put("Setting 1", false);
+			list_settings.put("Setting 1", "false");
 			setting_keys.add("Setting 1");
-			list_settings.put("Setting 2", false);
+			list_settings.put("Setting 2", "false");
 			setting_keys.add("Setting 2");
+			list_settings.put("Setting 3", "This is text");
+			setting_keys.add("Setting 3");
+
+			list_settings.put("Setting 4", "false");
+			setting_keys.add("Setting 4");
+			list_settings.put("Setting 5", "1234");
+			setting_keys.add("Setting 5");
+
+			list_settings.put("Setting 6", "true");
+			setting_keys.add("Setting 6");
 		}
 
 		// file copy to use for file upload
