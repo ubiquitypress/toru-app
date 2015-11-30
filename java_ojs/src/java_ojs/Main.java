@@ -28,6 +28,8 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.BorderLayout;
 import javax.swing.border.SoftBevelBorder;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.border.BevelBorder;
 import javax.swing.table.DefaultTableModel;
@@ -340,31 +342,34 @@ public class Main {
 			for (int key_author : author_keys) {
 				Author author = author_storage.get(key_author);
 				try {
-					PreparedStatement prep = c
-							.prepareStatement("SELECT author_id,article_id FROM ARTICLE_AUTHOR");
-				
+					PreparedStatement prep = c.prepareStatement("SELECT author_id,article_id FROM ARTICLE_AUTHOR");
 
 					ResultSet rs_author = prep.executeQuery();
-					while(rs_author.next()){
-					int author_id = rs_author.getInt(1);
+					while (rs_author.next()) {
+						int author_id = rs_author.getInt(1);
 
-					int article_id = rs_author.getInt(2);
-					System.out.println(author_id + " - "+author.getId() );
-					if (author_id==author.getId()){
-					System.out.println(author.getFull_name() + " " + Integer.toString(article_id));
-					
-					ResultSet rs_new_issue = c.createStatement()
-							.executeQuery("SELECT issue_id FROM ISSUE_ARTICLE;");
-					while(rs_new_issue.next()){
-					int issue_id = rs_new_issue.getInt("issue_id");
-					Issue update_issue = issue_storage.get(issue_id);
-					if(update_issue.getArticles_list().containsKey(article_id)){
-					update_issue.add_author(article_id, author);
-					System.out.println("Author size: "+update_issue.getArticles_list().get(article_id).getAuthors().size());
-					issue_storage.put(issue_id, update_issue);}
+						int article_id = rs_author.getInt(2);
+						System.out.println(author_id + " - " + author.getId());
+						if (author_id == author.getId()) {
+							System.out.println(author.getFull_name() + " " + Integer.toString(article_id));
 
-					rs_new_issue.close();}}}
-					} catch (SQLException e) {
+							ResultSet rs_new_issue = c.createStatement()
+									.executeQuery("SELECT issue_id FROM ISSUE_ARTICLE;");
+							while (rs_new_issue.next()) {
+								int issue_id = rs_new_issue.getInt("issue_id");
+								Issue update_issue = issue_storage.get(issue_id);
+								if (update_issue.getArticles_list().containsKey(article_id)) {
+									update_issue.add_author(article_id, author);
+									System.out.println("Author size: "
+											+ update_issue.getArticles_list().get(article_id).getAuthors().size());
+									issue_storage.put(issue_id, update_issue);
+								}
+
+								rs_new_issue.close();
+							}
+						}
+					}
+				} catch (SQLException e) {
 					e.printStackTrace();
 
 				}
@@ -375,7 +380,7 @@ public class Main {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-	
+
 		System.out.println("Done.");
 	}
 
@@ -1298,7 +1303,7 @@ public class Main {
 				width_small = (int) (640 - (640 * (37.5 / 100)));
 			}
 			final int current_id = i_id + 1;
-			height_small = (int) (640 - (640 * (5 / 100)));
+			height_small = (int) (800 - (800 * (5 / 100)));
 			final JFrame edit_issue = new JFrame();
 			issue_screens.put(i_id, edit_issue);
 			edit_issue.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -1388,7 +1393,124 @@ public class Main {
 			datePicker.setBounds(100, 410, width_small - 200, 30);
 			// panel.add(label);
 			edit_issue.getContentPane().add(datePicker);
+			JLabel lblShowDisplay = new JLabel("---- Display Values ----");
+			lblShowDisplay.setForeground(new Color(245, 255, 250));
+			lblShowDisplay.setHorizontalAlignment(SwingConstants.CENTER);
+			lblShowDisplay.setBounds(74, 452, width_small - 151, 16);
+			edit_issue.getContentPane().add(lblShowDisplay);
+			
+			final JTextField show_title = new JTextField();
+			show_title.setBounds(100, 502, width_small - 200, 26);
+			edit_issue.getContentPane().add(show_title);
+			show_title.setColumns(10);
 
+			JLabel lblShowTitleText = new JLabel("Show Title");
+			lblShowTitleText.setForeground(new Color(245, 255, 250));
+			lblShowTitleText.setHorizontalAlignment(SwingConstants.CENTER);
+			lblShowTitleText.setBounds(74, 482, width_small - 151, 16);
+			edit_issue.getContentPane().add(lblShowTitleText);
+
+			final JTextField show_volume = new JTextField();
+			show_volume.setBounds(100, 550, width_small - 200, 26);
+			edit_issue.getContentPane().add(show_volume);
+			show_volume.setColumns(10);
+
+			JLabel lblShowVolume = new JLabel("Show Volume");
+			lblShowVolume.setForeground(new Color(245, 255, 250));
+			lblShowVolume.setHorizontalAlignment(SwingConstants.CENTER);
+			lblShowVolume.setBounds(74, 530, width_small - 151, 16);
+			edit_issue.getContentPane().add(lblShowVolume);
+
+			final JTextField show_number = new JTextField();
+			show_number.setBounds(100, 600, width_small - 200, 26);
+			edit_issue.getContentPane().add(show_number);
+			show_number.setColumns(10);
+
+			JLabel lblShowNumber = new JLabel("Show Number");
+			lblShowNumber.setForeground(new Color(245, 255, 250));
+			lblShowNumber.setHorizontalAlignment(SwingConstants.CENTER);
+			lblShowNumber.setBounds(74, 580, width_small - 151, 16);
+			edit_issue.getContentPane().add(lblShowNumber);
+			
+			final JTextField show_year = new JTextField();
+			show_year.setBounds(100, 650, width_small - 200, 26);
+			edit_issue.getContentPane().add(show_year);
+			show_year.setColumns(10);
+
+			JLabel lblShowYear = new JLabel("Show Year");
+			lblShowYear.setForeground(new Color(245, 255, 250));
+			lblShowYear.setHorizontalAlignment(SwingConstants.CENTER);
+			lblShowYear.setBounds(74, 630, width_small - 151, 16);
+			edit_issue.getContentPane().add(lblShowYear);
+
+			title.getDocument().addDocumentListener(new DocumentListener() {
+
+				@Override
+				public void insertUpdate(DocumentEvent de) {
+					show_title.setText(title.getText());
+				}
+
+				@Override
+				public void removeUpdate(DocumentEvent de) {
+					show_title.setText(title.getText());
+				}
+
+				@Override
+				public void changedUpdate(DocumentEvent de) {
+					show_title.setText(title.getText());
+				}
+			});
+			year.getDocument().addDocumentListener(new DocumentListener() {
+
+				@Override
+				public void insertUpdate(DocumentEvent de) {
+					show_year.setText(year.getText());
+				}
+
+				@Override
+				public void removeUpdate(DocumentEvent de) {
+					show_year.setText(year.getText());
+				}
+
+				@Override
+				public void changedUpdate(DocumentEvent de) {
+					show_year.setText(year.getText());
+				}
+			});
+			volume.getDocument().addDocumentListener(new DocumentListener() {
+
+				@Override
+				public void insertUpdate(DocumentEvent de) {
+					show_volume.setText(volume.getText());
+				}
+
+				@Override
+				public void removeUpdate(DocumentEvent de) {
+					show_volume.setText(volume.getText());
+				}
+
+				@Override
+				public void changedUpdate(DocumentEvent de) {
+					show_volume.setText(volume.getText());
+				}
+			});
+			number.getDocument().addDocumentListener(new DocumentListener() {
+
+				@Override
+				public void insertUpdate(DocumentEvent de) {
+					show_number.setText(number.getText());
+				}
+
+				@Override
+				public void removeUpdate(DocumentEvent de) {
+					show_number.setText(number.getText());
+				}
+
+				@Override
+				public void changedUpdate(DocumentEvent de) {
+					show_number.setText(number.getText());
+				}
+			});
 			JButton btnSubmit = new JButton("Create");
 
 			btnSubmit.addActionListener(new ActionListener() {
@@ -1398,10 +1520,21 @@ public class Main {
 						int entered_volume = Integer.parseInt(volume.getText());
 						int entered_number = Integer.parseInt(number.getText());
 						int entered_year = Integer.parseInt(year.getText());
+						
+
+						int entered_show_volume = Integer.parseInt(show_volume.getText());
+						int entered_show_number = Integer.parseInt(show_number.getText());
+						int entered_show_year = Integer.parseInt(show_year.getText());
 						i_id++;
 						Issue issue = new Issue(i_id, title.getText(), entered_volume, entered_number, entered_year,
 								datePicker.getDate());
-
+						issue.setShow_title(show_title.getText());
+						issue.setShow_volume(entered_show_volume);
+						issue.setShow_year(entered_show_year);
+						issue.setShow_number(entered_show_number);
+						
+						
+						
 						// JOptionPane.showMessageDialog(null, "Deleted");
 						SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
 
@@ -1475,7 +1608,7 @@ public class Main {
 					width_small = (int) (640 - (640 * (37.5 / 100)));
 				}
 
-				height_small = (int) (640 - (640 * (5 / 100)));
+				height_small = (int) (800 - (800 * (5 / 100)));
 				final JFrame edit_issue = new JFrame();
 				issue_screens.put(issue_id, edit_issue);
 				edit_issue.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -1570,21 +1703,89 @@ public class Main {
 				datePicker.setBounds(100, 410, width_small - 200, 30);
 				// panel.add(label);
 				edit_issue.getContentPane().add(datePicker);
+				
+				edit_issue.getContentPane().add(datePicker);
+				JLabel lblShowDisplay = new JLabel("---- Display Values ----");
+				lblShowDisplay.setForeground(new Color(245, 255, 250));
+				lblShowDisplay.setHorizontalAlignment(SwingConstants.CENTER);
+				lblShowDisplay.setBounds(74, 452, width_small - 151, 16);
+				edit_issue.getContentPane().add(lblShowDisplay);
+				
+				final JTextField show_title = new JTextField(current_issue.getShow_title());
+				show_title.setBounds(100, 502, width_small - 200, 26);
+				edit_issue.getContentPane().add(show_title);
+				show_title.setColumns(10);
 
+				JLabel lblShowTitleText = new JLabel("Show Title");
+				lblShowTitleText.setForeground(new Color(245, 255, 250));
+				lblShowTitleText.setHorizontalAlignment(SwingConstants.CENTER);
+				lblShowTitleText.setBounds(74, 482, width_small - 151, 16);
+				edit_issue.getContentPane().add(lblShowTitleText);
+
+				final JTextField show_volume = new JTextField(Integer.toString(current_issue.getShow_volume()));
+				show_volume.setBounds(100, 550, width_small - 200, 26);
+				edit_issue.getContentPane().add(show_volume);
+				show_volume.setColumns(10);
+
+				JLabel lblShowVolume = new JLabel("Show Volume");
+				lblShowVolume.setForeground(new Color(245, 255, 250));
+				lblShowVolume.setHorizontalAlignment(SwingConstants.CENTER);
+				lblShowVolume.setBounds(74, 530, width_small - 151, 16);
+				edit_issue.getContentPane().add(lblShowVolume);
+
+				final JTextField show_number = new JTextField(Integer.toString(current_issue.getShow_number()));
+				show_number.setBounds(100, 600, width_small - 200, 26);
+				edit_issue.getContentPane().add(show_number);
+				show_number.setColumns(10);
+
+				JLabel lblShowNumber = new JLabel("Show Number");
+				lblShowNumber.setForeground(new Color(245, 255, 250));
+				lblShowNumber.setHorizontalAlignment(SwingConstants.CENTER);
+				lblShowNumber.setBounds(74, 580, width_small - 151, 16);
+				edit_issue.getContentPane().add(lblShowNumber);
+				
+				final JTextField show_year = new JTextField(Integer.toString(current_issue.getShow_year()));
+				show_year.setBounds(100, 650, width_small - 200, 26);
+				edit_issue.getContentPane().add(show_year);
+				show_year.setColumns(10);
+
+				JLabel lblShowYear = new JLabel("Show Year");
+				lblShowYear.setForeground(new Color(245, 255, 250));
+				lblShowYear.setHorizontalAlignment(SwingConstants.CENTER);
+				lblShowYear.setBounds(74, 630, width_small - 151, 16);
+				edit_issue.getContentPane().add(lblShowYear);
 				JButton btnSubmit = new JButton("Save");
 
 				Action actionSubmit = new AbstractAction() {
 					@Override
 					public void actionPerformed(ActionEvent e) {
+						try {
+						int entered_volume = Integer.parseInt(volume.getText());
+						int entered_number = Integer.parseInt(number.getText());
+						int entered_year = Integer.parseInt(year.getText());
+						
+
+						int entered_show_volume = Integer.parseInt(show_volume.getText());
+						int entered_show_number = Integer.parseInt(show_number.getText());
+						int entered_show_year = Integer.parseInt(show_year.getText());
+						
 						current_issue.setTitle(title.getText());
-						current_issue.setVolume(Integer.parseInt(volume.getText()));
-						current_issue.setNumber(Integer.parseInt(number.getText()));
-						current_issue.setYear(Integer.parseInt(year.getText()));
+						current_issue.setVolume(entered_volume);
+						current_issue.setNumber(entered_number);
+						current_issue.setYear(entered_year);
 						current_issue.setDate_published(datePicker.getDate());
+
+						current_issue.setShow_title(show_title.getText());
+						current_issue.setShow_volume(entered_show_volume);
+						current_issue.setShow_year(entered_show_year);
+						current_issue.setShow_number(entered_show_number);
 						edit_issue.dispose();
 						issue_storage.put(issue_id, current_issue);
 						issues.dispose();
 						dashboard();
+						} catch (Exception ex) {
+							JOptionPane.showMessageDialog(null, "Use only numbers in fields: Volume, Number, Year ");
+						}
 
 					}
 				};
@@ -1595,15 +1796,33 @@ public class Main {
 				datePicker.addActionListener(actionSubmit);
 				btnSubmit.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
-						current_issue.setTitle(title.getText());
-						current_issue.setVolume(Integer.parseInt(volume.getText()));
-						current_issue.setNumber(Integer.parseInt(number.getText()));
-						current_issue.setYear(Integer.parseInt(year.getText()));
-						current_issue.setDate_published(datePicker.getDate());
-						edit_issue.dispose();
-						issue_storage.put(issue_id, current_issue);
-						issues.dispose();
-						dashboard();
+						try {
+							int entered_volume = Integer.parseInt(volume.getText());
+							int entered_number = Integer.parseInt(number.getText());
+							int entered_year = Integer.parseInt(year.getText());
+							
+
+							int entered_show_volume = Integer.parseInt(show_volume.getText());
+							int entered_show_number = Integer.parseInt(show_number.getText());
+							int entered_show_year = Integer.parseInt(show_year.getText());
+							
+							current_issue.setTitle(title.getText());
+							current_issue.setVolume(entered_volume);
+							current_issue.setNumber(entered_number);
+							current_issue.setYear(entered_year);
+							current_issue.setDate_published(datePicker.getDate());
+
+							current_issue.setShow_title(show_title.getText());
+							current_issue.setShow_volume(entered_show_volume);
+							current_issue.setShow_year(entered_show_year);
+							current_issue.setShow_number(entered_show_number);
+							edit_issue.dispose();
+							issue_storage.put(issue_id, current_issue);
+							issues.dispose();
+							dashboard();
+							} catch (Exception ex) {
+								JOptionPane.showMessageDialog(null, "Use only numbers in fields: Volume, Number, Year ");
+							}
 
 					}
 				});
@@ -2862,11 +3081,11 @@ public class Main {
 					listData[j] = author_storage.get(key).getFull_name();
 					author_list.add(key);
 					Article current_art = issue_storage.get(issue_id).getArticles_list().get(article_id);
-					ArrayList<Author> current_athors=current_art.getAuthors();
-					for (int b=0;b<current_athors.size();b++){
-					if (author_storage.get(key).getId()==current_art.getAuthors().get(b).getId()) {
-						selections++;
-					}
+					ArrayList<Author> current_athors = current_art.getAuthors();
+					for (int b = 0; b < current_athors.size(); b++) {
+						if (author_storage.get(key).getId() == current_art.getAuthors().get(b).getId()) {
+							selections++;
+						}
 					}
 
 					j = j + 1;
@@ -2876,18 +3095,19 @@ public class Main {
 				int[] selected = new int[selections];
 				for (int key : author_keys) {
 					Article current_art = issue_storage.get(issue_id).getArticles_list().get(article_id);
-					ArrayList<Author> current_athors=current_art.getAuthors();
-					for (int b=0;b<current_athors.size();b++){
-					if (author_storage.get(key).getId()==current_art.getAuthors().get(b).getId()) {
-						System.out.println(a + " - " + j);
-						selected[a] = j;
-						a = a + 1;
-					}
+					ArrayList<Author> current_athors = current_art.getAuthors();
+					for (int b = 0; b < current_athors.size(); b++) {
+						if (author_storage.get(key).getId() == current_art.getAuthors().get(b).getId()) {
+							System.out.println(a + " - " + j);
+							selected[a] = j;
+							a = a + 1;
+						}
 					}
 
 					j = j + 1;
-				};
-				System.out.println("authors: "+ selected);
+				}
+				;
+				System.out.println("authors: " + selected);
 				for (int index : selected) {
 					System.out.println("Selected: " + index);
 				}
