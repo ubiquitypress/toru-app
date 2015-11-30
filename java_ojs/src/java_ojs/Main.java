@@ -154,10 +154,16 @@ public class Main {
 				String value =list_settings.get(setting_keys.get(i));
 				System.out.println(setting_name + " " + value);
 
-				list_settings.put(setting_name, value);
-				setting_keys.add(setting_name);
+				try{
+					int value_int=Integer.parseInt(value);
 
-				json_file.put(setting_name,value);
+					json_file.put(setting_name,value_int);
+						
+					}catch(Exception e){
+
+						json_file.put(setting_name,value);
+					}
+				
 			}
 
 			StringWriter out = new StringWriter();
