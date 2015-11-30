@@ -33,6 +33,7 @@ import javax.swing.event.DocumentListener;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.border.BevelBorder;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.text.BadLocationException;
 
 import org.jdesktop.swingx.JXDatePicker;
 import org.jdesktop.swingx.JXTable;
@@ -2588,7 +2589,7 @@ public class Main {
 																		// box
 					field_label.setOpaque(true);
 					panel6.add(field_label);
-					field = new JLabel(author.getEmail());
+					field = new JLabel(author.getAffiliation());
 					field.setBounds(author_x + 75 + label_field_separation, author_y, 100, 30); // white
 																								// box
 					field.setOpaque(true);
@@ -2599,13 +2600,17 @@ public class Main {
 					field_label.setBounds(author_x, author_y, 75, 30); // white
 																		// box
 					field_label.setOpaque(true);
+
 					panel6.add(field_label);
 					JTextArea field_a = new JTextArea(author.getBio());
 					field_a.setBounds(author_x + 75 + label_field_separation, author_y, 100, 60); // white
 					field_a.setEditable(false);
 					field_a.setBackground(SystemColor.window);
 					field_a.setOpaque(true);
-					panel6.add(field_a);
+					JScrollPane scroll_bio = new JScrollPane(field_a); 
+					scroll_bio.setBounds(author_x + 75 + label_field_separation, author_y, 100, 60);
+					scroll_bio.setPreferredSize(new Dimension(250,200));
+					panel6.add(scroll_bio);
 					author_y = author_y + separation_vertical + 30;
 
 					field_label = new JLabel("OrcID:");
@@ -3187,6 +3192,8 @@ public class Main {
 				});
 
 				final HashMap<Integer, HashMap<Integer, JTextField>> author_fields = new HashMap<Integer, HashMap<Integer, JTextField>>();
+				final HashMap<Integer, JTextArea> authors_bio = new HashMap<Integer, JTextArea>();
+				
 				ArrayList<Author> authors = current_article.getAuthors();
 
 				int author_x = 16;
@@ -3280,11 +3287,15 @@ public class Main {
 					field_label.setOpaque(true);
 					panel6.add(field_label);
 					JTextArea field_area = new JTextArea(author.getBio());
+					
 					field_area.setBounds(author_x + 75 + label_field_separation, author_y, 100, 60); // white
 					// box
 					field_area.setOpaque(true);
-					panel6.add(field_area);
-					author_components.put(6, new JTextField(field_area.getText()));
+					JScrollPane scroll_bio = new JScrollPane(field_area); 
+					scroll_bio.setBounds(author_x + 75 + label_field_separation, author_y, 100, 60);
+					scroll_bio.setPreferredSize(new Dimension(250,200));
+					panel6.add(scroll_bio);
+					authors_bio.put(author.getId(),field_area);
 					author_fields.put(author.getId(), author_components);
 					author_y = author_y + separation_vertical + 30;
 
@@ -3527,18 +3538,21 @@ public class Main {
 							author.setLast_name(a_fields.get(3).getText());
 							author.setEmail(a_fields.get(4).getText());
 							author.setAffiliation(a_fields.get(5).getText());
-							author.setBio(a_fields.get(6).getText());
+							author.setBio(authors_bio.get(updated_authors.get(i).getId()).getText());
 							author.setOrcid(a_fields.get(7).getText());
 							author.setDepartment(a_fields.get(8).getText());
 							author.setCountry(a_fields.get(9).getText());
 							updated_authors.set(i, author);
+							author_storage.put(updated_authors.get(i).getId(), author);
 						}
 						a.setAuthors(updated_authors);
 						a.setAbstract_text(lblAbstract.getText());
 						a.setSection_id(sections.get(lblSectionId.getSelectedIndex()).getId());
 						a.setPages(Integer.parseInt(lblPageNum.getText()));
 						a.setDate_published(datePicker.getDate());
-						issue_storage.get(issue_id).update_article(a.getId(), a);
+						Issue current_issue=issue_storage.get(issue_id);
+						issue_storage.get(issue_id).update_article(article_id, a);
+						issue_storage.put(issue_id, current_issue);
 						issue(issue_id);
 					}
 				});
