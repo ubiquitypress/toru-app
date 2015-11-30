@@ -2072,7 +2072,7 @@ public class Main {
 						}
 					}
 				};
-				new Timer(delay, taskPerformer1).start();
+				new Timer(delay*2, taskPerformer1).start();
 				DefaultTableModel model = new DefaultTableModel(rows, columnNames);
 				Action delete = new AbstractAction() {
 					public void actionPerformed(ActionEvent e) {
@@ -2911,7 +2911,7 @@ public class Main {
 				upload.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
 						for (File f : uploaded_files) {
-							file_copy(issue_id, f.getPath().toString());
+							file_copy(article_id, f.getPath().toString());
 							System.out.println(chooser.getSelectedFile().getPath().toString());
 						}
 						if (!uploaded_files.isEmpty()) {
@@ -3643,7 +3643,7 @@ public class Main {
 							files = new HashMap<Integer, ArticleFile>();
 						}
 						for (File f : uploaded_files) {
-							file_copy(issue_id, f.getPath().toString());
+							file_copy(article_id, f.getPath().toString());
 
 							System.out.println("U-Files: " + uploaded_files.size());
 						}
@@ -4615,7 +4615,7 @@ public class Main {
 			article_files.put(file_id,
 					new ArticleFile(file_id, art_id, String.format("src/files/%d/%s", art_id, filename)));
 
-			file_storage.put(file_id, article_files);
+			file_storage.put(art_id, article_files);
 			Files.copy(Paths.get(source), Paths.get(String.format("src/files/%d/%s", art_id, filename)),
 					StandardCopyOption.REPLACE_EXISTING);
 		} catch (IOException e) {
