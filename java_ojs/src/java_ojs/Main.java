@@ -275,7 +275,7 @@ public class Main {
 			ResultSet sect_s = c.createStatement().executeQuery("SELECT * FROM SECTION ORDER BY id ASC;");
 			while (sect_s.next()) {
 				int id = sect_s.getInt("id");
-				String title = sect_s.getNString("title");
+				String title = sect_s.getString("title");
 				Section new_section = new Section(id, title);
 				section_storage.put(id, new_section);
 				section_db_id = id;
@@ -963,16 +963,16 @@ public class Main {
 					article_screens.put(id, new HashMap<Integer, JFrame>());
 
 					data.add(Integer.toString(row_issue.getId()));
-					data.add(row_issue.getTitle());
-					data.add(Integer.toString(row_issue.getVolume()));
-					data.add(Integer.toString(row_issue.getNumber()));
-					data.add(Integer.toString(row_issue.getYear()));
+					data.add(row_issue.getShow_title());
+					data.add(Integer.toString(row_issue.getShow_volume()));
+					data.add(Integer.toString(row_issue.getShow_number()));
+					data.add(Integer.toString(row_issue.getShow_year()));
 					data.add(sdf.format(row_issue.getDate_published()));
 					data.add("View");
 					data.add("Edit");
 					data.add("Delete");
-					Object[] row = { row_issue.getId(), row_issue.getTitle(), row_issue.getVolume(),
-							row_issue.getNumber(), row_issue.getYear(), sdf.format(row_issue.getDate_published()),
+					Object[] row = { row_issue.getId(), row_issue.getShow_title(), row_issue.getShow_volume(),
+							row_issue.getShow_number(), row_issue.getShow_year(), sdf.format(row_issue.getDate_published()),
 							"View", "Edit", "Delete" };
 					rows[i] = row;
 					i++;
@@ -2073,6 +2073,7 @@ public class Main {
 					public void actionPerformed(ActionEvent e) {
 						JTable table = (JTable) e.getSource();
 
+						articles.dispose();
 						int modelRow = Integer.valueOf(e.getActionCommand());
 						int article_row = table.getSelectedRow();
 						int selectedColumnIndex = 0;
@@ -2089,7 +2090,7 @@ public class Main {
 				Action edit = new AbstractAction() {
 					public void actionPerformed(ActionEvent e) {
 						JTable table = (JTable) e.getSource();
-
+						articles.dispose();
 						int modelRow = Integer.valueOf(e.getActionCommand());
 						int article_row = table.getSelectedRow();
 						int selectedColumnIndex = 0;
@@ -3438,7 +3439,7 @@ public class Main {
 						panelSection.setEnabled(true);
 						int result = JOptionPane.showConfirmDialog(null, panelSection, "Add Section",
 								JOptionPane.OK_CANCEL_OPTION);
-						if (result == JOptionPane.OK_OPTION) {
+						if (result == JOptionPane.OK_OPTION && txtSectionTitle.getText().isEmpty() ==false) {
 							section_db_id++;
 							Section new_section = new Section(section_db_id, txtSectionTitle.getText());
 							section_storage.put(section_db_id, new_section);
@@ -3498,9 +3499,8 @@ public class Main {
 						a.setSection_id(sections.get(lblSectionId.getSelectedIndex()).getId());
 						a.setPages(Integer.parseInt(lblPageNum.getText()));
 						a.setDate_published(datePicker.getDate());
-
 						issue_storage.get(issue_id).update_article(a.getId(), a);
-						article(issue_id, article_id);
+						issue(issue_id);
 					}
 				});
 				btnSave.setBounds((width_small - 200) / 2, height_small - 100, 200, 30);
@@ -4126,7 +4126,8 @@ public class Main {
 					panelSection.setEnabled(true);
 					int result = JOptionPane.showConfirmDialog(null, panelSection, "Add Section",
 							JOptionPane.OK_CANCEL_OPTION);
-					if (result == JOptionPane.OK_OPTION) {
+					if (result == JOptionPane.OK_OPTION && txtSectionTitle.getText().isEmpty() ==false ) {
+						System.out.println(txtSectionTitle.getText() );
 						section_db_id++;
 						Section new_section = new Section(section_db_id, txtSectionTitle.getText());
 						section_storage.put(section_db_id, new_section);
@@ -4165,6 +4166,7 @@ public class Main {
 					try {
 						int entered_sectionID = sections.get(lblSectionId.getSelectedIndex()).getId();
 						int entered_pages = Integer.parseInt(lblPageNum.getText());
+						System.out.println("Section id: "+entered_sectionID);
 						issue_screens.get(issue_id).dispose();
 						articles_id++;
 						list_issues.replace(issue_id, articles_id);
