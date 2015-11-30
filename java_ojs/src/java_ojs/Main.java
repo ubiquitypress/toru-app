@@ -2355,13 +2355,15 @@ public class Main {
 				// article.setSize(width_small, height_small);
 				article.setSize(width_small, height_small);
 				article.getContentPane().setBackground(new Color(128, 128, 128));
-				article.setVisible(true);
+				
 
 				article.setLocationRelativeTo(null);
 				article.setTitle("Article <" + article_id + "> Details");
 				article.addWindowListener(new WindowAdapter() {
 					@Override
 					public void windowClosing(WindowEvent e) {
+
+						issue(issue_id);
 						// database_save();
 					}
 				});
@@ -2920,6 +2922,8 @@ public class Main {
 				upload.setBounds(150, 240, 90, 30);
 
 				panel.add(upload);
+
+				article.setVisible(true);
 				if (article_screens.containsKey(issue_id)) {
 					HashMap<Integer, JFrame> issue_articles = article_screens.get(issue_id);
 					issue_articles.put(article_id, article);
@@ -2959,6 +2963,8 @@ public class Main {
 				article.addWindowListener(new WindowAdapter() {
 					@Override
 					public void windowClosing(WindowEvent e) {
+
+						issue(issue_id);
 						// database_save();
 					}
 				});
@@ -4411,6 +4417,7 @@ public class Main {
 						folder.delete();
 						file_storage.remove(current_id);
 					}
+					issue(issue_id);
 					// database_save();
 				}
 			});
@@ -4429,6 +4436,7 @@ public class Main {
 						folder.delete();
 						file_storage.remove(current_id);
 					}
+					issue(issue_id);
 					// database_save();
 				}
 			});
