@@ -14,7 +14,11 @@ import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.io.StringWriter;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.nio.file.Files;
@@ -136,18 +140,37 @@ public class Main {
 			stmt.executeUpdate("DELETE FROM ARTICLE");
 			stmt.executeUpdate("DELETE FROM SECTION");
 			stmt.executeUpdate("DELETE FROM ISSUE");
-			stmt.executeUpdate("DELETE FROM SETTING");
 			stmt.executeUpdate("DELETE FROM API");
 			stmt.executeUpdate("DELETE FROM FILE");
 			PreparedStatement prep = c.prepareStatement(api_insert_or_replace_statement);
 			prep.setString(1, source_api);
 			prep.setString(2, source_access_key);
 			prep.executeUpdate();
+	
+			JSONObject json_file = new JSONObject();
 			for (int i = 0; i < list_settings.size(); i++) {
-				PreparedStatement setting_prep = c.prepareStatement(settings_insert_or_replace_statement);
-				setting_prep.setString(1, setting_keys.get(i));
-				setting_prep.setString(2, list_settings.get(setting_keys.get(i)));
-				setting_prep.executeUpdate();
+				String setting_name = setting_keys.get(i);
+
+				String value =list_settings.get(setting_keys.get(i));
+				System.out.println(setting_name + " " + value);
+
+				list_settings.put(setting_name, value);
+				setting_keys.add(setting_name);
+
+				json_file.put(setting_name,value);
+			}
+
+			StringWriter out = new StringWriter();
+			try {
+				json_file.writeJSONString(out);
+				String s = json_file.toJSONString();
+				FileWriter new_jsn=new FileWriter("./settings.json");
+				new_jsn.write(out.toString());
+				new_jsn.flush();
+				new_jsn.close();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
 
 			SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
@@ -272,14 +295,47 @@ public class Main {
 				System.out.println("URL: " + source_api);
 				System.out.println("ACCESS KEY: " + source_access_key);
 			}
-			rs = c.createStatement().executeQuery("SELECT * FROM SETTING ;");
-			while (rs.next()) {
-				String name = rs.getString("name");
-				String value = rs.getString("value");
-				list_settings.put(name, value);
-				setting_keys.add(name);
-				System.out.println("Setting - " + name + " : " + value.toString());
-			}
+			JSONParser parser = new JSONParser();
+
+				try {
+					Object obj = null;
+					try {
+						obj = parser.parse(new FileReader("./settings.json"));
+					} catch (FileNotFoundException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					} catch (IOException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
+					JSONObject array = (JSONObject) obj;
+
+
+					Set<Map> keys = array.keySet();
+					Object jsn_keys[] = keys.toArray();
+
+					for (Object k : jsn_keys) {
+						String setting_name = k.toString();
+
+						String value = array.get(k).toString();
+						System.out.println(setting_name + " " + value);
+
+						list_settings.put(setting_name, value);
+						setting_keys.add(setting_name);
+
+					
+					}
+
+				
+
+
+				} catch (ParseException pe) {
+
+					System.out.println("position: " + pe.getPosition());
+					System.out.println(pe);
+				}
+			
+			
 
 			SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
 			rs = c.createStatement().executeQuery("SELECT * FROM ISSUE ORDER BY id ASC;");
@@ -438,10 +494,8 @@ public class Main {
 			Class.forName("org.sqlite.JDBC");
 			c = DriverManager.getConnection("jdbc:sqlite:local_datatabse.db");
 			stmt = c.createStatement();
-			String sql = "CREATE TABLE IF NOT EXISTS SETTING" + "(NAME CHAR(100) PRIMARY KEY NOT NULL,"
-					+ " VALUE CHAR(150) NOT NULL)";
-			stmt.executeUpdate(sql);
-			sql = "CREATE TABLE IF NOT EXISTS API" + "(URL CHAR(250) PRIMARY KEY NOT NULL,"
+
+			String sql = "CREATE TABLE IF NOT EXISTS API" + "(URL CHAR(250) PRIMARY KEY NOT NULL,"
 					+ " ACCESS_KEY CHAR(100) NOT NULL)";
 			stmt.executeUpdate(sql);
 			sql = "CREATE TABLE IF NOT EXISTS ISSUE" + "(id INTEGER PRIMARY KEY," + " title CHAR(500) NOT NULL,"
@@ -4740,51 +4794,7 @@ public class Main {
 
 		database_setup();
 		populate_variables();
-		String j = "{\"balance\": 1000.21, \"num\":100, \"is_vip\":true, \"name\":\"foo\"}";
-		JSONParser parser = new JSONParser();
-		try {
-			Object obj = parser.parse(j);
-			JSONObject array = (JSONObject) obj;
 
-			System.out.println("The 2nd element of array");
-			Set<Map> keys = array.keySet();
-			Object jsn_keys[] = keys.toArray();
-			for (Object k : jsn_keys) {
-				String setting_name = k.toString();
-
-				String value = array.get(k).toString();
-				System.out.println(setting_name + " " + value);
-			}
-		} catch (ParseException pe) {
-
-			System.out.println("position: " + pe.getPosition());
-			System.out.println(pe);
-		}
-		if (list_settings.isEmpty()) {
-			try {
-				Object obj = parser.parse(j);
-				JSONObject array = (JSONObject) obj;
-
-				System.out.println("The 2nd element of array");
-				Set<Map> keys = array.keySet();
-				Object jsn_keys[] = keys.toArray();
-				for (Object k : jsn_keys) {
-					String setting_name = k.toString();
-
-					String value = array.get(k).toString();
-					System.out.println(setting_name + " " + value);
-
-					list_settings.put(setting_name, value);
-					setting_keys.add(setting_name);
-
-				}
-
-			} catch (ParseException pe) {
-
-				System.out.println("position: " + pe.getPosition());
-				System.out.println(pe);
-			}
-		}
 
 		// file copy to use for file upload
 		// file_copy(1,"src/lib/db_xxs.png");
