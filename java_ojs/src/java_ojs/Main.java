@@ -365,14 +365,14 @@ public class Main {
 				int article_id = rs_files.getInt(2);
 				String path = rs_files.getString(3);
 				HashMap<Integer, ArticleFile> files = file_storage.get(article_id);
-				if (file_id<id){
-					file_id=id;
+				if (file_id < id) {
+					file_id = id;
 				}
-				files.put(id, new ArticleFile(id,article_id,path));
+				files.put(id, new ArticleFile(id, article_id, path));
 				file_storage.put(article_id, files);
 			}
 			rs_files.close();
-			
+
 			Set<Integer> author_keys = author_storage.keySet();
 			for (int key_author : author_keys) {
 				Author author = author_storage.get(key_author);
@@ -2762,10 +2762,10 @@ public class Main {
 				panel10.setBounds(115, 280, 225, 190);
 
 				JPanel panel11 = new JPanel();
-				panel11.setBounds(265, 285, 265, 190 +100 * file_storage.keySet().size());
+				panel11.setBounds(265, 285, 265, 190 + 100 * file_storage.keySet().size());
 				panel11.setLayout(null);
 				panel11.setAutoscrolls(true);
-				panel11.setPreferredSize(new Dimension(250,190+280* file_storage.keySet().size()));
+				panel11.setPreferredSize(new Dimension(250, 190 + 280 * file_storage.keySet().size()));
 				article.getContentPane().add(panel11);
 				String label_text = "";
 				System.out.println(file_storage.keySet().toString());
@@ -3600,6 +3600,8 @@ public class Main {
 								uploaded_files.add(f);
 								label_text = label_text + f.getName() + "\n";
 							}
+
+							System.out.println("Uploaded " + uploaded_files.size() + " files");
 							label_text = label_text + "]----Not Uploaded-----";
 							label_tooltip = files.length + " files";
 
@@ -3612,18 +3614,18 @@ public class Main {
 					public void actionPerformed(ActionEvent e) {
 						select.setEnabled(false);
 						btnClear.setEnabled(false);
+						upload.setEnabled(false);
 						HashMap<Integer, ArticleFile> files = null;
 						if (file_storage.containsKey(article_id)) {
-						 files = file_storage.get(article_id);
-						}else{
+							files = file_storage.get(article_id);
+						} else {
 
-						 files = new HashMap<Integer, ArticleFile>();
+							files = new HashMap<Integer, ArticleFile>();
 						}
 						for (File f : uploaded_files) {
 							file_copy(issue_id, f.getPath().toString());
-							file_id++;
-							files.put(file_id, new ArticleFile(file_id,article_id,f.getPath().toString()));
-							System.out.println(chooser.getSelectedFile().getPath().toString());
+
+							System.out.println("U-Files: " + uploaded_files.size());
 						}
 						if (!uploaded_files.isEmpty()) {
 							select.setEnabled(false);
@@ -3634,8 +3636,11 @@ public class Main {
 							Set<Integer> keys = files_existing.keySet();
 							for (int k : keys) {
 								ArticleFile a_file = files_existing.get(k);
+								System.out.println("Files: " + keys.size());
 								label_text = label_text
 										+ a_file.getPath().substring(a_file.getPath().lastIndexOf("/") + 1) + "\n";
+
+								System.out.println("::::" + label_text);
 							}
 							lblFile.setText(label_text);
 						}
@@ -4323,15 +4328,11 @@ public class Main {
 			});
 			upload.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
-					HashMap<Integer, ArticleFile> files =new HashMap<Integer, ArticleFile>();
-					
+
 					for (File f : uploaded_files) {
-						file_id++;
-						files.put(file_id, new ArticleFile(file_id,current_id,f.getPath().toString()));
 						file_copy(current_id, f.getPath().toString());
 						System.out.println(chooser.getSelectedFile().getPath().toString());
 					}
-					file_storage.put(current_id, files);
 					if (!uploaded_files.isEmpty()) {
 						select.setEnabled(false);
 					}
@@ -4343,6 +4344,7 @@ public class Main {
 							ArticleFile a_file = files_existing.get(k);
 							label_text = label_text + a_file.getPath().substring(a_file.getPath().lastIndexOf("/") + 1)
 									+ "\n";
+							System.out.println("::::" + label_text);
 						}
 						lblFile.setText(label_text);
 					}
@@ -4582,13 +4584,16 @@ public class Main {
 			File dir = new File(String.format("src/files/%d/", art_id));
 			dir.mkdirs();
 			file_id++;
+			HashMap<Integer, ArticleFile> article_files = null;
 			if (!file_storage.containsKey(art_id)) {
-				file_storage.put(art_id, new HashMap<Integer, ArticleFile>());
+				article_files = new HashMap<Integer, ArticleFile>();
+			} else {
+				article_files = file_storage.get(art_id);
 			}
-			HashMap<Integer, ArticleFile> article_files = file_storage.get(art_id);
 			article_files.put(file_id,
 					new ArticleFile(file_id, art_id, String.format("src/files/%d/%s", art_id, filename)));
-			file_storage.put(art_id, article_files);
+
+			file_storage.put(file_id, article_files);
 			Files.copy(Paths.get(source), Paths.get(String.format("src/files/%d/%s", art_id, filename)),
 					StandardCopyOption.REPLACE_EXISTING);
 		} catch (IOException e) {
