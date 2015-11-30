@@ -453,6 +453,7 @@ public class Main {
 			login.getContentPane().setForeground(Color.WHITE);
 			login.getContentPane().setBackground(new Color(128, 128, 128));
 
+			login.setLocationRelativeTo(null) ;
 			login.setSize(width_small, height_small);// 400 width and 500 height
 			login.getContentPane().setLayout(null);// using no layout managers
 			JLabel lblNewLabel = new JLabel("TORU");
@@ -617,6 +618,7 @@ public class Main {
 				settings.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 				settings.getContentPane().setBackground(new Color(128, 128, 128));
 				settings.setTitle("Settings");
+
 				settings.addWindowListener(new WindowAdapter() {
 					@Override
 					public void windowClosing(WindowEvent e) {
@@ -765,6 +767,7 @@ public class Main {
 				api.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 				api.getContentPane().setBackground(new Color(128, 128, 128));
 				api.setTitle("API Information");
+
 				api.addWindowListener(new WindowAdapter() {
 					@Override
 					public void windowClosing(WindowEvent e) {
@@ -943,6 +946,7 @@ public class Main {
 				issues.getContentPane().setBackground(new Color(105, 105, 105));
 				issues.setVisible(true);
 				issues.setTitle("Dashboard");
+				issues.setLocationRelativeTo(null) ;
 				issues.addWindowListener(new WindowAdapter() {
 					@Override
 					public void windowClosing(WindowEvent e) {
@@ -1881,6 +1885,7 @@ public class Main {
 				HashMap<Integer, JFrame> issue_articles = new HashMap<Integer, JFrame>();
 				articles.getContentPane().setBackground(new Color(128, 128, 128));
 
+				articles.setLocationRelativeTo(null) ;
 				articles.setTitle("Issue <" + Integer.toString(issue_id) + ">");
 				articles.addWindowListener(new WindowAdapter() {
 					@Override
@@ -2320,6 +2325,8 @@ public class Main {
 				article.setSize(width_small, height_small);
 				article.getContentPane().setBackground(new Color(128, 128, 128));
 				article.setVisible(true);
+
+				article.setLocationRelativeTo(null) ;
 				article.setTitle("Article <" + article_id + "> Details");
 				article.addWindowListener(new WindowAdapter() {
 					@Override
@@ -2912,6 +2919,8 @@ public class Main {
 				article.setTitle("Editing - Article <" + article_id + ">");
 				article.getContentPane().setBackground(new Color(128, 128, 128));
 				article.setVisible(true);
+
+				article.setLocationRelativeTo(null) ;
 				article.addWindowListener(new WindowAdapter() {
 					@Override
 					public void windowClosing(WindowEvent e) {
@@ -3663,7 +3672,7 @@ public class Main {
 			article.setTitle("New Article");
 			article.getContentPane().setBackground(new Color(128, 128, 128));
 			article.setVisible(true);
-
+			article.setLocationRelativeTo(null) ;
 			article.getContentPane().setLayout(null);
 
 			JLabel lblArticleDetails = new JLabel("Article Details");
