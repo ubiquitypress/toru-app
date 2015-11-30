@@ -83,6 +83,8 @@ public class Main {
 	private String article_insert_or_replace_statement = "INSERT OR REPLACE INTO ARTICLE(id,title,section_id,pages,abstract,date_published) VALUES (?,?,?,?,?,?)";
 	private String article_author_insert_or_replace_statement = "INSERT OR REPLACE INTO ARTICLE_AUTHOR(id,article_id,author_id) VALUES (?,?,?)";
 	private String issue_article_insert_or_replace_statement = "INSERT OR REPLACE INTO ISSUE_ARTICLE(id,article_id,issue_id) VALUES (?,?,?)";
+	private String file_insert_or_replace_statement = "INSERT OR REPLACE INTO FILE(id,article_id,path) VALUES (?,?,?)";
+
 	private String delete_issue_statement = "DELETE FROM ISSUE WHERE id=?";
 	int width = 800;
 	private int height = 600;
@@ -113,6 +115,7 @@ public class Main {
 			stmt.executeUpdate("DELETE FROM ISSUE");
 			stmt.executeUpdate("DELETE FROM SETTING");
 			stmt.executeUpdate("DELETE FROM API");
+			stmt.executeUpdate("DELETE FROM FILE");
 			PreparedStatement prep = c.prepareStatement(api_insert_or_replace_statement);
 			prep.setString(1, source_api);
 			prep.setString(2, source_access_key);
@@ -151,6 +154,20 @@ public class Main {
 				author_prep.setString(10, save_author.getCountry());
 				author_prep.executeUpdate();
 
+			}
+			Set<Integer> file_art_keys = file_storage.keySet();
+
+			for (int key : file_art_keys) {
+				HashMap<Integer, ArticleFile> files = file_storage.get(key);
+				Set<Integer> file_keys = files.keySet();
+				for (int f_key : file_keys) {
+					ArticleFile current_file = files.get(f_key);
+					PreparedStatement file_prep = c.prepareStatement(file_insert_or_replace_statement);
+					file_prep.setInt(1, current_file.getId());
+					file_prep.setInt(2, current_file.getArticle_id());
+					file_prep.setString(3, current_file.getPath());
+					file_prep.executeUpdate();
+				}
 			}
 			Set<Integer> issue_keys = issue_storage.keySet();
 			for (int key : issue_keys) {
@@ -288,6 +305,9 @@ public class Main {
 				int id = art_s.getInt("id");
 				String title = art_s.getString("title");
 				int section_id = art_s.getInt("section_id");
+
+				HashMap<Integer, ArticleFile> files = new HashMap<Integer, ArticleFile>();
+				file_storage.put(id, files);
 				int pages = art_s.getInt(rsmd.getColumnName(4));
 				String abstract_text = art_s.getString(rsmd.getColumnName(5));
 
@@ -338,6 +358,21 @@ public class Main {
 				System.out.println(author_storage.size());
 			}
 			authors_s.close();
+
+			ResultSet rs_files = c.createStatement().executeQuery("SELECT id,article_id,path FROM FILE");
+			while (rs_files.next()) {
+				int id = rs_files.getInt(1);
+				int article_id = rs_files.getInt(2);
+				String path = rs_files.getString(3);
+				HashMap<Integer, ArticleFile> files = file_storage.get(article_id);
+				if (file_id<id){
+					file_id=id;
+				}
+				files.put(id, new ArticleFile(id,article_id,path));
+				file_storage.put(article_id, files);
+			}
+			rs_files.close();
+			
 			Set<Integer> author_keys = author_storage.keySet();
 			for (int key_author : author_keys) {
 				Author author = author_storage.get(key_author);
@@ -453,7 +488,7 @@ public class Main {
 			login.getContentPane().setForeground(Color.WHITE);
 			login.getContentPane().setBackground(new Color(128, 128, 128));
 
-			login.setLocationRelativeTo(null) ;
+			login.setLocationRelativeTo(null);
 			login.setSize(width_small, height_small);// 400 width and 500 height
 			login.getContentPane().setLayout(null);// using no layout managers
 			JLabel lblNewLabel = new JLabel("TORU");
@@ -946,7 +981,7 @@ public class Main {
 				issues.getContentPane().setBackground(new Color(105, 105, 105));
 				issues.setVisible(true);
 				issues.setTitle("Dashboard");
-				issues.setLocationRelativeTo(null) ;
+				issues.setLocationRelativeTo(null);
 				issues.addWindowListener(new WindowAdapter() {
 					@Override
 					public void windowClosing(WindowEvent e) {
@@ -976,8 +1011,8 @@ public class Main {
 					data.add("Edit");
 					data.add("Delete");
 					Object[] row = { row_issue.getId(), row_issue.getShow_title(), row_issue.getShow_volume(),
-							row_issue.getShow_number(), row_issue.getShow_year(), sdf.format(row_issue.getDate_published()),
-							"View", "Edit", "Delete" };
+							row_issue.getShow_number(), row_issue.getShow_year(),
+							sdf.format(row_issue.getDate_published()), "View", "Edit", "Delete" };
 					rows[i] = row;
 					i++;
 					rowData.add(data);
@@ -1402,7 +1437,7 @@ public class Main {
 			lblShowDisplay.setHorizontalAlignment(SwingConstants.CENTER);
 			lblShowDisplay.setBounds(74, 452, width_small - 151, 16);
 			edit_issue.getContentPane().add(lblShowDisplay);
-			
+
 			final JTextField show_title = new JTextField();
 			show_title.setBounds(100, 502, width_small - 200, 26);
 			edit_issue.getContentPane().add(show_title);
@@ -1435,7 +1470,7 @@ public class Main {
 			lblShowNumber.setHorizontalAlignment(SwingConstants.CENTER);
 			lblShowNumber.setBounds(74, 580, width_small - 151, 16);
 			edit_issue.getContentPane().add(lblShowNumber);
-			
+
 			final JTextField show_year = new JTextField();
 			show_year.setBounds(100, 650, width_small - 200, 26);
 			edit_issue.getContentPane().add(show_year);
@@ -1524,7 +1559,6 @@ public class Main {
 						int entered_volume = Integer.parseInt(volume.getText());
 						int entered_number = Integer.parseInt(number.getText());
 						int entered_year = Integer.parseInt(year.getText());
-						
 
 						int entered_show_volume = Integer.parseInt(show_volume.getText());
 						int entered_show_number = Integer.parseInt(show_number.getText());
@@ -1536,9 +1570,7 @@ public class Main {
 						issue.setShow_volume(entered_show_volume);
 						issue.setShow_year(entered_show_year);
 						issue.setShow_number(entered_show_number);
-						
-						
-						
+
 						// JOptionPane.showMessageDialog(null, "Deleted");
 						SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
 
@@ -1707,14 +1739,14 @@ public class Main {
 				datePicker.setBounds(100, 410, width_small - 200, 30);
 				// panel.add(label);
 				edit_issue.getContentPane().add(datePicker);
-				
+
 				edit_issue.getContentPane().add(datePicker);
 				JLabel lblShowDisplay = new JLabel("---- Display Values ----");
 				lblShowDisplay.setForeground(new Color(245, 255, 250));
 				lblShowDisplay.setHorizontalAlignment(SwingConstants.CENTER);
 				lblShowDisplay.setBounds(74, 452, width_small - 151, 16);
 				edit_issue.getContentPane().add(lblShowDisplay);
-				
+
 				final JTextField show_title = new JTextField(current_issue.getShow_title());
 				show_title.setBounds(100, 502, width_small - 200, 26);
 				edit_issue.getContentPane().add(show_title);
@@ -1747,7 +1779,7 @@ public class Main {
 				lblShowNumber.setHorizontalAlignment(SwingConstants.CENTER);
 				lblShowNumber.setBounds(74, 580, width_small - 151, 16);
 				edit_issue.getContentPane().add(lblShowNumber);
-				
+
 				final JTextField show_year = new JTextField(Integer.toString(current_issue.getShow_year()));
 				show_year.setBounds(100, 650, width_small - 200, 26);
 				edit_issue.getContentPane().add(show_year);
@@ -1764,29 +1796,28 @@ public class Main {
 					@Override
 					public void actionPerformed(ActionEvent e) {
 						try {
-						int entered_volume = Integer.parseInt(volume.getText());
-						int entered_number = Integer.parseInt(number.getText());
-						int entered_year = Integer.parseInt(year.getText());
-						
+							int entered_volume = Integer.parseInt(volume.getText());
+							int entered_number = Integer.parseInt(number.getText());
+							int entered_year = Integer.parseInt(year.getText());
 
-						int entered_show_volume = Integer.parseInt(show_volume.getText());
-						int entered_show_number = Integer.parseInt(show_number.getText());
-						int entered_show_year = Integer.parseInt(show_year.getText());
-						
-						current_issue.setTitle(title.getText());
-						current_issue.setVolume(entered_volume);
-						current_issue.setNumber(entered_number);
-						current_issue.setYear(entered_year);
-						current_issue.setDate_published(datePicker.getDate());
+							int entered_show_volume = Integer.parseInt(show_volume.getText());
+							int entered_show_number = Integer.parseInt(show_number.getText());
+							int entered_show_year = Integer.parseInt(show_year.getText());
 
-						current_issue.setShow_title(show_title.getText());
-						current_issue.setShow_volume(entered_show_volume);
-						current_issue.setShow_year(entered_show_year);
-						current_issue.setShow_number(entered_show_number);
-						edit_issue.dispose();
-						issue_storage.put(issue_id, current_issue);
-						issues.dispose();
-						dashboard();
+							current_issue.setTitle(title.getText());
+							current_issue.setVolume(entered_volume);
+							current_issue.setNumber(entered_number);
+							current_issue.setYear(entered_year);
+							current_issue.setDate_published(datePicker.getDate());
+
+							current_issue.setShow_title(show_title.getText());
+							current_issue.setShow_volume(entered_show_volume);
+							current_issue.setShow_year(entered_show_year);
+							current_issue.setShow_number(entered_show_number);
+							edit_issue.dispose();
+							issue_storage.put(issue_id, current_issue);
+							issues.dispose();
+							dashboard();
 						} catch (Exception ex) {
 							JOptionPane.showMessageDialog(null, "Use only numbers in fields: Volume, Number, Year ");
 						}
@@ -1804,12 +1835,11 @@ public class Main {
 							int entered_volume = Integer.parseInt(volume.getText());
 							int entered_number = Integer.parseInt(number.getText());
 							int entered_year = Integer.parseInt(year.getText());
-							
 
 							int entered_show_volume = Integer.parseInt(show_volume.getText());
 							int entered_show_number = Integer.parseInt(show_number.getText());
 							int entered_show_year = Integer.parseInt(show_year.getText());
-							
+
 							current_issue.setTitle(title.getText());
 							current_issue.setVolume(entered_volume);
 							current_issue.setNumber(entered_number);
@@ -1824,9 +1854,9 @@ public class Main {
 							issue_storage.put(issue_id, current_issue);
 							issues.dispose();
 							dashboard();
-							} catch (Exception ex) {
-								JOptionPane.showMessageDialog(null, "Use only numbers in fields: Volume, Number, Year ");
-							}
+						} catch (Exception ex) {
+							JOptionPane.showMessageDialog(null, "Use only numbers in fields: Volume, Number, Year ");
+						}
 
 					}
 				});
@@ -1885,7 +1915,7 @@ public class Main {
 				HashMap<Integer, JFrame> issue_articles = new HashMap<Integer, JFrame>();
 				articles.getContentPane().setBackground(new Color(128, 128, 128));
 
-				articles.setLocationRelativeTo(null) ;
+				articles.setLocationRelativeTo(null);
 				articles.setTitle("Issue <" + Integer.toString(issue_id) + ">");
 				articles.addWindowListener(new WindowAdapter() {
 					@Override
@@ -2326,7 +2356,7 @@ public class Main {
 				article.getContentPane().setBackground(new Color(128, 128, 128));
 				article.setVisible(true);
 
-				article.setLocationRelativeTo(null) ;
+				article.setLocationRelativeTo(null);
 				article.setTitle("Article <" + article_id + "> Details");
 				article.addWindowListener(new WindowAdapter() {
 					@Override
@@ -2732,10 +2762,10 @@ public class Main {
 				panel10.setBounds(115, 280, 225, 190);
 
 				JPanel panel11 = new JPanel();
-				panel11.setBounds(265, 285, 265, 190 + 20 * file_storage.keySet().size());
+				panel11.setBounds(265, 285, 265, 190 +100 * file_storage.keySet().size());
 				panel11.setLayout(null);
 				panel11.setAutoscrolls(true);
-				panel11.setPreferredSize(new Dimension(250, 190 + 40 * file_storage.keySet().size()));
+				panel11.setPreferredSize(new Dimension(250,190+280* file_storage.keySet().size()));
 				article.getContentPane().add(panel11);
 				String label_text = "";
 				System.out.println(file_storage.keySet().toString());
@@ -2834,7 +2864,7 @@ public class Main {
 				lblFile.setToolTipText("");
 				JScrollPane fileSection = new JScrollPane(panel11);
 
-				fileSection.setPreferredSize(new Dimension(300 * 2, 200));
+				fileSection.setPreferredSize(new Dimension(300 * 2, 100 * file_storage.size()));
 				fileSection.setBounds(20, 280, 265, 190);
 				fileSection.add(panel10);
 				fileSection.createHorizontalScrollBar();
@@ -2920,7 +2950,7 @@ public class Main {
 				article.getContentPane().setBackground(new Color(128, 128, 128));
 				article.setVisible(true);
 
-				article.setLocationRelativeTo(null) ;
+				article.setLocationRelativeTo(null);
 				article.addWindowListener(new WindowAdapter() {
 					@Override
 					public void windowClosing(WindowEvent e) {
@@ -3448,7 +3478,7 @@ public class Main {
 						panelSection.setEnabled(true);
 						int result = JOptionPane.showConfirmDialog(null, panelSection, "Add Section",
 								JOptionPane.OK_CANCEL_OPTION);
-						if (result == JOptionPane.OK_OPTION && txtSectionTitle.getText().isEmpty() ==false) {
+						if (result == JOptionPane.OK_OPTION && txtSectionTitle.getText().isEmpty() == false) {
 							section_db_id++;
 							Section new_section = new Section(section_db_id, txtSectionTitle.getText());
 							section_storage.put(section_db_id, new_section);
@@ -3582,8 +3612,17 @@ public class Main {
 					public void actionPerformed(ActionEvent e) {
 						select.setEnabled(false);
 						btnClear.setEnabled(false);
+						HashMap<Integer, ArticleFile> files = null;
+						if (file_storage.containsKey(article_id)) {
+						 files = file_storage.get(article_id);
+						}else{
+
+						 files = new HashMap<Integer, ArticleFile>();
+						}
 						for (File f : uploaded_files) {
 							file_copy(issue_id, f.getPath().toString());
+							file_id++;
+							files.put(file_id, new ArticleFile(file_id,article_id,f.getPath().toString()));
 							System.out.println(chooser.getSelectedFile().getPath().toString());
 						}
 						if (!uploaded_files.isEmpty()) {
@@ -3672,7 +3711,7 @@ public class Main {
 			article.setTitle("New Article");
 			article.getContentPane().setBackground(new Color(128, 128, 128));
 			article.setVisible(true);
-			article.setLocationRelativeTo(null) ;
+			article.setLocationRelativeTo(null);
 			article.getContentPane().setLayout(null);
 
 			JLabel lblArticleDetails = new JLabel("Article Details");
@@ -4135,8 +4174,8 @@ public class Main {
 					panelSection.setEnabled(true);
 					int result = JOptionPane.showConfirmDialog(null, panelSection, "Add Section",
 							JOptionPane.OK_CANCEL_OPTION);
-					if (result == JOptionPane.OK_OPTION && txtSectionTitle.getText().isEmpty() ==false ) {
-						System.out.println(txtSectionTitle.getText() );
+					if (result == JOptionPane.OK_OPTION && txtSectionTitle.getText().isEmpty() == false) {
+						System.out.println(txtSectionTitle.getText());
 						section_db_id++;
 						Section new_section = new Section(section_db_id, txtSectionTitle.getText());
 						section_storage.put(section_db_id, new_section);
@@ -4175,7 +4214,7 @@ public class Main {
 					try {
 						int entered_sectionID = sections.get(lblSectionId.getSelectedIndex()).getId();
 						int entered_pages = Integer.parseInt(lblPageNum.getText());
-						System.out.println("Section id: "+entered_sectionID);
+						System.out.println("Section id: " + entered_sectionID);
 						issue_screens.get(issue_id).dispose();
 						articles_id++;
 						list_issues.replace(issue_id, articles_id);
@@ -4284,11 +4323,15 @@ public class Main {
 			});
 			upload.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
-					file_storage.put(current_id, new HashMap<Integer, ArticleFile>());
+					HashMap<Integer, ArticleFile> files =new HashMap<Integer, ArticleFile>();
+					
 					for (File f : uploaded_files) {
+						file_id++;
+						files.put(file_id, new ArticleFile(file_id,current_id,f.getPath().toString()));
 						file_copy(current_id, f.getPath().toString());
 						System.out.println(chooser.getSelectedFile().getPath().toString());
 					}
+					file_storage.put(current_id, files);
 					if (!uploaded_files.isEmpty()) {
 						select.setEnabled(false);
 					}
