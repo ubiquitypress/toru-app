@@ -2937,10 +2937,15 @@ public class Main {
 				lblIssueId.setFont(new Font("Dialog", Font.BOLD, 14));
 				lblIssueId.setText(Integer.toString(issue_id));
 
-				JLabel lblDatePublished = new JLabel("Date Published:");
+				final JLabel lblDateAccepted = new JLabel("Date Accepted:");
+				lblDateAccepted.setForeground(Color.BLACK);
+				lblDateAccepted.setFont(new Font("Dialog", Font.BOLD, 14));
+				lblDateAccepted.setBounds(24, 199, 150, 30);
+				panel.add(lblDateAccepted);
+				final JLabel lblDatePublished = new JLabel("Date Published:");
 				lblDatePublished.setForeground(Color.BLACK);
 				lblDatePublished.setFont(new Font("Dialog", Font.BOLD, 14));
-				lblDatePublished.setBounds(24, 195, 150, 30);
+				lblDatePublished.setBounds(24, 231, 150, 30);
 				panel.add(lblDatePublished);
 				Date current = new Date();
 
@@ -2950,9 +2955,14 @@ public class Main {
 				lblDate.setVerticalAlignment(SwingConstants.TOP);
 				lblDate.setForeground(Color.BLACK);
 				lblDate.setFont(new Font("Dialog", Font.BOLD, 14));
-				lblDate.setBounds(160, 203, 125, 30);
+				lblDate.setBounds(160, 240, 125, 30);
 				panel.add(lblDate);
-
+				JLabel lblDateAccept = new JLabel(sdf.format(current_article.getDate_accepted()));
+				lblDateAccept.setVerticalAlignment(SwingConstants.TOP);
+				lblDateAccept.setForeground(Color.BLACK);
+				lblDateAccept.setFont(new Font("Dialog", Font.BOLD, 14));
+				lblDateAccept.setBounds(160, 207, 125, 30);
+				panel.add(lblDateAccept);
 				JLabel lblArticleId = new JLabel(Integer.toString(current_article.getId()));
 				lblArticleId.setBounds(160, 19, 94, 30);
 				panel.add(lblArticleId);
@@ -3010,7 +3020,7 @@ public class Main {
 				panel.add(lblSection);
 				Panel panel10 = new Panel();
 				panel10.setBackground(new Color(153, 102, 51));
-				panel10.setBounds(115, 280, 225, 190);
+				panel10.setBounds(115, 315, 225, 160);
 
 				JPanel panel11 = new JPanel();
 				panel11.setBounds(265, 285, 265, 190 + 100 * file_storage.keySet().size());
@@ -3111,12 +3121,12 @@ public class Main {
 				JTextArea lblFile = new JTextArea(label_text);
 				lblFile.setForeground(Color.WHITE);
 				lblFile.setEnabled(false);
-				lblFile.setBounds(115, 280, 225, 190);
+				lblFile.setBounds(115, 312, 225, 160);
 				lblFile.setToolTipText("");
 				JScrollPane fileSection = new JScrollPane(panel11);
 
 				fileSection.setPreferredSize(new Dimension(300 * 2, 100 * file_storage.size()));
-				fileSection.setBounds(20, 280, 265, 190);
+				fileSection.setBounds(20, 312, 265, 160);
 				fileSection.add(panel10);
 				fileSection.createHorizontalScrollBar();
 				panel.add(fileSection);
@@ -3148,7 +3158,7 @@ public class Main {
 						}
 					}
 				});
-				select.setBounds(20, 240, 90, 30);
+				select.setBounds(20, 276, 90, 30);
 				panel.add(select);
 				JButton upload = new JButton("Upload");
 				upload.setEnabled(false);
@@ -3163,7 +3173,7 @@ public class Main {
 						}
 					}
 				});
-				upload.setBounds(150, 240, 90, 30);
+				upload.setBounds(150, 276, 90, 30);
 
 				panel.add(upload);
 
@@ -3748,10 +3758,15 @@ public class Main {
 				lblIssueId.setFont(new Font("Dialog", Font.BOLD, 14));
 				lblIssueId.setText(Integer.toString(issue_id));
 
+				final JLabel lblDateAccepted = new JLabel("Date Accepted:");
+				lblDateAccepted.setForeground(Color.BLACK);
+				lblDateAccepted.setFont(new Font("Dialog", Font.BOLD, 14));
+				lblDateAccepted.setBounds(24, 199, 150, 30);
+				panel.add(lblDateAccepted);
 				final JLabel lblDatePublished = new JLabel("Date Published:");
 				lblDatePublished.setForeground(Color.BLACK);
 				lblDatePublished.setFont(new Font("Dialog", Font.BOLD, 14));
-				lblDatePublished.setBounds(24, 195, 150, 30);
+				lblDatePublished.setBounds(24, 231, 150, 30);
 				panel.add(lblDatePublished);
 				Date current = new Date();
 
@@ -3867,6 +3882,22 @@ public class Main {
 					}
 				});
 
+				final JXDatePicker datePickerAccepted = new JXDatePicker();
+				datePickerAccepted.setFormats(sdf);
+				final JLabel label_accepted = new JLabel();
+				label_accepted.setText("Choose Date by selecting below.");
+				datePickerAccepted.addActionListener(new ActionListener() {
+					public void actionPerformed(ActionEvent e) {
+						label_accepted.setText(datePickerAccepted.getDate().toString());
+						System.out.println(datePickerAccepted.getDate());
+					}
+				});
+				label_accepted.setBounds(160, 250, 100, 25);
+				datePickerAccepted.setBounds(156, 202, 160, 30);
+
+				datePickerAccepted.setDate(current_article.getDate_accepted());
+				// panel.add(label);
+				panel.add(datePickerAccepted);
 				final JLabel label = new JLabel();
 				label.setText("Choose Date by selecting below.");
 				final JXDatePicker datePicker = new JXDatePicker();
@@ -3880,7 +3911,7 @@ public class Main {
 				});
 				label.setBounds(160, 250, 100, 25);
 				datePicker.setDate(current_article.getDate_published());
-				datePicker.setBounds(156, 198, 160, 30);
+				datePicker.setBounds(156, 234, 160, 30);
 				// panel.add(label);
 				panel.add(datePicker);
 
@@ -3917,6 +3948,7 @@ public class Main {
 						a.setSection_id(sections.get(lblSectionId.getSelectedIndex()).getId());
 						a.setPages(Integer.parseInt(lblPageNum.getText()));
 						a.setDate_published(datePicker.getDate());
+						a.setDate_accepted(datePickerAccepted.getDate());
 						Issue current_issue = issue_storage.get(issue_id);
 						issue_storage.get(issue_id).update_article(article_id, a);
 						issue_storage.put(issue_id, current_issue);
@@ -3926,7 +3958,7 @@ public class Main {
 				btnSave.setBounds((width_small - 200) / 2, height_small - 100, 200, 30);
 				Panel panel10 = new Panel();
 				panel10.setBackground(new Color(153, 102, 51));
-				panel10.setBounds(115, 280, 225, 190);
+				panel10.setBounds(115, 310, 225, 160);
 				String label_text = "";
 				if (file_storage.containsKey(article_id)) {
 					HashMap<Integer, ArticleFile> files = file_storage.get(article_id);
@@ -3940,11 +3972,11 @@ public class Main {
 				lblFile.setText(label_text);
 				lblFile.setForeground(Color.WHITE);
 				lblFile.setEnabled(false);
-				lblFile.setBounds(115, 280, 225, 190);
+				lblFile.setBounds(115, 310, 225, 160);
 				lblFile.setToolTipText("");
 				JScrollPane fileSection = new JScrollPane(lblFile);
 				fileSection.setPreferredSize(new Dimension(300 * 2, 200));
-				fileSection.setBounds(20, 280, 225, 190);
+				fileSection.setBounds(20, 310, 225, 160);
 				fileSection.add(panel10);
 				fileSection.createHorizontalScrollBar();
 				panel.add(fileSection);
@@ -3952,11 +3984,11 @@ public class Main {
 				JFileChooser chooser = new JFileChooser();
 				JButton btnClear = new JButton("Clear");
 				btnClear.setEnabled(false);
-				btnClear.setBounds(252, 285, 65, 30);
+				btnClear.setBounds(252, 315, 65, 30);
 				panel.add(btnClear);
 				JButton select = new JButton("Browse");
 
-				select.setBounds(20, 240, 90, 30);
+				select.setBounds(20, 276, 90, 30);
 				panel.add(select);
 				JButton upload = new JButton("Upload & Save");
 				upload.setEnabled(false);
@@ -4060,7 +4092,7 @@ public class Main {
 						}
 					}
 				});
-				upload.setBounds(150, 240, 140, 30);
+				upload.setBounds(150, 276, 140, 30);
 
 				panel.add(upload);
 				article.getContentPane().add(btnSave);
