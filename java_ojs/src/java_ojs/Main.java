@@ -1770,7 +1770,7 @@ public class Main {
 
 			btnSubmit.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
-					Boolean validation=true;
+					Boolean validation = true;
 					int entered_volume = 0;
 					int entered_number = 0;
 					int entered_year = 0;
@@ -1790,7 +1790,7 @@ public class Main {
 						year.setBackground(new Color(255, 255, 255));
 						year.setForeground(new Color(0, 0, 0));
 					} catch (Exception ex) {
-						validation=false;
+						validation = false;
 						number.setBackground(new Color(255, 0, 0));
 						number.setForeground(new Color(255, 255, 255));
 						volume.setBackground(new Color(255, 0, 0));
@@ -1810,7 +1810,7 @@ public class Main {
 						show_year.setBackground(new Color(255, 255, 255));
 						show_year.setForeground(new Color(0, 0, 0));
 					} catch (Exception ex) {
-						validation=false;
+						validation = false;
 						show_number.setBackground(new Color(255, 0, 0));
 						show_number.setForeground(new Color(255, 255, 255));
 						show_volume.setBackground(new Color(255, 0, 0));
@@ -1821,41 +1821,42 @@ public class Main {
 								"Use only numbers in fields: Show_Volume, Show_Number, Show_Year ");
 					}
 					SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
-					try{
+					try {
 
-						String test_accepted= sdf.format(datePicker.getDate());
-						String test_published= sdf.format(datePickerPublished.getDate());
+						String test_accepted = sdf.format(datePicker.getDate());
+						String test_published = sdf.format(datePickerPublished.getDate());
 
-					}catch (Exception ex) {
-						validation=false;
+					} catch (Exception ex) {
+						validation = false;
 						JOptionPane.showMessageDialog(null,
 								"Use dates from calendar for fields: Date Published and Date Accepted");
 					}
-					
-					if(validation){
-					i_id++;
-					Issue issue = new Issue(i_id, title.getText(), entered_volume, entered_number, entered_year,
-							datePicker.getDate(), datePickerPublished.getDate());
-					issue.setShow_title(show_title.getText());
-					issue.setShow_volume(entered_show_volume);
-					issue.setShow_year(entered_show_year);
-					issue.setShow_number(entered_show_number);
 
-					// JOptionPane.showMessageDialog(null, "Deleted");
+					if (validation) {
+						i_id++;
+						Issue issue = new Issue(i_id, title.getText(), entered_volume, entered_number, entered_year,
+								datePicker.getDate(), datePickerPublished.getDate());
+						issue.setShow_title(show_title.getText());
+						issue.setShow_volume(entered_show_volume);
+						issue.setShow_year(entered_show_year);
+						issue.setShow_number(entered_show_number);
 
-					list_issues.put(i_id, 1);
-					issue_screens.put(i_id, new JFrame());
-					article_screens.put(i_id, new HashMap<Integer, JFrame>());
-					issue_storage.put(i_id, issue);
-					Object[] new_row = { i_id, title.getText(), Integer.parseInt(volume.getText()),
-							Integer.parseInt(number.getText()), sdf.format(datePicker.getDate()), "View", "Edit",
-							"Delete" };
+						// JOptionPane.showMessageDialog(null, "Deleted");
 
-					((DefaultTableModel) issues_table.getModel()).addRow(new_row);
-					issues_table.repaint();
-					edit_issue.dispose();
-					issues.dispose();
-					dashboard();}
+						list_issues.put(i_id, 1);
+						issue_screens.put(i_id, new JFrame());
+						article_screens.put(i_id, new HashMap<Integer, JFrame>());
+						issue_storage.put(i_id, issue);
+						Object[] new_row = { i_id, title.getText(), Integer.parseInt(volume.getText()),
+								Integer.parseInt(number.getText()), sdf.format(datePicker.getDate()), "View", "Edit",
+								"Delete" };
+
+						((DefaultTableModel) issues_table.getModel()).addRow(new_row);
+						issues_table.repaint();
+						edit_issue.dispose();
+						issues.dispose();
+						dashboard();
+					}
 
 				}
 			});
@@ -2079,7 +2080,7 @@ public class Main {
 				Action actionSubmit = new AbstractAction() {
 					@Override
 					public void actionPerformed(ActionEvent e) {
-						Boolean validation=true;
+						Boolean validation = true;
 						int entered_volume = 0;
 						int entered_number = 0;
 						int entered_year = 0;
@@ -2099,7 +2100,7 @@ public class Main {
 							year.setBackground(new Color(255, 255, 255));
 							year.setForeground(new Color(0, 0, 0));
 						} catch (Exception ex) {
-							validation=false;
+							validation = false;
 							number.setBackground(new Color(255, 0, 0));
 							number.setForeground(new Color(255, 255, 255));
 							volume.setBackground(new Color(255, 0, 0));
@@ -2119,7 +2120,7 @@ public class Main {
 							show_year.setBackground(new Color(255, 255, 255));
 							show_year.setForeground(new Color(0, 0, 0));
 						} catch (Exception ex) {
-							validation=false;
+							validation = false;
 							show_number.setBackground(new Color(255, 0, 0));
 							show_number.setForeground(new Color(255, 255, 255));
 							show_volume.setBackground(new Color(255, 0, 0));
@@ -2130,18 +2131,18 @@ public class Main {
 									"Use only numbers in fields: Show_Volume, Show_Number, Show_Year ");
 						}
 						SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
-						try{
+						try {
 
-							String test_accepted= sdf.format(datePicker.getDate());
-							String test_published= sdf.format(datePickerPublished.getDate());
+							String test_accepted = sdf.format(datePicker.getDate());
+							String test_published = sdf.format(datePickerPublished.getDate());
 
-						}catch (Exception ex) {
-							validation=false;
+						} catch (Exception ex) {
+							validation = false;
 							JOptionPane.showMessageDialog(null,
 									"Use dates from calendar for fields: Date Published and Date Accepted");
 						}
-						
-						if(validation){
+
+						if (validation) {
 
 							current_issue.setTitle(title.getText());
 							current_issue.setVolume(entered_volume);
@@ -2157,7 +2158,7 @@ public class Main {
 							issue_storage.put(issue_id, current_issue);
 							issues.dispose();
 							dashboard();
-							}
+						}
 
 					}
 				};
@@ -2168,7 +2169,7 @@ public class Main {
 				datePicker.addActionListener(actionSubmit);
 				btnSubmit.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
-						Boolean validation=true;
+						Boolean validation = true;
 						int entered_volume = 0;
 						int entered_number = 0;
 						int entered_year = 0;
@@ -2188,7 +2189,7 @@ public class Main {
 							year.setBackground(new Color(255, 255, 255));
 							year.setForeground(new Color(0, 0, 0));
 						} catch (Exception ex) {
-							validation=false;
+							validation = false;
 							number.setBackground(new Color(255, 0, 0));
 							number.setForeground(new Color(255, 255, 255));
 							volume.setBackground(new Color(255, 0, 0));
@@ -2208,7 +2209,7 @@ public class Main {
 							show_year.setBackground(new Color(255, 255, 255));
 							show_year.setForeground(new Color(0, 0, 0));
 						} catch (Exception ex) {
-							validation=false;
+							validation = false;
 							show_number.setBackground(new Color(255, 0, 0));
 							show_number.setForeground(new Color(255, 255, 255));
 							show_volume.setBackground(new Color(255, 0, 0));
@@ -2219,18 +2220,18 @@ public class Main {
 									"Use only numbers in fields: Show_Volume, Show_Number, Show_Year ");
 						}
 						SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
-						try{
+						try {
 
-							String test_accepted= sdf.format(datePicker.getDate());
-							String test_published= sdf.format(datePickerPublished.getDate());
+							String test_accepted = sdf.format(datePicker.getDate());
+							String test_published = sdf.format(datePickerPublished.getDate());
 
-						}catch (Exception ex) {
-							validation=false;
+						} catch (Exception ex) {
+							validation = false;
 							JOptionPane.showMessageDialog(null,
 									"Use dates from calendar for fields: Date Published and Date Accepted");
 						}
-						
-						if(validation){
+
+						if (validation) {
 
 							current_issue.setTitle(title.getText());
 							current_issue.setVolume(entered_volume);
@@ -2246,7 +2247,7 @@ public class Main {
 							issue_storage.put(issue_id, current_issue);
 							issues.dispose();
 							dashboard();
-							}
+						}
 
 					}
 				});
@@ -4083,45 +4084,88 @@ public class Main {
 				lblSection.setBounds(24, 80, 94, 30);
 				panel.add(lblSection);
 
+				JTextArea lblFile = new JTextArea("");
+				String label_text = "";
 				JButton btnSave = new JButton("Save");
 				btnSave.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent arg0) {
-						article.dispose();
-						Article a = issue_storage.get(issue_id).getArticles_list().get(article_id);
-						a.setTitle(lblTitleText.getText());
-						ArrayList<Author> updated_authors = a.getAuthors();
-						for (int i = 0; i < updated_authors.size(); i++) {
-							Author author = updated_authors.get(i);
-							HashMap<Integer, JTextField> a_fields = author_fields.get(updated_authors.get(i).getId());
-							author.setFirst_name(a_fields.get(1).getText());
-							author.setMiddle_name(a_fields.get(2).getText());
-							author.setLast_name(a_fields.get(3).getText());
-							author.setEmail(a_fields.get(4).getText());
-							author.setAffiliation(a_fields.get(5).getText());
-							author.setBio(authors_bio.get(updated_authors.get(i).getId()).getText());
-							author.setOrcid(a_fields.get(7).getText());
-							author.setDepartment(a_fields.get(8).getText());
-							author.setCountry(a_fields.get(9).getText());
-							updated_authors.set(i, author);
-							author_storage.put(updated_authors.get(i).getId(), author);
+						Boolean validation = true;
+						int entered_sectionID = 0;
+						int entered_pages = 0;
+						try {
+							entered_sectionID = sections.get(lblSectionId.getSelectedIndex()).getId();
+							entered_pages = Integer.parseInt(lblPageNum.getText());
+
+							System.out.println("Section id: " + entered_sectionID);
+
+							lblSectionId.setBackground(new Color(255, 255, 255));
+							lblSectionId.setForeground(new Color(0, 0, 0));
+							lblPageNum.setBackground(new Color(255, 255, 255));
+							lblPageNum.setForeground(new Color(0, 0, 0));
+						} catch (NumberFormatException e) {
+							validation = false;
+
+							lblPageNum.setBackground(new Color(255, 0, 0));
+							lblPageNum.setForeground(new Color(255, 255, 255));
+							JOptionPane.showMessageDialog(null,
+									"Use only numbers in the Pages field and select a valid section item from the dropdown list. ");
 						}
-						a.setAuthors(updated_authors);
-						a.setAbstract_text(lblAbstract.getText());
-						a.setSection_id(sections.get(lblSectionId.getSelectedIndex()).getId());
-						a.setPages(Integer.parseInt(lblPageNum.getText()));
-						a.setDate_published(datePicker.getDate());
-						a.setDate_accepted(datePickerAccepted.getDate());
-						Issue current_issue = issue_storage.get(issue_id);
-						issue_storage.get(issue_id).update_article(article_id, a);
-						issue_storage.put(issue_id, current_issue);
-						issue(issue_id);
+						
+						SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
+						try {
+
+							String test_accepted = sdf.format(datePickerAccepted.getDate());
+							String test_published = sdf.format(datePicker.getDate());
+
+						} catch (Exception ex) {
+							validation = false;
+							JOptionPane.showMessageDialog(null,
+									"Use dates from calendar for fields: Date Published and Date Accepted");
+						}
+						if(lblFile.getText().contains("Not Uploaded")){
+							validation=false;
+							JOptionPane.showMessageDialog(null,
+									"There are files that have not been uploaded yet. Upload the files or clear the selection.");
+				
+						}
+						if (validation) {
+							article.dispose();
+							Article a = issue_storage.get(issue_id).getArticles_list().get(article_id);
+							a.setTitle(lblTitleText.getText());
+							ArrayList<Author> updated_authors = a.getAuthors();
+							for (int i = 0; i < updated_authors.size(); i++) {
+								Author author = updated_authors.get(i);
+								HashMap<Integer, JTextField> a_fields = author_fields
+										.get(updated_authors.get(i).getId());
+								author.setFirst_name(a_fields.get(1).getText());
+								author.setMiddle_name(a_fields.get(2).getText());
+								author.setLast_name(a_fields.get(3).getText());
+								author.setEmail(a_fields.get(4).getText());
+								author.setAffiliation(a_fields.get(5).getText());
+								author.setBio(authors_bio.get(updated_authors.get(i).getId()).getText());
+								author.setOrcid(a_fields.get(7).getText());
+								author.setDepartment(a_fields.get(8).getText());
+								author.setCountry(a_fields.get(9).getText());
+								updated_authors.set(i, author);
+								author_storage.put(updated_authors.get(i).getId(), author);
+							}
+							a.setAuthors(updated_authors);
+							a.setAbstract_text(lblAbstract.getText());
+							a.setSection_id(sections.get(lblSectionId.getSelectedIndex()).getId());
+							a.setPages(Integer.parseInt(lblPageNum.getText()));
+							a.setDate_published(datePicker.getDate());
+							a.setDate_accepted(datePickerAccepted.getDate());
+							Issue current_issue = issue_storage.get(issue_id);
+							issue_storage.get(issue_id).update_article(article_id, a);
+							issue_storage.put(issue_id, current_issue);
+							issue(issue_id);
+						}
 					}
 				});
 				btnSave.setBounds((width_small - 200) / 2, height_small - 100, 200, 30);
 				Panel panel10 = new Panel();
 				panel10.setBackground(new Color(153, 102, 51));
 				panel10.setBounds(115, 310, 225, 160);
-				String label_text = "";
 				if (file_storage.containsKey(article_id)) {
 					HashMap<Integer, ArticleFile> files = file_storage.get(article_id);
 					Set<Integer> keys = files.keySet();
@@ -4130,7 +4174,6 @@ public class Main {
 						label_text = label_text + path.substring(path.lastIndexOf("/") + 1) + "\n";
 					}
 				}
-				JTextArea lblFile = new JTextArea("");
 				lblFile.setText(label_text);
 				lblFile.setForeground(Color.WHITE);
 				lblFile.setEnabled(false);
@@ -4806,18 +4849,52 @@ public class Main {
 			lblSection.setFont(new Font("Dialog", Font.BOLD, 14));
 			lblSection.setBounds(24, 80, 94, 30);
 			panel.add(lblSection);
-
+			JTextArea lblFile = new JTextArea("");
 			JButton btnSave = new JButton("Create");
 			btnSave.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent arg0) {
+					Boolean validation = true;
+					int entered_sectionID = 0;
+					int entered_pages = 0;
 					try {
-						int entered_sectionID = sections.get(lblSectionId.getSelectedIndex()).getId();
-						int entered_pages = Integer.parseInt(lblPageNum.getText());
+						entered_sectionID = sections.get(lblSectionId.getSelectedIndex()).getId();
+						entered_pages = Integer.parseInt(lblPageNum.getText());
+
 						System.out.println("Section id: " + entered_sectionID);
+
+						lblSectionId.setBackground(new Color(255, 255, 255));
+						lblSectionId.setForeground(new Color(0, 0, 0));
+						lblPageNum.setBackground(new Color(255, 255, 255));
+						lblPageNum.setForeground(new Color(0, 0, 0));
+					} catch (NumberFormatException e) {
+						validation = false;
+
+						lblPageNum.setBackground(new Color(255, 0, 0));
+						lblPageNum.setForeground(new Color(255, 255, 255));
+						JOptionPane.showMessageDialog(null,
+								"Use only numbers in the Pages field and select a valid section item from the dropdown list. ");
+					}
+					SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
+					try {
+
+						String test_accepted = sdf.format(datePickerAccepted.getDate());
+						String test_published = sdf.format(datePicker.getDate());
+
+					} catch (Exception ex) {
+						validation = false;
+						JOptionPane.showMessageDialog(null,
+								"Use dates from calendar for fields: Date Published and Date Accepted");
+					}
+					if(lblFile.getText().contains("Not Uploaded")){
+						validation=false;
+						JOptionPane.showMessageDialog(null,
+								"There are files that have not been uploaded yet. Upload the files or clear the selection.");
+			
+					}
+					if (validation) {
 						issue_screens.get(issue_id).dispose();
 						articles_id++;
 						list_issues.replace(issue_id, articles_id);
-						SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
 						Issue current_issue = issue_storage.get(issue_id);
 
 						current_issue.add_article(articles_id,
@@ -4844,10 +4921,7 @@ public class Main {
 						System.out.println(article_screens.get(issue_id).containsKey(articles_id));
 
 						issue(issue_id);
-					} catch (NumberFormatException e) {
-						JOptionPane.showMessageDialog(null, "Use only numbers in fields: Pages, Section ID ");
 					}
-
 					/*
 					 * Article a =
 					 * issue_storage.get(issue_id).getArticles_list().get(
@@ -4877,7 +4951,7 @@ public class Main {
 			Panel panel10 = new Panel();
 			panel10.setBackground(new Color(153, 102, 51));
 			panel10.setBounds(115, 310, 225, 160);
-			JTextArea lblFile = new JTextArea("");
+			
 			lblFile.setForeground(Color.WHITE);
 			lblFile.setEnabled(false);
 			lblFile.setBounds(115, 310, 225, 160);
