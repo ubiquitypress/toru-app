@@ -98,7 +98,7 @@ public class Main {
 	private static HashMap<Integer, Section> section_storage;
 	private static HashMap<Integer, Author> author_storage;
 
-	private static HashMap<Integer,HashMap<Integer, Boolean>> author_primary_storage;
+	private static HashMap<Integer, HashMap<Integer, Boolean>> author_primary_storage;
 	private static HashMap<Integer, HashMap<Integer, ArticleFile>> file_storage;
 	private static HashMap<Integer, HashMap<Integer, JFrame>> article_screens;
 	private static ArrayList<String> setting_keys = new ArrayList<String>();
@@ -148,31 +148,31 @@ public class Main {
 			prep.setString(1, source_api);
 			prep.setString(2, source_access_key);
 			prep.executeUpdate();
-	
+
 			JSONObject json_file = new JSONObject();
 			for (int i = 0; i < list_settings.size(); i++) {
 				String setting_name = setting_keys.get(i);
 
-				String value =list_settings.get(setting_keys.get(i));
+				String value = list_settings.get(setting_keys.get(i));
 				System.out.println(setting_name + " " + value);
 
-				try{
-					int value_int=Integer.parseInt(value);
+				try {
+					int value_int = Integer.parseInt(value);
 
-					json_file.put(setting_name,value_int);
-						
-					}catch(Exception e){
+					json_file.put(setting_name, value_int);
 
-						json_file.put(setting_name,value);
-					}
-				
+				} catch (Exception e) {
+
+					json_file.put(setting_name, value);
+				}
+
 			}
 
 			StringWriter out = new StringWriter();
 			try {
 				json_file.writeJSONString(out);
 				String s = json_file.toJSONString();
-				FileWriter new_jsn=new FileWriter("./settings.json");
+				FileWriter new_jsn = new FileWriter("./settings.json");
 				new_jsn.write(out.toString());
 				new_jsn.flush();
 				new_jsn.close();
@@ -270,9 +270,11 @@ public class Main {
 						article_author_prep.setInt(1, j);
 						article_author_prep.setInt(2, save_article.getId());
 						article_author_prep.setInt(3, author.getId());
-						article_author_prep.setBoolean(4, author_primary_storage.get(save_article.getId()).get(author.getId()));
+						article_author_prep.setBoolean(4,
+								author_primary_storage.get(save_article.getId()).get(author.getId()));
 
-						System.out.println("Author: "+author.getId()+" Primary: "+ author_primary_storage.get(save_article.getId()).get(author.getId()));
+						System.out.println("Author: " + author.getId() + " Primary: "
+								+ author_primary_storage.get(save_article.getId()).get(author.getId()));
 						article_author_prep.executeUpdate();
 						j = j + 1;
 					}
@@ -302,7 +304,7 @@ public class Main {
 		article_screens = new HashMap<Integer, HashMap<Integer, JFrame>>();
 		author_storage = new HashMap<Integer, Author>();
 		section_storage = new HashMap<Integer, Section>();
-		author_primary_storage = new HashMap<Integer, HashMap<Integer,Boolean>>();
+		author_primary_storage = new HashMap<Integer, HashMap<Integer, Boolean>>();
 		try {
 			ResultSet rs = c.createStatement().executeQuery("SELECT * FROM API WHERE URL=" + "'api'" + ";");
 			while (rs.next()) {
@@ -313,46 +315,40 @@ public class Main {
 			}
 			JSONParser parser = new JSONParser();
 
+			try {
+				Object obj = null;
 				try {
-					Object obj = null;
-					try {
-						obj = parser.parse(new FileReader("./settings.json"));
-					} catch (FileNotFoundException e1) {
-						// TODO Auto-generated catch block
-						e1.printStackTrace();
-					} catch (IOException e1) {
-						// TODO Auto-generated catch block
-						e1.printStackTrace();
-					}
-					JSONObject array = (JSONObject) obj;
-
-
-					Set<Map> keys = array.keySet();
-					Object jsn_keys[] = keys.toArray();
-					System.out.println("Loading settings....");
-					for (Object k : jsn_keys) {
-						String setting_name = k.toString();
-
-						String value = array.get(k).toString();
-						System.out.println(setting_name + " " + value);
-
-						list_settings.put(setting_name, value);
-						setting_keys.add(setting_name);
-
-					
-					}
-				
-
-
-				} catch (ParseException pe) {
-
-					System.out.println("position: " + pe.getPosition());
-					System.out.println(pe);
+					obj = parser.parse(new FileReader("./settings.json"));
+				} catch (FileNotFoundException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				} catch (IOException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
 				}
-			
-			
+				JSONObject array = (JSONObject) obj;
 
-				System.out.println("Loading Issue data....");
+				Set<Map> keys = array.keySet();
+				Object jsn_keys[] = keys.toArray();
+				System.out.println("Loading settings....");
+				for (Object k : jsn_keys) {
+					String setting_name = k.toString();
+
+					String value = array.get(k).toString();
+					System.out.println(setting_name + " " + value);
+
+					list_settings.put(setting_name, value);
+					setting_keys.add(setting_name);
+
+				}
+
+			} catch (ParseException pe) {
+
+				System.out.println("position: " + pe.getPosition());
+				System.out.println(pe);
+			}
+
+			System.out.println("Loading Issue data....");
 			SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
 			rs = c.createStatement().executeQuery("SELECT * FROM ISSUE ORDER BY id ASC;");
 			while (rs.next()) {
@@ -370,7 +366,7 @@ public class Main {
 				String date = rs.getString("date_published");
 				Issue issue = null;
 				issue = new Issue(id, title, volume, number, year, show_title, show_volume, show_number, show_year,
-						sdf.parse(date_accepted),sdf.parse(date));
+						sdf.parse(date_accepted), sdf.parse(date));
 
 				// JOptionPane.showMessageDialog(null, "Deleted");
 
@@ -399,7 +395,7 @@ public class Main {
 				int id = art_s.getInt("id");
 				String title = art_s.getString("title");
 				int section_id = art_s.getInt("section_id");
-				author_primary_storage.put(id,new HashMap<Integer,Boolean>());
+				author_primary_storage.put(id, new HashMap<Integer, Boolean>());
 				HashMap<Integer, ArticleFile> files = new HashMap<Integer, ArticleFile>();
 				file_storage.put(id, files);
 				int pages = art_s.getInt(rsmd.getColumnName(4));
@@ -408,7 +404,8 @@ public class Main {
 				String date = art_s.getString(rsmd.getColumnName(6));
 				String date_accepted = art_s.getString(rsmd.getColumnName(7));
 				Article article = null;
-				article = new Article(id, title, section_id, pages, abstract_text, sdf.parse(date_accepted), sdf.parse(date));
+				article = new Article(id, title, section_id, pages, abstract_text, sdf.parse(date_accepted),
+						sdf.parse(date));
 				ResultSet rs_issue = c.createStatement().executeQuery(
 						"SELECT issue_id FROM ISSUE_ARTICLE WHERE article_id=" + Integer.toString(id) + ";");
 				int issue_id = rs_issue.getInt("issue_id");
@@ -470,7 +467,8 @@ public class Main {
 			for (int key_author : author_keys) {
 				Author author = author_storage.get(key_author);
 				try {
-					PreparedStatement prep = c.prepareStatement("SELECT author_id,article_id,primary_author FROM ARTICLE_AUTHOR");
+					PreparedStatement prep = c
+							.prepareStatement("SELECT author_id,article_id,primary_author FROM ARTICLE_AUTHOR");
 
 					ResultSet rs_author = prep.executeQuery();
 					while (rs_author.next()) {
@@ -482,10 +480,10 @@ public class Main {
 						System.out.println(author_id + " - " + author.getId());
 						if (author_id == author.getId()) {
 							System.out.println(author.getFull_name() + " " + Integer.toString(article_id));
-							HashMap<Integer,Boolean> primary_authors = author_primary_storage.get(article_id); 
+							HashMap<Integer, Boolean> primary_authors = author_primary_storage.get(article_id);
 							primary_authors.put(author_id, primary);
-							System.out.println("Author: "+author_id+" Primary: "+primary);
-							author_primary_storage.put(article_id,primary_authors);
+							System.out.println("Author: " + author_id + " Primary: " + primary);
+							author_primary_storage.put(article_id, primary_authors);
 							ResultSet rs_new_issue = c.createStatement()
 									.executeQuery("SELECT issue_id FROM ISSUE_ARTICLE;");
 							while (rs_new_issue.next()) {
@@ -530,7 +528,7 @@ public class Main {
 			sql = "CREATE TABLE IF NOT EXISTS ISSUE" + "(id INTEGER PRIMARY KEY," + " title CHAR(500) NOT NULL,"
 					+ "volume INTEGER," + "number INTEGER," + "year INTEGER," + " show_title CHAR(500) NOT NULL,"
 					+ "show_volume INTEGER," + "show_number INTEGER," + "show_year INTEGER,"
-					+ "date_published CHAR(50),"+ "date_accepted CHAR(50)"+")";
+					+ "date_published CHAR(50)," + "date_accepted CHAR(50)" + ")";
 			stmt.executeUpdate(sql);
 			sql = "CREATE TABLE IF NOT EXISTS SECTION" + "(id INTEGER PRIMARY KEY," + " title CHAR(250) NOT NULL)";
 			stmt.executeUpdate(sql);
@@ -540,8 +538,8 @@ public class Main {
 					+ " orcid CHAR(100)," + " department CHAR(300) NOT NULL," + " country CHAR(300) NOT NULL" + ")";
 			stmt.executeUpdate(sql);
 			sql = "CREATE TABLE IF NOT EXISTS ARTICLE" + "(id INTEGER PRIMARY KEY," + " title CHAR(500) NOT NULL,"
-					+ "section_id INTEGER," + "pages INTEGER," + " abstract CHAR(2000)," + "date_published CHAR(50),"+ "date_accepted CHAR(50),"
-					+ "FOREIGN KEY (section_id) REFERENCES SECTION(id)" + ")";
+					+ "section_id INTEGER," + "pages INTEGER," + " abstract CHAR(2000)," + "date_published CHAR(50),"
+					+ "date_accepted CHAR(50)," + "FOREIGN KEY (section_id) REFERENCES SECTION(id)" + ")";
 			stmt.executeUpdate(sql);
 			sql = "CREATE TABLE IF NOT EXISTS FILE" + "(id INTEGER PRIMARY KEY," + " article_id INTEGER,"
 					+ "path CHAR(1000) NOT NULL," + "FOREIGN KEY (article_id) REFERENCES ARTICLE(id)" + ")";
@@ -551,7 +549,8 @@ public class Main {
 					+ "FOREIGN KEY (issue_id) REFERENCES ISSUE(id)" + ")";
 			stmt.executeUpdate(sql);
 			sql = "CREATE TABLE IF NOT EXISTS ARTICLE_AUTHOR" + "(id INTEGER PRIMARY KEY," + " article_id INTEGER,"
-					+ " author_id INTEGER," +"primary_author BOOLEAN DEFAULT FALSE,"+ "FOREIGN KEY (article_id) REFERENCES ARTICLE(id),"
+					+ " author_id INTEGER," + "primary_author BOOLEAN DEFAULT FALSE,"
+					+ "FOREIGN KEY (article_id) REFERENCES ARTICLE(id),"
 					+ "FOREIGN KEY (author_id) REFERENCES AUTHOR(id)" + ")";
 			stmt.executeUpdate(sql);
 		} catch (Exception e) {
@@ -1208,14 +1207,16 @@ public class Main {
 					data.add("Edit");
 					data.add("Delete");
 					Object[] row = { row_issue.getId(), row_issue.getShow_title(), row_issue.getShow_volume(),
-							row_issue.getShow_number(), row_issue.getShow_year(),sdf.format(row_issue.getDate_accepted()),
-							sdf.format(row_issue.getDate_published()), "View", "Edit", "Delete" };
+							row_issue.getShow_number(), row_issue.getShow_year(),
+							sdf.format(row_issue.getDate_accepted()), sdf.format(row_issue.getDate_published()), "View",
+							"Edit", "Delete" };
 					rows[i] = row;
 					i++;
 					rowData.add(data);
 
 				}
-				Object columnNames[] = { "ID", "Title", "Volume", "Number", "Year","Date Accepted", "Date Published", "", "", "" };
+				Object columnNames[] = { "ID", "Title", "Volume", "Number", "Year", "Date Accepted", "Date Published",
+						"", "", "" };
 				issues.getContentPane().setLayout(null);
 
 				final JButton btnSync = new JButton("Sync");
@@ -1609,7 +1610,7 @@ public class Main {
 			lblyear.setForeground(new Color(245, 255, 250));
 			lblyear.setBounds(80, 347, width_small - 161, 16);
 			edit_issue.getContentPane().add(lblyear);
-			
+
 			SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
 			JLabel lblDateAccepted = new JLabel("Date Accepted");
 			lblDateAccepted.setHorizontalAlignment(SwingConstants.CENTER);
@@ -1769,43 +1770,92 @@ public class Main {
 
 			btnSubmit.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
+					Boolean validation=true;
+					int entered_volume = 0;
+					int entered_number = 0;
+					int entered_year = 0;
+					int entered_show_volume = 0;
+					int entered_show_number = 0;
+					int entered_show_year = 0;
 					try {
 
-						int entered_volume = Integer.parseInt(volume.getText());
-						int entered_number = Integer.parseInt(number.getText());
-						int entered_year = Integer.parseInt(year.getText());
+						entered_volume = Integer.parseInt(volume.getText());
+						entered_number = Integer.parseInt(number.getText());
+						entered_year = Integer.parseInt(year.getText());
 
-						int entered_show_volume = Integer.parseInt(show_volume.getText());
-						int entered_show_number = Integer.parseInt(show_number.getText());
-						int entered_show_year = Integer.parseInt(show_year.getText());
-						i_id++;
-						Issue issue = new Issue(i_id, title.getText(), entered_volume, entered_number, entered_year,
-								datePicker.getDate(),datePickerPublished.getDate());
-						issue.setShow_title(show_title.getText());
-						issue.setShow_volume(entered_show_volume);
-						issue.setShow_year(entered_show_year);
-						issue.setShow_number(entered_show_number);
-
-						// JOptionPane.showMessageDialog(null, "Deleted");
-						SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
-
-						list_issues.put(i_id, 1);
-						issue_screens.put(i_id, new JFrame());
-						article_screens.put(i_id, new HashMap<Integer, JFrame>());
-						issue_storage.put(i_id, issue);
-						Object[] new_row = { i_id, title.getText(), Integer.parseInt(volume.getText()),
-								Integer.parseInt(number.getText()), sdf.format(datePicker.getDate()), "View", "Edit",
-								"Delete" };
-
-						((DefaultTableModel) issues_table.getModel()).addRow(new_row);
-						issues_table.repaint();
-						edit_issue.dispose();
-						issues.dispose();
-						dashboard();
-
+						number.setBackground(new Color(255, 255, 255));
+						number.setForeground(new Color(0, 0, 0));
+						volume.setBackground(new Color(255, 255, 255));
+						volume.setForeground(new Color(0, 0, 0));
+						year.setBackground(new Color(255, 255, 255));
+						year.setForeground(new Color(0, 0, 0));
 					} catch (Exception ex) {
+						validation=false;
+						number.setBackground(new Color(255, 0, 0));
+						number.setForeground(new Color(255, 255, 255));
+						volume.setBackground(new Color(255, 0, 0));
+						volume.setForeground(new Color(255, 255, 255));
+						year.setBackground(new Color(255, 0, 0));
+						year.setForeground(new Color(255, 255, 255));
 						JOptionPane.showMessageDialog(null, "Use only numbers in fields: Volume, Number, Year ");
 					}
+					try {
+						entered_show_volume = Integer.parseInt(show_volume.getText());
+						entered_show_number = Integer.parseInt(show_number.getText());
+						entered_show_year = Integer.parseInt(show_year.getText());
+						show_number.setBackground(new Color(255, 255, 255));
+						show_number.setForeground(new Color(0, 0, 0));
+						show_volume.setBackground(new Color(255, 255, 255));
+						show_volume.setForeground(new Color(0, 0, 0));
+						show_year.setBackground(new Color(255, 255, 255));
+						show_year.setForeground(new Color(0, 0, 0));
+					} catch (Exception ex) {
+						validation=false;
+						show_number.setBackground(new Color(255, 0, 0));
+						show_number.setForeground(new Color(255, 255, 255));
+						show_volume.setBackground(new Color(255, 0, 0));
+						show_volume.setForeground(new Color(255, 255, 255));
+						show_year.setBackground(new Color(255, 0, 0));
+						show_year.setForeground(new Color(255, 255, 255));
+						JOptionPane.showMessageDialog(null,
+								"Use only numbers in fields: Show_Volume, Show_Number, Show_Year ");
+					}
+					SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
+					try{
+
+						String test_accepted= sdf.format(datePicker.getDate());
+						String test_published= sdf.format(datePickerPublished.getDate());
+
+					}catch (Exception ex) {
+						validation=false;
+						JOptionPane.showMessageDialog(null,
+								"Use dates from calendar for fields: Date Published and Date Accepted");
+					}
+					
+					if(validation){
+					i_id++;
+					Issue issue = new Issue(i_id, title.getText(), entered_volume, entered_number, entered_year,
+							datePicker.getDate(), datePickerPublished.getDate());
+					issue.setShow_title(show_title.getText());
+					issue.setShow_volume(entered_show_volume);
+					issue.setShow_year(entered_show_year);
+					issue.setShow_number(entered_show_number);
+
+					// JOptionPane.showMessageDialog(null, "Deleted");
+
+					list_issues.put(i_id, 1);
+					issue_screens.put(i_id, new JFrame());
+					article_screens.put(i_id, new HashMap<Integer, JFrame>());
+					issue_storage.put(i_id, issue);
+					Object[] new_row = { i_id, title.getText(), Integer.parseInt(volume.getText()),
+							Integer.parseInt(number.getText()), sdf.format(datePicker.getDate()), "View", "Edit",
+							"Delete" };
+
+					((DefaultTableModel) issues_table.getModel()).addRow(new_row);
+					issues_table.repaint();
+					edit_issue.dispose();
+					issues.dispose();
+					dashboard();}
 
 				}
 			});
@@ -2183,7 +2233,8 @@ public class Main {
 					Object[] row = { current_articles.get(id).getId(), issue_id,
 							current_articles.get(id).getSection_id(), current_articles.get(id).getTitle(),
 							current_articles.get(id).getPages(), current_articles.get(id).getAbstract_text(),
-							sdf.format(current_articles.get(id).getDate_accepted()),sdf.format(current_articles.get(id).getDate_published()), "View", "Edit", "Delete" };
+							sdf.format(current_articles.get(id).getDate_accepted()),
+							sdf.format(current_articles.get(id).getDate_published()), "View", "Edit", "Delete" };
 					rows[i] = row;
 					i++;
 					rowData.add(data);
@@ -2191,8 +2242,8 @@ public class Main {
 				}
 
 				article_screens.put(issue_id, issue_articles);
-				Object columnNames[] = { "ID", "Issue", "Section", "Title", "Pages", "Abstract", "Date Accepted", "Date Published", "",
-						"", "" };
+				Object columnNames[] = { "ID", "Issue", "Section", "Title", "Pages", "Abstract", "Date Accepted",
+						"Date Published", "", "", "" };
 
 				articles.getContentPane().setLayout(null);
 
@@ -2514,8 +2565,10 @@ public class Main {
 				Date date = new Date();
 				Issue row_issue = issue_storage.get(issue_id);
 				Object issue_rowData[][] = { { row_issue.getId(), row_issue.getTitle(), row_issue.getVolume(),
-						row_issue.getNumber(), row_issue.getYear(), sdf.format(row_issue.getDate_accepted()), sdf.format(row_issue.getDate_published()) } };
-				Object issue_columnNames[] = { "ID", "Title", "Volume", "Number", "Year", "Date Accepted", "Date Published" };
+						row_issue.getNumber(), row_issue.getYear(), sdf.format(row_issue.getDate_accepted()),
+						sdf.format(row_issue.getDate_published()) } };
+				Object issue_columnNames[] = { "ID", "Title", "Volume", "Number", "Year", "Date Accepted",
+						"Date Published" };
 
 				DefaultTableModel issue_dtm = new DefaultTableModel(issue_rowData, issue_columnNames);
 
@@ -2767,20 +2820,20 @@ public class Main {
 					author_x = author_x + separation_horizontal;
 					Author author = authors.get(i);
 
-				
-					Boolean primary= author_primary_storage.get(article_id).get(author.getId());
-					
-					if (primary){
+					Boolean primary = author_primary_storage.get(article_id).get(author.getId());
+
+					if (primary) {
 						JLabel author_num = new JLabel(Integer.toString(i + 1));
 						author_num.setBounds(20 + author_x, 35, 40, 16);
 						panel6.add(author_num);
 						JLabel author_primary = new JLabel("- PRIMARY -");
 						author_primary.setBounds(60 + author_x, 35, 85, 16);
-						panel6.add(author_primary);}else{
-							JLabel author_num = new JLabel(Integer.toString(i + 1));
-							author_num.setBounds(80 + author_x, 35, 40, 16);
-							panel6.add(author_num);
-						}
+						panel6.add(author_primary);
+					} else {
+						JLabel author_num = new JLabel(Integer.toString(i + 1));
+						author_num.setBounds(80 + author_x, 35, 40, 16);
+						panel6.add(author_num);
+					}
 
 					JLabel field_label = new JLabel("First name:");
 					field_label.setBounds(author_x, author_y, 75, 30); // white
@@ -3446,24 +3499,25 @@ public class Main {
 							}
 							Set<Integer> previous_authors = author_primary_storage.get(article_id).keySet();
 							for (int index : previous_authors) {
-								if(!new_authors.contains(index)){
+								if (!new_authors.contains(index)) {
 									removed_authors.add(index);
 								}
 							}
-							HashMap<Integer,Boolean>primary_storage = author_primary_storage.get(article_id);
-							for(int i=0;i<removed_authors.size();i++){
+							HashMap<Integer, Boolean> primary_storage = author_primary_storage.get(article_id);
+							for (int i = 0; i < removed_authors.size(); i++) {
 								primary_storage.remove(removed_authors.get(i));
 							}
-							for(int i=0;i<new_authors.size();i++){
-								if (!primary_storage.containsKey(new_authors.get(i))){
-								primary_storage.put(new_authors.get(i),false);}
+							for (int i = 0; i < new_authors.size(); i++) {
+								if (!primary_storage.containsKey(new_authors.get(i))) {
+									primary_storage.put(new_authors.get(i), false);
+								}
 							}
-							author_primary_storage.put(article_id,primary_storage);
+							author_primary_storage.put(article_id, primary_storage);
 							current_issue.reset_authors(article_id);
 							for (int index : selections) {
 								Author new_author = author_storage.get(author_list.get(index));
 								current_issue.add_author(article_id, new_author);
-							
+
 							}
 							issue_storage.put(issue_id, current_issue);
 							article.dispose();
@@ -3477,9 +3531,9 @@ public class Main {
 				final HashMap<Integer, JTextArea> authors_bio = new HashMap<Integer, JTextArea>();
 
 				ArrayList<Author> authors = current_article.getAuthors();
-				final HashMap<Integer, JButton> primary_buttons = new HashMap<Integer, JButton> ();
-				final HashMap<Integer, JLabel> primary_labels = new HashMap<Integer, JLabel> ();
-				
+				final HashMap<Integer, JButton> primary_buttons = new HashMap<Integer, JButton>();
+				final HashMap<Integer, JLabel> primary_labels = new HashMap<Integer, JLabel>();
+
 				int author_x = 16;
 				int author_y = 60;
 				int separation_horizontal = 205;
@@ -3492,11 +3546,11 @@ public class Main {
 					Author author = authors.get(i);
 					JLabel author_num = new JLabel(Integer.toString(i + 1));
 					author_num.setBounds(20 + author_x, 35, 40, 16);
-					
+
 					panel6.add(author_num);
-					Boolean primary= author_primary_storage.get(article_id).get(author.getId());
-					
-					if (primary){
+					Boolean primary = author_primary_storage.get(article_id).get(author.getId());
+
+					if (primary) {
 						JLabel author_primary = new JLabel("PRIMARY");
 						author_primary.setBounds(60 + author_x, 35, 80, 16);
 						primary_labels.put(author.getId(), author_primary);
@@ -3504,91 +3558,93 @@ public class Main {
 
 						JButton author_primary_btn = new JButton("Make Primary");
 						author_primary_btn.setBounds(60 + author_x, 33, 120, 25);
-						int a_id=author.getId();
+						int a_id = author.getId();
 						author_primary_btn.addActionListener(new ActionListener() {
 							public void actionPerformed(ActionEvent arg0) {
-								
-								HashMap<Integer,Boolean> update_primary= author_primary_storage.get(article_id);
-							
+
+								HashMap<Integer, Boolean> update_primary = author_primary_storage.get(article_id);
+
 								Set<Integer> primary_keys = update_primary.keySet();
-								for(int pkey:primary_keys){
-									if(pkey!=a_id){
+								for (int pkey : primary_keys) {
+									if (pkey != a_id) {
 										update_primary.put(pkey, false);
-									}else{
+									} else {
 										update_primary.put(pkey, true);
 
-										System.out.println(pkey+" - "+a_id);
+										System.out.println(pkey + " - " + a_id);
 									}
 
 								}
-								author_primary_storage.put(article_id,update_primary);
+								author_primary_storage.put(article_id, update_primary);
 
 								System.out.println(a_id + " " + update_primary.get(a_id));
-								
-								System.out.println(a_id + " " + author_primary_storage.get(article_id).get(a_id));
-								
-								Set<Integer> label_keys = primary_labels.keySet();
-								for(int key_lbl:label_keys){
-								if(primary_labels.get(key_lbl).getParent()==panel6){
-									panel6.remove(primary_labels.get(key_lbl));
 
-									panel6.add(primary_buttons.get(key_lbl));
-								}
+								System.out.println(a_id + " " + author_primary_storage.get(article_id).get(a_id));
+
+								Set<Integer> label_keys = primary_labels.keySet();
+								for (int key_lbl : label_keys) {
+									if (primary_labels.get(key_lbl).getParent() == panel6) {
+										panel6.remove(primary_labels.get(key_lbl));
+
+										panel6.add(primary_buttons.get(key_lbl));
+									}
 								}
 								panel6.remove(primary_buttons.get(a_id));
 								panel6.add(primary_labels.get(a_id));
 								panel6.repaint();
-								
-							}});
-						primary_buttons.put(a_id,author_primary_btn );
-					}else{
+
+							}
+						});
+						primary_buttons.put(a_id, author_primary_btn);
+					} else {
 
 						JLabel author_primary = new JLabel("PRIMARY");
 						author_primary.setBounds(60 + author_x, 35, 80, 16);
 						primary_labels.put(author.getId(), author_primary);
-					JButton author_primary_btn = new JButton("Make Primary");
-					author_primary_btn.setBounds(60 + author_x, 33, 120, 25);
-					panel6.add(author_primary_btn);
-					int a_id=author.getId();
-					author_primary_btn.addActionListener(new ActionListener() {
-						public void actionPerformed(ActionEvent arg0) {
-							
-							HashMap<Integer,Boolean> update_primary= author_primary_storage.get(article_id);
-							
-							Set<Integer> primary_keys = update_primary.keySet();
-							for(int pkey:primary_keys){
-								if(pkey!=a_id){
-									update_primary.put(pkey, false);
-								}else{
-									update_primary.put(pkey, true);
+						JButton author_primary_btn = new JButton("Make Primary");
+						author_primary_btn.setBounds(60 + author_x, 33, 120, 25);
+						panel6.add(author_primary_btn);
+						int a_id = author.getId();
+						author_primary_btn.addActionListener(new ActionListener() {
+							public void actionPerformed(ActionEvent arg0) {
 
-									System.out.println(pkey+" - "+a_id);
+								HashMap<Integer, Boolean> update_primary = author_primary_storage.get(article_id);
+
+								Set<Integer> primary_keys = update_primary.keySet();
+								for (int pkey : primary_keys) {
+									if (pkey != a_id) {
+										update_primary.put(pkey, false);
+									} else {
+										update_primary.put(pkey, true);
+
+										System.out.println(pkey + " - " + a_id);
+									}
+
 								}
+								author_primary_storage.put(article_id, update_primary);
+
+								System.out.println(a_id + " " + update_primary.get(a_id));
+								System.out.println(a_id + " " + author_primary_storage.get(article_id).get(a_id));
+
+								Set<Integer> label_keys = primary_labels.keySet();
+								for (int key_lbl : label_keys) {
+									if (primary_labels.get(key_lbl).getParent() == panel6) {
+										panel6.remove(primary_labels.get(key_lbl));
+
+										panel6.add(primary_buttons.get(key_lbl));
+									}
+								}
+								panel6.remove(primary_buttons.get(a_id));
+								panel6.add(primary_labels.get(a_id));
+								panel6.repaint();
 
 							}
-							author_primary_storage.put(article_id,update_primary);
+						});
 
-							System.out.println(a_id + " " + update_primary.get(a_id));
-							System.out.println(a_id + " " + author_primary_storage.get(article_id).get(a_id));
-							
-							Set<Integer> label_keys = primary_labels.keySet();
-							for(int key_lbl:label_keys){
-							if(primary_labels.get(key_lbl).getParent()==panel6){
-								panel6.remove(primary_labels.get(key_lbl));
-
-								panel6.add(primary_buttons.get(key_lbl));
-							}
-							}
-							panel6.remove(primary_buttons.get(a_id));
-							panel6.add(primary_labels.get(a_id));
-							panel6.repaint();
-							
-						}});
-
-					primary_buttons.put(a_id,author_primary_btn );
+						primary_buttons.put(a_id, author_primary_btn);
 					}
 					HashMap<Integer, JTextField> author_components = new HashMap<Integer, JTextField>();
-				
+
 					JLabel field_label = new JLabel("First name:");
 					field_label.setBounds(author_x, author_y, 75, 30); // white
 																		// box
@@ -4609,7 +4665,6 @@ public class Main {
 				}
 			});
 
-			
 			final JXDatePicker datePickerAccepted = new JXDatePicker();
 			datePickerAccepted.setFormats(sdf);
 			final JLabel label_accepted = new JLabel();
@@ -4661,15 +4716,16 @@ public class Main {
 
 						current_issue.add_article(articles_id,
 								new Article(articles_id, lblTitleText.getText(), entered_sectionID, entered_pages,
-										lblAbstract.getText(),datePickerAccepted.getDate(), datePicker.getDate(), current_issue));
+										lblAbstract.getText(), datePickerAccepted.getDate(), datePicker.getDate(),
+										current_issue));
 						int[] selections = listbox.getSelectedIndices();
-						HashMap<Integer,Boolean> author_primary = new HashMap<Integer,Boolean>();
-						author_primary_storage.put(articles_id,author_primary);
+						HashMap<Integer, Boolean> author_primary = new HashMap<Integer, Boolean>();
+						author_primary_storage.put(articles_id, author_primary);
 						for (int index : selections) {
 							current_issue.add_author(articles_id, author_storage.get(author_list.get(index)));
 							author_primary.put(author_storage.get(author_list.get(index)).getId(), false);
 						}
-						author_primary_storage.put(articles_id,author_primary);
+						author_primary_storage.put(articles_id, author_primary);
 						article.dispose();
 						issue_storage.put(issue_id, current_issue);
 						Object[] new_row = { articles_id, issue_id, 1, "title", 1, "abstract", sdf.format(current),
@@ -4680,7 +4736,7 @@ public class Main {
 
 						article_screens.put(issue_id, issue_articles);
 						System.out.println(article_screens.get(issue_id).containsKey(articles_id));
-						
+
 						issue(issue_id);
 					} catch (NumberFormatException e) {
 						JOptionPane.showMessageDialog(null, "Use only numbers in fields: Pages, Section ID ");
@@ -5044,7 +5100,6 @@ public class Main {
 
 		database_setup();
 		populate_variables();
-
 
 		// file copy to use for file upload
 		// file_copy(1,"src/lib/db_xxs.png");
