@@ -9,11 +9,12 @@ public class Article {
 	private int section_id;
 	private int pages;
 	private String abstract_text;
+	private Date date_accepted;
 	private Date date_published;
 	private Issue issue_fk;
 	private ArrayList<Author> authors;
 
-	public Article(int id, String title, int section_id, int pages, String abstract_text, Date date_published,
+	public Article(int id, String title, int section_id, int pages, String abstract_text, Date date_accepted, Date date_published,
 			Issue issue_fk) {
 
 		this.title = title;
@@ -21,17 +22,19 @@ public class Article {
 		this.section_id = section_id;
 		this.pages = pages;
 		this.abstract_text = abstract_text;
+		this.date_accepted = date_accepted;
 		this.date_published = date_published;
 		this.issue_fk = issue_fk;
 		this.authors = new ArrayList<Author>();
 	}
-	public Article(int id, String title, int section_id, int pages, String abstract_text, Date date_published) {
+	public Article(int id, String title, int section_id, int pages, String abstract_text, Date date_accepted, Date date_published) {
 
 		this.title = title;
 		this.id = id;
 		this.section_id = section_id;
 		this.pages = pages;
 		this.abstract_text = abstract_text;
+		this.date_accepted = date_accepted;
 		this.date_published = date_published;
 		this.issue_fk = null;
 		this.authors = new ArrayList<Author>();
@@ -110,5 +113,13 @@ public class Article {
 	public void setIssue_fk(Issue issue_fk) {
 		this.issue_fk = issue_fk;
 	}
+	public Date getDate_accepted() {
+		return date_accepted;
+	}
+	public void setDate_accepted(Date date_accepted) {
+		this.date_accepted = date_accepted;
+	}
+	
+	
 
 }

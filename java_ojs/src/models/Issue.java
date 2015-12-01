@@ -14,10 +14,11 @@ public class Issue {
 	private int show_number;
 	private int show_year;
 	private HashMap<Integer, Article> articles_list;
+	private Date date_accepted;
 	private Date date_published;
 	
 	public Issue(int id, String title, int volume, int number, int year, String show_title, int show_volume, int show_number,
-			int show_year, Date date_published) {
+			int show_year, Date date_accepted, Date date_published) {
 		this.title = title;
 		this.id = id;
 		this.volume = volume;
@@ -27,10 +28,11 @@ public class Issue {
 		this.show_volume = show_volume;
 		this.show_number = show_number;
 		this.show_year = show_year;
+		this.date_accepted=date_accepted;
 		this.date_published = date_published;
 		this.articles_list = new  HashMap<Integer, Article>();
 	}
-	public Issue(int id, String title, int volume, int number, int year, Date date_published) {
+	public Issue(int id, String title, int volume, int number, int year, Date date_accepted, Date date_published) {
 		this.title = title;
 		this.id = id;
 		this.volume = volume;
@@ -40,11 +42,12 @@ public class Issue {
 		this.show_volume = volume;
 		this.show_number = number;
 		this.show_year = year;
+		this.date_accepted=date_accepted;
 		this.date_published = date_published;
 		this.articles_list = new  HashMap<Integer, Article>();
 	}
 	public Issue(int id, String title, int volume, int number, int year, String show_title, int show_volume, int show_number,
-			int show_year, Date date_published, int current_article_id) {
+			int show_year, Date date_accepted, Date date_published, int current_article_id) {
 		this.title = title;
 		this.id = id;
 		this.volume = volume;
@@ -54,6 +57,7 @@ public class Issue {
 		this.show_volume = show_volume;
 		this.show_number = show_number;
 		this.show_year = show_year;
+		this.date_accepted=date_accepted;
 		this.date_published = date_published;
 		this.articles_list = new  HashMap<Integer, Article>();
 	}
@@ -158,6 +162,12 @@ public class Issue {
 	}
 	public void remove_article(int id){
 		articles_list.remove(id);
+	}
+	public Date getDate_accepted() {
+		return date_accepted;
+	}
+	public void setDate_accepted(Date date_accepted) {
+		this.date_accepted = date_accepted;
 	}
 	
 	

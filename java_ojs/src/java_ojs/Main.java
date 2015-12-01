@@ -106,10 +106,10 @@ public class Main {
 	private static Statement stmt = null;
 	private String api_insert_or_replace_statement = "INSERT OR REPLACE INTO API(URL,ACCESS_KEY) VALUES (?,?)";
 	private String settings_insert_or_replace_statement = "INSERT OR REPLACE INTO SETTING(NAME,VALUE) VALUES (?,?)";
-	private String issue_insert_or_replace_statement = "INSERT OR REPLACE INTO ISSUE(id,title,volume,number,year,show_title,show_volume,show_number,show_year,date_published) VALUES (?,?,?,?,?,?,?,?,?,?)";
+	private String issue_insert_or_replace_statement = "INSERT OR REPLACE INTO ISSUE(id,title,volume,number,year,show_title,show_volume,show_number,show_year,date_published,date_accepted) VALUES (?,?,?,?,?,?,?,?,?,?,?)";
 	private String section_insert_or_replace_statement = "INSERT OR REPLACE INTO SECTION(id,title) VALUES (?,?)";
 	private String author_insert_or_replace_statement = "INSERT OR REPLACE INTO AUTHOR(id,first_name,middle_name,last_name,email,affiliation,bio,orcid,department,country) VALUES (?,?,?,?,?,?,?,?,?,?)";
-	private String article_insert_or_replace_statement = "INSERT OR REPLACE INTO ARTICLE(id,title,section_id,pages,abstract,date_published) VALUES (?,?,?,?,?,?)";
+	private String article_insert_or_replace_statement = "INSERT OR REPLACE INTO ARTICLE(id,title,section_id,pages,abstract,date_published,date_accepted) VALUES (?,?,?,?,?,?,?)";
 	private String article_author_insert_or_replace_statement = "INSERT OR REPLACE INTO ARTICLE_AUTHOR(id,article_id,author_id,primary_author) VALUES (?,?,?,?)";
 	private String issue_article_insert_or_replace_statement = "INSERT OR REPLACE INTO ISSUE_ARTICLE(id,article_id,issue_id) VALUES (?,?,?)";
 	private String file_insert_or_replace_statement = "INSERT OR REPLACE INTO FILE(id,article_id,path) VALUES (?,?,?)";
@@ -239,6 +239,8 @@ public class Main {
 				issue_prep.setInt(8, save_issue.getShow_number());
 				issue_prep.setInt(9, save_issue.getShow_year());
 				issue_prep.setString(10, sdf.format(save_issue.getDate_published()));
+
+				issue_prep.setString(11, sdf.format(save_issue.getDate_accepted()));
 				issue_prep.executeUpdate();
 				int i = 1;
 				int j = 1;
@@ -251,6 +253,8 @@ public class Main {
 					article_prep.setInt(4, save_article.getPages());
 					article_prep.setString(5, save_article.getAbstract_text());
 					article_prep.setString(6, sdf.format(save_article.getDate_published()));
+
+					article_prep.setString(7, sdf.format(save_article.getDate_accepted()));
 					article_prep.executeUpdate();
 					PreparedStatement issue_article_prep = c
 							.prepareStatement(issue_article_insert_or_replace_statement);
@@ -361,10 +365,12 @@ public class Main {
 				int show_volume = rs.getInt("volume");
 				int show_number = rs.getInt("number");
 				int show_year = rs.getInt("year");
+
+				String date_accepted = rs.getString("date_accepted");
 				String date = rs.getString("date_published");
 				Issue issue = null;
 				issue = new Issue(id, title, volume, number, year, show_title, show_volume, show_number, show_year,
-						sdf.parse(date));
+						sdf.parse(date_accepted),sdf.parse(date));
 
 				// JOptionPane.showMessageDialog(null, "Deleted");
 
@@ -400,8 +406,9 @@ public class Main {
 				String abstract_text = art_s.getString(rsmd.getColumnName(5));
 
 				String date = art_s.getString(rsmd.getColumnName(6));
+				String date_accepted = art_s.getString(rsmd.getColumnName(7));
 				Article article = null;
-				article = new Article(id, title, section_id, pages, abstract_text, sdf.parse(date));
+				article = new Article(id, title, section_id, pages, abstract_text, sdf.parse(date_accepted), sdf.parse(date));
 				ResultSet rs_issue = c.createStatement().executeQuery(
 						"SELECT issue_id FROM ISSUE_ARTICLE WHERE article_id=" + Integer.toString(id) + ";");
 				int issue_id = rs_issue.getInt("issue_id");
@@ -523,7 +530,7 @@ public class Main {
 			sql = "CREATE TABLE IF NOT EXISTS ISSUE" + "(id INTEGER PRIMARY KEY," + " title CHAR(500) NOT NULL,"
 					+ "volume INTEGER," + "number INTEGER," + "year INTEGER," + " show_title CHAR(500) NOT NULL,"
 					+ "show_volume INTEGER," + "show_number INTEGER," + "show_year INTEGER,"
-					+ "date_published CHAR(50))";
+					+ "date_published CHAR(50),"+ "date_accepted CHAR(50)"+")";
 			stmt.executeUpdate(sql);
 			sql = "CREATE TABLE IF NOT EXISTS SECTION" + "(id INTEGER PRIMARY KEY," + " title CHAR(250) NOT NULL)";
 			stmt.executeUpdate(sql);
@@ -533,7 +540,7 @@ public class Main {
 					+ " orcid CHAR(100)," + " department CHAR(300) NOT NULL," + " country CHAR(300) NOT NULL" + ")";
 			stmt.executeUpdate(sql);
 			sql = "CREATE TABLE IF NOT EXISTS ARTICLE" + "(id INTEGER PRIMARY KEY," + " title CHAR(500) NOT NULL,"
-					+ "section_id INTEGER," + "pages INTEGER," + " abstract CHAR(2000)," + "date_published CHAR(50),"
+					+ "section_id INTEGER," + "pages INTEGER," + " abstract CHAR(2000)," + "date_published CHAR(50),"+ "date_accepted CHAR(50),"
 					+ "FOREIGN KEY (section_id) REFERENCES SECTION(id)" + ")";
 			stmt.executeUpdate(sql);
 			sql = "CREATE TABLE IF NOT EXISTS FILE" + "(id INTEGER PRIMARY KEY," + " article_id INTEGER,"
@@ -1201,14 +1208,14 @@ public class Main {
 					data.add("Edit");
 					data.add("Delete");
 					Object[] row = { row_issue.getId(), row_issue.getShow_title(), row_issue.getShow_volume(),
-							row_issue.getShow_number(), row_issue.getShow_year(),
+							row_issue.getShow_number(), row_issue.getShow_year(),sdf.format(row_issue.getDate_accepted()),
 							sdf.format(row_issue.getDate_published()), "View", "Edit", "Delete" };
 					rows[i] = row;
 					i++;
 					rowData.add(data);
 
 				}
-				Object columnNames[] = { "ID", "Title", "Volume", "Number", "Year", "Date Published", "", "", "" };
+				Object columnNames[] = { "ID", "Title", "Volume", "Number", "Year","Date Accepted", "Date Published", "", "", "" };
 				issues.getContentPane().setLayout(null);
 
 				final JButton btnSync = new JButton("Sync");
@@ -1415,9 +1422,9 @@ public class Main {
 						// ((DefaultTableModel)table.getModel()).removeRow(modelRow);
 					}
 				};
-				ButtonColumn buttonColumn = new ButtonColumn(issues_table, view, 6);
-				ButtonColumn buttonColumn2 = new ButtonColumn(issues_table, edit, 7);
-				ButtonColumn buttonColumn3 = new ButtonColumn(issues_table, delete, 8);
+				ButtonColumn buttonColumn = new ButtonColumn(issues_table, view, 7);
+				ButtonColumn buttonColumn2 = new ButtonColumn(issues_table, edit, 8);
+				ButtonColumn buttonColumn3 = new ButtonColumn(issues_table, delete, 9);
 
 				JLabel lblIssues = new JLabel("Issues");
 				lblIssues.setBackground(new Color(220, 20, 60));
@@ -1602,13 +1609,13 @@ public class Main {
 			lblyear.setForeground(new Color(245, 255, 250));
 			lblyear.setBounds(80, 347, width_small - 161, 16);
 			edit_issue.getContentPane().add(lblyear);
-
+			
 			SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
-			JLabel lblDatePublished = new JLabel("Date Published");
-			lblDatePublished.setHorizontalAlignment(SwingConstants.CENTER);
-			lblDatePublished.setForeground(new Color(245, 255, 250));
-			lblDatePublished.setBounds(80, 394, width_small - 161, 16);
-			edit_issue.getContentPane().add(lblDatePublished);
+			JLabel lblDateAccepted = new JLabel("Date Accepted");
+			lblDateAccepted.setHorizontalAlignment(SwingConstants.CENTER);
+			lblDateAccepted.setForeground(new Color(245, 255, 250));
+			lblDateAccepted.setBounds(80, 394, width_small - 161, 16);
+			edit_issue.getContentPane().add(lblDateAccepted);
 
 			final JXDatePicker datePicker = new JXDatePicker();
 			datePicker.setFormats(sdf);
@@ -1622,54 +1629,72 @@ public class Main {
 			datePicker.setBounds(100, 410, width_small - 200, 30);
 			// panel.add(label);
 			edit_issue.getContentPane().add(datePicker);
+			JLabel lblDatePublished = new JLabel("Date Published");
+			lblDatePublished.setHorizontalAlignment(SwingConstants.CENTER);
+			lblDatePublished.setForeground(new Color(245, 255, 250));
+			lblDatePublished.setBounds(80, 441, width_small - 161, 16);
+			edit_issue.getContentPane().add(lblDatePublished);
+
+			final JXDatePicker datePickerPublished = new JXDatePicker();
+			datePickerPublished.setFormats(sdf);
+
+			datePickerPublished.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					System.out.println(datePickerPublished.getDate());
+				}
+			});
+			;
+			datePickerPublished.setBounds(100, 460, width_small - 200, 30);
+			// panel.add(label);
+			edit_issue.getContentPane().add(datePickerPublished);
 			JLabel lblShowDisplay = new JLabel("---- Display Values ----");
 			lblShowDisplay.setForeground(new Color(245, 255, 250));
 			lblShowDisplay.setHorizontalAlignment(SwingConstants.CENTER);
-			lblShowDisplay.setBounds(74, 452, width_small - 151, 16);
+			lblShowDisplay.setBounds(74, 495, width_small - 151, 16);
 			edit_issue.getContentPane().add(lblShowDisplay);
 
 			final JTextField show_title = new JTextField();
-			show_title.setBounds(100, 502, width_small - 200, 26);
+			show_title.setBounds(100, 542, width_small - 200, 26);
 			edit_issue.getContentPane().add(show_title);
 			show_title.setColumns(10);
 
 			JLabel lblShowTitleText = new JLabel("Show Title");
 			lblShowTitleText.setForeground(new Color(245, 255, 250));
 			lblShowTitleText.setHorizontalAlignment(SwingConstants.CENTER);
-			lblShowTitleText.setBounds(74, 482, width_small - 151, 16);
+			lblShowTitleText.setBounds(74, 522, width_small - 151, 16);
 			edit_issue.getContentPane().add(lblShowTitleText);
 
 			final JTextField show_volume = new JTextField();
-			show_volume.setBounds(100, 550, width_small - 200, 26);
+			show_volume.setBounds(100, 590, width_small - 200, 26);
 			edit_issue.getContentPane().add(show_volume);
 			show_volume.setColumns(10);
 
 			JLabel lblShowVolume = new JLabel("Show Volume");
 			lblShowVolume.setForeground(new Color(245, 255, 250));
 			lblShowVolume.setHorizontalAlignment(SwingConstants.CENTER);
-			lblShowVolume.setBounds(74, 530, width_small - 151, 16);
+			lblShowVolume.setBounds(74, 570, width_small - 151, 16);
 			edit_issue.getContentPane().add(lblShowVolume);
 
 			final JTextField show_number = new JTextField();
-			show_number.setBounds(100, 600, width_small - 200, 26);
+			show_number.setBounds(100, 640, width_small - 200, 26);
 			edit_issue.getContentPane().add(show_number);
 			show_number.setColumns(10);
 
 			JLabel lblShowNumber = new JLabel("Show Number");
 			lblShowNumber.setForeground(new Color(245, 255, 250));
 			lblShowNumber.setHorizontalAlignment(SwingConstants.CENTER);
-			lblShowNumber.setBounds(74, 580, width_small - 151, 16);
+			lblShowNumber.setBounds(74, 620, width_small - 151, 16);
 			edit_issue.getContentPane().add(lblShowNumber);
 
 			final JTextField show_year = new JTextField();
-			show_year.setBounds(100, 650, width_small - 200, 26);
+			show_year.setBounds(100, 690, width_small - 200, 26);
 			edit_issue.getContentPane().add(show_year);
 			show_year.setColumns(10);
 
 			JLabel lblShowYear = new JLabel("Show Year");
 			lblShowYear.setForeground(new Color(245, 255, 250));
 			lblShowYear.setHorizontalAlignment(SwingConstants.CENTER);
-			lblShowYear.setBounds(74, 630, width_small - 151, 16);
+			lblShowYear.setBounds(74, 670, width_small - 151, 16);
 			edit_issue.getContentPane().add(lblShowYear);
 
 			title.getDocument().addDocumentListener(new DocumentListener() {
@@ -1755,7 +1780,7 @@ public class Main {
 						int entered_show_year = Integer.parseInt(show_year.getText());
 						i_id++;
 						Issue issue = new Issue(i_id, title.getText(), entered_volume, entered_number, entered_year,
-								datePicker.getDate());
+								datePicker.getDate(),datePickerPublished.getDate());
 						issue.setShow_title(show_title.getText());
 						issue.setShow_volume(entered_show_volume);
 						issue.setShow_year(entered_show_year);
@@ -1785,9 +1810,9 @@ public class Main {
 				}
 			});
 			if (height_small - 150 > 300) {
-				btnSubmit.setBounds(((width_small / 3) * 2) / 2, height_small - 100, width_small / 3, 29);
+				btnSubmit.setBounds(((width_small / 3) * 2) / 2, height_small - 70, width_small / 3, 29);
 			} else {
-				btnSubmit.setBounds(((width_small / 3) * 2) / 2, 350, width_small / 3, 29);
+				btnSubmit.setBounds(((width_small / 3) * 2) / 2, 380, width_small / 3, 29);
 			}
 
 			edit_issue.getContentPane().add(btnSubmit);
@@ -4417,10 +4442,15 @@ public class Main {
 			lblIssueId.setFont(new Font("Dialog", Font.BOLD, 14));
 			lblIssueId.setText(Integer.toString(issue_id));
 
+			final JLabel lblDateAccepted = new JLabel("Date Accepted:");
+			lblDateAccepted.setForeground(Color.BLACK);
+			lblDateAccepted.setFont(new Font("Dialog", Font.BOLD, 14));
+			lblDateAccepted.setBounds(24, 199, 150, 30);
+			panel.add(lblDateAccepted);
 			final JLabel lblDatePublished = new JLabel("Date Published:");
 			lblDatePublished.setForeground(Color.BLACK);
 			lblDatePublished.setFont(new Font("Dialog", Font.BOLD, 14));
-			lblDatePublished.setBounds(24, 195, 150, 30);
+			lblDatePublished.setBounds(24, 231, 150, 30);
 			panel.add(lblDatePublished);
 			Date current = new Date();
 
@@ -4527,6 +4557,21 @@ public class Main {
 				}
 			});
 
+			
+			final JXDatePicker datePickerAccepted = new JXDatePicker();
+			datePickerAccepted.setFormats(sdf);
+			final JLabel label_accepted = new JLabel();
+			label_accepted.setText("Choose Date by selecting below.");
+			datePickerAccepted.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					label_accepted.setText(datePickerAccepted.getDate().toString());
+					System.out.println(datePickerAccepted.getDate());
+				}
+			});
+			label_accepted.setBounds(160, 250, 100, 25);
+			datePickerAccepted.setBounds(156, 202, 160, 30);
+			// panel.add(label);
+			panel.add(datePickerAccepted);
 			final JLabel label = new JLabel();
 			label.setText("Choose Date by selecting below.");
 			final JXDatePicker datePicker = new JXDatePicker();
@@ -4539,7 +4584,7 @@ public class Main {
 				}
 			});
 			label.setBounds(160, 250, 100, 25);
-			datePicker.setBounds(156, 198, 160, 30);
+			datePicker.setBounds(156, 234, 160, 30);
 			// panel.add(label);
 			panel.add(datePicker);
 
@@ -4559,13 +4604,12 @@ public class Main {
 						issue_screens.get(issue_id).dispose();
 						articles_id++;
 						list_issues.replace(issue_id, articles_id);
-						Date current = new Date();
 						SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
 						Issue current_issue = issue_storage.get(issue_id);
 
 						current_issue.add_article(articles_id,
 								new Article(articles_id, lblTitleText.getText(), entered_sectionID, entered_pages,
-										lblAbstract.getText(), datePicker.getDate(), current_issue));
+										lblAbstract.getText(),datePickerAccepted.getDate(), datePicker.getDate(), current_issue));
 						int[] selections = listbox.getSelectedIndices();
 						HashMap<Integer,Boolean> author_primary = new HashMap<Integer,Boolean>();
 						author_primary_storage.put(articles_id,author_primary);
@@ -4618,15 +4662,15 @@ public class Main {
 			article.getContentPane().add(btnSave);
 			Panel panel10 = new Panel();
 			panel10.setBackground(new Color(153, 102, 51));
-			panel10.setBounds(115, 280, 225, 190);
+			panel10.setBounds(115, 310, 225, 160);
 			JTextArea lblFile = new JTextArea("");
 			lblFile.setForeground(Color.WHITE);
 			lblFile.setEnabled(false);
-			lblFile.setBounds(115, 280, 225, 190);
+			lblFile.setBounds(115, 310, 225, 160);
 			lblFile.setToolTipText("");
 			JScrollPane fileSection = new JScrollPane(lblFile);
 			fileSection.setPreferredSize(new Dimension(300 * 2, 200));
-			fileSection.setBounds(20, 280, 225, 190);
+			fileSection.setBounds(20, 310, 225, 160);
 			fileSection.add(panel10);
 			fileSection.createHorizontalScrollBar();
 			panel.add(fileSection);
@@ -4634,7 +4678,7 @@ public class Main {
 			JFileChooser chooser = new JFileChooser();
 			JButton select = new JButton("Browse");
 
-			select.setBounds(20, 240, 90, 30);
+			select.setBounds(20, 276, 90, 30);
 			panel.add(select);
 			JButton upload = new JButton("Upload");
 			upload.setEnabled(false);
@@ -4692,7 +4736,7 @@ public class Main {
 			});
 
 			btnClear.setEnabled(false);
-			upload.setBounds(156, 240, 90, 30);
+			upload.setBounds(156, 276, 90, 30);
 			btnClear.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent arg0) {
 					if (file_storage.containsKey(current_id)) {
@@ -4717,7 +4761,7 @@ public class Main {
 				}
 			});
 
-			btnClear.setBounds(252, 285, 65, 30);
+			btnClear.setBounds(252, 315, 65, 30);
 			panel.add(btnClear);
 			panel.add(upload);
 
