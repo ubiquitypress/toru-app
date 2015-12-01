@@ -3384,9 +3384,31 @@ public class Main {
 							SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
 							Issue current_issue = issue_storage.get(issue_id);
 
+							ArrayList<Integer> removed_authors = new ArrayList<Integer>();
+							ArrayList<Integer> new_authors = new ArrayList<Integer>();
+							for (int index : selections) {
+								new_authors.add(author_list.get(index));
+							}
+							Set<Integer> previous_authors = author_primary_storage.get(article_id).keySet();
+							for (int index : previous_authors) {
+								if(!new_authors.contains(index)){
+									removed_authors.add(index);
+								}
+							}
+							HashMap<Integer,Boolean>primary_storage = author_primary_storage.get(article_id);
+							for(int i=0;i<removed_authors.size();i++){
+								primary_storage.remove(removed_authors.get(i));
+							}
+							for(int i=0;i<new_authors.size();i++){
+								if (!primary_storage.containsKey(new_authors.get(i))){
+								primary_storage.put(new_authors.get(i),false);}
+							}
+							author_primary_storage.put(article_id,primary_storage);
 							current_issue.reset_authors(article_id);
 							for (int index : selections) {
-								current_issue.add_author(article_id, author_storage.get(author_list.get(index)));
+								Author new_author = author_storage.get(author_list.get(index));
+								current_issue.add_author(article_id, new_author);
+							
 							}
 							issue_storage.put(issue_id, current_issue);
 							article.dispose();
