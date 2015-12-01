@@ -2514,8 +2514,8 @@ public class Main {
 				Date date = new Date();
 				Issue row_issue = issue_storage.get(issue_id);
 				Object issue_rowData[][] = { { row_issue.getId(), row_issue.getTitle(), row_issue.getVolume(),
-						row_issue.getNumber(), row_issue.getYear(), sdf.format(row_issue.getDate_published()) } };
-				Object issue_columnNames[] = { "ID", "Title", "Volume", "Number", "Year", "Date Published" };
+						row_issue.getNumber(), row_issue.getYear(), sdf.format(row_issue.getDate_accepted()), sdf.format(row_issue.getDate_published()) } };
+				Object issue_columnNames[] = { "ID", "Title", "Volume", "Number", "Year", "Date Accepted", "Date Published" };
 
 				DefaultTableModel issue_dtm = new DefaultTableModel(issue_rowData, issue_columnNames);
 
