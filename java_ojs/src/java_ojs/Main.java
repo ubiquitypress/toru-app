@@ -773,14 +773,20 @@ public class Main {
 				final JButton btnSync1 = new JButton("Sync");
 				btnSync1.setBounds(width_small - 155, 68, 70, 25);
 				settings.getContentPane().add(btnSync1);
-
+				final JButton btnBasic = new JButton("Basic");
+				btnBasic.setBounds(width_small/2 + 20, 185, 100, 25);
+				settings.getContentPane().add(btnBasic);
+				final JButton btnAdvanced = new JButton("Advanced");
+				btnAdvanced.setBounds(width_small/2 + 120, 185, 100, 25);
+				settings.getContentPane().add(btnAdvanced);
+				
 				JLabel lblSettings = new JLabel("Settings");
 				lblSettings.setBackground(new Color(128, 0, 128));
 				lblSettings.setOpaque(true);
 				lblSettings.setForeground(new Color(255, 255, 255));
 				lblSettings.setFont(new Font("URW Gothic L", Font.BOLD, 24));
 				lblSettings.setHorizontalAlignment(SwingConstants.CENTER);
-				lblSettings.setBounds((width_small / 2) - 83, 128, 160, 30);
+				lblSettings.setBounds((width_small/2) - 83, 128, 160, 30);
 				settings.getContentPane().add(lblSettings);
 				JScrollPane scrollSettings = new JScrollPane();
 				scrollSettings.setBounds(40, 180, width_small - 80, height_small - 300);
@@ -789,13 +795,13 @@ public class Main {
 
 				panelSettings.setLayout(null);
 				panelSettings.setAutoscrolls(true);
-				int y = 10;
+				int y = 30;
 				int settings_height = 210 + 30 * (setting_keys.size() - 8);
 				panelSettings.setPreferredSize(new Dimension(width_small - 80, settings_height));
 				JScrollPane scrollFrame = new JScrollPane(panelSettings);
 				panelSettings.setAutoscrolls(true);
 				scrollFrame.setPreferredSize(new Dimension(320, 200));
-				scrollFrame.setBounds(40, 180, width_small - 80, height_small - 300);
+				scrollFrame.setBounds(40, 220, width_small - 80, height_small - 350);
 				// scrollSettings.setViewportView(scrollFrame);
 				settings.getContentPane().add(scrollFrame);
 				for (int i = 0; i < setting_keys.size(); i++) {
@@ -817,7 +823,7 @@ public class Main {
 						});
 						done = true;
 						panelSettings.add(chckbxSampleSetting);
-						y = y + 25;
+						y = y + 28;
 					}
 					if (!done) {
 						try {
