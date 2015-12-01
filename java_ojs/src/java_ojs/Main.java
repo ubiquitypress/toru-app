@@ -97,6 +97,8 @@ public class Main {
 	private static HashMap<Integer, Issue> issue_storage;
 	private static HashMap<Integer, Section> section_storage;
 	private static HashMap<Integer, Author> author_storage;
+
+	private static HashMap<Integer,HashMap<Integer, Boolean>> author_primary_storage;
 	private static HashMap<Integer, HashMap<Integer, ArticleFile>> file_storage;
 	private static HashMap<Integer, HashMap<Integer, JFrame>> article_screens;
 	private static ArrayList<String> setting_keys = new ArrayList<String>();
@@ -108,7 +110,7 @@ public class Main {
 	private String section_insert_or_replace_statement = "INSERT OR REPLACE INTO SECTION(id,title) VALUES (?,?)";
 	private String author_insert_or_replace_statement = "INSERT OR REPLACE INTO AUTHOR(id,first_name,middle_name,last_name,email,affiliation,bio,orcid,department,country) VALUES (?,?,?,?,?,?,?,?,?,?)";
 	private String article_insert_or_replace_statement = "INSERT OR REPLACE INTO ARTICLE(id,title,section_id,pages,abstract,date_published) VALUES (?,?,?,?,?,?)";
-	private String article_author_insert_or_replace_statement = "INSERT OR REPLACE INTO ARTICLE_AUTHOR(id,article_id,author_id) VALUES (?,?,?)";
+	private String article_author_insert_or_replace_statement = "INSERT OR REPLACE INTO ARTICLE_AUTHOR(id,article_id,author_id,primary_author) VALUES (?,?,?,?)";
 	private String issue_article_insert_or_replace_statement = "INSERT OR REPLACE INTO ISSUE_ARTICLE(id,article_id,issue_id) VALUES (?,?,?)";
 	private String file_insert_or_replace_statement = "INSERT OR REPLACE INTO FILE(id,article_id,path) VALUES (?,?,?)";
 
@@ -264,6 +266,7 @@ public class Main {
 						article_author_prep.setInt(1, j);
 						article_author_prep.setInt(2, save_article.getId());
 						article_author_prep.setInt(3, author.getId());
+						article_author_prep.setBoolean(4, author_primary_storage.get(save_article.getId()).get(author.getId()));
 						article_author_prep.executeUpdate();
 						j = j + 1;
 					}
@@ -293,6 +296,7 @@ public class Main {
 		article_screens = new HashMap<Integer, HashMap<Integer, JFrame>>();
 		author_storage = new HashMap<Integer, Author>();
 		section_storage = new HashMap<Integer, Section>();
+		author_primary_storage = new HashMap<Integer, HashMap<Integer,Boolean>>();
 		try {
 			ResultSet rs = c.createStatement().executeQuery("SELECT * FROM API WHERE URL=" + "'api'" + ";");
 			while (rs.next()) {
@@ -319,7 +323,7 @@ public class Main {
 
 					Set<Map> keys = array.keySet();
 					Object jsn_keys[] = keys.toArray();
-
+					System.out.println("Loading settings....");
 					for (Object k : jsn_keys) {
 						String setting_name = k.toString();
 
@@ -331,7 +335,6 @@ public class Main {
 
 					
 					}
-
 				
 
 
@@ -343,6 +346,7 @@ public class Main {
 			
 			
 
+				System.out.println("Loading Issue data....");
 			SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
 			rs = c.createStatement().executeQuery("SELECT * FROM ISSUE ORDER BY id ASC;");
 			while (rs.next()) {
@@ -369,6 +373,7 @@ public class Main {
 				i_id = id;
 			}
 			rs.close();
+			System.out.println("Loading Section data....");
 			ResultSet sect_s = c.createStatement().executeQuery("SELECT * FROM SECTION ORDER BY id ASC;");
 			while (sect_s.next()) {
 				int id = sect_s.getInt("id");
@@ -378,6 +383,7 @@ public class Main {
 				section_db_id = id;
 			}
 			sect_s.close();
+			System.out.println("Loading Article data....");
 			ResultSet art_s = c.createStatement().executeQuery("SELECT * FROM ARTICLE ORDER BY id ASC;");
 			ResultSetMetaData rsmd = art_s.getMetaData();
 			System.out.println(rsmd.getColumnName(2));
@@ -385,7 +391,7 @@ public class Main {
 				int id = art_s.getInt("id");
 				String title = art_s.getString("title");
 				int section_id = art_s.getInt("section_id");
-
+				author_primary_storage.put(id,new HashMap<Integer,Boolean>());
 				HashMap<Integer, ArticleFile> files = new HashMap<Integer, ArticleFile>();
 				file_storage.put(id, files);
 				int pages = art_s.getInt(rsmd.getColumnName(4));
@@ -411,6 +417,8 @@ public class Main {
 				rs_issue.close();
 			}
 			art_s.close();
+
+			System.out.println("Loading Author data....");
 			ResultSet authors_s = c.createStatement().executeQuery("SELECT * FROM AUTHOR ORDER BY id ASC;");
 			ResultSetMetaData author_rsmd = authors_s.getMetaData();
 			while (authors_s.next()) {
@@ -434,6 +442,7 @@ public class Main {
 			}
 			authors_s.close();
 
+			System.out.println("Loading File data....");
 			ResultSet rs_files = c.createStatement().executeQuery("SELECT id,article_id,path FROM FILE");
 			while (rs_files.next()) {
 				int id = rs_files.getInt(1);
@@ -452,17 +461,21 @@ public class Main {
 			for (int key_author : author_keys) {
 				Author author = author_storage.get(key_author);
 				try {
-					PreparedStatement prep = c.prepareStatement("SELECT author_id,article_id FROM ARTICLE_AUTHOR");
+					PreparedStatement prep = c.prepareStatement("SELECT author_id,article_id,primary_author FROM ARTICLE_AUTHOR");
 
 					ResultSet rs_author = prep.executeQuery();
 					while (rs_author.next()) {
 						int author_id = rs_author.getInt(1);
 
 						int article_id = rs_author.getInt(2);
+
+						Boolean primary = rs_author.getBoolean(3);
 						System.out.println(author_id + " - " + author.getId());
 						if (author_id == author.getId()) {
 							System.out.println(author.getFull_name() + " " + Integer.toString(article_id));
-
+							HashMap<Integer,Boolean> primary_authors = author_primary_storage.get(article_id); 
+							primary_authors.put(author_id, primary);
+							author_primary_storage.put(article_id,primary_authors);
 							ResultSet rs_new_issue = c.createStatement()
 									.executeQuery("SELECT issue_id FROM ISSUE_ARTICLE;");
 							while (rs_new_issue.next()) {
@@ -528,7 +541,7 @@ public class Main {
 					+ "FOREIGN KEY (issue_id) REFERENCES ISSUE(id)" + ")";
 			stmt.executeUpdate(sql);
 			sql = "CREATE TABLE IF NOT EXISTS ARTICLE_AUTHOR" + "(id INTEGER PRIMARY KEY," + " article_id INTEGER,"
-					+ " author_id INTEGER," + "FOREIGN KEY (article_id) REFERENCES ARTICLE(id),"
+					+ " author_id INTEGER," +"primary_author BOOLEAN DEFAULT FALSE,"+ "FOREIGN KEY (article_id) REFERENCES ARTICLE(id),"
 					+ "FOREIGN KEY (author_id) REFERENCES AUTHOR(id)" + ")";
 			stmt.executeUpdate(sql);
 		} catch (Exception e) {
@@ -3373,7 +3386,9 @@ public class Main {
 				final HashMap<Integer, JTextArea> authors_bio = new HashMap<Integer, JTextArea>();
 
 				ArrayList<Author> authors = current_article.getAuthors();
-
+				final HashMap<Integer, JButton> primary_buttons = new HashMap<Integer, JButton> ();
+				final HashMap<Integer, JLabel> primary_labels = new HashMap<Integer, JLabel> ();
+				
 				int author_x = 16;
 				int author_y = 60;
 				int separation_horizontal = 205;
@@ -3383,13 +3398,81 @@ public class Main {
 
 					separation_horizontal = 205 * i;
 					author_x = author_x + separation_horizontal;
-
-					JLabel author_num = new JLabel(Integer.toString(i + 1));
-					author_num.setBounds(87 + author_x, 35, 156, 16);
-					panel6.add(author_num);
-
-					HashMap<Integer, JTextField> author_components = new HashMap<Integer, JTextField>();
 					Author author = authors.get(i);
+					JLabel author_num = new JLabel(Integer.toString(i + 1));
+					author_num.setBounds(20 + author_x, 35, 40, 16);
+					
+					panel6.add(author_num);
+					Boolean primary= author_primary_storage.get(article_id).get(author.getId());
+					
+					if (primary){
+						JLabel author_primary = new JLabel("PRIMARY");
+						author_primary.setBounds(60 + author_x, 35, 80, 16);
+						primary_labels.put(author.getId(), author_primary);
+						panel6.add(author_primary);
+
+						JButton author_primary_btn = new JButton("Make Primary");
+						author_primary_btn.setBounds(60 + author_x, 33, 120, 25);
+						int a_id=author.getId();
+						author_primary_btn.addActionListener(new ActionListener() {
+							public void actionPerformed(ActionEvent arg0) {
+								
+								HashMap<Integer,Boolean> update_primary= author_primary_storage.get(article_id);
+							
+								Set<Integer> primary_keys = update_primary.keySet();
+								for(int pkey:primary_keys){
+									if(pkey!=a_id){
+										update_primary.put(a_id, false);
+									}else{
+										update_primary.put(a_id, true);
+									}
+								}
+								Set<Integer> label_keys = primary_labels.keySet();
+								for(int key_lbl:label_keys){
+								if(primary_labels.get(key_lbl).getParent()==panel6){
+									panel6.remove(primary_labels.get(key_lbl));
+
+									panel6.add(primary_buttons.get(key_lbl));
+								}
+								}
+								panel6.remove(primary_buttons.get(a_id));
+								panel6.add(primary_labels.get(a_id));
+								panel6.repaint();
+								
+							}});
+						primary_buttons.put(a_id,author_primary_btn );
+					}else{
+
+						JLabel author_primary = new JLabel("PRIMARY");
+						author_primary.setBounds(60 + author_x, 35, 80, 16);
+						primary_labels.put(author.getId(), author_primary);
+					JButton author_primary_btn = new JButton("Make Primary");
+					author_primary_btn.setBounds(60 + author_x, 33, 120, 25);
+					panel6.add(author_primary_btn);
+					int a_id=author.getId();
+					author_primary_btn.addActionListener(new ActionListener() {
+						public void actionPerformed(ActionEvent arg0) {
+							
+							HashMap<Integer,Boolean> update_buttons= author_primary_storage.get(article_id);
+							
+							Set<Integer> label_keys = primary_labels.keySet();
+							for(int key_lbl:label_keys){
+							if(primary_labels.get(key_lbl).getParent()==panel6){
+								panel6.remove(primary_labels.get(key_lbl));
+
+								panel6.add(primary_buttons.get(key_lbl));
+							}
+							}
+							panel6.remove(primary_buttons.get(a_id));
+							panel6.add(primary_labels.get(a_id));
+							panel6.repaint();
+							
+						}});
+
+					primary_buttons.put(a_id,author_primary_btn );
+					}
+					HashMap<Integer, JTextField> author_components = new HashMap<Integer, JTextField>();
+				
 					JLabel field_label = new JLabel("First name:");
 					field_label.setBounds(author_x, author_y, 75, 30); // white
 																		// box
@@ -4423,9 +4506,13 @@ public class Main {
 								new Article(articles_id, lblTitleText.getText(), entered_sectionID, entered_pages,
 										lblAbstract.getText(), datePicker.getDate(), current_issue));
 						int[] selections = listbox.getSelectedIndices();
+						HashMap<Integer,Boolean> author_primary = new HashMap<Integer,Boolean>();
+						author_primary_storage.put(articles_id,author_primary);
 						for (int index : selections) {
 							current_issue.add_author(articles_id, author_storage.get(author_list.get(index)));
+							author_primary.put(author_storage.get(author_list.get(index)).getId(), false);
 						}
+						author_primary_storage.put(articles_id,author_primary);
 						article.dispose();
 						issue_storage.put(issue_id, current_issue);
 						Object[] new_row = { articles_id, issue_id, 1, "title", 1, "abstract", sdf.format(current),
@@ -4436,7 +4523,7 @@ public class Main {
 
 						article_screens.put(issue_id, issue_articles);
 						System.out.println(article_screens.get(issue_id).containsKey(articles_id));
-
+						
 						issue(issue_id);
 					} catch (NumberFormatException e) {
 						JOptionPane.showMessageDialog(null, "Use only numbers in fields: Pages, Section ID ");
