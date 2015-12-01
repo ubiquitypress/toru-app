@@ -1167,12 +1167,12 @@ public class Main {
 				// show_number, show_year, date_published]
 				issues = new JFrame();
 				issues.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-				if (height >= 480 && width >= 640) {
+				if (height >= 640 && width >= 900) {
 					issues.setSize(width, height);
 				} else {
-					width = 640;
-					height = 480;
-					issues.setSize(640, 480);
+					width = 900;
+					height = 640;
+					issues.setSize(900, 640);
 				}
 				SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
 				issues.getContentPane().setBackground(new Color(105, 105, 105));
@@ -1539,7 +1539,7 @@ public class Main {
 				width_small = (int) (640 - (640 * (37.5 / 100)));
 			}
 			final int current_id = i_id + 1;
-			height_small = (int) (800 - (800 * (5 / 100)));
+			height_small = (int) (810 - (810 * (5 / 100)));
 			final JFrame edit_issue = new JFrame();
 			issue_screens.put(i_id, edit_issue);
 			edit_issue.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -1859,7 +1859,7 @@ public class Main {
 					width_small = (int) (640 - (640 * (37.5 / 100)));
 				}
 
-				height_small = (int) (800 - (800 * (5 / 100)));
+				height_small = (int) (810 - (810 * (5 / 100)));
 				final JFrame edit_issue = new JFrame();
 				issue_screens.put(issue_id, edit_issue);
 				edit_issue.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -1935,11 +1935,11 @@ public class Main {
 				edit_issue.getContentPane().add(lblyear);
 
 				SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
-				JLabel lblDatePublished = new JLabel("Date Published");
-				lblDatePublished.setHorizontalAlignment(SwingConstants.CENTER);
-				lblDatePublished.setForeground(new Color(245, 255, 250));
-				lblDatePublished.setBounds(80, 394, width_small - 161, 16);
-				edit_issue.getContentPane().add(lblDatePublished);
+				JLabel lblDateAccepted = new JLabel("Date Accepted");
+				lblDateAccepted.setHorizontalAlignment(SwingConstants.CENTER);
+				lblDateAccepted.setForeground(new Color(245, 255, 250));
+				lblDateAccepted.setBounds(80, 394, width_small - 161, 16);
+				edit_issue.getContentPane().add(lblDateAccepted);
 
 				final JXDatePicker datePicker = new JXDatePicker();
 				datePicker.setFormats(sdf);
@@ -1950,60 +1950,79 @@ public class Main {
 					}
 				});
 				;
-				datePicker.setDate(current_issue.getDate_published());
 				datePicker.setBounds(100, 410, width_small - 200, 30);
+
+				datePicker.setDate(current_issue.getDate_accepted());
 				// panel.add(label);
 				edit_issue.getContentPane().add(datePicker);
+				JLabel lblDatePublished = new JLabel("Date Published");
+				lblDatePublished.setHorizontalAlignment(SwingConstants.CENTER);
+				lblDatePublished.setForeground(new Color(245, 255, 250));
+				lblDatePublished.setBounds(80, 441, width_small - 161, 16);
+				edit_issue.getContentPane().add(lblDatePublished);
 
-				edit_issue.getContentPane().add(datePicker);
+				final JXDatePicker datePickerPublished = new JXDatePicker();
+				datePickerPublished.setFormats(sdf);
+
+				datePickerPublished.addActionListener(new ActionListener() {
+					public void actionPerformed(ActionEvent e) {
+						System.out.println(datePickerPublished.getDate());
+					}
+				});
+				;
+				datePickerPublished.setDate(current_issue.getDate_published());
+				datePickerPublished.setBounds(100, 460, width_small - 200, 30);
+				// panel.add(label);
+				edit_issue.getContentPane().add(datePickerPublished);
+
 				JLabel lblShowDisplay = new JLabel("---- Display Values ----");
 				lblShowDisplay.setForeground(new Color(245, 255, 250));
 				lblShowDisplay.setHorizontalAlignment(SwingConstants.CENTER);
-				lblShowDisplay.setBounds(74, 452, width_small - 151, 16);
+				lblShowDisplay.setBounds(74, 495, width_small - 151, 16);
 				edit_issue.getContentPane().add(lblShowDisplay);
 
 				final JTextField show_title = new JTextField(current_issue.getShow_title());
-				show_title.setBounds(100, 502, width_small - 200, 26);
+				show_title.setBounds(100, 542, width_small - 200, 26);
 				edit_issue.getContentPane().add(show_title);
 				show_title.setColumns(10);
 
 				JLabel lblShowTitleText = new JLabel("Show Title");
 				lblShowTitleText.setForeground(new Color(245, 255, 250));
 				lblShowTitleText.setHorizontalAlignment(SwingConstants.CENTER);
-				lblShowTitleText.setBounds(74, 482, width_small - 151, 16);
+				lblShowTitleText.setBounds(74, 522, width_small - 151, 16);
 				edit_issue.getContentPane().add(lblShowTitleText);
 
-				final JTextField show_volume = new JTextField(Integer.toString(current_issue.getShow_volume()));
-				show_volume.setBounds(100, 550, width_small - 200, 26);
+				final JTextField show_volume = new JTextField(current_issue.getShow_volume());
+				show_volume.setBounds(100, 590, width_small - 200, 26);
 				edit_issue.getContentPane().add(show_volume);
 				show_volume.setColumns(10);
 
 				JLabel lblShowVolume = new JLabel("Show Volume");
 				lblShowVolume.setForeground(new Color(245, 255, 250));
 				lblShowVolume.setHorizontalAlignment(SwingConstants.CENTER);
-				lblShowVolume.setBounds(74, 530, width_small - 151, 16);
+				lblShowVolume.setBounds(74, 570, width_small - 151, 16);
 				edit_issue.getContentPane().add(lblShowVolume);
 
-				final JTextField show_number = new JTextField(Integer.toString(current_issue.getShow_number()));
-				show_number.setBounds(100, 600, width_small - 200, 26);
+				final JTextField show_number = new JTextField(current_issue.getShow_number());
+				show_number.setBounds(100, 640, width_small - 200, 26);
 				edit_issue.getContentPane().add(show_number);
 				show_number.setColumns(10);
 
 				JLabel lblShowNumber = new JLabel("Show Number");
 				lblShowNumber.setForeground(new Color(245, 255, 250));
 				lblShowNumber.setHorizontalAlignment(SwingConstants.CENTER);
-				lblShowNumber.setBounds(74, 580, width_small - 151, 16);
+				lblShowNumber.setBounds(74, 620, width_small - 151, 16);
 				edit_issue.getContentPane().add(lblShowNumber);
 
-				final JTextField show_year = new JTextField(Integer.toString(current_issue.getShow_year()));
-				show_year.setBounds(100, 650, width_small - 200, 26);
+				final JTextField show_year = new JTextField(current_issue.getShow_year());
+				show_year.setBounds(100, 690, width_small - 200, 26);
 				edit_issue.getContentPane().add(show_year);
 				show_year.setColumns(10);
 
 				JLabel lblShowYear = new JLabel("Show Year");
 				lblShowYear.setForeground(new Color(245, 255, 250));
 				lblShowYear.setHorizontalAlignment(SwingConstants.CENTER);
-				lblShowYear.setBounds(74, 630, width_small - 151, 16);
+				lblShowYear.setBounds(74, 670, width_small - 151, 16);
 				edit_issue.getContentPane().add(lblShowYear);
 				JButton btnSubmit = new JButton("Save");
 
@@ -2076,9 +2095,9 @@ public class Main {
 					}
 				});
 				if (height_small - 150 > 300) {
-					btnSubmit.setBounds(((width_small / 3) * 2) / 2, height_small - 100, width_small / 3, 29);
+					btnSubmit.setBounds(((width_small / 3) * 2) / 2, height_small - 70, width_small / 3, 29);
 				} else {
-					btnSubmit.setBounds(((width_small / 3) * 2) / 2, 350, width_small / 3, 29);
+					btnSubmit.setBounds(((width_small / 3) * 2) / 2, 380, width_small / 3, 29);
 				}
 
 				edit_issue.getContentPane().add(btnSubmit);
@@ -2120,12 +2139,12 @@ public class Main {
 
 				final JFrame articles = new JFrame();
 				articles.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-				if (height >= 480 && width >= 640) {
+				if (height >= 640 && width >= 960) {
 					articles.setSize(width, height);
 				} else {
-					width = 640;
-					height = 480;
-					articles.setSize(640, 480);
+					width = 960;
+					height = 640;
+					articles.setSize(960, 640);
 				}
 				HashMap<Integer, JFrame> issue_articles = new HashMap<Integer, JFrame>();
 				articles.getContentPane().setBackground(new Color(128, 128, 128));
@@ -2145,7 +2164,7 @@ public class Main {
 				HashMap<Integer, Article> current_articles = current_issue.getArticles_list();
 				Set<Integer> art_keys = current_articles.keySet();
 				ArrayList<List<Object>> rowData = new ArrayList<List<Object>>();
-				Object[][] rows = new Object[art_keys.size()][10];
+				Object[][] rows = new Object[art_keys.size()][11];
 				int i = 0;
 				for (int id : art_keys) {
 					ArrayList<Object> data = new ArrayList<Object>();
@@ -2164,7 +2183,7 @@ public class Main {
 					Object[] row = { current_articles.get(id).getId(), issue_id,
 							current_articles.get(id).getSection_id(), current_articles.get(id).getTitle(),
 							current_articles.get(id).getPages(), current_articles.get(id).getAbstract_text(),
-							sdf.format(current_articles.get(id).getDate_published()), "View", "Edit", "Delete" };
+							sdf.format(current_articles.get(id).getDate_accepted()),sdf.format(current_articles.get(id).getDate_published()), "View", "Edit", "Delete" };
 					rows[i] = row;
 					i++;
 					rowData.add(data);
@@ -2172,7 +2191,7 @@ public class Main {
 				}
 
 				article_screens.put(issue_id, issue_articles);
-				Object columnNames[] = { "ID", "Issue", "Section", "Title", "Pages", "Abstract", "Date Published", "",
+				Object columnNames[] = { "ID", "Issue", "Section", "Title", "Pages", "Abstract", "Date Accepted", "Date Published", "",
 						"", "" };
 
 				articles.getContentPane().setLayout(null);
@@ -2209,6 +2228,7 @@ public class Main {
 						return tip;
 					}
 				};
+				article_table.setAutoResizeMode(article_table.AUTO_RESIZE_SUBSEQUENT_COLUMNS);
 				// reference:
 				// https://svn.java.net/svn/swinglabs-demos~svn/trunk/src/java/org/jdesktop/demo/sample/
 				final JTextField filter = new JTextField("");
@@ -2354,9 +2374,9 @@ public class Main {
 						// ((DefaultTableModel)table.getModel()).removeRow(modelRow);
 					}
 				};
-				ButtonColumn buttonColumn = new ButtonColumn(article_table, view, 7);
-				ButtonColumn buttonColumn2 = new ButtonColumn(article_table, edit, 8);
-				ButtonColumn buttonColumn3 = new ButtonColumn(article_table, delete, 9);
+				ButtonColumn buttonColumn = new ButtonColumn(article_table, view, 8);
+				ButtonColumn buttonColumn2 = new ButtonColumn(article_table, edit, 9);
+				ButtonColumn buttonColumn3 = new ButtonColumn(article_table, delete, 10);
 
 				JLabel lblArticles = new JLabel("Articles");
 				lblArticles.setBackground(new Color(128, 128, 128));
