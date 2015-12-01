@@ -811,6 +811,8 @@ public class Main {
 
 						for (int i = 0; i < checkboxes.size(); i++) {
 							checkboxes.get(i).setSelected(true);
+							list_settings.remove(checkboxes.get(i).getText());
+							list_settings.put(checkboxes.get(i).getText(),"true");
 						}
 
 						panelSettings.repaint();
@@ -826,8 +828,12 @@ public class Main {
 						for (int i = 0; i < checkboxes.size(); i++) {
 							if (basic.contains(checkboxes.get(i).getText())) {
 								checkboxes.get(i).setSelected(true);
+								list_settings.remove(checkboxes.get(i).getText());
+								list_settings.put(checkboxes.get(i).getText(),"true");
 							} else {
 								checkboxes.get(i).setSelected(false);
+								list_settings.remove(checkboxes.get(i).getText());
+								list_settings.put(checkboxes.get(i).getText(),"false");
 							}
 						}
 
