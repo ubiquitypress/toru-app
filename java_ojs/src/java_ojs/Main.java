@@ -267,6 +267,8 @@ public class Main {
 						article_author_prep.setInt(2, save_article.getId());
 						article_author_prep.setInt(3, author.getId());
 						article_author_prep.setBoolean(4, author_primary_storage.get(save_article.getId()).get(author.getId()));
+
+						System.out.println("Author: "+author.getId()+" Primary: "+ author_primary_storage.get(save_article.getId()).get(author.getId()));
 						article_author_prep.executeUpdate();
 						j = j + 1;
 					}
@@ -475,6 +477,7 @@ public class Main {
 							System.out.println(author.getFull_name() + " " + Integer.toString(article_id));
 							HashMap<Integer,Boolean> primary_authors = author_primary_storage.get(article_id); 
 							primary_authors.put(author_id, primary);
+							System.out.println("Author: "+author_id+" Primary: "+primary);
 							author_primary_storage.put(article_id,primary_authors);
 							ResultSet rs_new_issue = c.createStatement()
 									.executeQuery("SELECT issue_id FROM ISSUE_ARTICLE;");
@@ -2719,9 +2722,20 @@ public class Main {
 					author_x = author_x + separation_horizontal;
 					Author author = authors.get(i);
 
-					JLabel author_num = new JLabel(Integer.toString(i + 1));
-					author_num.setBounds(87 + author_x, 35, 156, 16);
-					panel6.add(author_num);
+				
+					Boolean primary= author_primary_storage.get(article_id).get(author.getId());
+					
+					if (primary){
+						JLabel author_num = new JLabel(Integer.toString(i + 1));
+						author_num.setBounds(20 + author_x, 35, 40, 16);
+						panel6.add(author_num);
+						JLabel author_primary = new JLabel("- PRIMARY -");
+						author_primary.setBounds(60 + author_x, 35, 85, 16);
+						panel6.add(author_primary);}else{
+							JLabel author_num = new JLabel(Integer.toString(i + 1));
+							author_num.setBounds(80 + author_x, 35, 40, 16);
+							panel6.add(author_num);
+						}
 
 					JLabel field_label = new JLabel("First name:");
 					field_label.setBounds(author_x, author_y, 75, 30); // white
@@ -3422,11 +3436,20 @@ public class Main {
 								Set<Integer> primary_keys = update_primary.keySet();
 								for(int pkey:primary_keys){
 									if(pkey!=a_id){
-										update_primary.put(a_id, false);
+										update_primary.put(pkey, false);
 									}else{
-										update_primary.put(a_id, true);
+										update_primary.put(pkey, true);
+
+										System.out.println(pkey+" - "+a_id);
 									}
+
 								}
+								author_primary_storage.put(article_id,update_primary);
+
+								System.out.println(a_id + " " + update_primary.get(a_id));
+								
+								System.out.println(a_id + " " + author_primary_storage.get(article_id).get(a_id));
+								
 								Set<Integer> label_keys = primary_labels.keySet();
 								for(int key_lbl:label_keys){
 								if(primary_labels.get(key_lbl).getParent()==panel6){
@@ -3453,7 +3476,23 @@ public class Main {
 					author_primary_btn.addActionListener(new ActionListener() {
 						public void actionPerformed(ActionEvent arg0) {
 							
-							HashMap<Integer,Boolean> update_buttons= author_primary_storage.get(article_id);
+							HashMap<Integer,Boolean> update_primary= author_primary_storage.get(article_id);
+							
+							Set<Integer> primary_keys = update_primary.keySet();
+							for(int pkey:primary_keys){
+								if(pkey!=a_id){
+									update_primary.put(pkey, false);
+								}else{
+									update_primary.put(pkey, true);
+
+									System.out.println(pkey+" - "+a_id);
+								}
+
+							}
+							author_primary_storage.put(article_id,update_primary);
+
+							System.out.println(a_id + " " + update_primary.get(a_id));
+							System.out.println(a_id + " " + author_primary_storage.get(article_id).get(a_id));
 							
 							Set<Integer> label_keys = primary_labels.keySet();
 							for(int key_lbl:label_keys){
