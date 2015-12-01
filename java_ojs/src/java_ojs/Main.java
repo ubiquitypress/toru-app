@@ -2042,7 +2042,7 @@ public class Main {
 				lblShowTitleText.setBounds(74, 522, width_small - 151, 16);
 				edit_issue.getContentPane().add(lblShowTitleText);
 
-				final JTextField show_volume = new JTextField(current_issue.getShow_volume());
+				final JTextField show_volume = new JTextField(Integer.toString(current_issue.getShow_volume()));
 				show_volume.setBounds(100, 590, width_small - 200, 26);
 				edit_issue.getContentPane().add(show_volume);
 				show_volume.setColumns(10);
@@ -2053,7 +2053,7 @@ public class Main {
 				lblShowVolume.setBounds(74, 570, width_small - 151, 16);
 				edit_issue.getContentPane().add(lblShowVolume);
 
-				final JTextField show_number = new JTextField(current_issue.getShow_number());
+				final JTextField show_number = new JTextField(Integer.toString(current_issue.getShow_number()));
 				show_number.setBounds(100, 640, width_small - 200, 26);
 				edit_issue.getContentPane().add(show_number);
 				show_number.setColumns(10);
@@ -2064,7 +2064,7 @@ public class Main {
 				lblShowNumber.setBounds(74, 620, width_small - 151, 16);
 				edit_issue.getContentPane().add(lblShowNumber);
 
-				final JTextField show_year = new JTextField(current_issue.getShow_year());
+				final JTextField show_year = new JTextField(Integer.toString(current_issue.getShow_year()));
 				show_year.setBounds(100, 690, width_small - 200, 26);
 				edit_issue.getContentPane().add(show_year);
 				show_year.setColumns(10);
@@ -2079,21 +2079,76 @@ public class Main {
 				Action actionSubmit = new AbstractAction() {
 					@Override
 					public void actionPerformed(ActionEvent e) {
+						Boolean validation=true;
+						int entered_volume = 0;
+						int entered_number = 0;
+						int entered_year = 0;
+						int entered_show_volume = 0;
+						int entered_show_number = 0;
+						int entered_show_year = 0;
 						try {
-							int entered_volume = Integer.parseInt(volume.getText());
-							int entered_number = Integer.parseInt(number.getText());
-							int entered_year = Integer.parseInt(year.getText());
 
-							int entered_show_volume = Integer.parseInt(show_volume.getText());
-							int entered_show_number = Integer.parseInt(show_number.getText());
-							int entered_show_year = Integer.parseInt(show_year.getText());
+							entered_volume = Integer.parseInt(volume.getText());
+							entered_number = Integer.parseInt(number.getText());
+							entered_year = Integer.parseInt(year.getText());
+
+							number.setBackground(new Color(255, 255, 255));
+							number.setForeground(new Color(0, 0, 0));
+							volume.setBackground(new Color(255, 255, 255));
+							volume.setForeground(new Color(0, 0, 0));
+							year.setBackground(new Color(255, 255, 255));
+							year.setForeground(new Color(0, 0, 0));
+						} catch (Exception ex) {
+							validation=false;
+							number.setBackground(new Color(255, 0, 0));
+							number.setForeground(new Color(255, 255, 255));
+							volume.setBackground(new Color(255, 0, 0));
+							volume.setForeground(new Color(255, 255, 255));
+							year.setBackground(new Color(255, 0, 0));
+							year.setForeground(new Color(255, 255, 255));
+							JOptionPane.showMessageDialog(null, "Use only numbers in fields: Volume, Number, Year ");
+						}
+						try {
+							entered_show_volume = Integer.parseInt(show_volume.getText());
+							entered_show_number = Integer.parseInt(show_number.getText());
+							entered_show_year = Integer.parseInt(show_year.getText());
+							show_number.setBackground(new Color(255, 255, 255));
+							show_number.setForeground(new Color(0, 0, 0));
+							show_volume.setBackground(new Color(255, 255, 255));
+							show_volume.setForeground(new Color(0, 0, 0));
+							show_year.setBackground(new Color(255, 255, 255));
+							show_year.setForeground(new Color(0, 0, 0));
+						} catch (Exception ex) {
+							validation=false;
+							show_number.setBackground(new Color(255, 0, 0));
+							show_number.setForeground(new Color(255, 255, 255));
+							show_volume.setBackground(new Color(255, 0, 0));
+							show_volume.setForeground(new Color(255, 255, 255));
+							show_year.setBackground(new Color(255, 0, 0));
+							show_year.setForeground(new Color(255, 255, 255));
+							JOptionPane.showMessageDialog(null,
+									"Use only numbers in fields: Show_Volume, Show_Number, Show_Year ");
+						}
+						SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
+						try{
+
+							String test_accepted= sdf.format(datePicker.getDate());
+							String test_published= sdf.format(datePickerPublished.getDate());
+
+						}catch (Exception ex) {
+							validation=false;
+							JOptionPane.showMessageDialog(null,
+									"Use dates from calendar for fields: Date Published and Date Accepted");
+						}
+						
+						if(validation){
 
 							current_issue.setTitle(title.getText());
 							current_issue.setVolume(entered_volume);
 							current_issue.setNumber(entered_number);
 							current_issue.setYear(entered_year);
-							current_issue.setDate_published(datePicker.getDate());
-
+							current_issue.setDate_published(datePickerPublished.getDate());
+							current_issue.setDate_accepted(datePicker.getDate());
 							current_issue.setShow_title(show_title.getText());
 							current_issue.setShow_volume(entered_show_volume);
 							current_issue.setShow_year(entered_show_year);
@@ -2102,9 +2157,7 @@ public class Main {
 							issue_storage.put(issue_id, current_issue);
 							issues.dispose();
 							dashboard();
-						} catch (Exception ex) {
-							JOptionPane.showMessageDialog(null, "Use only numbers in fields: Volume, Number, Year ");
-						}
+							}
 
 					}
 				};
@@ -2115,21 +2168,76 @@ public class Main {
 				datePicker.addActionListener(actionSubmit);
 				btnSubmit.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
+						Boolean validation=true;
+						int entered_volume = 0;
+						int entered_number = 0;
+						int entered_year = 0;
+						int entered_show_volume = 0;
+						int entered_show_number = 0;
+						int entered_show_year = 0;
 						try {
-							int entered_volume = Integer.parseInt(volume.getText());
-							int entered_number = Integer.parseInt(number.getText());
-							int entered_year = Integer.parseInt(year.getText());
 
-							int entered_show_volume = Integer.parseInt(show_volume.getText());
-							int entered_show_number = Integer.parseInt(show_number.getText());
-							int entered_show_year = Integer.parseInt(show_year.getText());
+							entered_volume = Integer.parseInt(volume.getText());
+							entered_number = Integer.parseInt(number.getText());
+							entered_year = Integer.parseInt(year.getText());
+
+							number.setBackground(new Color(255, 255, 255));
+							number.setForeground(new Color(0, 0, 0));
+							volume.setBackground(new Color(255, 255, 255));
+							volume.setForeground(new Color(0, 0, 0));
+							year.setBackground(new Color(255, 255, 255));
+							year.setForeground(new Color(0, 0, 0));
+						} catch (Exception ex) {
+							validation=false;
+							number.setBackground(new Color(255, 0, 0));
+							number.setForeground(new Color(255, 255, 255));
+							volume.setBackground(new Color(255, 0, 0));
+							volume.setForeground(new Color(255, 255, 255));
+							year.setBackground(new Color(255, 0, 0));
+							year.setForeground(new Color(255, 255, 255));
+							JOptionPane.showMessageDialog(null, "Use only numbers in fields: Volume, Number, Year ");
+						}
+						try {
+							entered_show_volume = Integer.parseInt(show_volume.getText());
+							entered_show_number = Integer.parseInt(show_number.getText());
+							entered_show_year = Integer.parseInt(show_year.getText());
+							show_number.setBackground(new Color(255, 255, 255));
+							show_number.setForeground(new Color(0, 0, 0));
+							show_volume.setBackground(new Color(255, 255, 255));
+							show_volume.setForeground(new Color(0, 0, 0));
+							show_year.setBackground(new Color(255, 255, 255));
+							show_year.setForeground(new Color(0, 0, 0));
+						} catch (Exception ex) {
+							validation=false;
+							show_number.setBackground(new Color(255, 0, 0));
+							show_number.setForeground(new Color(255, 255, 255));
+							show_volume.setBackground(new Color(255, 0, 0));
+							show_volume.setForeground(new Color(255, 255, 255));
+							show_year.setBackground(new Color(255, 0, 0));
+							show_year.setForeground(new Color(255, 255, 255));
+							JOptionPane.showMessageDialog(null,
+									"Use only numbers in fields: Show_Volume, Show_Number, Show_Year ");
+						}
+						SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
+						try{
+
+							String test_accepted= sdf.format(datePicker.getDate());
+							String test_published= sdf.format(datePickerPublished.getDate());
+
+						}catch (Exception ex) {
+							validation=false;
+							JOptionPane.showMessageDialog(null,
+									"Use dates from calendar for fields: Date Published and Date Accepted");
+						}
+						
+						if(validation){
 
 							current_issue.setTitle(title.getText());
 							current_issue.setVolume(entered_volume);
 							current_issue.setNumber(entered_number);
 							current_issue.setYear(entered_year);
-							current_issue.setDate_published(datePicker.getDate());
-
+							current_issue.setDate_published(datePickerPublished.getDate());
+							current_issue.setDate_accepted(datePicker.getDate());
 							current_issue.setShow_title(show_title.getText());
 							current_issue.setShow_volume(entered_show_volume);
 							current_issue.setShow_year(entered_show_year);
@@ -2138,9 +2246,7 @@ public class Main {
 							issue_storage.put(issue_id, current_issue);
 							issues.dispose();
 							dashboard();
-						} catch (Exception ex) {
-							JOptionPane.showMessageDialog(null, "Use only numbers in fields: Volume, Number, Year ");
-						}
+							}
 
 					}
 				});
