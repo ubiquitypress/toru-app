@@ -774,19 +774,19 @@ public class Main {
 				btnSync1.setBounds(width_small - 155, 68, 70, 25);
 				settings.getContentPane().add(btnSync1);
 				final JButton btnBasic = new JButton("Basic");
-				btnBasic.setBounds(width_small/2 + 20, 185, 100, 25);
+				btnBasic.setBounds(width_small / 2 + 20, 185, 100, 25);
 				settings.getContentPane().add(btnBasic);
 				final JButton btnAdvanced = new JButton("Advanced");
-				btnAdvanced.setBounds(width_small/2 + 120, 185, 100, 25);
+
 				settings.getContentPane().add(btnAdvanced);
-				
+
 				JLabel lblSettings = new JLabel("Settings");
 				lblSettings.setBackground(new Color(128, 0, 128));
 				lblSettings.setOpaque(true);
 				lblSettings.setForeground(new Color(255, 255, 255));
 				lblSettings.setFont(new Font("URW Gothic L", Font.BOLD, 24));
 				lblSettings.setHorizontalAlignment(SwingConstants.CENTER);
-				lblSettings.setBounds((width_small/2) - 83, 128, 160, 30);
+				lblSettings.setBounds((width_small / 2) - 83, 128, 160, 30);
 				settings.getContentPane().add(lblSettings);
 				JScrollPane scrollSettings = new JScrollPane();
 				scrollSettings.setBounds(40, 180, width_small - 80, height_small - 300);
@@ -804,11 +804,42 @@ public class Main {
 				scrollFrame.setBounds(40, 220, width_small - 80, height_small - 350);
 				// scrollSettings.setViewportView(scrollFrame);
 				settings.getContentPane().add(scrollFrame);
+				ArrayList<JCheckBox> checkboxes = new ArrayList<JCheckBox>();
+				btnAdvanced.setBounds(width_small / 2 + 120, 185, 100, 25);
+				btnAdvanced.addActionListener(new ActionListener() {
+					public void actionPerformed(ActionEvent arg0) {
+
+						for (int i = 0; i < checkboxes.size(); i++) {
+							checkboxes.get(i).setSelected(true);
+						}
+
+						panelSettings.repaint();
+					}
+				});
+				ArrayList<String> basic = new ArrayList<String>();
+				basic.add("Optimize PDFs");
+				basic.add("Optimize Images");
+				basic.add("Validate XML (JATS)");
+				basic.add("Insert DOIs in PDFs");
+				btnBasic.addActionListener(new ActionListener() {
+					public void actionPerformed(ActionEvent arg0) {
+						for (int i = 0; i < checkboxes.size(); i++) {
+							if (basic.contains(checkboxes.get(i).getText())) {
+								checkboxes.get(i).setSelected(true);
+							} else {
+								checkboxes.get(i).setSelected(false);
+							}
+						}
+
+						panelSettings.repaint();
+					}
+				});
 				for (int i = 0; i < setting_keys.size(); i++) {
 					String value = list_settings.get(setting_keys.get(i));
 					boolean done = false;
 					if (value.compareTo("true") == 0 || value.compareTo("false") == 0) {
 						Boolean processed = Boolean.parseBoolean(value);
+
 						final JCheckBox chckbxSampleSetting = new JCheckBox(setting_keys.get(i));
 						final int s = i;
 						chckbxSampleSetting.setName(Integer.toString(i));
@@ -822,6 +853,7 @@ public class Main {
 							}
 						});
 						done = true;
+						checkboxes.add(chckbxSampleSetting);
 						panelSettings.add(chckbxSampleSetting);
 						y = y + 28;
 					}
@@ -4116,7 +4148,7 @@ public class Main {
 							JOptionPane.showMessageDialog(null,
 									"Use only numbers in the Pages field and select a valid section item from the dropdown list. ");
 						}
-						
+
 						SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
 						try {
 
@@ -4128,11 +4160,11 @@ public class Main {
 							JOptionPane.showMessageDialog(null,
 									"Use dates from calendar for fields: Date Published and Date Accepted");
 						}
-						if(lblFile.getText().contains("Not Uploaded")){
-							validation=false;
+						if (lblFile.getText().contains("Not Uploaded")) {
+							validation = false;
 							JOptionPane.showMessageDialog(null,
 									"There are files that have not been uploaded yet. Upload the files or clear the selection.");
-				
+
 						}
 						if (validation) {
 							article.dispose();
@@ -4891,11 +4923,11 @@ public class Main {
 						JOptionPane.showMessageDialog(null,
 								"Use dates from calendar for fields: Date Published and Date Accepted");
 					}
-					if(lblFile.getText().contains("Not Uploaded")){
-						validation=false;
+					if (lblFile.getText().contains("Not Uploaded")) {
+						validation = false;
 						JOptionPane.showMessageDialog(null,
 								"There are files that have not been uploaded yet. Upload the files or clear the selection.");
-			
+
 					}
 					if (validation) {
 						issue_screens.get(issue_id).dispose();
@@ -4957,7 +4989,7 @@ public class Main {
 			Panel panel10 = new Panel();
 			panel10.setBackground(new Color(153, 102, 51));
 			panel10.setBounds(115, 310, 225, 160);
-			
+
 			lblFile.setForeground(Color.WHITE);
 			lblFile.setEnabled(false);
 			lblFile.setBounds(115, 310, 225, 160);
