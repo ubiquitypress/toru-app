@@ -812,7 +812,7 @@ public class Main {
 						for (int i = 0; i < checkboxes.size(); i++) {
 							checkboxes.get(i).setSelected(true);
 							list_settings.remove(checkboxes.get(i).getText());
-							list_settings.put(checkboxes.get(i).getText(),"true");
+							list_settings.put(checkboxes.get(i).getText(), "true");
 						}
 
 						panelSettings.repaint();
@@ -829,11 +829,11 @@ public class Main {
 							if (basic.contains(checkboxes.get(i).getText())) {
 								checkboxes.get(i).setSelected(true);
 								list_settings.remove(checkboxes.get(i).getText());
-								list_settings.put(checkboxes.get(i).getText(),"true");
+								list_settings.put(checkboxes.get(i).getText(), "true");
 							} else {
 								checkboxes.get(i).setSelected(false);
 								list_settings.remove(checkboxes.get(i).getText());
-								list_settings.put(checkboxes.get(i).getText(),"false");
+								list_settings.put(checkboxes.get(i).getText(), "false");
 							}
 						}
 
@@ -1579,12 +1579,12 @@ public class Main {
 			int width_small = 0;
 			int height_small = 0;
 			if (height >= 480 && width >= 640) {
-				width_small = (int) (900 - (900 * (37.5 / 100)));
+				width_small = (int) (1024 - (1024 * (37.5 / 100)));
 			} else {
-				width_small = (int) (640 - (640 * (37.5 / 100)));
+				width_small = (int) (960 - (960 * (37.5 / 100)));
 			}
 			final int current_id = i_id + 1;
-			height_small = (int) (810 - (810 * (5 / 100)));
+			height_small = (int) (600 - (600 * (5 / 100)));
 			final JFrame edit_issue = new JFrame();
 			issue_screens.put(i_id, edit_issue);
 			edit_issue.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -1611,14 +1611,14 @@ public class Main {
 			lblNewLabel.setBounds((width_small / 2) - 34, 15, 95, 25);
 			edit_issue.getContentPane().add(lblNewLabel);
 			final JTextField title = new JTextField();
-			title.setBounds(100, 218, width_small - 200, 26);
+			title.setBounds(50, 218, 250, 26);
 			edit_issue.getContentPane().add(title);
 			title.setColumns(10);
 
 			JLabel lblTitleText = new JLabel("Title");
 			lblTitleText.setForeground(new Color(245, 255, 250));
 			lblTitleText.setHorizontalAlignment(SwingConstants.CENTER);
-			lblTitleText.setBounds(74, 200, width_small - 151, 16);
+			lblTitleText.setBounds(50, 200, 250, 16);
 			edit_issue.getContentPane().add(lblTitleText);
 			JPanel title_background = new JPanel();
 			title_background.setBackground(new Color(0, 0, 0));
@@ -1627,32 +1627,32 @@ public class Main {
 
 			final JTextField volume = new JTextField();
 			volume.setColumns(10);
-			volume.setBounds(100, 270, width_small - 200, 26);
+			volume.setBounds(50, 270, 250, 26);
 			edit_issue.getContentPane().add(volume);
 			JLabel lblvolume = new JLabel("Volume");
 			lblvolume.setHorizontalAlignment(SwingConstants.CENTER);
 			lblvolume.setForeground(new Color(245, 255, 250));
-			lblvolume.setBounds(80, 250, width_small - 161, 16);
+			lblvolume.setBounds(50, 250, 250, 16);
 			edit_issue.getContentPane().add(lblvolume);
 
 			final JTextField number = new JTextField();
 			number.setColumns(10);
-			number.setBounds(100, 317, width_small - 200, 26);
+			number.setBounds(50, 317, 250, 26);
 			edit_issue.getContentPane().add(number);
 			JLabel lblnumber = new JLabel("Number");
 			lblnumber.setHorizontalAlignment(SwingConstants.CENTER);
 			lblnumber.setForeground(new Color(245, 255, 250));
-			lblnumber.setBounds(80, 300, width_small - 161, 16);
+			lblnumber.setBounds(50, 300, 250, 16);
 			edit_issue.getContentPane().add(lblnumber);
 
 			final JTextField year = new JTextField();
 			year.setColumns(10);
-			year.setBounds(100, 364, width_small - 200, 26);
+			year.setBounds(50, 364, 250, 26);
 			edit_issue.getContentPane().add(year);
 			JLabel lblyear = new JLabel("Year");
 			lblyear.setHorizontalAlignment(SwingConstants.CENTER);
 			lblyear.setForeground(new Color(245, 255, 250));
-			lblyear.setBounds(80, 347, width_small - 161, 16);
+			lblyear.setBounds(50, 347, 250, 16);
 			edit_issue.getContentPane().add(lblyear);
 
 			SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
@@ -1695,51 +1695,51 @@ public class Main {
 			JLabel lblShowDisplay = new JLabel("---- Display Values ----");
 			lblShowDisplay.setForeground(new Color(245, 255, 250));
 			lblShowDisplay.setHorizontalAlignment(SwingConstants.CENTER);
-			lblShowDisplay.setBounds(74, 495, width_small - 151, 16);
+			lblShowDisplay.setBounds(340, 170, 250, 16);
 			edit_issue.getContentPane().add(lblShowDisplay);
 
 			final JTextField show_title = new JTextField();
-			show_title.setBounds(100, 542, width_small - 200, 26);
+			show_title.setBounds(340, 218, 250, 26);
 			edit_issue.getContentPane().add(show_title);
 			show_title.setColumns(10);
 
 			JLabel lblShowTitleText = new JLabel("Show Title");
 			lblShowTitleText.setForeground(new Color(245, 255, 250));
 			lblShowTitleText.setHorizontalAlignment(SwingConstants.CENTER);
-			lblShowTitleText.setBounds(74, 522, width_small - 151, 16);
+			lblShowTitleText.setBounds(340, 200, 250, 16);
 			edit_issue.getContentPane().add(lblShowTitleText);
 
 			final JTextField show_volume = new JTextField();
-			show_volume.setBounds(100, 590, width_small - 200, 26);
+			show_volume.setBounds(340, 270, 250, 26);
 			edit_issue.getContentPane().add(show_volume);
 			show_volume.setColumns(10);
 
 			JLabel lblShowVolume = new JLabel("Show Volume");
 			lblShowVolume.setForeground(new Color(245, 255, 250));
 			lblShowVolume.setHorizontalAlignment(SwingConstants.CENTER);
-			lblShowVolume.setBounds(74, 570, width_small - 151, 16);
+			lblShowVolume.setBounds(340, 250, 250, 16);
 			edit_issue.getContentPane().add(lblShowVolume);
 
 			final JTextField show_number = new JTextField();
-			show_number.setBounds(100, 640, width_small - 200, 26);
+			show_number.setBounds(340, 317, 250, 26);
 			edit_issue.getContentPane().add(show_number);
 			show_number.setColumns(10);
 
 			JLabel lblShowNumber = new JLabel("Show Number");
 			lblShowNumber.setForeground(new Color(245, 255, 250));
 			lblShowNumber.setHorizontalAlignment(SwingConstants.CENTER);
-			lblShowNumber.setBounds(74, 620, width_small - 151, 16);
+			lblShowNumber.setBounds(340, 300, 250, 16);
 			edit_issue.getContentPane().add(lblShowNumber);
 
 			final JTextField show_year = new JTextField();
-			show_year.setBounds(100, 690, width_small - 200, 26);
+			show_year.setBounds(340, 364, 250, 26);
 			edit_issue.getContentPane().add(show_year);
 			show_year.setColumns(10);
 
 			JLabel lblShowYear = new JLabel("Show Year");
 			lblShowYear.setForeground(new Color(245, 255, 250));
 			lblShowYear.setHorizontalAlignment(SwingConstants.CENTER);
-			lblShowYear.setBounds(74, 670, width_small - 151, 16);
+			lblShowYear.setBounds(340, 347, 250, 16);
 			edit_issue.getContentPane().add(lblShowYear);
 
 			title.getDocument().addDocumentListener(new DocumentListener() {
@@ -1949,12 +1949,11 @@ public class Main {
 				int width_small = 0;
 				int height_small = 0;
 				if (height >= 480 && width >= 640) {
-					width_small = (int) (900 - (900 * (37.5 / 100)));
+					width_small = (int) (1024 - (1024 * (37.5 / 100)));
 				} else {
-					width_small = (int) (640 - (640 * (37.5 / 100)));
+					width_small = (int) (960 - (960 * (37.5 / 100)));
 				}
-
-				height_small = (int) (810 - (810 * (5 / 100)));
+				height_small = (int) (600 - (600 * (5 / 100)));
 				final JFrame edit_issue = new JFrame();
 				issue_screens.put(issue_id, edit_issue);
 				edit_issue.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -1981,7 +1980,7 @@ public class Main {
 				lblNewLabel.setBounds((width_small / 2) - 34, 15, 95, 25);
 				edit_issue.getContentPane().add(lblNewLabel);
 				final JTextField title = new JTextField();
-				title.setBounds(100, 218, width_small - 200, 26);
+				title.setBounds(50, 218, 250, 26);
 				title.setText(current_issue.getTitle());
 				edit_issue.getContentPane().add(title);
 				title.setColumns(10);
@@ -1989,7 +1988,7 @@ public class Main {
 				JLabel lblTitleText = new JLabel("Title");
 				lblTitleText.setForeground(new Color(245, 255, 250));
 				lblTitleText.setHorizontalAlignment(SwingConstants.CENTER);
-				lblTitleText.setBounds(74, 200, width_small - 151, 16);
+				lblTitleText.setBounds(50, 200, 250, 16);
 				edit_issue.getContentPane().add(lblTitleText);
 				JPanel title_background = new JPanel();
 				title_background.setBackground(new Color(0, 0, 0));
@@ -1999,34 +1998,34 @@ public class Main {
 				final JTextField volume = new JTextField();
 				volume.setColumns(10);
 				volume.setText(Integer.toString(current_issue.getVolume()));
-				volume.setBounds(100, 270, width_small - 200, 26);
+				volume.setBounds(50, 270, 250, 26);
 				edit_issue.getContentPane().add(volume);
 				JLabel lblvolume = new JLabel("Volume");
 				lblvolume.setHorizontalAlignment(SwingConstants.CENTER);
 				lblvolume.setForeground(new Color(245, 255, 250));
-				lblvolume.setBounds(80, 250, width_small - 161, 16);
+				lblvolume.setBounds(50, 250, 250, 16);
 				edit_issue.getContentPane().add(lblvolume);
 
 				final JTextField number = new JTextField();
 				number.setColumns(10);
 				number.setText(Integer.toString(current_issue.getNumber()));
-				number.setBounds(100, 317, width_small - 200, 26);
+				number.setBounds(50, 317, 250, 26);
 				edit_issue.getContentPane().add(number);
 				JLabel lblnumber = new JLabel("Number");
 				lblnumber.setHorizontalAlignment(SwingConstants.CENTER);
 				lblnumber.setForeground(new Color(245, 255, 250));
-				lblnumber.setBounds(80, 300, width_small - 161, 16);
+				lblnumber.setBounds(50, 300, 250, 16);
 				edit_issue.getContentPane().add(lblnumber);
 
 				final JTextField year = new JTextField();
 				year.setColumns(10);
 				year.setText(Integer.toString(current_issue.getYear()));
-				year.setBounds(100, 364, width_small - 200, 26);
+				year.setBounds(50, 364, 250, 26);
 				edit_issue.getContentPane().add(year);
 				JLabel lblyear = new JLabel("Year");
 				lblyear.setHorizontalAlignment(SwingConstants.CENTER);
 				lblyear.setForeground(new Color(245, 255, 250));
-				lblyear.setBounds(80, 347, width_small - 161, 16);
+				lblyear.setBounds(50, 347, 250, 16);
 				edit_issue.getContentPane().add(lblyear);
 
 				SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
@@ -2073,51 +2072,51 @@ public class Main {
 				JLabel lblShowDisplay = new JLabel("---- Display Values ----");
 				lblShowDisplay.setForeground(new Color(245, 255, 250));
 				lblShowDisplay.setHorizontalAlignment(SwingConstants.CENTER);
-				lblShowDisplay.setBounds(74, 495, width_small - 151, 16);
+				lblShowDisplay.setBounds(340, 170, 250, 16);
 				edit_issue.getContentPane().add(lblShowDisplay);
 
 				final JTextField show_title = new JTextField(current_issue.getShow_title());
-				show_title.setBounds(100, 542, width_small - 200, 26);
+				show_title.setBounds(340, 218, 250, 26);
 				edit_issue.getContentPane().add(show_title);
 				show_title.setColumns(10);
 
 				JLabel lblShowTitleText = new JLabel("Show Title");
 				lblShowTitleText.setForeground(new Color(245, 255, 250));
 				lblShowTitleText.setHorizontalAlignment(SwingConstants.CENTER);
-				lblShowTitleText.setBounds(74, 522, width_small - 151, 16);
+				lblShowTitleText.setBounds(340, 200, 250, 16);
 				edit_issue.getContentPane().add(lblShowTitleText);
 
 				final JTextField show_volume = new JTextField(Integer.toString(current_issue.getShow_volume()));
-				show_volume.setBounds(100, 590, width_small - 200, 26);
+				show_volume.setBounds(340, 270, 250, 26);
 				edit_issue.getContentPane().add(show_volume);
 				show_volume.setColumns(10);
 
 				JLabel lblShowVolume = new JLabel("Show Volume");
 				lblShowVolume.setForeground(new Color(245, 255, 250));
 				lblShowVolume.setHorizontalAlignment(SwingConstants.CENTER);
-				lblShowVolume.setBounds(74, 570, width_small - 151, 16);
+				lblShowVolume.setBounds(340, 250, 250, 16);
 				edit_issue.getContentPane().add(lblShowVolume);
 
 				final JTextField show_number = new JTextField(Integer.toString(current_issue.getShow_number()));
-				show_number.setBounds(100, 640, width_small - 200, 26);
+				show_number.setBounds(340, 317, 250, 26);
 				edit_issue.getContentPane().add(show_number);
 				show_number.setColumns(10);
 
 				JLabel lblShowNumber = new JLabel("Show Number");
 				lblShowNumber.setForeground(new Color(245, 255, 250));
 				lblShowNumber.setHorizontalAlignment(SwingConstants.CENTER);
-				lblShowNumber.setBounds(74, 620, width_small - 151, 16);
+				lblShowNumber.setBounds(340, 300, 250, 16);
 				edit_issue.getContentPane().add(lblShowNumber);
 
 				final JTextField show_year = new JTextField(Integer.toString(current_issue.getShow_year()));
-				show_year.setBounds(100, 690, width_small - 200, 26);
+				show_year.setBounds(340, 364, 250, 26);
 				edit_issue.getContentPane().add(show_year);
 				show_year.setColumns(10);
 
 				JLabel lblShowYear = new JLabel("Show Year");
 				lblShowYear.setForeground(new Color(245, 255, 250));
 				lblShowYear.setHorizontalAlignment(SwingConstants.CENTER);
-				lblShowYear.setBounds(74, 670, width_small - 151, 16);
+				lblShowYear.setBounds(340, 347, 250, 16);
 				edit_issue.getContentPane().add(lblShowYear);
 				JButton btnSubmit = new JButton("Save");
 
