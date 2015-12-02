@@ -2916,10 +2916,51 @@ public class Main {
 				articleSection.setBounds(40, 132, width_small / 2 - 100, height_small - 280);
 				// scrollSettings.setViewportView(scrollFrame);
 				article.getContentPane().add(articleSection);
+				JPanel panelMetadata = new JPanel();
+				panelMetadata.setBackground(SystemColor.window);
+				panelMetadata.setBounds(50, height_small -260, 300, 307);
+				panelMetadata.setLayout(null);
+				panelMetadata.setAutoscrolls(true);
+				
+				JLabel lblCompetingInterests = new JLabel("Competing Interests");
+				lblCompetingInterests.setBounds(35, 40, 131, 15);
+				panelMetadata.add(lblCompetingInterests);
+				JTextArea txtCompetingInterests = new JTextArea();
+				txtCompetingInterests.setColumns(10);
+				txtCompetingInterests.setBounds(35, 70, 131, 100);
 
+				JScrollPane cmptinterests= new JScrollPane (txtCompetingInterests);
+				cmptinterests.setBounds(35, 70, 131, 100);
+				panelMetadata.add(cmptinterests);
+				// scrollSettings.setViewportView(scrollFrame);
+
+				JLabel lblFunding = new JLabel("Funding");
+				lblFunding.setBounds(35, 175, 131, 15);
+				panelMetadata.add(lblFunding);
+				
+
+				JTextArea txtFunding = new JTextArea();
+				txtFunding.setColumns(10);
+				txtFunding.setBounds(35, 195, 131, 100);
+
+				JScrollPane funding= new JScrollPane (txtFunding);
+				funding.setBounds(35, 195, 131, 100);
+				panelMetadata.add(funding);
+				panelMetadata.setPreferredSize(new Dimension(240,380));
+
+				panelMetadata.setSize(new Dimension(240,380));
+				JButton btnAddMetadata = new JButton("View Metadata");
+				btnAddMetadata.setBounds(40,height_small-150,160,50);
+				btnAddMetadata.addActionListener(new ActionListener() {
+					public void actionPerformed(ActionEvent e) {
+						int result = JOptionPane.showConfirmDialog(null, panelMetadata, "Edit Authors",
+								JOptionPane.OK_CANCEL_OPTION);
+						if (result == JOptionPane.OK_OPTION) {}}});
+			panel.add(btnAddMetadata);
+				article.getContentPane().add(btnAddMetadata);
 				JPanel panel3 = new JPanel();
 				panel3.setBackground(SystemColor.window);
-				panel3.setBounds(50, 107, 320, 307);
+				panel3.setBounds(50, height_small -260, 320, 120);
 				article.getContentPane().add(panel3);
 				panel3.setLayout(null);
 				panel3.setAutoscrolls(true);
@@ -3677,6 +3718,49 @@ public class Main {
 					}
 				});
 
+				JPanel panelMetadata = new JPanel();
+				panelMetadata.setBackground(SystemColor.window);
+				panelMetadata.setBounds(50, height_small -260, 300, 307);
+				panelMetadata.setLayout(null);
+				panelMetadata.setAutoscrolls(true);
+				
+				JLabel lblCompetingInterests = new JLabel("Competing Interests");
+				lblCompetingInterests.setBounds(35, 40, 131, 15);
+				panelMetadata.add(lblCompetingInterests);
+				JTextArea txtCompetingInterests = new JTextArea();
+				txtCompetingInterests.setColumns(10);
+				txtCompetingInterests.setBounds(35, 70, 131, 100);
+
+				JScrollPane cmptinterests= new JScrollPane (txtCompetingInterests);
+				cmptinterests.setBounds(35, 70, 131, 100);
+				panelMetadata.add(cmptinterests);
+				// scrollSettings.setViewportView(scrollFrame);
+
+				JLabel lblFunding = new JLabel("Funding");
+				lblFunding.setBounds(35, 175, 131, 15);
+				panelMetadata.add(lblFunding);
+				
+
+				JTextArea txtFunding = new JTextArea();
+				txtFunding.setColumns(10);
+				txtFunding.setBounds(35, 195, 131, 100);
+
+				JScrollPane funding= new JScrollPane (txtFunding);
+				funding.setBounds(35, 195, 131, 100);
+				panelMetadata.add(funding);
+				panelMetadata.setPreferredSize(new Dimension(240,380));
+
+				panelMetadata.setSize(new Dimension(240,380));
+				JButton btnAddMetadata = new JButton("Edit Metadata");
+				btnAddMetadata.setBounds(40,height_small-150,160,50);
+				btnAddMetadata.addActionListener(new ActionListener() {
+					public void actionPerformed(ActionEvent e) {
+						int result = JOptionPane.showConfirmDialog(null, panelMetadata, "Edit Authors",
+								JOptionPane.OK_CANCEL_OPTION);
+						if (result == JOptionPane.OK_OPTION) {}}});
+			panel.add(btnAddMetadata);
+				article.getContentPane().add(btnAddMetadata);
+				
 				final HashMap<Integer, HashMap<Integer, JTextField>> author_fields = new HashMap<Integer, HashMap<Integer, JTextField>>();
 				final HashMap<Integer, JTextArea> authors_bio = new HashMap<Integer, JTextArea>();
 
@@ -5116,6 +5200,48 @@ public class Main {
 					// database_save();
 				}
 			});
+			JPanel panelMetadata = new JPanel();
+			panelMetadata.setBackground(SystemColor.window);
+			panelMetadata.setBounds(50, height_small -260, 300, 307);
+			panelMetadata.setLayout(null);
+			panelMetadata.setAutoscrolls(true);
+			
+			JLabel lblCompetingInterests = new JLabel("Competing Interests");
+			lblCompetingInterests.setBounds(35, 40, 131, 15);
+			panelMetadata.add(lblCompetingInterests);
+			JTextArea txtCompetingInterests = new JTextArea();
+			txtCompetingInterests.setColumns(10);
+			txtCompetingInterests.setBounds(35, 70, 131, 100);
+
+			JScrollPane cmptinterests= new JScrollPane (txtCompetingInterests);
+			cmptinterests.setBounds(35, 70, 131, 100);
+			panelMetadata.add(cmptinterests);
+			// scrollSettings.setViewportView(scrollFrame);
+
+			JLabel lblFunding = new JLabel("Funding");
+			lblFunding.setBounds(35, 175, 131, 15);
+			panelMetadata.add(lblFunding);
+			
+
+			JTextArea txtFunding = new JTextArea();
+			txtFunding.setColumns(10);
+			txtFunding.setBounds(35, 195, 131, 100);
+
+			JScrollPane funding= new JScrollPane (txtFunding);
+			funding.setBounds(35, 195, 131, 100);
+			panelMetadata.add(funding);
+			panelMetadata.setPreferredSize(new Dimension(240,380));
+
+			panelMetadata.setSize(new Dimension(240,380));
+			JButton btnAddMetadata = new JButton("Add Metadata");
+			btnAddMetadata.setBounds(40,height_small-150,160,50);
+			btnAddMetadata.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					int result = JOptionPane.showConfirmDialog(null, panelMetadata, "Edit Authors",
+							JOptionPane.OK_CANCEL_OPTION);
+					if (result == JOptionPane.OK_OPTION) {}}});
+		panel.add(btnAddMetadata);
+			article.getContentPane().add(btnAddMetadata);
 			article.addWindowListener(new WindowAdapter() {
 				@Override
 				public void windowClosed(WindowEvent e) {
@@ -5184,7 +5310,7 @@ public class Main {
 		section_db_id = 2;
 		section_storage.put(1, new Section(1, "Section 1"));
 		section_storage.put(2, new Section(2, "Section 2"));
-		dashboard();
+		article(1,1);
 	}
 
 	public void add_author() {
@@ -5203,23 +5329,43 @@ public class Main {
 								// height
 		api.getContentPane().setLayout(null);// using no layout managers
 		api.setVisible(true);
-		JPanel panelSection = new JPanel();
-		panelSection.setBounds(0, 0, 480, 150);
-		panelSection.setLayout(null);
 
-		JTextField txtSectionTitle = new JTextField();
-		txtSectionTitle.setBounds(90, 65, 300, 30);
-		panelSection.add(txtSectionTitle);
-		txtSectionTitle.setColumns(10);
+		JPanel panelMetadata = new JPanel();
+		panelMetadata.setBackground(SystemColor.window);
+		panelMetadata.setBounds(50, 107, 300, 307);
+		panelMetadata.setLayout(null);
+		panelMetadata.setAutoscrolls(true);
+		JScrollPane articleSection = new JScrollPane(panelMetadata);
+		panelMetadata.setAutoscrolls(true);
+		
+		JLabel lblCompetingInterests = new JLabel("Competing Interests");
+		lblCompetingInterests.setBounds(35, 40, 131, 15);
+		panelMetadata.add(lblCompetingInterests);
+		JTextArea txtCompetingInterests = new JTextArea();
+		txtCompetingInterests.setColumns(10);
+		txtCompetingInterests.setBounds(35, 70, 131, 100);
 
-		JLabel lblTitle = new JLabel("Title");
-		lblTitle.setHorizontalAlignment(SwingConstants.CENTER);
-		lblTitle.setBounds(190, 40, 100, 20);
-		panelSection.add(lblTitle);
-		panelSection.setBounds(0, 0, 480, 150);
-		panelSection.setSize(new Dimension(480, 150));
-		panelSection.setPreferredSize(new Dimension(480, 150));
-		panelSection.setVisible(true);
+		JScrollPane cmptinterests= new JScrollPane (txtCompetingInterests);
+		cmptinterests.setBounds(35, 70, 131, 100);
+		panelMetadata.add(cmptinterests);
+		articleSection.setPreferredSize(new Dimension(320, 200));
+		articleSection.setBounds(40, 132, 600 / 2 - 100, 720 - 280);
+		// scrollSettings.setViewportView(scrollFrame);
+		api.getContentPane().add(articleSection);
+
+		JLabel lblFunding = new JLabel("Funding");
+		lblFunding.setBounds(35, 175, 131, 15);
+		panelMetadata.add(lblFunding);
+		
+
+		JTextArea txtFunding = new JTextArea();
+		txtFunding.setColumns(10);
+		txtFunding.setBounds(35, 195, 131, 100);
+
+		JScrollPane funding= new JScrollPane (txtFunding);
+		funding.setBounds(35, 195, 131, 100);
+		panelMetadata.add(funding);
+		panelMetadata.setVisible(false);
 		/*
 		 * JLabel lblMiddleName = new JLabel("Middle name");
 		 * lblMiddleName.setHorizontalAlignment(SwingConstants.CENTER);
