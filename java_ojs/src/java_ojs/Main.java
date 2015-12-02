@@ -81,6 +81,7 @@ import models.Article;
 import models.ArticleFile;
 import models.Author;
 import models.Issue;
+import models.Metadata;
 import models.Section;
 
 public class Main {
@@ -95,6 +96,8 @@ public class Main {
 	private static HashMap<Integer, Integer> list_issues;
 	private static HashMap<Integer, JFrame> issue_screens;
 	private static HashMap<Integer, Issue> issue_storage;
+
+	private static HashMap<Integer, Metadata> metadata_storage;
 	private static HashMap<Integer, Section> section_storage;
 	private static HashMap<Integer, Author> author_storage;
 
@@ -113,6 +116,7 @@ public class Main {
 	private String article_author_insert_or_replace_statement = "INSERT OR REPLACE INTO ARTICLE_AUTHOR(id,article_id,author_id,primary_author) VALUES (?,?,?,?)";
 	private String issue_article_insert_or_replace_statement = "INSERT OR REPLACE INTO ISSUE_ARTICLE(id,article_id,issue_id) VALUES (?,?,?)";
 	private String file_insert_or_replace_statement = "INSERT OR REPLACE INTO FILE(id,article_id,path) VALUES (?,?,?)";
+	private String metadata_insert_or_replace_statement = "INSERT OR REPLACE INTO METADATA(id,article_id,competing_interests,funding) VALUES (?,?,?,?)";
 
 	private String delete_issue_statement = "DELETE FROM ISSUE WHERE id=?";
 	int width = 800;
@@ -123,6 +127,7 @@ public class Main {
 	private static int file_id = 0;
 	private static int author_id = 0;
 	private static int section_db_id = 0;
+	private static int metadata_id = 0;
 
 	/*
 	 * Initial setup test
@@ -144,6 +149,7 @@ public class Main {
 			stmt.executeUpdate("DELETE FROM ISSUE");
 			stmt.executeUpdate("DELETE FROM API");
 			stmt.executeUpdate("DELETE FROM FILE");
+			stmt.executeUpdate("DELETE FROM METADATA");
 			PreparedStatement prep = c.prepareStatement(api_insert_or_replace_statement);
 			prep.setString(1, source_api);
 			prep.setString(2, source_access_key);
@@ -281,7 +287,18 @@ public class Main {
 					i = i + 1;
 				}
 			}
+			Set<Integer> metadata_keys = metadata_storage.keySet();
 
+			for (int key : metadata_keys) {
+				Metadata meta = metadata_storage.get(key);
+				PreparedStatement meta_prep = c.prepareStatement(metadata_insert_or_replace_statement);
+				meta_prep.setInt(1, meta.getId());
+				meta_prep.setInt(2, meta.getArticle_id());
+				meta_prep.setString(3, meta.getCompeting_interests());
+				meta_prep.setString(4, meta.getFunding());
+				meta_prep.executeUpdate();
+
+			}
 			c.close();
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
@@ -305,6 +322,7 @@ public class Main {
 		author_storage = new HashMap<Integer, Author>();
 		section_storage = new HashMap<Integer, Section>();
 		author_primary_storage = new HashMap<Integer, HashMap<Integer, Boolean>>();
+		metadata_storage = new HashMap<Integer, Metadata>();
 		try {
 			ResultSet rs = c.createStatement().executeQuery("SELECT * FROM API WHERE URL=" + "'api'" + ";");
 			while (rs.next()) {
@@ -462,6 +480,21 @@ public class Main {
 				file_storage.put(article_id, files);
 			}
 			rs_files.close();
+			System.out.println("Loading File data....");
+			ResultSet rs_metadata = c.createStatement()
+					.executeQuery("SELECT id,article_id,competing_interests,funding FROM METADATA");
+			while (rs_metadata.next()) {
+				int id = rs_metadata.getInt(1);
+				int article_id = rs_metadata.getInt(2);
+				String competing_interests = rs_metadata.getString(3);
+				String funding = rs_metadata.getString(4);
+				Metadata meta = new Metadata(id, article_id, competing_interests, funding);
+				metadata_storage.put(article_id, meta);
+				if (id > metadata_id) {
+					metadata_id = id;
+				}
+			}
+			rs_metadata.close();
 
 			Set<Integer> author_keys = author_storage.keySet();
 			for (int key_author : author_keys) {
@@ -553,6 +586,11 @@ public class Main {
 					+ "FOREIGN KEY (article_id) REFERENCES ARTICLE(id),"
 					+ "FOREIGN KEY (author_id) REFERENCES AUTHOR(id)" + ")";
 			stmt.executeUpdate(sql);
+			sql = "CREATE TABLE IF NOT EXISTS METADATA" + "(id INTEGER PRIMARY KEY," + " article_id INTEGER,"
+					+ " competing_interests CHAR(1000)," + "funding CHAR(1000),"
+					+ "FOREIGN KEY (article_id) REFERENCES ARTICLE(id)" + ")";
+			stmt.executeUpdate(sql);
+
 		} catch (Exception e) {
 			System.err.println(e.getClass().getName() + ": " + e.getMessage());
 			System.exit(0);
@@ -2788,6 +2826,10 @@ public class Main {
 					height_small = (int) (768 - (768 * (5 / 100)));
 				}
 				final JFrame article = new JFrame();
+				Metadata meta = null;
+				if (metadata_storage.containsKey(article_id)) {
+					meta = metadata_storage.get(article_id);
+				}
 				article.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 				// article.setSize(width_small, height_small);
 				article.setSize(width_small, height_small);
@@ -2918,19 +2960,22 @@ public class Main {
 				article.getContentPane().add(articleSection);
 				JPanel panelMetadata = new JPanel();
 				panelMetadata.setBackground(SystemColor.window);
-				panelMetadata.setBounds(50, height_small -260, 300, 307);
+				panelMetadata.setBounds(50, height_small - 260, 300, 307);
 				panelMetadata.setLayout(null);
 				panelMetadata.setAutoscrolls(true);
-				
+
 				JLabel lblCompetingInterests = new JLabel("Competing Interests");
 				lblCompetingInterests.setBounds(35, 40, 145, 15);
 				panelMetadata.add(lblCompetingInterests);
 				JTextArea txtCompetingInterests = new JTextArea();
+				if (meta != null) {
+					txtCompetingInterests.setText(meta.getCompeting_interests());
+				}
 				txtCompetingInterests.setColumns(10);
 				txtCompetingInterests.setEditable(false);
 				txtCompetingInterests.setBounds(35, 70, 145, 100);
 
-				JScrollPane cmptinterests= new JScrollPane (txtCompetingInterests);
+				JScrollPane cmptinterests = new JScrollPane(txtCompetingInterests);
 				cmptinterests.setBounds(35, 70, 145, 100);
 				panelMetadata.add(cmptinterests);
 				// scrollSettings.setViewportView(scrollFrame);
@@ -2938,31 +2983,35 @@ public class Main {
 				JLabel lblFunding = new JLabel("Funding");
 				lblFunding.setBounds(35, 175, 145, 15);
 				panelMetadata.add(lblFunding);
-				
-
 				JTextArea txtFunding = new JTextArea();
+				if (meta != null) {
+					txtFunding.setText(meta.getFunding());
+				}
 				txtFunding.setColumns(10);
 				txtFunding.setEditable(false);
 				txtFunding.setBounds(35, 195, 145, 100);
 
-				JScrollPane funding= new JScrollPane (txtFunding);
+				JScrollPane funding = new JScrollPane(txtFunding);
 				funding.setBounds(35, 195, 145, 100);
 				panelMetadata.add(funding);
-				panelMetadata.setPreferredSize(new Dimension(240,380));
+				panelMetadata.setPreferredSize(new Dimension(240, 380));
 
-				panelMetadata.setSize(new Dimension(240,380));
+				panelMetadata.setSize(new Dimension(240, 380));
 				JButton btnAddMetadata = new JButton("View Metadata");
-				btnAddMetadata.setBounds(40,height_small-150,160,50);
+				btnAddMetadata.setBounds(40, height_small - 150, 160, 50);
 				btnAddMetadata.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
 						int result = JOptionPane.showConfirmDialog(null, panelMetadata, "Edit Authors",
 								JOptionPane.OK_CANCEL_OPTION);
-						if (result == JOptionPane.OK_OPTION) {}}});
-			panel.add(btnAddMetadata);
+						if (result == JOptionPane.OK_OPTION) {
+						}
+					}
+				});
+				panel.add(btnAddMetadata);
 				article.getContentPane().add(btnAddMetadata);
 				JPanel panel3 = new JPanel();
 				panel3.setBackground(SystemColor.window);
-				panel3.setBounds(50, height_small -260, 320, 120);
+				panel3.setBounds(50, height_small - 260, 320, 120);
 				article.getContentPane().add(panel3);
 				panel3.setLayout(null);
 				panel3.setAutoscrolls(true);
@@ -3452,6 +3501,10 @@ public class Main {
 					height_small = (int) (768 - (768 * (5 / 100)));
 				}
 				final JFrame article = new JFrame();
+				Metadata meta = null;
+				if (metadata_storage.containsKey(article_id)) {
+					meta = metadata_storage.get(article_id);
+				}
 				article.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 				// article.setSize(width_small, height_small);
 				article.setSize(width_small, height_small);
@@ -3722,18 +3775,21 @@ public class Main {
 
 				JPanel panelMetadata = new JPanel();
 				panelMetadata.setBackground(SystemColor.window);
-				panelMetadata.setBounds(50, height_small -260, 300, 307);
+				panelMetadata.setBounds(50, height_small - 260, 300, 307);
 				panelMetadata.setLayout(null);
 				panelMetadata.setAutoscrolls(true);
-				
+
 				JLabel lblCompetingInterests = new JLabel("Competing Interests");
 				lblCompetingInterests.setBounds(35, 40, 145, 15);
 				panelMetadata.add(lblCompetingInterests);
 				JTextArea txtCompetingInterests = new JTextArea();
+				if (meta != null) {
+					txtCompetingInterests.setText(meta.getCompeting_interests());
+				}
 				txtCompetingInterests.setColumns(10);
 				txtCompetingInterests.setBounds(35, 70, 145, 100);
 
-				JScrollPane cmptinterests= new JScrollPane (txtCompetingInterests);
+				JScrollPane cmptinterests = new JScrollPane(txtCompetingInterests);
 				cmptinterests.setBounds(35, 70, 145, 100);
 				panelMetadata.add(cmptinterests);
 				// scrollSettings.setViewportView(scrollFrame);
@@ -3741,28 +3797,33 @@ public class Main {
 				JLabel lblFunding = new JLabel("Funding");
 				lblFunding.setBounds(35, 175, 145, 15);
 				panelMetadata.add(lblFunding);
-				
 
 				JTextArea txtFunding = new JTextArea();
+				if (meta != null) {
+					txtFunding.setText(meta.getFunding());
+				}
 				txtFunding.setColumns(10);
 				txtFunding.setBounds(35, 195, 145, 100);
 
-				JScrollPane funding= new JScrollPane (txtFunding);
+				JScrollPane funding = new JScrollPane(txtFunding);
 				funding.setBounds(35, 195, 145, 100);
 				panelMetadata.add(funding);
-				panelMetadata.setPreferredSize(new Dimension(240,380));
+				panelMetadata.setPreferredSize(new Dimension(240, 380));
 
-				panelMetadata.setSize(new Dimension(240,380));
+				panelMetadata.setSize(new Dimension(240, 380));
 				JButton btnAddMetadata = new JButton("Edit Metadata");
-				btnAddMetadata.setBounds(40,height_small-150,160,50);
+				btnAddMetadata.setBounds(40, height_small - 150, 160, 50);
 				btnAddMetadata.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
 						int result = JOptionPane.showConfirmDialog(null, panelMetadata, "Edit Authors",
 								JOptionPane.OK_CANCEL_OPTION);
-						if (result == JOptionPane.OK_OPTION) {}}});
-			panel.add(btnAddMetadata);
+						if (result == JOptionPane.OK_OPTION) {
+						}
+					}
+				});
+				panel.add(btnAddMetadata);
 				article.getContentPane().add(btnAddMetadata);
-				
+
 				final HashMap<Integer, HashMap<Integer, JTextField>> author_fields = new HashMap<Integer, HashMap<Integer, JTextField>>();
 				final HashMap<Integer, JTextArea> authors_bio = new HashMap<Integer, JTextArea>();
 
@@ -4259,6 +4320,17 @@ public class Main {
 						}
 						if (validation) {
 							article.dispose();
+							if (metadata_storage.containsKey(article_id)) {
+								Metadata meta_update = metadata_storage.get(article_id);
+								meta_update.setCompeting_interests(txtCompetingInterests.getText());
+								meta_update.setFunding(txtFunding.getText());
+								metadata_storage.put(article_id, meta_update);
+							} else {
+								metadata_id++;
+								Metadata meta_update = new Metadata(metadata_id, article_id,
+										txtCompetingInterests.getText(), txtFunding.getText());
+								metadata_storage.put(article_id, meta_update);
+							}
 							Article a = issue_storage.get(issue_id).getArticles_list().get(article_id);
 							a.setTitle(lblTitleText.getText());
 							ArrayList<Author> updated_authors = a.getAuthors();
@@ -4465,7 +4537,7 @@ public class Main {
 			article.setVisible(true);
 			article.setLocationRelativeTo(null);
 			article.getContentPane().setLayout(null);
-
+		
 			JLabel lblArticleDetails = new JLabel("Article Details");
 			lblArticleDetails.setHorizontalAlignment(SwingConstants.CENTER);
 			lblArticleDetails.setFont(new Font("Dialog", Font.BOLD, 20));
@@ -4568,6 +4640,50 @@ public class Main {
 			panel_2.setBounds(0, 110, width_small, 5);
 
 			article.getContentPane().add(panel_2);
+			JPanel panelMetadata = new JPanel();
+			panelMetadata.setBackground(SystemColor.window);
+			panelMetadata.setBounds(50, height_small - 260, 300, 307);
+			panelMetadata.setLayout(null);
+			panelMetadata.setAutoscrolls(true);
+
+			JLabel lblCompetingInterests = new JLabel("Competing Interests");
+			lblCompetingInterests.setBounds(35, 40, 145, 15);
+			panelMetadata.add(lblCompetingInterests);
+			JTextArea txtCompetingInterests = new JTextArea();
+			txtCompetingInterests.setColumns(10);
+			txtCompetingInterests.setBounds(35, 70, 145, 100);
+
+			JScrollPane cmptinterests = new JScrollPane(txtCompetingInterests);
+			cmptinterests.setBounds(35, 70, 145, 100);
+			panelMetadata.add(cmptinterests);
+			// scrollSettings.setViewportView(scrollFrame);
+
+			JLabel lblFunding = new JLabel("Funding");
+			lblFunding.setBounds(35, 175, 145, 15);
+			panelMetadata.add(lblFunding);
+
+			JTextArea txtFunding = new JTextArea();
+			txtFunding.setColumns(10);
+			txtFunding.setBounds(35, 195, 145, 100);
+
+			JScrollPane funding = new JScrollPane(txtFunding);
+			funding.setBounds(35, 195, 145, 100);
+			panelMetadata.add(funding);
+			panelMetadata.setPreferredSize(new Dimension(240, 380));
+
+			panelMetadata.setSize(new Dimension(240, 380));
+			JButton btnAddMetadata = new JButton("Add Metadata");
+			btnAddMetadata.setBounds(40, height_small - 150, 160, 50);
+			btnAddMetadata.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					int result = JOptionPane.showConfirmDialog(null, panelMetadata, "Edit Authors",
+							JOptionPane.OK_CANCEL_OPTION);
+					if (result == JOptionPane.OK_OPTION) {
+					}
+				}
+			});
+			panel.add(btnAddMetadata);
+			article.getContentPane().add(btnAddMetadata);
 			panel.setPreferredSize(new Dimension(320, settings_height));
 			JScrollPane articleSection = new JScrollPane(panel);
 			panel.setAutoscrolls(true);
@@ -5021,8 +5137,20 @@ public class Main {
 
 					}
 					if (validation) {
+
+						System.out.println("Metadata id: "+ metadata_id);
+						metadata_id++;
+
+						System.out.println("Metadata id: "+ metadata_id);
+						Metadata meta_update = new Metadata(metadata_id, current_id, txtCompetingInterests.getText(),
+								txtFunding.getText());
+						
 						issue_screens.get(issue_id).dispose();
 						articles_id++;
+						metadata_storage.put(articles_id, meta_update);
+						System.out.println("Metadata added");
+
+						System.out.println(metadata_storage.get(articles_id).getCompeting_interests());
 						list_issues.replace(issue_id, articles_id);
 						Issue current_issue = issue_storage.get(issue_id);
 
@@ -5197,53 +5325,12 @@ public class Main {
 						File folder = new File(String.format("src/files/%d/", current_id));
 						folder.delete();
 						file_storage.remove(current_id);
+						metadata_storage.remove(current_id);
 					}
 					issue(issue_id);
 					// database_save();
 				}
 			});
-			JPanel panelMetadata = new JPanel();
-			panelMetadata.setBackground(SystemColor.window);
-			panelMetadata.setBounds(50, height_small -260, 300, 307);
-			panelMetadata.setLayout(null);
-			panelMetadata.setAutoscrolls(true);
-			
-			JLabel lblCompetingInterests = new JLabel("Competing Interests");
-			lblCompetingInterests.setBounds(35, 40, 145, 15);
-			panelMetadata.add(lblCompetingInterests);
-			JTextArea txtCompetingInterests = new JTextArea();
-			txtCompetingInterests.setColumns(10);
-			txtCompetingInterests.setBounds(35, 70, 145, 100);
-
-			JScrollPane cmptinterests= new JScrollPane (txtCompetingInterests);
-			cmptinterests.setBounds(35, 70, 145, 100);
-			panelMetadata.add(cmptinterests);
-			// scrollSettings.setViewportView(scrollFrame);
-
-			JLabel lblFunding = new JLabel("Funding");
-			lblFunding.setBounds(35, 175, 145, 15);
-			panelMetadata.add(lblFunding);
-			
-
-			JTextArea txtFunding = new JTextArea();
-			txtFunding.setColumns(10);
-			txtFunding.setBounds(35, 195, 145, 100);
-
-			JScrollPane funding= new JScrollPane (txtFunding);
-			funding.setBounds(35, 195, 145, 100);
-			panelMetadata.add(funding);
-			panelMetadata.setPreferredSize(new Dimension(240,380));
-
-			panelMetadata.setSize(new Dimension(240,380));
-			JButton btnAddMetadata = new JButton("Add Metadata");
-			btnAddMetadata.setBounds(40,height_small-150,160,50);
-			btnAddMetadata.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent e) {
-					int result = JOptionPane.showConfirmDialog(null, panelMetadata, "Edit Authors",
-							JOptionPane.OK_CANCEL_OPTION);
-					if (result == JOptionPane.OK_OPTION) {}}});
-		panel.add(btnAddMetadata);
-			article.getContentPane().add(btnAddMetadata);
 			article.addWindowListener(new WindowAdapter() {
 				@Override
 				public void windowClosed(WindowEvent e) {
@@ -5257,8 +5344,10 @@ public class Main {
 						}
 						File folder = new File(String.format("src/files/%d/", current_id));
 						folder.delete();
+						metadata_storage.remove(current_id);
 						file_storage.remove(current_id);
 					}
+
 					issue(issue_id);
 					// database_save();
 				}
@@ -5312,7 +5401,7 @@ public class Main {
 		section_db_id = 2;
 		section_storage.put(1, new Section(1, "Section 1"));
 		section_storage.put(2, new Section(2, "Section 2"));
-		article(1,1);
+		dashboard();
 	}
 
 	public void add_author() {
@@ -5339,7 +5428,7 @@ public class Main {
 		panelMetadata.setAutoscrolls(true);
 		JScrollPane articleSection = new JScrollPane(panelMetadata);
 		panelMetadata.setAutoscrolls(true);
-		
+
 		JLabel lblCompetingInterests = new JLabel("Competing Interests");
 		lblCompetingInterests.setBounds(35, 40, 131, 15);
 		panelMetadata.add(lblCompetingInterests);
@@ -5347,7 +5436,7 @@ public class Main {
 		txtCompetingInterests.setColumns(10);
 		txtCompetingInterests.setBounds(35, 70, 131, 100);
 
-		JScrollPane cmptinterests= new JScrollPane (txtCompetingInterests);
+		JScrollPane cmptinterests = new JScrollPane(txtCompetingInterests);
 		cmptinterests.setBounds(35, 70, 131, 100);
 		panelMetadata.add(cmptinterests);
 		articleSection.setPreferredSize(new Dimension(320, 200));
@@ -5358,13 +5447,12 @@ public class Main {
 		JLabel lblFunding = new JLabel("Funding");
 		lblFunding.setBounds(35, 175, 131, 15);
 		panelMetadata.add(lblFunding);
-		
 
 		JTextArea txtFunding = new JTextArea();
 		txtFunding.setColumns(10);
 		txtFunding.setBounds(35, 195, 131, 100);
 
-		JScrollPane funding= new JScrollPane (txtFunding);
+		JScrollPane funding = new JScrollPane(txtFunding);
 		funding.setBounds(35, 195, 131, 100);
 		panelMetadata.add(funding);
 		panelMetadata.setVisible(false);
