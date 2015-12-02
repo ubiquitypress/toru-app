@@ -2923,28 +2923,30 @@ public class Main {
 				panelMetadata.setAutoscrolls(true);
 				
 				JLabel lblCompetingInterests = new JLabel("Competing Interests");
-				lblCompetingInterests.setBounds(35, 40, 131, 15);
+				lblCompetingInterests.setBounds(35, 40, 145, 15);
 				panelMetadata.add(lblCompetingInterests);
 				JTextArea txtCompetingInterests = new JTextArea();
 				txtCompetingInterests.setColumns(10);
-				txtCompetingInterests.setBounds(35, 70, 131, 100);
+				txtCompetingInterests.setEditable(false);
+				txtCompetingInterests.setBounds(35, 70, 145, 100);
 
 				JScrollPane cmptinterests= new JScrollPane (txtCompetingInterests);
-				cmptinterests.setBounds(35, 70, 131, 100);
+				cmptinterests.setBounds(35, 70, 145, 100);
 				panelMetadata.add(cmptinterests);
 				// scrollSettings.setViewportView(scrollFrame);
 
 				JLabel lblFunding = new JLabel("Funding");
-				lblFunding.setBounds(35, 175, 131, 15);
+				lblFunding.setBounds(35, 175, 145, 15);
 				panelMetadata.add(lblFunding);
 				
 
 				JTextArea txtFunding = new JTextArea();
 				txtFunding.setColumns(10);
-				txtFunding.setBounds(35, 195, 131, 100);
+				txtFunding.setEditable(false);
+				txtFunding.setBounds(35, 195, 145, 100);
 
 				JScrollPane funding= new JScrollPane (txtFunding);
-				funding.setBounds(35, 195, 131, 100);
+				funding.setBounds(35, 195, 145, 100);
 				panelMetadata.add(funding);
 				panelMetadata.setPreferredSize(new Dimension(240,380));
 
@@ -3725,28 +3727,28 @@ public class Main {
 				panelMetadata.setAutoscrolls(true);
 				
 				JLabel lblCompetingInterests = new JLabel("Competing Interests");
-				lblCompetingInterests.setBounds(35, 40, 131, 15);
+				lblCompetingInterests.setBounds(35, 40, 145, 15);
 				panelMetadata.add(lblCompetingInterests);
 				JTextArea txtCompetingInterests = new JTextArea();
 				txtCompetingInterests.setColumns(10);
-				txtCompetingInterests.setBounds(35, 70, 131, 100);
+				txtCompetingInterests.setBounds(35, 70, 145, 100);
 
 				JScrollPane cmptinterests= new JScrollPane (txtCompetingInterests);
-				cmptinterests.setBounds(35, 70, 131, 100);
+				cmptinterests.setBounds(35, 70, 145, 100);
 				panelMetadata.add(cmptinterests);
 				// scrollSettings.setViewportView(scrollFrame);
 
 				JLabel lblFunding = new JLabel("Funding");
-				lblFunding.setBounds(35, 175, 131, 15);
+				lblFunding.setBounds(35, 175, 145, 15);
 				panelMetadata.add(lblFunding);
 				
 
 				JTextArea txtFunding = new JTextArea();
 				txtFunding.setColumns(10);
-				txtFunding.setBounds(35, 195, 131, 100);
+				txtFunding.setBounds(35, 195, 145, 100);
 
 				JScrollPane funding= new JScrollPane (txtFunding);
-				funding.setBounds(35, 195, 131, 100);
+				funding.setBounds(35, 195, 145, 100);
 				panelMetadata.add(funding);
 				panelMetadata.setPreferredSize(new Dimension(240,380));
 
@@ -5207,28 +5209,28 @@ public class Main {
 			panelMetadata.setAutoscrolls(true);
 			
 			JLabel lblCompetingInterests = new JLabel("Competing Interests");
-			lblCompetingInterests.setBounds(35, 40, 131, 15);
+			lblCompetingInterests.setBounds(35, 40, 145, 15);
 			panelMetadata.add(lblCompetingInterests);
 			JTextArea txtCompetingInterests = new JTextArea();
 			txtCompetingInterests.setColumns(10);
-			txtCompetingInterests.setBounds(35, 70, 131, 100);
+			txtCompetingInterests.setBounds(35, 70, 145, 100);
 
 			JScrollPane cmptinterests= new JScrollPane (txtCompetingInterests);
-			cmptinterests.setBounds(35, 70, 131, 100);
+			cmptinterests.setBounds(35, 70, 145, 100);
 			panelMetadata.add(cmptinterests);
 			// scrollSettings.setViewportView(scrollFrame);
 
 			JLabel lblFunding = new JLabel("Funding");
-			lblFunding.setBounds(35, 175, 131, 15);
+			lblFunding.setBounds(35, 175, 145, 15);
 			panelMetadata.add(lblFunding);
 			
 
 			JTextArea txtFunding = new JTextArea();
 			txtFunding.setColumns(10);
-			txtFunding.setBounds(35, 195, 131, 100);
+			txtFunding.setBounds(35, 195, 145, 100);
 
 			JScrollPane funding= new JScrollPane (txtFunding);
-			funding.setBounds(35, 195, 131, 100);
+			funding.setBounds(35, 195, 145, 100);
 			panelMetadata.add(funding);
 			panelMetadata.setPreferredSize(new Dimension(240,380));
 
