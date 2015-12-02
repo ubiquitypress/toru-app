@@ -2826,6 +2826,7 @@ public class Main {
 					height_small = (int) (768 - (768 * (5 / 100)));
 				}
 				final JFrame article = new JFrame();
+				String setting_meta=list_settings.get("Metadata");
 				Metadata meta = null;
 				if (metadata_storage.containsKey(article_id)) {
 					meta = metadata_storage.get(article_id);
@@ -2958,6 +2959,7 @@ public class Main {
 				articleSection.setBounds(40, 132, width_small / 2 - 100, height_small - 280);
 				// scrollSettings.setViewportView(scrollFrame);
 				article.getContentPane().add(articleSection);
+				
 				JPanel panelMetadata = new JPanel();
 				panelMetadata.setBackground(SystemColor.window);
 				panelMetadata.setBounds(50, height_small - 260, 300, 307);
@@ -3007,8 +3009,9 @@ public class Main {
 						}
 					}
 				});
+				if(setting_meta.compareToIgnoreCase("true")==0){
 				panel.add(btnAddMetadata);
-				article.getContentPane().add(btnAddMetadata);
+				article.getContentPane().add(btnAddMetadata);}
 				JPanel panel3 = new JPanel();
 				panel3.setBackground(SystemColor.window);
 				panel3.setBounds(50, height_small - 260, 320, 120);
@@ -3512,6 +3515,7 @@ public class Main {
 				article.getContentPane().setBackground(new Color(128, 128, 128));
 				article.setVisible(true);
 
+				String setting_meta=list_settings.get("Metadata");
 				article.setLocationRelativeTo(null);
 				article.addWindowListener(new WindowAdapter() {
 					@Override
@@ -3821,9 +3825,11 @@ public class Main {
 						}
 					}
 				});
+
+				if(setting_meta.compareToIgnoreCase("true")==0){
 				panel.add(btnAddMetadata);
 				article.getContentPane().add(btnAddMetadata);
-
+				}
 				final HashMap<Integer, HashMap<Integer, JTextField>> author_fields = new HashMap<Integer, HashMap<Integer, JTextField>>();
 				final HashMap<Integer, JTextArea> authors_bio = new HashMap<Integer, JTextArea>();
 
@@ -4320,6 +4326,7 @@ public class Main {
 						}
 						if (validation) {
 							article.dispose();
+							if(setting_meta.compareToIgnoreCase("true")==0){
 							if (metadata_storage.containsKey(article_id)) {
 								Metadata meta_update = metadata_storage.get(article_id);
 								meta_update.setCompeting_interests(txtCompetingInterests.getText());
@@ -4330,7 +4337,7 @@ public class Main {
 								Metadata meta_update = new Metadata(metadata_id, article_id,
 										txtCompetingInterests.getText(), txtFunding.getText());
 								metadata_storage.put(article_id, meta_update);
-							}
+							}}
 							Article a = issue_storage.get(issue_id).getArticles_list().get(article_id);
 							a.setTitle(lblTitleText.getText());
 							ArrayList<Author> updated_authors = a.getAuthors();
@@ -4526,6 +4533,8 @@ public class Main {
 				width_small = (int) (640 + (640 * (37.5 / 100)));
 				height_small = (int) (768 - (768 * (5 / 100)));
 			}
+
+			String setting_meta=list_settings.get("Metadata");
 			int current_id = articles_id + 1;
 			int initial_file_num = file_id;
 			final JFrame article = new JFrame();
@@ -4682,8 +4691,10 @@ public class Main {
 					}
 				}
 			});
+
+			if(setting_meta.compareToIgnoreCase("true")==0){
 			panel.add(btnAddMetadata);
-			article.getContentPane().add(btnAddMetadata);
+			article.getContentPane().add(btnAddMetadata);}
 			panel.setPreferredSize(new Dimension(320, settings_height));
 			JScrollPane articleSection = new JScrollPane(panel);
 			panel.setAutoscrolls(true);
@@ -5137,20 +5148,23 @@ public class Main {
 
 					}
 					if (validation) {
-
+						Metadata meta_update = null;
+						if(setting_meta.compareToIgnoreCase("true")==0){
 						System.out.println("Metadata id: "+ metadata_id);
 						metadata_id++;
 
 						System.out.println("Metadata id: "+ metadata_id);
-						Metadata meta_update = new Metadata(metadata_id, current_id, txtCompetingInterests.getText(),
+						meta_update = new Metadata(metadata_id, current_id, txtCompetingInterests.getText(),
 								txtFunding.getText());
-						
+						}
 						issue_screens.get(issue_id).dispose();
 						articles_id++;
+
+						if(setting_meta.compareToIgnoreCase("true")==0){
 						metadata_storage.put(articles_id, meta_update);
 						System.out.println("Metadata added");
 
-						System.out.println(metadata_storage.get(articles_id).getCompeting_interests());
+						System.out.println(metadata_storage.get(articles_id).getCompeting_interests());}
 						list_issues.replace(issue_id, articles_id);
 						Issue current_issue = issue_storage.get(issue_id);
 
@@ -5342,6 +5356,7 @@ public class Main {
 							File f = new File(up_files.get(key).getPath());
 							f.delete();
 						}
+						metadata_storage.remove(current_id);
 						File folder = new File(String.format("src/files/%d/", current_id));
 						folder.delete();
 						metadata_storage.remove(current_id);
