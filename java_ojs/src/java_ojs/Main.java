@@ -4920,6 +4920,7 @@ public class Main {
 								txtLastName.getText(), txtEmail.getText(), txtAffiliation.getText(), txtBio.getText(),
 								txtOrcID.getText(), txtDepartment.getText(), txtCountry.getText());
 						author_storage.put(author_id, new_author);
+						author_list.add(author_id);
 						listModel.addElement(new_author.getFull_name());
 						listbox.repaint();
 					}
