@@ -5508,12 +5508,16 @@ public class Main {
 			}
 		System.setProperty("http.agent", "Jakarta Commons-HttpClient/3.1");
 		byte[] encoding = Base64.encodeBase64("ioannis:root".getBytes());
-		HttpPost httppost = new HttpPost("http://127.0.0.1:8000/api-auth/login");
-		httppost.setHeader("Authorization", "Basic " + new String(encoding));
+		HttpPost httppost = new HttpPost("http://127.0.0.1:8000/api-auth/login/");
+		httppost.setHeader("Authorization", "Basic " +encoding);
+
+		System.out.println("Authorization"+ "Basic " +encoding);
 		httppost.setHeader("X-CSRFToken", csrf);
 		System.out.println("executing request " + httppost.getRequestLine());
 		HttpResponse response = null;
 		try {
+			httpClient.getParams().setBooleanParameter("http.protocol.expect-continue", false); 
+
 			response = httpClient.execute(httppost);
 		} catch (ClientProtocolException e) {
 			// TODO Auto-generated catch block
@@ -5522,7 +5526,9 @@ public class Main {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		System.out.println(httppost.getAllHeaders().toString());
 		HttpEntity entity = response.getEntity();
+		System.out.println(response.toString());
 		author_id = 6;
 		author_storage.put(1, new Author(1, "Peter", "M.", "FakeAuthor", "fake_author@fakeaddress.com", "affiliation",
 				"bio", "orcid", "testing", "gb"));
