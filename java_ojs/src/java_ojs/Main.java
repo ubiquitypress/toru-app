@@ -8,20 +8,25 @@ import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.CookieStore;
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.fluent.Response;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.protocol.ClientContext;
 import org.apache.http.conn.ClientConnectionManager;
 import org.apache.http.conn.scheme.PlainSocketFactory;
 import org.apache.http.conn.scheme.Scheme;
 import org.apache.http.conn.scheme.SchemeRegistry;
 import org.apache.http.conn.ssl.SSLSocketFactory;
 import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.BasicCookieStore;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
 import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.params.HttpParams;
 import org.apache.http.params.HttpProtocolParams;
+import org.apache.http.protocol.BasicHttpContext;
+import org.apache.http.protocol.HttpContext;
 import org.apache.http.util.EntityUtils;
 
 import java.awt.Color;
@@ -164,7 +169,10 @@ public class Main {
 	private static int author_id = 0;
 	private static int section_db_id = 0;
 	private static int metadata_id = 0;
-	private static final int SOCKET_OPERATION_TIMEOUT = 60 * 1000;
+	private static final int SOCKET_OPERATION_TIMEOUT = 5 * 1000;
+
+	CookieStore cookieStore = new BasicCookieStore();
+	HttpContext httpContext = new BasicHttpContext();
 	/*
 	 * Initial setup test
 	 */
@@ -2486,7 +2494,7 @@ public class Main {
 						System.out.println("sync");
 						HttpResponse response = null;
 						try {
-							response=httpClient.execute(new HttpGet("http://127.0.0.1:8000/issues/"));
+							response=httpClient.execute(new HttpGet("http://127.0.0.1:8000/issues/"), httpContext);
 						} catch (ClientProtocolException e2) {
 							// TODO Auto-generated catch block
 							e2.printStackTrace();
@@ -2495,7 +2503,8 @@ public class Main {
 							e2.printStackTrace();
 						}
 						System.out.println("get");
-						CookieStore cookieStore = httpClient.getCookieStore();
+						System.out.println(httpContext);
+						cookieStore = httpClient.getCookieStore();
 						List<org.apache.http.cookie.Cookie> cookies =  cookieStore.getCookies();
 						System.out.println( cookies);
 						String csrf = "";
@@ -2535,7 +2544,7 @@ public class Main {
 						post.setHeader("Content-type", "application/json");
 						System.out.println(post);
 						try {
-							 response = httpClient.execute(post);
+							 response = httpClient.execute(post, httpContext);
 
 									System.out.println(response);
 						} catch (ClientProtocolException e1) {
@@ -5529,13 +5538,14 @@ public class Main {
 	        ClientConnectionManager conMgr = new ThreadSafeClientConnManager(params, schReg);
 
 	        DefaultHttpClient httpClient = new DefaultHttpClient(conMgr, params);
-		 ClientConnectionManager mgr = httpClient.getConnectionManager();
+	        ClientConnectionManager mgr = httpClient.getConnectionManager();
 		
 		    httpClient.getCredentialsProvider().setCredentials(
                     new AuthScope(AuthScope.ANY_HOST, AuthScope.ANY_PORT), 
                     new UsernamePasswordCredentials("ioannis", "root"));
+		    HttpResponse response = null;
 		    try {
-				httpClient.execute(new HttpGet("http://127.0.0.1:8000/api-auth/login/"));
+		    	response = httpClient.execute(new HttpGet("http://127.0.0.1:8000/api-auth/login/"));
 			} catch (ClientProtocolException e2) {
 				// TODO Auto-generated catch block
 				e2.printStackTrace();
@@ -5543,7 +5553,8 @@ public class Main {
 				// TODO Auto-generated catch block
 				e2.printStackTrace();
 			}
-			CookieStore cookieStore = httpClient.getCookieStore();
+		    HttpEntity entity = response.getEntity();
+			cookieStore = httpClient.getCookieStore();
 			List<org.apache.http.cookie.Cookie> cookies =  cookieStore.getCookies();
 			System.out.println( cookies);
 			String csrf = "";
@@ -5554,19 +5565,30 @@ public class Main {
 				}
 			    
 			}
-		System.setProperty("http.agent", "Jakarta Commons-HttpClient/3.1");
+
+	        httpContext.setAttribute(ClientContext.COOKIE_STORE, cookieStore);
+
+		  try {
+				InputStream is = entity.getContent();
+				is.close();  
+			} catch (IOException exc) {
+				// TODO Auto-generated catch block
+				exc.printStackTrace();
+			}
 		byte[] encoding = Base64.encodeBase64("ioannis:root".getBytes());
 		HttpPost httppost = new HttpPost("http://127.0.0.1:8000/api-auth/login/");
 		httppost.setHeader("Authorization", "Basic " +encoding);
 
 		System.out.println("Authorization"+ "Basic " +encoding);
 		httppost.setHeader("X-CSRFToken", csrf);
+		httppost.setHeader("Connection", "keep-alive");
 		System.out.println("executing request " + httppost.getRequestLine());
-		HttpResponse response = null;
+	 response = null;
+
 		try {
 			httpClient.getParams().setBooleanParameter("http.protocol.expect-continue", false); 
 
-			response = httpClient.execute(httppost);
+			response = httpClient.execute(httppost,httpContext);
 		} catch (ClientProtocolException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -5575,15 +5597,34 @@ public class Main {
 			e.printStackTrace();
 		}
 		System.out.println(httppost.getAllHeaders().toString());
-		HttpEntity entity = response.getEntity();
+		entity = response.getEntity();
 		System.out.println(response.toString());
-		try {
+
+        try {
 			InputStream is = entity.getContent();
-			is.close();    
-		} catch (IOException e) {
+			is.close();  
+		} catch (IOException exc) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			exc.printStackTrace();
 		}
+
+		cookieStore = httpClient.getCookieStore();
+        httpContext.setAttribute(ClientContext.COOKIE_STORE, cookieStore);
+        System.out.println(httpContext);
+       response = null;
+		try {
+			response=httpClient.execute(new HttpGet("http://127.0.0.1:8000/issues/"), httpContext);
+		} catch (ClientProtocolException e2) {
+			// TODO Auto-generated catch block
+			e2.printStackTrace();
+		} catch (IOException e2) {
+			// TODO Auto-generated catch block
+			e2.printStackTrace();
+		}
+
+		cookieStore = httpClient.getCookieStore();
+        httpContext.setAttribute(ClientContext.COOKIE_STORE, cookieStore);
+        System.out.println(httpContext);
 		author_id = 6;
 		author_storage.put(1, new Author(1, "Peter", "M.", "FakeAuthor", "fake_author@fakeaddress.com", "affiliation",
 				"bio", "orcid", "testing", "gb"));
