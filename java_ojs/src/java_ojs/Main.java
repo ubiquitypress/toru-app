@@ -1,5 +1,5 @@
 package java_ojs;
-
+import org.apache.commons.codec.binary.Base64;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.auth.AuthScope;
@@ -5486,7 +5486,43 @@ public class Main {
 		    httpClient.getCredentialsProvider().setCredentials(
                     new AuthScope(AuthScope.ANY_HOST, AuthScope.ANY_PORT), 
                     new UsernamePasswordCredentials("ioannis", "root"));
+		    try {
+				httpClient.execute(new HttpGet("http://127.0.0.1:8000/api-auth/login/"));
+			} catch (ClientProtocolException e2) {
+				// TODO Auto-generated catch block
+				e2.printStackTrace();
+			} catch (IOException e2) {
+				// TODO Auto-generated catch block
+				e2.printStackTrace();
+			}
+			CookieStore cookieStore = httpClient.getCookieStore();
+			List<org.apache.http.cookie.Cookie> cookies =  cookieStore.getCookies();
+			System.out.println( cookies);
+			String csrf = "";
+			for (org.apache.http.cookie.Cookie cookie: cookies) {
+				if (cookie.getName().compareTo("csrftoken")==0){
+			   System.out.println( cookie.getValue());
+			   csrf = cookie.getValue();
+				}
+			    
+			}
 		System.setProperty("http.agent", "Jakarta Commons-HttpClient/3.1");
+		byte[] encoding = Base64.encodeBase64("ioannis:root".getBytes());
+		HttpPost httppost = new HttpPost("http://127.0.0.1:8000/api-auth/login");
+		httppost.setHeader("Authorization", "Basic " + new String(encoding));
+		httppost.setHeader("X-CSRFToken", csrf);
+		System.out.println("executing request " + httppost.getRequestLine());
+		HttpResponse response = null;
+		try {
+			response = httpClient.execute(httppost);
+		} catch (ClientProtocolException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		HttpEntity entity = response.getEntity();
 		author_id = 6;
 		author_storage.put(1, new Author(1, "Peter", "M.", "FakeAuthor", "fake_author@fakeaddress.com", "affiliation",
 				"bio", "orcid", "testing", "gb"));
