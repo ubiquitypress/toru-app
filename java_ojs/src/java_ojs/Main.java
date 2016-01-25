@@ -2,6 +2,7 @@ package java_ojs;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
+import org.apache.http.HttpVersion;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.ClientProtocolException;
@@ -10,10 +11,18 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.conn.ClientConnectionManager;
+import org.apache.http.conn.scheme.PlainSocketFactory;
+import org.apache.http.conn.scheme.Scheme;
+import org.apache.http.conn.scheme.SchemeRegistry;
+import org.apache.http.conn.ssl.SSLSocketFactory;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
+import org.apache.http.params.BasicHttpParams;
+import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.params.HttpParams;
+import org.apache.http.params.HttpProtocolParams;
+import org.apache.http.util.EntityUtils;
 
 import java.awt.Color;
 import java.awt.Dimension;
@@ -155,7 +164,7 @@ public class Main {
 	private static int author_id = 0;
 	private static int section_db_id = 0;
 	private static int metadata_id = 0;
-	
+	private static final int SOCKET_OPERATION_TIMEOUT = 60 * 1000;
 	/*
 	 * Initial setup test
 	 */
@@ -2474,8 +2483,10 @@ public class Main {
 				btnSync.setBounds(width - 155, 21, 70, 24);
 				btnSync.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
+						System.out.println("sync");
+						HttpResponse response = null;
 						try {
-							httpClient.execute(new HttpGet("http://127.0.0.1:8000/issues/"));
+							response=httpClient.execute(new HttpGet("http://127.0.0.1:8000/issues/"));
 						} catch (ClientProtocolException e2) {
 							// TODO Auto-generated catch block
 							e2.printStackTrace();
@@ -2483,15 +2494,35 @@ public class Main {
 							// TODO Auto-generated catch block
 							e2.printStackTrace();
 						}
+						System.out.println("get");
 						CookieStore cookieStore = httpClient.getCookieStore();
 						List<org.apache.http.cookie.Cookie> cookies =  cookieStore.getCookies();
 						System.out.println( cookies);
+						String csrf = "";
+					
 						for (org.apache.http.cookie.Cookie cookie: cookies) {
+							if (cookie.getName().compareTo("csrftoken")==0){
 						   System.out.println( cookie.getValue());
+						   csrf = cookie.getValue();
+							}
 						    
+						}
+					
+						System.out.println(csrf);
+
+						HttpEntity entity = response.getEntity();
+						try {
+							InputStream is = entity.getContent();
+							is.close();  
+						} catch (IOException exc) {
+							// TODO Auto-generated catch block
+							exc.printStackTrace();
 						}
 						Gson gson= new Gson();
 						HttpPost post = new HttpPost("http://127.0.0.1:8000/issues/");
+
+						
+						post.setHeader("X-CSRFToken", csrf);
 						StringEntity postingString = null;
 						try {
 							postingString = new StringEntity(gson.toJson(current_issue));
@@ -2502,8 +2533,9 @@ public class Main {
 						post.setEntity(postingString);
 						System.out.println(postingString);
 						post.setHeader("Content-type", "application/json");
+						System.out.println(post);
 						try {
-							HttpResponse  response = httpClient.execute(post);
+							 response = httpClient.execute(post);
 
 									System.out.println(response);
 						} catch (ClientProtocolException e1) {
@@ -5480,9 +5512,25 @@ public class Main {
 		} catch (IllegalAccessException e) {
 			// handle exception
 		}
+		 HttpParams params = new BasicHttpParams();
+
+	        HttpProtocolParams.setVersion(params, HttpVersion.HTTP_1_1);
+	        HttpProtocolParams.setContentCharset(params, HTTP.CRLF);
+	        HttpProtocolParams.setUseExpectContinue(params, true);
+
+	        HttpConnectionParams.setStaleCheckingEnabled(params, false);
+	        HttpConnectionParams.setConnectionTimeout(params, SOCKET_OPERATION_TIMEOUT);
+	        HttpConnectionParams.setSoTimeout(params, SOCKET_OPERATION_TIMEOUT);
+	        HttpConnectionParams.setSocketBufferSize(params, 8192);
+
+	        SchemeRegistry schReg = new SchemeRegistry();
+	        schReg.register(new Scheme("http", PlainSocketFactory.getSocketFactory(), 80));
+	        schReg.register(new Scheme("https", SSLSocketFactory.getSocketFactory(), 443));
+	        ClientConnectionManager conMgr = new ThreadSafeClientConnManager(params, schReg);
+
+	        DefaultHttpClient httpClient = new DefaultHttpClient(conMgr, params);
 		 ClientConnectionManager mgr = httpClient.getConnectionManager();
-		    HttpParams params = httpClient.getParams();
-		    httpClient = new DefaultHttpClient(new ThreadSafeClientConnManager(params,mgr.getSchemeRegistry()), params);
+		
 		    httpClient.getCredentialsProvider().setCredentials(
                     new AuthScope(AuthScope.ANY_HOST, AuthScope.ANY_PORT), 
                     new UsernamePasswordCredentials("ioannis", "root"));
@@ -5529,6 +5577,13 @@ public class Main {
 		System.out.println(httppost.getAllHeaders().toString());
 		HttpEntity entity = response.getEntity();
 		System.out.println(response.toString());
+		try {
+			InputStream is = entity.getContent();
+			is.close();    
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		author_id = 6;
 		author_storage.put(1, new Author(1, "Peter", "M.", "FakeAuthor", "fake_author@fakeaddress.com", "affiliation",
 				"bio", "orcid", "testing", "gb"));
