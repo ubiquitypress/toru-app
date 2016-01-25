@@ -1,5 +1,20 @@
 package java_ojs;
 
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.auth.AuthScope;
+import org.apache.http.auth.UsernamePasswordCredentials;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.CookieStore;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.conn.ClientConnectionManager;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
+import org.apache.http.params.HttpParams;
+
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
@@ -13,14 +28,23 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.StringWriter;
+import java.io.UnsupportedEncodingException;
+import java.net.Authenticator;
+import java.net.HttpURLConnection;
 import java.net.InetSocketAddress;
+import java.net.PasswordAuthentication;
 import java.net.Socket;
+import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
@@ -75,7 +99,10 @@ import org.jdesktop.swingx.sort.RowFilters;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
+import org.json.*;
 import org.json.simple.parser.ParseException;
+
+import com.google.gson.Gson;
 
 import models.Article;
 import models.ArticleFile;
@@ -117,7 +144,7 @@ public class Main {
 	private String issue_article_insert_or_replace_statement = "INSERT OR REPLACE INTO ISSUE_ARTICLE(id,article_id,issue_id) VALUES (?,?,?)";
 	private String file_insert_or_replace_statement = "INSERT OR REPLACE INTO FILE(id,article_id,path) VALUES (?,?,?)";
 	private String metadata_insert_or_replace_statement = "INSERT OR REPLACE INTO METADATA(id,article_id,competing_interests,funding) VALUES (?,?,?,?)";
-
+	private DefaultHttpClient httpClient = new DefaultHttpClient(); 
 	private String delete_issue_statement = "DELETE FROM ISSUE WHERE id=?";
 	int width = 800;
 	private int height = 600;
@@ -128,7 +155,7 @@ public class Main {
 	private static int author_id = 0;
 	private static int section_db_id = 0;
 	private static int metadata_id = 0;
-
+	
 	/*
 	 * Initial setup test
 	 */
@@ -1303,6 +1330,9 @@ public class Main {
 
 				final JButton btnSync = new JButton("Sync");
 				btnSync.setBounds(width - 155, 21, 70, 24);
+			
+				String postUrl="www.site.com";// put in your url
+				
 				issues.getContentPane().add(btnSync);
 				Set<Integer> author_keys = author_storage.keySet();
 				ArrayList<Integer> author_list = new ArrayList<Integer>();
@@ -1337,6 +1367,11 @@ public class Main {
 				DefaultTableModel dtm = new DefaultTableModel(rows, columnNames);
 
 				issues_table = new JXTable(dtm) {
+					/**
+					 * 
+					 */
+					private static final long serialVersionUID = 1L;
+
 					// **** Source:
 					// http://stackoverflow.com/questions/9467093/how-to-add-a-tooltip-to-a-cell-in-a-jtable
 					// ****//
@@ -2437,6 +2472,49 @@ public class Main {
 
 				final JButton btnSync = new JButton("Sync");
 				btnSync.setBounds(width - 155, 21, 70, 24);
+				btnSync.addActionListener(new ActionListener() {
+					public void actionPerformed(ActionEvent e) {
+						try {
+							httpClient.execute(new HttpGet("http://127.0.0.1:8000/issues/"));
+						} catch (ClientProtocolException e2) {
+							// TODO Auto-generated catch block
+							e2.printStackTrace();
+						} catch (IOException e2) {
+							// TODO Auto-generated catch block
+							e2.printStackTrace();
+						}
+						CookieStore cookieStore = httpClient.getCookieStore();
+						List<org.apache.http.cookie.Cookie> cookies =  cookieStore.getCookies();
+						System.out.println( cookies);
+						for (org.apache.http.cookie.Cookie cookie: cookies) {
+						   System.out.println( cookie.getValue());
+						    
+						}
+						Gson gson= new Gson();
+						HttpPost post = new HttpPost("http://127.0.0.1:8000/issues/");
+						StringEntity postingString = null;
+						try {
+							postingString = new StringEntity(gson.toJson(current_issue));
+						} catch (UnsupportedEncodingException e1) {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						}//convert your pojo to   json
+						post.setEntity(postingString);
+						System.out.println(postingString);
+						post.setHeader("Content-type", "application/json");
+						try {
+							HttpResponse  response = httpClient.execute(post);
+
+									System.out.println(response);
+						} catch (ClientProtocolException e1) {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						} catch (IOException e1) {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						}
+					}
+				});
 				articles.getContentPane().add(btnSync);
 
 				JScrollPane scrollPane = new JScrollPane();
@@ -5384,6 +5462,7 @@ public class Main {
 	/**
 	 * @wbp.parser.entryPoint
 	 */
+	@SuppressWarnings("deprecation")
 	public Main() {
 		try {
 			for (LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
@@ -5401,6 +5480,13 @@ public class Main {
 		} catch (IllegalAccessException e) {
 			// handle exception
 		}
+		 ClientConnectionManager mgr = httpClient.getConnectionManager();
+		    HttpParams params = httpClient.getParams();
+		    httpClient = new DefaultHttpClient(new ThreadSafeClientConnManager(params,mgr.getSchemeRegistry()), params);
+		    httpClient.getCredentialsProvider().setCredentials(
+                    new AuthScope(AuthScope.ANY_HOST, AuthScope.ANY_PORT), 
+                    new UsernamePasswordCredentials("ioannis", "root"));
+		System.setProperty("http.agent", "Jakarta Commons-HttpClient/3.1");
 		author_id = 6;
 		author_storage.put(1, new Author(1, "Peter", "M.", "FakeAuthor", "fake_author@fakeaddress.com", "affiliation",
 				"bio", "orcid", "testing", "gb"));
