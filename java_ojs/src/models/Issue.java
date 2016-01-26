@@ -16,6 +16,10 @@ public class Issue {
 	private HashMap<Integer, Article> articles_list;
 	private Date date_accepted;
 	private Date date_published;
+
+	private int published;
+	private int access_status;
+	private int current;
 	
 	public Issue(int id, String title, int volume, int number, int year, String show_title, int show_volume, int show_number,
 			int show_year, Date date_accepted, Date date_published) {
@@ -31,6 +35,27 @@ public class Issue {
 		this.date_accepted=date_accepted;
 		this.date_published = date_published;
 		this.articles_list = new  HashMap<Integer, Article>();
+		this.published = 0;
+		this.access_status = 0;
+		this.current = 0;
+	}
+	public Issue(int id, String title, int volume, int number, int year, String show_title, int show_volume, int show_number,
+			int show_year, Date date_accepted, Date date_published, int published, int access_status, int current) {
+		this.title = title;
+		this.id = id;
+		this.volume = volume;
+		this.number = number;
+		this.year = year;
+		this.show_title = show_title;
+		this.show_volume = show_volume;
+		this.show_number = show_number;
+		this.show_year = show_year;
+		this.date_accepted=date_accepted;
+		this.date_published = date_published;
+		this.articles_list = new  HashMap<Integer, Article>();
+		this.published = published;
+		this.access_status = access_status;
+		this.current = current;
 	}
 	public Issue(int id, String title, int volume, int number, int year, Date date_accepted, Date date_published) {
 		this.title = title;
@@ -168,6 +193,24 @@ public class Issue {
 	}
 	public void setDate_accepted(Date date_accepted) {
 		this.date_accepted = date_accepted;
+	}
+	public int getPublished() {
+		return published;
+	}
+	public void setPublished(int published) {
+		this.published = published;
+	}
+	public int getAccess_status() {
+		return access_status;
+	}
+	public void setAccess_status(int access_status) {
+		this.access_status = access_status;
+	}
+	public int getCurrent() {
+		return current;
+	}
+	public void setCurrent(int current) {
+		this.current = current;
 	}
 	
 	

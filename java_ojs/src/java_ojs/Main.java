@@ -171,7 +171,7 @@ public class Main {
 	private static Statement stmt = null;
 	private String api_insert_or_replace_statement = "INSERT OR REPLACE INTO API(URL,ACCESS_KEY) VALUES (?,?)";
 	private String settings_insert_or_replace_statement = "INSERT OR REPLACE INTO SETTING(NAME,VALUE) VALUES (?,?)";
-	private String issue_insert_or_replace_statement = "INSERT OR REPLACE INTO ISSUE(id,title,volume,number,year,show_title,show_volume,show_number,show_year,date_published,date_accepted) VALUES (?,?,?,?,?,?,?,?,?,?,?)";
+	private String issue_insert_or_replace_statement = "INSERT OR REPLACE INTO ISSUE(id,title,volume,number,year,show_title,show_volume,show_number,show_year,date_published,date_accepted, published, current, access_status) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
 	private String section_insert_or_replace_statement = "INSERT OR REPLACE INTO SECTION(id,title) VALUES (?,?)";
 	private String author_insert_or_replace_statement = "INSERT OR REPLACE INTO AUTHOR(id,first_name,middle_name,last_name,email,affiliation,bio,orcid,department,country) VALUES (?,?,?,?,?,?,?,?,?,?)";
 	private String article_insert_or_replace_statement = "INSERT OR REPLACE INTO ARTICLE(id,title,section_id,pages,abstract,date_published,date_accepted) VALUES (?,?,?,?,?,?,?)";
@@ -313,6 +313,10 @@ public class Main {
 				issue_prep.setString(10, sdf.format(save_issue.getDate_published()));
 
 				issue_prep.setString(11, sdf.format(save_issue.getDate_accepted()));
+				issue_prep.setInt(12, save_issue.getPublished());
+				issue_prep.setInt(12, save_issue.getAccess_status());
+				issue_prep.setInt(12, save_issue.getCurrent());
+				
 				issue_prep.executeUpdate();
 				int i = 1;
 				int j = 1;
@@ -445,12 +449,15 @@ public class Main {
 				int show_volume = rs.getInt("volume");
 				int show_number = rs.getInt("number");
 				int show_year = rs.getInt("year");
+				int published = rs.getInt("published");
+				int current = rs.getInt("current");
+				int access_status = rs.getInt("access_status");
 
 				String date_accepted = rs.getString("date_accepted");
 				String date = rs.getString("date_published");
 				Issue issue = null;
 				issue = new Issue(id, title, volume, number, year, show_title, show_volume, show_number, show_year,
-						sdf.parse(date_accepted), sdf.parse(date));
+						sdf.parse(date_accepted), sdf.parse(date), published, current, access_status);
 
 				// JOptionPane.showMessageDialog(null, "Deleted");
 
@@ -625,8 +632,8 @@ public class Main {
 					+ " ACCESS_KEY CHAR(100) NOT NULL)";
 			stmt.executeUpdate(sql);
 			sql = "CREATE TABLE IF NOT EXISTS ISSUE" + "(id INTEGER PRIMARY KEY," + " title CHAR(500) NOT NULL,"
-					+ "volume INTEGER," + "number INTEGER," + "year INTEGER," + " show_title CHAR(500) NOT NULL,"
-					+ "show_volume INTEGER," + "show_number INTEGER," + "show_year INTEGER,"
+					+ "volume INTEGER," + "number INTEGER," + "year INTEGER,"+ "published INTEGER," + " show_title CHAR(500) NOT NULL,"
+					+ "show_volume INTEGER," + "show_number INTEGER," + "show_year INTEGER,"+ "access_status INTEGER,"+ "current INTEGER,"
 					+ "date_published CHAR(50)," + "date_accepted CHAR(50)" + ")";
 			stmt.executeUpdate(sql);
 			sql = "CREATE TABLE IF NOT EXISTS SECTION" + "(id INTEGER PRIMARY KEY," + " title CHAR(250) NOT NULL)";
@@ -5658,7 +5665,7 @@ public class Main {
 		httpContext.setAttribute(ClientContext.COOKIE_STORE, cookieStore);
 		HttpPost httpPost = new HttpPost("http://127.0.0.1:8000/issues/");
 		Issue test_issue = issue_storage.get(1);
-
+/*
 		JSONObject obj = new JSONObject();
 		obj.put("id", 6987);
 		obj.put("journal", "http://localhost:8000/journals/1/");
@@ -5689,7 +5696,7 @@ public class Main {
 			e2.printStackTrace();
 		}
 
-		System.out.println(response.toString());
+		System.out.println(response.toString());*/
 		author_id = 6;
 		author_storage.put(1, new Author(1, "Peter", "M.", "FakeAuthor", "fake_author@fakeaddress.com", "affiliation",
 				"bio", "orcid", "testing", "gb"));
