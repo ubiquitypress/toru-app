@@ -6,6 +6,7 @@ import java.util.HashMap;
 public class Issue {
 	private int id;
 	private String title; 
+	private Journal journal; 
 	private int volume;  
 	private int number;
 	private int year;
@@ -40,7 +41,7 @@ public class Issue {
 		this.current = 0;
 	}
 	public Issue(int id, String title, int volume, int number, int year, String show_title, int show_volume, int show_number,
-			int show_year, Date date_accepted, Date date_published, int published, int access_status, int current) {
+			int show_year, Date date_accepted, Date date_published, int published, int access_status, int current, Journal journal) {
 		this.title = title;
 		this.id = id;
 		this.volume = volume;
@@ -56,6 +57,7 @@ public class Issue {
 		this.published = published;
 		this.access_status = access_status;
 		this.current = current;
+		this.journal = journal;
 	}
 	public Issue(int id, String title, int volume, int number, int year, Date date_accepted, Date date_published) {
 		this.title = title;
@@ -211,6 +213,12 @@ public class Issue {
 	}
 	public void setCurrent(int current) {
 		this.current = current;
+	}
+	public Journal getJournal() {
+		return journal;
+	}
+	public void setJournal(Journal journal) {
+		this.journal = journal;
 	}
 	
 	

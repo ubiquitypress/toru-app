@@ -144,6 +144,7 @@ import models.Article;
 import models.ArticleFile;
 import models.Author;
 import models.Issue;
+import models.Journal;
 import models.Metadata;
 import models.Section;
 
@@ -458,7 +459,7 @@ public class Main {
 				String date = rs.getString("date_published");
 				Issue issue = null;
 				issue = new Issue(id, title, volume, number, year, show_title, show_volume, show_number, show_year,
-						sdf.parse(date_accepted), sdf.parse(date), published, current, access_status);
+						sdf.parse(date_accepted), sdf.parse(date), published, current, access_status,new Journal(1,"up",(float) 2.0,"en_US",0));
 
 				// JOptionPane.showMessageDialog(null, "Deleted");
 
@@ -5535,10 +5536,11 @@ public class Main {
 
 	/**
 	 * @throws IOException
+	 * @throws java.text.ParseException 
 	 * @wbp.parser.entryPoint
 	 */
 	@SuppressWarnings("deprecation")
-	public Main() throws IOException {
+	public Main() throws IOException, java.text.ParseException {
 		try {
 			for (LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
 				if ("Nimbus".equals(info.getName())) {
@@ -5665,22 +5667,22 @@ public class Main {
 		});
 		httpContext.setAttribute(ClientContext.COOKIE_STORE, cookieStore);
 		HttpPut httpPost = new HttpPut("http://127.0.0.1:8000/issues/6987/");
-		Issue test_issue = issue_storage.get(1);
-
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
+		Issue test_issue = new Issue(6987,"title",1,1,2016,"0",2,2,2015,sdf.parse("2016/01/11"),sdf.parse("2016/01/11"),0,0,0,new Journal(1,"up",(float) 2.0,"en_US",0));
 		JSONObject obj = new JSONObject();
-		obj.put("id", 6987);
-		obj.put("journal", "http://localhost:8000/journals/1/");
-		obj.put("volume", 1);
-		obj.put("number", 122);
-		obj.put("year", 3);
-		obj.put("published", 1);
-		obj.put("show_volume", 32);
-		obj.put("show_number", 3);
-		obj.put("show_year", 3);
+		obj.put("id", test_issue.getId());
+		obj.put("journal",String.format("http://localhost:8000/journals/%s/",test_issue.getJournal().getId()));
+		obj.put("volume", test_issue.getVolume());
+		obj.put("number", test_issue.getNumber());
+		obj.put("year", test_issue.getYear());
+		obj.put("published", test_issue.getPublished());
+		obj.put("show_volume", test_issue.getShow_volume());
+		obj.put("show_number", test_issue.getShow_number());
+		obj.put("show_year", test_issue.getShow_year());
 		obj.put("show_title", 0);
-		obj.put("current", 0);
-		obj.put("published", 0);
-		obj.put("access_status", 0);
+		obj.put("current", test_issue.getCurrent());
+		obj.put("published", test_issue.getPublished());
+		obj.put("access_status", test_issue.getAccess_status());
 		httpPost.setEntity(new StringEntity(obj.toJSONString()));
 		httpPost.addHeader("Authorization", "Basic " + encoding);
 		httpPost.setHeader("Accept", "application/json");
