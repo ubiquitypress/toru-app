@@ -1,4 +1,5 @@
 package java_ojs;
+
 import org.apache.commons.codec.binary.Base64;
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
@@ -130,6 +131,7 @@ import org.json.*;
 import org.json.simple.parser.ParseException;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
@@ -177,7 +179,7 @@ public class Main {
 	private String issue_article_insert_or_replace_statement = "INSERT OR REPLACE INTO ISSUE_ARTICLE(id,article_id,issue_id) VALUES (?,?,?)";
 	private String file_insert_or_replace_statement = "INSERT OR REPLACE INTO FILE(id,article_id,path) VALUES (?,?,?)";
 	private String metadata_insert_or_replace_statement = "INSERT OR REPLACE INTO METADATA(id,article_id,competing_interests,funding) VALUES (?,?,?,?)";
-	private DefaultHttpClient httpClient = new DefaultHttpClient(); 
+	private DefaultHttpClient httpClient = new DefaultHttpClient();
 	private String delete_issue_statement = "DELETE FROM ISSUE WHERE id=?";
 	int width = 800;
 	private int height = 600;
@@ -192,6 +194,7 @@ public class Main {
 
 	CookieStore cookieStore = new BasicCookieStore();
 	HttpContext httpContext = new BasicHttpContext();
+
 	/*
 	 * Initial setup test
 	 */
@@ -1366,9 +1369,9 @@ public class Main {
 
 				final JButton btnSync = new JButton("Sync");
 				btnSync.setBounds(width - 155, 21, 70, 24);
-			
-				String postUrl="www.site.com";// put in your url
-				
+
+				String postUrl = "www.site.com";// put in your url
+
 				issues.getContentPane().add(btnSync);
 				Set<Integer> author_keys = author_storage.keySet();
 				ArrayList<Integer> author_list = new ArrayList<Integer>();
@@ -2513,7 +2516,7 @@ public class Main {
 						System.out.println("sync");
 						HttpResponse response = null;
 						try {
-							response=httpClient.execute(new HttpGet("http://127.0.0.1:8000/issues/"), httpContext);
+							response = httpClient.execute(new HttpGet("http://127.0.0.1:8000/issues/"), httpContext);
 						} catch (ClientProtocolException e2) {
 							// TODO Auto-generated catch block
 							e2.printStackTrace();
@@ -2524,32 +2527,31 @@ public class Main {
 						System.out.println("get");
 						System.out.println(httpContext);
 						cookieStore = httpClient.getCookieStore();
-						List<org.apache.http.cookie.Cookie> cookies =  cookieStore.getCookies();
-						System.out.println( cookies);
+						List<org.apache.http.cookie.Cookie> cookies = cookieStore.getCookies();
+						System.out.println(cookies);
 						String csrf = "";
-					
-						for (org.apache.http.cookie.Cookie cookie: cookies) {
-							if (cookie.getName().compareTo("csrftoken")==0){
-						   System.out.println( cookie.getValue());
-						   csrf = cookie.getValue();
+
+						for (org.apache.http.cookie.Cookie cookie : cookies) {
+							if (cookie.getName().compareTo("csrftoken") == 0) {
+								System.out.println(cookie.getValue());
+								csrf = cookie.getValue();
 							}
-						    
+
 						}
-					
+
 						System.out.println(csrf);
 
 						HttpEntity entity = response.getEntity();
 						try {
 							InputStream is = entity.getContent();
-							is.close();  
+							is.close();
 						} catch (IOException exc) {
 							// TODO Auto-generated catch block
 							exc.printStackTrace();
 						}
-						Gson gson= new Gson();
+						Gson gson = new Gson();
 						HttpPost post = new HttpPost("http://127.0.0.1:8000/issues/");
 
-						
 						post.setHeader("X-CSRFToken", csrf);
 						StringEntity postingString = null;
 						try {
@@ -2557,15 +2559,15 @@ public class Main {
 						} catch (UnsupportedEncodingException e1) {
 							// TODO Auto-generated catch block
 							e1.printStackTrace();
-						}//convert your pojo to   json
+						} // convert your pojo to json
 						post.setEntity(postingString);
 						System.out.println(postingString);
 						post.setHeader("Content-type", "application/json");
 						System.out.println(post);
 						try {
-							 response = httpClient.execute(post, httpContext);
+							response = httpClient.execute(post, httpContext);
 
-									System.out.println(response);
+							System.out.println(response);
 						} catch (ClientProtocolException e1) {
 							// TODO Auto-generated catch block
 							e1.printStackTrace();
@@ -2964,7 +2966,7 @@ public class Main {
 					height_small = (int) (768 - (768 * (5 / 100)));
 				}
 				final JFrame article = new JFrame();
-				String setting_meta=list_settings.get("Metadata");
+				String setting_meta = list_settings.get("Metadata");
 				Metadata meta = null;
 				if (metadata_storage.containsKey(article_id)) {
 					meta = metadata_storage.get(article_id);
@@ -3097,7 +3099,7 @@ public class Main {
 				articleSection.setBounds(40, 132, width_small / 2 - 100, height_small - 280);
 				// scrollSettings.setViewportView(scrollFrame);
 				article.getContentPane().add(articleSection);
-				
+
 				JPanel panelMetadata = new JPanel();
 				panelMetadata.setBackground(SystemColor.window);
 				panelMetadata.setBounds(50, height_small - 260, 300, 307);
@@ -3147,9 +3149,10 @@ public class Main {
 						}
 					}
 				});
-				if(setting_meta.compareToIgnoreCase("true")==0){
-				panel.add(btnAddMetadata);
-				article.getContentPane().add(btnAddMetadata);}
+				if (setting_meta.compareToIgnoreCase("true") == 0) {
+					panel.add(btnAddMetadata);
+					article.getContentPane().add(btnAddMetadata);
+				}
 				JPanel panel3 = new JPanel();
 				panel3.setBackground(SystemColor.window);
 				panel3.setBounds(50, height_small - 260, 320, 120);
@@ -3653,7 +3656,7 @@ public class Main {
 				article.getContentPane().setBackground(new Color(128, 128, 128));
 				article.setVisible(true);
 
-				String setting_meta=list_settings.get("Metadata");
+				String setting_meta = list_settings.get("Metadata");
 				article.setLocationRelativeTo(null);
 				article.addWindowListener(new WindowAdapter() {
 					@Override
@@ -3964,9 +3967,9 @@ public class Main {
 					}
 				});
 
-				if(setting_meta.compareToIgnoreCase("true")==0){
-				panel.add(btnAddMetadata);
-				article.getContentPane().add(btnAddMetadata);
+				if (setting_meta.compareToIgnoreCase("true") == 0) {
+					panel.add(btnAddMetadata);
+					article.getContentPane().add(btnAddMetadata);
 				}
 				final HashMap<Integer, HashMap<Integer, JTextField>> author_fields = new HashMap<Integer, HashMap<Integer, JTextField>>();
 				final HashMap<Integer, JTextArea> authors_bio = new HashMap<Integer, JTextArea>();
@@ -4464,18 +4467,19 @@ public class Main {
 						}
 						if (validation) {
 							article.dispose();
-							if(setting_meta.compareToIgnoreCase("true")==0){
-							if (metadata_storage.containsKey(article_id)) {
-								Metadata meta_update = metadata_storage.get(article_id);
-								meta_update.setCompeting_interests(txtCompetingInterests.getText());
-								meta_update.setFunding(txtFunding.getText());
-								metadata_storage.put(article_id, meta_update);
-							} else {
-								metadata_id++;
-								Metadata meta_update = new Metadata(metadata_id, article_id,
-										txtCompetingInterests.getText(), txtFunding.getText());
-								metadata_storage.put(article_id, meta_update);
-							}}
+							if (setting_meta.compareToIgnoreCase("true") == 0) {
+								if (metadata_storage.containsKey(article_id)) {
+									Metadata meta_update = metadata_storage.get(article_id);
+									meta_update.setCompeting_interests(txtCompetingInterests.getText());
+									meta_update.setFunding(txtFunding.getText());
+									metadata_storage.put(article_id, meta_update);
+								} else {
+									metadata_id++;
+									Metadata meta_update = new Metadata(metadata_id, article_id,
+											txtCompetingInterests.getText(), txtFunding.getText());
+									metadata_storage.put(article_id, meta_update);
+								}
+							}
 							Article a = issue_storage.get(issue_id).getArticles_list().get(article_id);
 							a.setTitle(lblTitleText.getText());
 							ArrayList<Author> updated_authors = a.getAuthors();
@@ -4672,7 +4676,7 @@ public class Main {
 				height_small = (int) (768 - (768 * (5 / 100)));
 			}
 
-			String setting_meta=list_settings.get("Metadata");
+			String setting_meta = list_settings.get("Metadata");
 			int current_id = articles_id + 1;
 			int initial_file_num = file_id;
 			final JFrame article = new JFrame();
@@ -4684,7 +4688,7 @@ public class Main {
 			article.setVisible(true);
 			article.setLocationRelativeTo(null);
 			article.getContentPane().setLayout(null);
-		
+
 			JLabel lblArticleDetails = new JLabel("Article Details");
 			lblArticleDetails.setHorizontalAlignment(SwingConstants.CENTER);
 			lblArticleDetails.setFont(new Font("Dialog", Font.BOLD, 20));
@@ -4830,9 +4834,10 @@ public class Main {
 				}
 			});
 
-			if(setting_meta.compareToIgnoreCase("true")==0){
-			panel.add(btnAddMetadata);
-			article.getContentPane().add(btnAddMetadata);}
+			if (setting_meta.compareToIgnoreCase("true") == 0) {
+				panel.add(btnAddMetadata);
+				article.getContentPane().add(btnAddMetadata);
+			}
 			panel.setPreferredSize(new Dimension(320, settings_height));
 			JScrollPane articleSection = new JScrollPane(panel);
 			panel.setAutoscrolls(true);
@@ -5288,22 +5293,23 @@ public class Main {
 					}
 					if (validation) {
 						Metadata meta_update = null;
-						if(setting_meta.compareToIgnoreCase("true")==0){
-						System.out.println("Metadata id: "+ metadata_id);
-						metadata_id++;
+						if (setting_meta.compareToIgnoreCase("true") == 0) {
+							System.out.println("Metadata id: " + metadata_id);
+							metadata_id++;
 
-						System.out.println("Metadata id: "+ metadata_id);
-						meta_update = new Metadata(metadata_id, current_id, txtCompetingInterests.getText(),
-								txtFunding.getText());
+							System.out.println("Metadata id: " + metadata_id);
+							meta_update = new Metadata(metadata_id, current_id, txtCompetingInterests.getText(),
+									txtFunding.getText());
 						}
 						issue_screens.get(issue_id).dispose();
 						articles_id++;
 
-						if(setting_meta.compareToIgnoreCase("true")==0){
-						metadata_storage.put(articles_id, meta_update);
-						System.out.println("Metadata added");
+						if (setting_meta.compareToIgnoreCase("true") == 0) {
+							metadata_storage.put(articles_id, meta_update);
+							System.out.println("Metadata added");
 
-						System.out.println(metadata_storage.get(articles_id).getCompeting_interests());}
+							System.out.println(metadata_storage.get(articles_id).getCompeting_interests());
+						}
 						list_issues.replace(issue_id, articles_id);
 						Issue current_issue = issue_storage.get(issue_id);
 
@@ -5520,7 +5526,7 @@ public class Main {
 	}
 
 	/**
-	 * @throws IOException 
+	 * @throws IOException
 	 * @wbp.parser.entryPoint
 	 */
 	@SuppressWarnings("deprecation")
@@ -5541,79 +5547,77 @@ public class Main {
 		} catch (IllegalAccessException e) {
 			// handle exception
 		}
-		 HttpParams params = new BasicHttpParams();
+		HttpParams params = new BasicHttpParams();
 
-	        HttpProtocolParams.setVersion(params, HttpVersion.HTTP_1_1);
-	        HttpProtocolParams.setContentCharset(params, HTTP.CRLF);
-	        HttpProtocolParams.setUseExpectContinue(params, true);
+		HttpProtocolParams.setVersion(params, HttpVersion.HTTP_1_1);
+		HttpProtocolParams.setContentCharset(params, HTTP.CRLF);
+		HttpProtocolParams.setUseExpectContinue(params, true);
 
-	        HttpConnectionParams.setStaleCheckingEnabled(params, false);
-	        HttpConnectionParams.setConnectionTimeout(params, SOCKET_OPERATION_TIMEOUT);
-	        HttpConnectionParams.setSoTimeout(params, SOCKET_OPERATION_TIMEOUT);
-	        HttpConnectionParams.setSocketBufferSize(params, 8192);
+		HttpConnectionParams.setStaleCheckingEnabled(params, false);
+		HttpConnectionParams.setConnectionTimeout(params, SOCKET_OPERATION_TIMEOUT);
+		HttpConnectionParams.setSoTimeout(params, SOCKET_OPERATION_TIMEOUT);
+		HttpConnectionParams.setSocketBufferSize(params, 8192);
 
-	        SchemeRegistry schReg = new SchemeRegistry();
-	        schReg.register(new Scheme("http", PlainSocketFactory.getSocketFactory(), 80));
-	        schReg.register(new Scheme("https", SSLSocketFactory.getSocketFactory(), 443));
-	        ClientConnectionManager conMgr = new ThreadSafeClientConnManager(params, schReg);
+		SchemeRegistry schReg = new SchemeRegistry();
+		schReg.register(new Scheme("http", PlainSocketFactory.getSocketFactory(), 80));
+		schReg.register(new Scheme("https", SSLSocketFactory.getSocketFactory(), 443));
+		ClientConnectionManager conMgr = new ThreadSafeClientConnManager(params, schReg);
 
-	        DefaultHttpClient httpClient = new DefaultHttpClient(conMgr, params);
-	        ClientConnectionManager mgr = httpClient.getConnectionManager();
-	        
-		    httpClient.getCredentialsProvider().setCredentials(
-                    new AuthScope(AuthScope.ANY_HOST, AuthScope.ANY_PORT), 
-                    new UsernamePasswordCredentials("ioannis", "root"));
+		DefaultHttpClient httpClient = new DefaultHttpClient(conMgr, params);
+		ClientConnectionManager mgr = httpClient.getConnectionManager();
 
-		    HttpResponse response = null;
-		    try {
-		    	response = httpClient.execute(new HttpGet("http://127.0.0.1:8000/api-auth/login/"),httpContext);
-			} catch (ClientProtocolException e2) {
-				// TODO Auto-generated catch block
-				e2.printStackTrace();
-			} catch (IOException e2) {
-				// TODO Auto-generated catch block
-				e2.printStackTrace();
-			}
-		    HttpEntity entity = response.getEntity();
-			CookieStore cookieStore2 = httpClient.getCookieStore();
-			List<org.apache.http.cookie.Cookie> biscuits = cookieStore2.getCookies();
-			for(int i =0;i<biscuits.size();i++) {
-			    cookieStore.addCookie(biscuits.get(i));
-			}
-			System.out.println( biscuits);
-			String csrf = "";
-			for (org.apache.http.cookie.Cookie cookie: biscuits) {
-				if (cookie.getName().compareTo("csrftoken")==0){
-			   System.out.println( cookie.getValue());
-			   csrf = cookie.getValue();
-				}
-			    
+		httpClient.getCredentialsProvider().setCredentials(new AuthScope(AuthScope.ANY_HOST, AuthScope.ANY_PORT),
+				new UsernamePasswordCredentials("ioannis", "root"));
+
+		HttpResponse response = null;
+		try {
+			response = httpClient.execute(new HttpGet("http://127.0.0.1:8000/api-auth/login/"), httpContext);
+		} catch (ClientProtocolException e2) {
+			// TODO Auto-generated catch block
+			e2.printStackTrace();
+		} catch (IOException e2) {
+			// TODO Auto-generated catch block
+			e2.printStackTrace();
+		}
+		HttpEntity entity = response.getEntity();
+		CookieStore cookieStore2 = httpClient.getCookieStore();
+		List<org.apache.http.cookie.Cookie> biscuits = cookieStore2.getCookies();
+		for (int i = 0; i < biscuits.size(); i++) {
+			cookieStore.addCookie(biscuits.get(i));
+		}
+		System.out.println(biscuits);
+		String csrf = "";
+		for (org.apache.http.cookie.Cookie cookie : biscuits) {
+			if (cookie.getName().compareTo("csrftoken") == 0) {
+				System.out.println(cookie.getValue());
+				csrf = cookie.getValue();
 			}
 
+		}
 
-		  try {
-				InputStream is = entity.getContent();
-				is.close();  
-			} catch (IOException exc) {
-				// TODO Auto-generated catch block
-				exc.printStackTrace();
-			}
-		  BASE64Encoder encoder = new BASE64Encoder();
-		
-		String encoding =  encoder.encode("ioannis:root".getBytes());
+		try {
+			InputStream is = entity.getContent();
+			is.close();
+		} catch (IOException exc) {
+			// TODO Auto-generated catch block
+			exc.printStackTrace();
+		}
+		BASE64Encoder encoder = new BASE64Encoder();
+
+		String encoding = encoder.encode("ioannis:root".getBytes());
 		HttpPost httppost = new HttpPost("http://127.0.0.1:8000/api-auth/login/");
-		httppost.setHeader("Authorization", "Basic " +encoding);
-		System.out.println("Authorization"+ "Basic " +encoding);
+		httppost.setHeader("Authorization", "Basic " + encoding);
+		System.out.println("Authorization" + "Basic " + encoding);
 		httppost.setHeader("X-CSRFToken", csrf);
 		httppost.setHeader("Connection", "keep-alive");
 		System.out.println("executing request " + httppost.getRequestLine());
-	 response = null;
+		response = null;
 
 		try {
-			httpClient.getParams().setBooleanParameter("http.protocol.expect-continue", false); 
+			httpClient.getParams().setBooleanParameter("http.protocol.expect-continue", false);
 
-			response = httpClient.execute(httppost,httpContext);
-			
+			response = httpClient.execute(httppost, httpContext);
+
 		} catch (ClientProtocolException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -5624,18 +5628,18 @@ public class Main {
 
 		httpContext.setAttribute(ClientContext.COOKIE_STORE, cookieStore);
 		cookieStore2 = httpClient.getCookieStore();
-		 biscuits = cookieStore2.getCookies();
-		for(int i =0;i<biscuits.size();i++) {
-		    cookieStore.addCookie(biscuits.get(i));
+		biscuits = cookieStore2.getCookies();
+		for (int i = 0; i < biscuits.size(); i++) {
+			cookieStore.addCookie(biscuits.get(i));
 		}
 
 		System.out.println(httppost.getAllHeaders().toString());
 		entity = response.getEntity();
 		System.out.println(response.toString());
 
-        try {
+		try {
 			InputStream is = entity.getContent();
-			is.close();  
+			is.close();
 		} catch (IOException exc) {
 			// TODO Auto-generated catch block
 			exc.printStackTrace();
@@ -5643,23 +5647,40 @@ public class Main {
 
 		cookieStore2 = httpClient.getCookieStore();
 		biscuits = cookieStore2.getCookies();
-		for(int i =0;i<biscuits.size();i++) {
-		    cookieStore.addCookie(biscuits.get(i));
+		for (int i = 0; i < biscuits.size(); i++) {
+			cookieStore.addCookie(biscuits.get(i));
 		}
-		Authenticator.setDefault (new Authenticator() {
-		    protected PasswordAuthentication getPasswordAuthentication() {
-		        return new PasswordAuthentication ("ioannis", "root".toCharArray());
-		    }
+		Authenticator.setDefault(new Authenticator() {
+			protected PasswordAuthentication getPasswordAuthentication() {
+				return new PasswordAuthentication("ioannis", "root".toCharArray());
+			}
 		});
 		httpContext.setAttribute(ClientContext.COOKIE_STORE, cookieStore);
-        HttpGet get_test = new HttpGet("http://127.0.0.1:8000/issues/");
+		HttpPost httpPost = new HttpPost("http://127.0.0.1:8000/issues/");
+		Issue test_issue = issue_storage.get(1);
 
-        get_test.addHeader("Authorization", "Basic " + encoding);
-        get_test.addHeader("Content-type", "application/json");
+		JSONObject obj = new JSONObject();
+		obj.put("id", 6987);
+		obj.put("journal", "http://localhost:8000/journals/1/");
+		obj.put("volume", test_issue.getVolume());
+		obj.put("number", test_issue.getNumber());
+		obj.put("year", test_issue.getYear());
+		obj.put("published", 1);
+		obj.put("show_volume", test_issue.getShow_volume());
+		obj.put("show_number", test_issue.getShow_number());
+		obj.put("show_year", test_issue.getShow_year());
+		obj.put("show_title", 0);
+		obj.put("current", 0);
+		obj.put("published", 0);
+		obj.put("access_status", 0);
+		httpPost.setEntity(new StringEntity(obj.toJSONString()));
+		httpPost.addHeader("Authorization", "Basic " + encoding);
+		httpPost.setHeader("Accept", "application/json");
+		httpPost.addHeader("Content-type", "application/json");
 
-       response = null;
+		response = null;
 		try {
-			response=httpClient.execute(get_test);
+			response = httpClient.execute(httpPost);
 		} catch (ClientProtocolException e2) {
 			// TODO Auto-generated catch block
 			e2.printStackTrace();
@@ -5667,8 +5688,8 @@ public class Main {
 			// TODO Auto-generated catch block
 			e2.printStackTrace();
 		}
-	
-		 System.out.println(response.toString());
+
+		System.out.println(response.toString());
 		author_id = 6;
 		author_storage.put(1, new Author(1, "Peter", "M.", "FakeAuthor", "fake_author@fakeaddress.com", "affiliation",
 				"bio", "orcid", "testing", "gb"));
