@@ -20,6 +20,7 @@ import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.fluent.Response;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.HttpPut;
 import org.apache.http.client.protocol.ClientContext;
 import org.apache.http.client.protocol.HttpClientContext;
 import org.apache.http.conn.ClientConnectionManager;
@@ -5663,19 +5664,19 @@ public class Main {
 			}
 		});
 		httpContext.setAttribute(ClientContext.COOKIE_STORE, cookieStore);
-		HttpPost httpPost = new HttpPost("http://127.0.0.1:8000/issues/");
+		HttpPut httpPost = new HttpPut("http://127.0.0.1:8000/issues/6987/");
 		Issue test_issue = issue_storage.get(1);
-/*
+
 		JSONObject obj = new JSONObject();
 		obj.put("id", 6987);
 		obj.put("journal", "http://localhost:8000/journals/1/");
-		obj.put("volume", test_issue.getVolume());
-		obj.put("number", test_issue.getNumber());
-		obj.put("year", test_issue.getYear());
+		obj.put("volume", 1);
+		obj.put("number", 122);
+		obj.put("year", 3);
 		obj.put("published", 1);
-		obj.put("show_volume", test_issue.getShow_volume());
-		obj.put("show_number", test_issue.getShow_number());
-		obj.put("show_year", test_issue.getShow_year());
+		obj.put("show_volume", 32);
+		obj.put("show_number", 3);
+		obj.put("show_year", 3);
 		obj.put("show_title", 0);
 		obj.put("current", 0);
 		obj.put("published", 0);
@@ -5696,7 +5697,7 @@ public class Main {
 			e2.printStackTrace();
 		}
 
-		System.out.println(response.toString());*/
+		System.out.println(response.toString());
 		author_id = 6;
 		author_storage.put(1, new Author(1, "Peter", "M.", "FakeAuthor", "fake_author@fakeaddress.com", "affiliation",
 				"bio", "orcid", "testing", "gb"));
