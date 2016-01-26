@@ -4,8 +4,7 @@ import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpHost;
 import org.apache.http.HttpResponse;
-
-import javax.ws.rs.core.NewCookie;
+import sun.misc.BASE64Encoder;
 import javax.ws.rs.ext.MessageBodyWorkers;
 import org.apache.http.HttpVersion;
 import org.apache.http.auth.AuthSchemeRegistry;
@@ -5542,74 +5541,134 @@ public class Main {
 		} catch (IllegalAccessException e) {
 			// handle exception
 		}
+		 HttpParams params = new BasicHttpParams();
 
-		byte[] encoding = Base64.encodeBase64("ioannis:root".getBytes());
-		
-		try {
+	        HttpProtocolParams.setVersion(params, HttpVersion.HTTP_1_1);
+	        HttpProtocolParams.setContentCharset(params, HTTP.CRLF);
+	        HttpProtocolParams.setUseExpectContinue(params, true);
 
-			Client client = Client.create();
+	        HttpConnectionParams.setStaleCheckingEnabled(params, false);
+	        HttpConnectionParams.setConnectionTimeout(params, SOCKET_OPERATION_TIMEOUT);
+	        HttpConnectionParams.setSoTimeout(params, SOCKET_OPERATION_TIMEOUT);
+	        HttpConnectionParams.setSocketBufferSize(params, 8192);
 
-			WebResource webResource = client
-			   .resource("http://localhost:8000/api-auth/login/");
-			webResource.header("Content-Type", "application/json;charset=UTF-8");
-			webResource.header("Authorization", encoding);
-			
-			ClientResponse response2 = webResource.accept("application/json")
-	                   .get(ClientResponse.class);
-			System.out.println(response2.getCookies());
+	        SchemeRegistry schReg = new SchemeRegistry();
+	        schReg.register(new Scheme("http", PlainSocketFactory.getSocketFactory(), 80));
+	        schReg.register(new Scheme("https", SSLSocketFactory.getSocketFactory(), 443));
+	        ClientConnectionManager conMgr = new ThreadSafeClientConnManager(params, schReg);
 
-				List<NewCookie> cookies = response2.getCookies();
-			
-				System.out.println( cookies);
-				String csrf = "";
-				for (NewCookie cookie: cookies) {
-					if (cookie.getName().compareTo("csrftoken")==0){
-				   System.out.println( cookie.getValue());
-				   csrf = cookie.getValue();
-					}
-				    
+	        DefaultHttpClient httpClient = new DefaultHttpClient(conMgr, params);
+	        ClientConnectionManager mgr = httpClient.getConnectionManager();
+	        
+		    httpClient.getCredentialsProvider().setCredentials(
+                    new AuthScope(AuthScope.ANY_HOST, AuthScope.ANY_PORT), 
+                    new UsernamePasswordCredentials("ioannis", "root"));
+
+		    HttpResponse response = null;
+		    try {
+		    	response = httpClient.execute(new HttpGet("http://127.0.0.1:8000/api-auth/login/"),httpContext);
+			} catch (ClientProtocolException e2) {
+				// TODO Auto-generated catch block
+				e2.printStackTrace();
+			} catch (IOException e2) {
+				// TODO Auto-generated catch block
+				e2.printStackTrace();
+			}
+		    HttpEntity entity = response.getEntity();
+			CookieStore cookieStore2 = httpClient.getCookieStore();
+			List<org.apache.http.cookie.Cookie> biscuits = cookieStore2.getCookies();
+			for(int i =0;i<biscuits.size();i++) {
+			    cookieStore.addCookie(biscuits.get(i));
+			}
+			System.out.println( biscuits);
+			String csrf = "";
+			for (org.apache.http.cookie.Cookie cookie: biscuits) {
+				if (cookie.getName().compareTo("csrftoken")==0){
+			   System.out.println( cookie.getValue());
+			   csrf = cookie.getValue();
 				}
-
-			if (response2.getStatus() != 200) {
-			   throw new RuntimeException("Failed : HTTP error code : "
-				+ response2.getStatus());
+			    
 			}
 
-			String output = response2.toString();
 
-			System.out.println("Output from Server .... \n");
-			System.out.println(output);
+		  try {
+				InputStream is = entity.getContent();
+				is.close();  
+			} catch (IOException exc) {
+				// TODO Auto-generated catch block
+				exc.printStackTrace();
+			}
+		  BASE64Encoder encoder = new BASE64Encoder();
+		
+		String encoding =  encoder.encode("ioannis:root".getBytes());
+		HttpPost httppost = new HttpPost("http://127.0.0.1:8000/api-auth/login/");
+		httppost.setHeader("Authorization", "Basic " +encoding);
+		System.out.println("Authorization"+ "Basic " +encoding);
+		httppost.setHeader("X-CSRFToken", csrf);
+		httppost.setHeader("Connection", "keep-alive");
+		System.out.println("executing request " + httppost.getRequestLine());
+	 response = null;
+
+		try {
+			httpClient.getParams().setBooleanParameter("http.protocol.expect-continue", false); 
+
+			response = httpClient.execute(httppost,httpContext);
 			
-			webResource = client
-					   .resource("http://localhost:8000/api-auth/login/");
-			webResource.header("Content-Type", "application/json;charset=UTF-8");
-			webResource.header("Authorization","Basic "+encoding);
-			webResource.header("X-CSRF-Token", csrf);
-			
-			String input = "{\"username\":\"ioannis\",\"password\":\"Fade To Black\"}";
-					 response2 = webResource.accept("application/json")
-			                   .post(ClientResponse.class);
-					System.out.println(response2.getCookies());
-
-						cookies = response2.getCookies();
-					
-						System.out.println( cookies);
-				
-
-					if (response2.getStatus() != 200) {
-					   throw new RuntimeException("Failed : HTTP error code : "
-						+ response2.getStatus());
-					}
-
-					output = response2.toString();
-
-					System.out.println("Output from Server .... \n");
-					System.out.println(output);
-		  } catch (Exception e) {
-
+		} catch (ClientProtocolException e) {
+			// TODO Auto-generated catch block
 			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 
-		  }
+		httpContext.setAttribute(ClientContext.COOKIE_STORE, cookieStore);
+		cookieStore2 = httpClient.getCookieStore();
+		 biscuits = cookieStore2.getCookies();
+		for(int i =0;i<biscuits.size();i++) {
+		    cookieStore.addCookie(biscuits.get(i));
+		}
+
+		System.out.println(httppost.getAllHeaders().toString());
+		entity = response.getEntity();
+		System.out.println(response.toString());
+
+        try {
+			InputStream is = entity.getContent();
+			is.close();  
+		} catch (IOException exc) {
+			// TODO Auto-generated catch block
+			exc.printStackTrace();
+		}
+
+		cookieStore2 = httpClient.getCookieStore();
+		biscuits = cookieStore2.getCookies();
+		for(int i =0;i<biscuits.size();i++) {
+		    cookieStore.addCookie(biscuits.get(i));
+		}
+		Authenticator.setDefault (new Authenticator() {
+		    protected PasswordAuthentication getPasswordAuthentication() {
+		        return new PasswordAuthentication ("ioannis", "root".toCharArray());
+		    }
+		});
+		httpContext.setAttribute(ClientContext.COOKIE_STORE, cookieStore);
+        HttpGet get_test = new HttpGet("http://127.0.0.1:8000/issues/");
+
+        get_test.addHeader("Authorization", "Basic " + encoding);
+        get_test.addHeader("Content-type", "application/json");
+
+       response = null;
+		try {
+			response=httpClient.execute(get_test);
+		} catch (ClientProtocolException e2) {
+			// TODO Auto-generated catch block
+			e2.printStackTrace();
+		} catch (IOException e2) {
+			// TODO Auto-generated catch block
+			e2.printStackTrace();
+		}
+	
+		 System.out.println(response.toString());
 		author_id = 6;
 		author_storage.put(1, new Author(1, "Peter", "M.", "FakeAuthor", "fake_author@fakeaddress.com", "affiliation",
 				"bio", "orcid", "testing", "gb"));
