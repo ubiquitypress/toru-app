@@ -5533,7 +5533,44 @@ public class Main {
 			login("dashboard");
 		}
 	}
+public void update_issue_intersect(Issue issue, String credentials) throws UnsupportedEncodingException{
+	JSONObject obj = IssueToJSON(issue);
+	HttpPut httpPost = new HttpPut("http://127.0.0.1:8000/issues/6987/");
+	httpPost.setEntity(new StringEntity(obj.toJSONString()));
+	httpPost.addHeader("Authorization", "Basic " + credentials);
+	httpPost.setHeader("Accept", "application/json");
+	httpPost.addHeader("Content-type", "application/json");
 
+	HttpResponse response = null;
+	try {
+		response = httpClient.execute(httpPost);
+	} catch (ClientProtocolException e2) {
+		// TODO Auto-generated catch block
+		e2.printStackTrace();
+	} catch (IOException e2) {
+		// TODO Auto-generated catch block
+		e2.printStackTrace();
+	}
+
+	System.out.println(response.toString());
+}
+public JSONObject IssueToJSON (Issue issue){
+	JSONObject obj = new JSONObject();
+	obj.put("id", issue.getId());
+	obj.put("journal",String.format("http://localhost:8000/journals/%s/",issue.getJournal().getId()));
+	obj.put("volume", issue.getVolume());
+	obj.put("number", issue.getNumber());
+	obj.put("year", issue.getYear());
+	obj.put("published", issue.getPublished());
+	obj.put("show_volume", issue.getShow_volume());
+	obj.put("show_number", issue.getShow_number());
+	obj.put("show_year", issue.getShow_year());
+	obj.put("show_title", 0);
+	obj.put("current", issue.getCurrent());
+	obj.put("published", issue.getPublished());
+	obj.put("access_status", issue.getAccess_status());
+	return obj;
+}
 	/**
 	 * @throws IOException
 	 * @throws java.text.ParseException 
@@ -5665,41 +5702,12 @@ public class Main {
 				return new PasswordAuthentication("ioannis", "root".toCharArray());
 			}
 		});
+		
 		httpContext.setAttribute(ClientContext.COOKIE_STORE, cookieStore);
-		HttpPut httpPost = new HttpPut("http://127.0.0.1:8000/issues/6987/");
+		
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
 		Issue test_issue = new Issue(6987,"title",1,1,2016,"0",2,2,2015,sdf.parse("2016/01/11"),sdf.parse("2016/01/11"),0,0,0,new Journal(1,"up",(float) 2.0,"en_US",0));
-		JSONObject obj = new JSONObject();
-		obj.put("id", test_issue.getId());
-		obj.put("journal",String.format("http://localhost:8000/journals/%s/",test_issue.getJournal().getId()));
-		obj.put("volume", test_issue.getVolume());
-		obj.put("number", test_issue.getNumber());
-		obj.put("year", test_issue.getYear());
-		obj.put("published", test_issue.getPublished());
-		obj.put("show_volume", test_issue.getShow_volume());
-		obj.put("show_number", test_issue.getShow_number());
-		obj.put("show_year", test_issue.getShow_year());
-		obj.put("show_title", 0);
-		obj.put("current", test_issue.getCurrent());
-		obj.put("published", test_issue.getPublished());
-		obj.put("access_status", test_issue.getAccess_status());
-		httpPost.setEntity(new StringEntity(obj.toJSONString()));
-		httpPost.addHeader("Authorization", "Basic " + encoding);
-		httpPost.setHeader("Accept", "application/json");
-		httpPost.addHeader("Content-type", "application/json");
-
-		response = null;
-		try {
-			response = httpClient.execute(httpPost);
-		} catch (ClientProtocolException e2) {
-			// TODO Auto-generated catch block
-			e2.printStackTrace();
-		} catch (IOException e2) {
-			// TODO Auto-generated catch block
-			e2.printStackTrace();
-		}
-
-		System.out.println(response.toString());
+		update_issue_intersect(test_issue,encoding);
 		author_id = 6;
 		author_storage.put(1, new Author(1, "Peter", "M.", "FakeAuthor", "fake_author@fakeaddress.com", "affiliation",
 				"bio", "orcid", "testing", "gb"));
