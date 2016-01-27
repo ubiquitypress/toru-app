@@ -199,7 +199,7 @@ public class Main {
 	private static int section_db_id = 0;
 	private static int metadata_id = 0;
 	private static final int SOCKET_OPERATION_TIMEOUT = 5 * 1000;
-
+	private static String base_url = "http://127.0.0.1:8000";
 	CookieStore cookieStore = new BasicCookieStore();
 	HttpContext httpContext = new BasicHttpContext();
 
@@ -5602,6 +5602,7 @@ public void update_issue_intersect(Issue issue, String credentials) throws Illeg
 			System.out.println(setting_json.get("setting_name"));
 			System.out.println(setting_json.get("setting_value"));
 			setting_pk = (long) setting_json.get("pk");
+			setting_json.put("setting_value", issue.getTitle());
 		}
 	} catch (ParseException e) {
 		// TODO Auto-generated catch block
@@ -5610,11 +5611,42 @@ public void update_issue_intersect(Issue issue, String credentials) throws Illeg
 	System.out.println(setting_json.isEmpty());
 	System.out.println(exists);
 	System.out.println(setting_pk);
-	HttpPost httpPost = new HttpPost("http://127.0.0.1:8000/issue-setting/");
-	httpPost.setEntity(new StringEntity(obj.toJSONString()));
+	if (setting_json.isEmpty()){
+		setting_json=IssueSettingToJSON(issue,"title",issue.getTitle(),"string","en_US");
+	}
+	System.out.println(setting_json);
+	if (!exists){
+	HttpPost httpPost = new HttpPost("http://127.0.0.1:8000/issue-settings/");
+	httpPost.setEntity(new StringEntity(setting_json.toJSONString()));
 	httpPost.addHeader("Authorization", "Basic " + credentials);
 	httpPost.setHeader("Accept", "application/json");
 	httpPost.addHeader("Content-type", "application/json");
+	try {
+		response = httpClient.execute(httpPost);
+	} catch (ClientProtocolException e2) {
+		// TODO Auto-generated catch block
+		e2.printStackTrace();
+	} catch (IOException e2) {
+		// TODO Auto-generated catch block
+		e2.printStackTrace();
+	}
+	}else{
+		setting_json.put("setting_value", "updated-title");
+		HttpPut httpPost = new HttpPut(String.format("http://127.0.0.1:8000/update/issue/setting/%s/",setting_json.get("pk")));
+		httpPost.setEntity(new StringEntity(setting_json.toJSONString()));
+		httpPost.addHeader("Authorization", "Basic " + credentials);
+		httpPost.setHeader("Accept", "application/json");
+		httpPost.addHeader("Content-type", "application/json");
+		try {
+			response = httpClient.execute(httpPost);
+		} catch (ClientProtocolException e2) {
+			// TODO Auto-generated catch block
+			e2.printStackTrace();
+		} catch (IOException e2) {
+			// TODO Auto-generated catch block
+			e2.printStackTrace();
+		}
+	}
 
 	/*response = null;
 	try {
@@ -5629,7 +5661,8 @@ public void update_issue_intersect(Issue issue, String credentials) throws Illeg
 }
 public JSONObject IssueSettingToJSON(Issue issue, String name, String value, String type, String locale){
 	JSONObject obj = new JSONObject();
-	obj.put("issue", null);
+	obj.put("issue", String.format("%s/issues/%s/", base_url,issue.getId()));
+	System.out.println(obj.get("issue"));
 	obj.put("locale", locale );
 	obj.put("setting_name", name);
 	obj.put("setting_value", value);
