@@ -1606,12 +1606,12 @@ public class Main {
 							int selectedColumnIndex = 0;
 							Object selectedObject = (Object) table.getModel().getValueAt(issue_row,
 									selectedColumnIndex);
-							int selected_issue = (int) selectedObject;
+							long selected_issue = (long) selectedObject;
 							if (issue_screens.get(selected_issue).isVisible()
 									|| !(issue_screens.get(selected_issue) == null)) {
 								HashMap<Long, JFrame> opened = article_screens.get(selected_issue);
 								Set<Long> ids = opened.keySet();
-								System.out.println("Issue: " + Integer.toString(selected_issue));
+								System.out.println("Issue: " + Long.toString(selected_issue));
 								for (long id : ids) {
 									System.out.println(id);
 									JFrame art_window = opened.get(id);
@@ -1640,7 +1640,7 @@ public class Main {
 						int issue_row = table.getSelectedRow();
 						int selectedColumnIndex = 0;
 						Object selectedObject = (Object) table.getModel().getValueAt(issue_row, selectedColumnIndex);
-						int selected_issue = (int) selectedObject;
+						long selected_issue = (long) selectedObject;
 						if (!issue_screens.get(selected_issue).isVisible()) {
 							issue(selected_issue);
 						}
@@ -1655,7 +1655,7 @@ public class Main {
 						int issue_row = table.getSelectedRow();
 						int selectedColumnIndex = 0;
 						Object selectedObject = (Object) table.getModel().getValueAt(issue_row, selectedColumnIndex);
-						int selected_issue = (int) selectedObject;
+						long selected_issue = (long) selectedObject;
 
 						edit_issue(selected_issue);
 
@@ -2744,7 +2744,7 @@ public class Main {
 							int selectedColumnIndex = 0;
 							Object selectedObject = (Object) table.getModel().getValueAt(article_row,
 									selectedColumnIndex);
-							int selected_article = (int) selectedObject;
+							long selected_article = (long) selectedObject;
 							Issue current_issue = issue_storage.get(issue_id);
 							current_issue.remove_article(selected_article);
 							issue_storage.put(issue_id, current_issue);
@@ -2772,7 +2772,7 @@ public class Main {
 						int article_row = table.getSelectedRow();
 						int selectedColumnIndex = 0;
 						Object selectedObject = (Object) table.getModel().getValueAt(article_row, selectedColumnIndex);
-						int selected_article = (int) selectedObject;
+						long selected_article = (long) selectedObject;
 						if (article_screens.get(issue_id).get(selected_article).isVisible()) {
 							article_screens.get(issue_id).get(selected_article).dispose();
 						}
@@ -2789,7 +2789,7 @@ public class Main {
 						int article_row = table.getSelectedRow();
 						int selectedColumnIndex = 0;
 						Object selectedObject = (Object) table.getModel().getValueAt(article_row, selectedColumnIndex);
-						int selected_article = (int) selectedObject;
+						long selected_article = (long) selectedObject;
 						if (article_screens.get(issue_id).get(selected_article).isVisible()) {
 							article_screens.get(issue_id).get(selected_article).dispose();
 						}
