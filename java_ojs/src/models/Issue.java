@@ -171,6 +171,14 @@ public class Issue {
 	public void setArticles_list(HashMap<Long, Article> articles_list) {
 		this.articles_list = articles_list;
 	}
+	@Override
+	public String toString() {
+		return "Issue [id=" + id + ", title=" + title + ", journal=" + journal + ", volume=" + volume + ", number="
+				+ number + ", year=" + year + ", show_title=" + show_title + ", show_volume=" + show_volume
+				+ ", show_number=" + show_number + ", show_year=" + show_year + ", articles_list=" + articles_list
+				+ ", date_accepted=" + date_accepted + ", date_published=" + date_published + ", published=" + published
+				+ ", access_status=" + access_status + ", current=" + current + "]";
+	}
 	public void add_article(long article_id,Article a){
 		articles_list.put(article_id,a);
 	}
