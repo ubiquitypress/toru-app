@@ -1,14 +1,14 @@
 package models;
 
 public class Section {
-	private int id;
+	private long id;
 	private String title;
-	public Section(int section_id, String title) {
+	public Section(long section_id, String title) {
 		super();
 		this.id = section_id;
 		this.title = title;
 	}
-	public int getId() {
+	public long getId() {
 		return id;
 	}
 	

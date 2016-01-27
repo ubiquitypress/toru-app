@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Date;
 
 public class Journal {
-	private int id;
+	private long id;
 	private String path;
 	private float seq;
 	private String primary_locale;
@@ -33,10 +33,10 @@ public class Journal {
 	public void setEnabled(int enabled) {
 		this.enabled = enabled;
 	}
-	public int getId() {
+	public long getId() {
 		return id;
 	}
-	public Journal(int id, String path, float seq, String primary_locale, int enabled) {
+	public Journal(long id, String path, float seq, String primary_locale, int enabled) {
 		this.id = id;
 		this.path = path;
 		this.seq = seq;

@@ -4,7 +4,7 @@ import java.util.Date;
 import java.util.HashMap;
 
 public class Issue {
-	private int id;
+	private long id;
 	private String title; 
 	private Journal journal; 
 	private int volume;  
@@ -14,7 +14,7 @@ public class Issue {
 	private int show_volume;
 	private int show_number;
 	private int show_year;
-	private HashMap<Integer, Article> articles_list;
+	private HashMap<Long, Article> articles_list;
 	private Date date_accepted;
 	private Date date_published;
 
@@ -22,7 +22,7 @@ public class Issue {
 	private int access_status;
 	private int current;
 	
-	public Issue(int id, String title, int volume, int number, int year, String show_title, int show_volume, int show_number,
+	public Issue(long id, String title, int volume, int number, int year, String show_title, int show_volume, int show_number,
 			int show_year, Date date_accepted, Date date_published) {
 		this.title = title;
 		this.id = id;
@@ -35,12 +35,12 @@ public class Issue {
 		this.show_year = show_year;
 		this.date_accepted=date_accepted;
 		this.date_published = date_published;
-		this.articles_list = new  HashMap<Integer, Article>();
+		this.articles_list = new  HashMap<Long, Article>();
 		this.published = 0;
 		this.access_status = 0;
 		this.current = 0;
 	}
-	public Issue(int id, String title, int volume, int number, int year, String show_title, int show_volume, int show_number,
+	public Issue(long id, String title, int volume, int number, int year, String show_title, int show_volume, int show_number,
 			int show_year, Date date_accepted, Date date_published, int published, int access_status, int current, Journal journal) {
 		this.title = title;
 		this.id = id;
@@ -53,13 +53,13 @@ public class Issue {
 		this.show_year = show_year;
 		this.date_accepted=date_accepted;
 		this.date_published = date_published;
-		this.articles_list = new  HashMap<Integer, Article>();
+		this.articles_list = new  HashMap<Long, Article>();
 		this.published = published;
 		this.access_status = access_status;
 		this.current = current;
 		this.journal = journal;
 	}
-	public Issue(int id, String title, int volume, int number, int year, Date date_accepted, Date date_published) {
+	public Issue(long id, String title, int volume, int number, int year, Date date_accepted, Date date_published) {
 		this.title = title;
 		this.id = id;
 		this.volume = volume;
@@ -71,9 +71,9 @@ public class Issue {
 		this.show_year = year;
 		this.date_accepted=date_accepted;
 		this.date_published = date_published;
-		this.articles_list = new  HashMap<Integer, Article>();
+		this.articles_list = new  HashMap<Long, Article>();
 	}
-	public Issue(int id, String title, int volume, int number, int year, String show_title, int show_volume, int show_number,
+	public Issue(long id, String title, int volume, int number, int year, String show_title, int show_volume, int show_number,
 			int show_year, Date date_accepted, Date date_published, int current_article_id) {
 		this.title = title;
 		this.id = id;
@@ -86,10 +86,10 @@ public class Issue {
 		this.show_year = show_year;
 		this.date_accepted=date_accepted;
 		this.date_published = date_published;
-		this.articles_list = new  HashMap<Integer, Article>();
+		this.articles_list = new  HashMap<Long, Article>();
 	}
 
-	public int getId() {
+	public long getId() {
 		return id;
 	}
 
@@ -165,29 +165,29 @@ public class Issue {
 	public void setDate_published(Date date_published) {
 		this.date_published = date_published;
 	}
-	public HashMap<Integer, Article> getArticles_list() {
+	public HashMap<Long, Article> getArticles_list() {
 		return articles_list;
 	}
-	public void setArticles_list(HashMap<Integer, Article> articles_list) {
+	public void setArticles_list(HashMap<Long, Article> articles_list) {
 		this.articles_list = articles_list;
 	}
-	public void add_article(int article_id,Article a){
+	public void add_article(long article_id,Article a){
 		articles_list.put(article_id,a);
 	}
-	public void update_article(int article_id,Article a){
+	public void update_article(long article_id,Article a){
 		articles_list.put(article_id,a);
 	}
-	public void add_author(int article_id,Author a){
+	public void add_author(long article_id,Author a){
 		Article updated=articles_list.get(article_id);
 		updated.add_author(a);		
 		articles_list.put(article_id,updated);
 	}
-	public void reset_authors(int article_id){
+	public void reset_authors(long article_id){
 		Article updated=articles_list.get(article_id);
 		updated.reset_authors();	
 		articles_list.put(article_id,updated);
 	}
-	public void remove_article(int id){
+	public void remove_article(long id){
 		articles_list.remove(id);
 	}
 	public Date getDate_accepted() {

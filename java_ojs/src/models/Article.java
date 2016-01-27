@@ -4,9 +4,9 @@ import java.util.ArrayList;
 import java.util.Date;
 
 public class Article {
-	private int id;
+	private long id;
 	private String title;
-	private int section_id;
+	private long section_id;
 	private int pages;
 	private String abstract_text;
 	private Date date_accepted;
@@ -14,7 +14,7 @@ public class Article {
 	private Issue issue_fk;
 	private ArrayList<Author> authors;
 
-	public Article(int id, String title, int section_id, int pages, String abstract_text, Date date_accepted, Date date_published,
+	public Article(long id, String title, long section_id, int pages, String abstract_text, Date date_accepted, Date date_published,
 			Issue issue_fk) {
 
 		this.title = title;
@@ -27,7 +27,7 @@ public class Article {
 		this.issue_fk = issue_fk;
 		this.authors = new ArrayList<Author>();
 	}
-	public Article(int id, String title, int section_id, int pages, String abstract_text, Date date_accepted, Date date_published) {
+	public Article(long id, String title, long section_id, int pages, String abstract_text, Date date_accepted, Date date_published) {
 
 		this.title = title;
 		this.id = id;
@@ -40,7 +40,7 @@ public class Article {
 		this.authors = new ArrayList<Author>();
 	}
 
-	public int getId() {
+	public long getId() {
 		return id;
 	}
 
@@ -74,11 +74,11 @@ public class Article {
 		this.title = title;
 	}
 
-	public int getSection_id() {
+	public long getSection_id() {
 		return section_id;
 	}
 
-	public void setSection_id(int section_id) {
+	public void setSection_id(long section_id) {
 		this.section_id = section_id;
 	}
 

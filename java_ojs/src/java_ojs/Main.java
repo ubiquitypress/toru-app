@@ -163,17 +163,17 @@ public class Main {
 	private static String source_access_key = "";
 	private JPasswordField passwordField;
 	private static HashMap<String, String> list_settings;
-	private static HashMap<Integer, Integer> list_issues;
-	private static HashMap<Integer, JFrame> issue_screens;
-	private static HashMap<Integer, Issue> issue_storage;
+	private static HashMap<Long, Long> list_issues;
+	private static HashMap<Long, JFrame> issue_screens;
+	private static HashMap<Long, Issue> issue_storage;
 
-	private static HashMap<Integer, Metadata> metadata_storage;
-	private static HashMap<Integer, Section> section_storage;
-	private static HashMap<Integer, Author> author_storage;
+	private static HashMap<Long, Metadata> metadata_storage;
+	private static HashMap<Long, Section> section_storage;
+	private static HashMap<Long, Author> author_storage;
 
-	private static HashMap<Integer, HashMap<Integer, Boolean>> author_primary_storage;
-	private static HashMap<Integer, HashMap<Integer, ArticleFile>> file_storage;
-	private static HashMap<Integer, HashMap<Integer, JFrame>> article_screens;
+	private static HashMap<Long, HashMap<Long, Boolean>> author_primary_storage;
+	private static HashMap<Long, HashMap<Long, ArticleFile>> file_storage;
+	private static HashMap<Long, HashMap<Long, JFrame>> article_screens;
 	private static ArrayList<String> setting_keys = new ArrayList<String>();
 	private static Connection c = null;
 	private static Statement stmt = null;
@@ -187,22 +187,23 @@ public class Main {
 	private String issue_article_insert_or_replace_statement = "INSERT OR REPLACE INTO ISSUE_ARTICLE(id,article_id,issue_id) VALUES (?,?,?)";
 	private String file_insert_or_replace_statement = "INSERT OR REPLACE INTO FILE(id,article_id,path) VALUES (?,?,?)";
 	private String metadata_insert_or_replace_statement = "INSERT OR REPLACE INTO METADATA(id,article_id,competing_interests,funding) VALUES (?,?,?,?)";
-	private DefaultHttpClient httpClient = new DefaultHttpClient();
+	private static DefaultHttpClient httpClient = new DefaultHttpClient();
 	private String delete_issue_statement = "DELETE FROM ISSUE WHERE id=?";
 	int width = 800;
 	private int height = 600;
 	private Boolean logged_in = true;
-	private static int i_id = 0;
-	private static int articles_id = 0;
-	private static int file_id = 0;
-	private static int author_id = 0;
-	private static int section_db_id = 0;
-	private static int metadata_id = 0;
+	private static long i_id = 0;
+	private static long journal_id = 0;
+	private static long articles_id = 0;
+	private static long file_id = 0;
+	private static long author_id = 0;
+	private static long section_db_id = 0;
+	private static long metadata_id = 0;
 	private static final int SOCKET_OPERATION_TIMEOUT = 5 * 1000;
 	private static String base_url = "http://127.0.0.1:8000";
 	CookieStore cookieStore = new BasicCookieStore();
 	HttpContext httpContext = new BasicHttpContext();
-
+	static String encoding = "";
 	/*
 	 * Initial setup test
 	 */
@@ -263,20 +264,20 @@ public class Main {
 
 			SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
 
-			Set<Integer> section_keys = section_storage.keySet();
-			for (int key : section_keys) {
+			Set<Long> section_keys = section_storage.keySet();
+			for (long key : section_keys) {
 				Section save_section = section_storage.get(key);
 				PreparedStatement section_prep = c.prepareStatement(section_insert_or_replace_statement);
-				section_prep.setInt(1, save_section.getId());
+				section_prep.setInt(1, (int) (long)  save_section.getId());
 				section_prep.setString(2, save_section.getTitle());
 				section_prep.executeUpdate();
 			}
 
-			Set<Integer> author_keys = author_storage.keySet();
-			for (int key : author_keys) {
+			Set<Long> author_keys = author_storage.keySet();
+			for (long key : author_keys) {
 				Author save_author = author_storage.get(key);
 				PreparedStatement author_prep = c.prepareStatement(author_insert_or_replace_statement);
-				author_prep.setInt(1, save_author.getId());
+				author_prep.setInt(1, (int) (long)  save_author.getId());
 				author_prep.setString(2, save_author.getFirst_name());
 				author_prep.setString(3, save_author.getMiddle_name());
 				author_prep.setString(4, save_author.getLast_name());
@@ -289,27 +290,27 @@ public class Main {
 				author_prep.executeUpdate();
 
 			}
-			Set<Integer> file_art_keys = file_storage.keySet();
+			Set<Long> file_art_keys = file_storage.keySet();
 
-			for (int key : file_art_keys) {
-				HashMap<Integer, ArticleFile> files = file_storage.get(key);
-				Set<Integer> file_keys = files.keySet();
-				for (int f_key : file_keys) {
+			for (long key : file_art_keys) {
+				HashMap<Long, ArticleFile> files = file_storage.get(key);
+				Set<Long> file_keys = files.keySet();
+				for (long f_key : file_keys) {
 					ArticleFile current_file = files.get(f_key);
 					PreparedStatement file_prep = c.prepareStatement(file_insert_or_replace_statement);
-					file_prep.setInt(1, current_file.getId());
-					file_prep.setInt(2, current_file.getArticle_id());
+					file_prep.setInt(1, (int) (long)  current_file.getId());
+					file_prep.setInt(2, (int) (long)  current_file.getArticle_id());
 					file_prep.setString(3, current_file.getPath());
 					file_prep.executeUpdate();
 				}
 			}
-			Set<Integer> issue_keys = issue_storage.keySet();
-			for (int key : issue_keys) {
+			Set<Long> issue_keys = issue_storage.keySet();
+			for (long key : issue_keys) {
 				Issue save_issue = issue_storage.get(key);
-				HashMap<Integer, Article> articles = save_issue.getArticles_list();
-				Set<Integer> article_keys = articles.keySet();
+				HashMap<Long, Article> articles = save_issue.getArticles_list();
+				Set<Long> article_keys = articles.keySet();
 				PreparedStatement issue_prep = c.prepareStatement(issue_insert_or_replace_statement);
-				issue_prep.setInt(1, save_issue.getId());
+				issue_prep.setInt(1, (int) (long)  save_issue.getId());
 				issue_prep.setString(2, save_issue.getTitle());
 				issue_prep.setInt(3, save_issue.getVolume());
 				issue_prep.setInt(4, save_issue.getNumber());
@@ -328,12 +329,12 @@ public class Main {
 				issue_prep.executeUpdate();
 				int i = 1;
 				int j = 1;
-				for (int art_key : article_keys) {
+				for (long art_key : article_keys) {
 					Article save_article = articles.get(art_key);
 					PreparedStatement article_prep = c.prepareStatement(article_insert_or_replace_statement);
-					article_prep.setInt(1, save_article.getId());
+					article_prep.setInt(1, (int) (long)  save_article.getId());
 					article_prep.setString(2, save_article.getTitle());
-					article_prep.setInt(3, save_article.getSection_id());
+					article_prep.setInt(3,(int) (long) save_article.getSection_id());
 					article_prep.setInt(4, save_article.getPages());
 					article_prep.setString(5, save_article.getAbstract_text());
 					article_prep.setString(6, sdf.format(save_article.getDate_published()));
@@ -343,8 +344,8 @@ public class Main {
 					PreparedStatement issue_article_prep = c
 							.prepareStatement(issue_article_insert_or_replace_statement);
 					issue_article_prep.setInt(1, i);
-					issue_article_prep.setInt(2, save_article.getId());
-					issue_article_prep.setInt(3, save_issue.getId());
+					issue_article_prep.setInt(2, (int) (long) save_article.getId());
+					issue_article_prep.setInt(3, (int) (long) save_issue.getId());
 					issue_article_prep.executeUpdate();
 					ArrayList<Author> authors = save_article.getAuthors();
 					for (int b = 0; b < authors.size(); b++) {
@@ -352,8 +353,8 @@ public class Main {
 						PreparedStatement article_author_prep = c
 								.prepareStatement(article_author_insert_or_replace_statement);
 						article_author_prep.setInt(1, j);
-						article_author_prep.setInt(2, save_article.getId());
-						article_author_prep.setInt(3, author.getId());
+						article_author_prep.setInt(2, (int) (long)  save_article.getId());
+						article_author_prep.setInt(3, (int) (long)  author.getId());
 						article_author_prep.setBoolean(4,
 								author_primary_storage.get(save_article.getId()).get(author.getId()));
 
@@ -365,13 +366,13 @@ public class Main {
 					i = i + 1;
 				}
 			}
-			Set<Integer> metadata_keys = metadata_storage.keySet();
+			Set<Long> metadata_keys = metadata_storage.keySet();
 
-			for (int key : metadata_keys) {
+			for (Long key : metadata_keys) {
 				Metadata meta = metadata_storage.get(key);
 				PreparedStatement meta_prep = c.prepareStatement(metadata_insert_or_replace_statement);
-				meta_prep.setInt(1, meta.getId());
-				meta_prep.setInt(2, meta.getArticle_id());
+				meta_prep.setInt(1, (int) (long)  meta.getId());
+				meta_prep.setInt(2, (int) (long)  meta.getArticle_id());
 				meta_prep.setString(3, meta.getCompeting_interests());
 				meta_prep.setString(4, meta.getFunding());
 				meta_prep.executeUpdate();
@@ -392,15 +393,15 @@ public class Main {
 	public static void populate_variables() throws ParseException, java.text.ParseException {
 		System.out.println("Retrieving data from local database");
 		list_settings = new HashMap<String, String>();
-		list_issues = new HashMap<Integer, Integer>();
-		issue_storage = new HashMap<Integer, Issue>();
-		issue_screens = new HashMap<Integer, JFrame>();
-		file_storage = new HashMap<Integer, HashMap<Integer, ArticleFile>>();
-		article_screens = new HashMap<Integer, HashMap<Integer, JFrame>>();
-		author_storage = new HashMap<Integer, Author>();
-		section_storage = new HashMap<Integer, Section>();
-		author_primary_storage = new HashMap<Integer, HashMap<Integer, Boolean>>();
-		metadata_storage = new HashMap<Integer, Metadata>();
+		list_issues = new HashMap<Long, Long>();
+		issue_storage = new HashMap<Long, Issue>();
+		issue_screens = new HashMap<Long, JFrame>();
+		file_storage = new HashMap<Long, HashMap<Long, ArticleFile>>();
+		article_screens = new HashMap<Long, HashMap<Long, JFrame>>();
+		author_storage = new HashMap<Long, Author>();
+		section_storage = new HashMap<Long, Section>();
+		author_primary_storage = new HashMap<Long, HashMap<Long, Boolean>>();
+		metadata_storage = new HashMap<Long, Metadata>();
 		try {
 			ResultSet rs = c.createStatement().executeQuery("SELECT * FROM API WHERE URL=" + "'api'" + ";");
 			while (rs.next()) {
@@ -448,7 +449,7 @@ public class Main {
 			SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
 			rs = c.createStatement().executeQuery("SELECT * FROM ISSUE ORDER BY id ASC;");
 			while (rs.next()) {
-				int id = rs.getInt("id");
+				long id = rs.getInt("id");
 				String title = rs.getString("title");
 				int volume = rs.getInt("volume");
 				int number = rs.getInt("number");
@@ -469,9 +470,9 @@ public class Main {
 
 				// JOptionPane.showMessageDialog(null, "Deleted");
 
-				list_issues.put(id, 1);
+				list_issues.put(id, (long) 1);
 				issue_screens.put(id, new JFrame());
-				article_screens.put(id, new HashMap<Integer, JFrame>());
+				article_screens.put(id, new HashMap<Long, JFrame>());
 				issue_storage.put(id, issue);
 				i_id = id;
 			}
@@ -479,7 +480,7 @@ public class Main {
 			System.out.println("Loading Section data....");
 			ResultSet sect_s = c.createStatement().executeQuery("SELECT * FROM SECTION ORDER BY id ASC;");
 			while (sect_s.next()) {
-				int id = sect_s.getInt("id");
+				long id = sect_s.getInt("id");
 				String title = sect_s.getString("title");
 				Section new_section = new Section(id, title);
 				section_storage.put(id, new_section);
@@ -491,11 +492,11 @@ public class Main {
 			ResultSetMetaData rsmd = art_s.getMetaData();
 			System.out.println(rsmd.getColumnName(2));
 			while (art_s.next()) {
-				int id = art_s.getInt("id");
+				long id = art_s.getInt("id");
 				String title = art_s.getString("title");
 				int section_id = art_s.getInt("section_id");
-				author_primary_storage.put(id, new HashMap<Integer, Boolean>());
-				HashMap<Integer, ArticleFile> files = new HashMap<Integer, ArticleFile>();
+				author_primary_storage.put(id, new HashMap<Long, Boolean>());
+				HashMap<Long, ArticleFile> files = new HashMap<Long, ArticleFile>();
 				file_storage.put(id, files);
 				int pages = art_s.getInt(rsmd.getColumnName(4));
 				String abstract_text = art_s.getString(rsmd.getColumnName(5));
@@ -506,15 +507,15 @@ public class Main {
 				article = new Article(id, title, section_id, pages, abstract_text, sdf.parse(date_accepted),
 						sdf.parse(date));
 				ResultSet rs_issue = c.createStatement().executeQuery(
-						"SELECT issue_id FROM ISSUE_ARTICLE WHERE article_id=" + Integer.toString(id) + ";");
-				int issue_id = rs_issue.getInt("issue_id");
+						"SELECT issue_id FROM ISSUE_ARTICLE WHERE article_id=" + Long.toString(id) + ";");
+				long issue_id = rs_issue.getInt("issue_id");
 				Issue update_issue = issue_storage.get(issue_id);
 				update_issue.add_article(id, article);
 				issue_storage.put(issue_id, update_issue);
 				articles_id = id;
 				// JOptionPane.showMessageDialog(null, "Deleted");
 
-				HashMap<Integer, JFrame> issue_articles = article_screens.get(issue_id);
+				HashMap<Long, JFrame> issue_articles = article_screens.get(issue_id);
 
 				issue_articles.put(id, new JFrame());
 
@@ -527,7 +528,7 @@ public class Main {
 			ResultSet authors_s = c.createStatement().executeQuery("SELECT * FROM AUTHOR ORDER BY id ASC;");
 			ResultSetMetaData author_rsmd = authors_s.getMetaData();
 			while (authors_s.next()) {
-				int id = authors_s.getInt("id");
+				long id = authors_s.getInt("id");
 				String first_name = authors_s.getString("first_name");
 				String middle_name = authors_s.getString("middle_name");
 				String last_name = authors_s.getString("last_name");
@@ -550,10 +551,10 @@ public class Main {
 			System.out.println("Loading File data....");
 			ResultSet rs_files = c.createStatement().executeQuery("SELECT id,article_id,path FROM FILE");
 			while (rs_files.next()) {
-				int id = rs_files.getInt(1);
-				int article_id = rs_files.getInt(2);
+				long id = rs_files.getInt(1);
+				long article_id = rs_files.getInt(2);
 				String path = rs_files.getString(3);
-				HashMap<Integer, ArticleFile> files = file_storage.get(article_id);
+				HashMap<Long, ArticleFile> files = file_storage.get(article_id);
 				if (file_id < id) {
 					file_id = id;
 				}
@@ -565,8 +566,8 @@ public class Main {
 			ResultSet rs_metadata = c.createStatement()
 					.executeQuery("SELECT id,article_id,competing_interests,funding FROM METADATA");
 			while (rs_metadata.next()) {
-				int id = rs_metadata.getInt(1);
-				int article_id = rs_metadata.getInt(2);
+				long id = rs_metadata.getInt(1);
+				long article_id = rs_metadata.getInt(2);
 				String competing_interests = rs_metadata.getString(3);
 				String funding = rs_metadata.getString(4);
 				Metadata meta = new Metadata(id, article_id, competing_interests, funding);
@@ -577,8 +578,8 @@ public class Main {
 			}
 			rs_metadata.close();
 
-			Set<Integer> author_keys = author_storage.keySet();
-			for (int key_author : author_keys) {
+			Set<Long> author_keys = author_storage.keySet();
+			for (long key_author : author_keys) {
 				Author author = author_storage.get(key_author);
 				try {
 					PreparedStatement prep = c
@@ -586,22 +587,22 @@ public class Main {
 
 					ResultSet rs_author = prep.executeQuery();
 					while (rs_author.next()) {
-						int author_id = rs_author.getInt(1);
+						long author_id = rs_author.getInt(1);
 
-						int article_id = rs_author.getInt(2);
+						long article_id = rs_author.getInt(2);
 
 						Boolean primary = rs_author.getBoolean(3);
 						System.out.println(author_id + " - " + author.getId());
 						if (author_id == author.getId()) {
-							System.out.println(author.getFull_name() + " " + Integer.toString(article_id));
-							HashMap<Integer, Boolean> primary_authors = author_primary_storage.get(article_id);
+							System.out.println(author.getFull_name() + " " + Long.toString(article_id));
+							HashMap<Long, Boolean> primary_authors = author_primary_storage.get(article_id);
 							primary_authors.put(author_id, primary);
 							System.out.println("Author: " + author_id + " Primary: " + primary);
 							author_primary_storage.put(article_id, primary_authors);
 							ResultSet rs_new_issue = c.createStatement()
 									.executeQuery("SELECT issue_id FROM ISSUE_ARTICLE;");
 							while (rs_new_issue.next()) {
-								int issue_id = rs_new_issue.getInt("issue_id");
+								long issue_id = rs_new_issue.getInt("issue_id");
 								Issue update_issue = issue_storage.get(issue_id);
 								if (update_issue.getArticles_list().containsKey(article_id)) {
 									update_issue.add_author(article_id, author);
@@ -628,7 +629,66 @@ public class Main {
 
 		System.out.println("Done.");
 	}
+	public static Long get_remote_id(String type) throws IllegalStateException, IOException{
+		long latest = 1;
+		HttpGet httpGet = new HttpGet(String.format("http://127.0.0.1:8000/get/latest/%s/?format=json",type));
+		httpGet.addHeader("Authorization", "Basic " + encoding);
+		httpGet.setHeader("Accept", "application/json");
+		httpGet.addHeader("Content-type", "application/json");
 
+		HttpResponse response = null;
+		try {
+			response = httpClient.execute(httpGet);
+		} catch (ClientProtocolException e2) {
+			// TODO Auto-generated catch block
+			e2.printStackTrace();
+		} catch (IOException e2) {
+			// TODO Auto-generated catch block
+			e2.printStackTrace();
+		}
+		JsonFactory jsonf = new JsonFactory();
+		InputStream result = response.getEntity().getContent();
+		org.json.simple.parser.JSONParser jsonParser = new JSONParser();
+		boolean exists= true;
+		JSONObject latest_json = new JSONObject();
+		try {
+			JSONObject latest_obj = (JSONObject) jsonParser.parse(IOUtils.toString(result));
+			String detail = (String) latest_obj.get("detail");
+			System.out.println(latest_obj);
+			if (detail!=null){
+				exists = false;
+			}else{
+				JSONArray results = (JSONArray) latest_obj.get("results");
+				System.out.println(latest_obj);
+				System.out.println(results.get(0));
+				latest_json = (JSONObject) results.get(0);
+				latest = (long) latest_json.get("id");
+				System.out.println(latest);
+			}
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		System.out.println(latest);
+		return latest;
+	}
+	public static void latest_ids() throws IllegalStateException, IOException {
+	long	remote_issue_id = 0;
+	long	remote_article_id = 0;
+	long	remote_journal_id = 0;
+	remote_issue_id= get_remote_id("issue");
+	remote_article_id= get_remote_id("article");
+	remote_journal_id= get_remote_id("journal");
+	if (remote_issue_id>i_id){
+		i_id = remote_issue_id;
+	}
+	if (remote_article_id>articles_id){
+		articles_id = remote_article_id;
+	}
+	if (remote_journal_id>journal_id){
+		journal_id = remote_journal_id;
+	}
+	}
 	public static void database_setup() {
 
 		try {
@@ -675,6 +735,15 @@ public class Main {
 		} catch (Exception e) {
 			System.err.println(e.getClass().getName() + ": " + e.getMessage());
 			System.exit(0);
+		}
+		try {
+			latest_ids();
+		} catch (IllegalStateException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 		System.out.println("Opened database successfully");
 	}
@@ -1350,17 +1419,17 @@ public class Main {
 				// Object rowData[][] = { { 1, "title", 1, 1, 2015,
 				// sdf.format(date), "View", "Edit", "Delete" } };
 
-				Set<Integer> issue_keys = issue_storage.keySet();
+				Set<Long> issue_keys = issue_storage.keySet();
 				ArrayList<List<Object>> rowData = new ArrayList<List<Object>>();
 				Object[][] rows = new Object[issue_keys.size()][6];
 				int i = 0;
-				for (int id : issue_keys) {
+				for (long id : issue_keys) {
 					Issue row_issue = issue_storage.get(id);
 					ArrayList<Object> data = new ArrayList<Object>();
 					issue_screens.put(id, new JFrame());
-					article_screens.put(id, new HashMap<Integer, JFrame>());
+					article_screens.put(id, new HashMap<Long, JFrame>());
 
-					data.add(Integer.toString(row_issue.getId()));
+					data.add(Long.toString(row_issue.getId()));
 					data.add(row_issue.getShow_title());
 					data.add(Integer.toString(row_issue.getShow_volume()));
 					data.add(Integer.toString(row_issue.getShow_number()));
@@ -1388,12 +1457,12 @@ public class Main {
 				String postUrl = "www.site.com";// put in your url
 
 				issues.getContentPane().add(btnSync);
-				Set<Integer> author_keys = author_storage.keySet();
-				ArrayList<Integer> author_list = new ArrayList<Integer>();
+				Set<Long> author_keys = author_storage.keySet();
+				ArrayList<Long> author_list = new ArrayList<Long>();
 				String listData[] = new String[author_keys.size()];
 				int j = 0;
 				DefaultListModel listModel = new DefaultListModel();
-				for (int key : author_keys) {
+				for (long key : author_keys) {
 					listModel.addElement(author_storage.get(key).getFull_name());
 					listData[j] = author_storage.get(key).getFull_name();
 					author_list.add(key);
@@ -1540,10 +1609,10 @@ public class Main {
 							int selected_issue = (int) selectedObject;
 							if (issue_screens.get(selected_issue).isVisible()
 									|| !(issue_screens.get(selected_issue) == null)) {
-								HashMap<Integer, JFrame> opened = article_screens.get(selected_issue);
-								Set<Integer> ids = opened.keySet();
+								HashMap<Long, JFrame> opened = article_screens.get(selected_issue);
+								Set<Long> ids = opened.keySet();
 								System.out.println("Issue: " + Integer.toString(selected_issue));
-								for (int id : ids) {
+								for (long id : ids) {
 									System.out.println(id);
 									JFrame art_window = opened.get(id);
 									if (art_window.isVisible() || !(art_window == null)) {
@@ -1710,7 +1779,7 @@ public class Main {
 			} else {
 				width_small = (int) (960 - (960 * (37.5 / 100)));
 			}
-			final int current_id = i_id + 1;
+			final long current_id = i_id + 1;
 			height_small = (int) (600 - (600 * (5 / 100)));
 			final JFrame edit_issue = new JFrame();
 			issue_screens.put(i_id, edit_issue);
@@ -2014,9 +2083,9 @@ public class Main {
 
 						// JOptionPane.showMessageDialog(null, "Deleted");
 
-						list_issues.put(i_id, 1);
+						list_issues.put(i_id, (long)1);
 						issue_screens.put(i_id, new JFrame());
-						article_screens.put(i_id, new HashMap<Integer, JFrame>());
+						article_screens.put(i_id, new HashMap<Long, JFrame>());
 						issue_storage.put(i_id, issue);
 						Object[] new_row = { i_id, title.getText(), Integer.parseInt(volume.getText()),
 								Integer.parseInt(number.getText()), sdf.format(datePicker.getDate()), "View", "Edit",
@@ -2070,7 +2139,7 @@ public class Main {
 		}
 	}
 
-	public void edit_issue(final int issue_id) {
+	public void edit_issue(final long issue_id) {
 		if (logged_in) {
 			if (issue_screens.containsKey(issue_id) && !issue_screens.get(issue_id).isVisible()) {
 				int width_small = 0;
@@ -2460,7 +2529,7 @@ public class Main {
 		}
 	}
 
-	public void issue(final int issue_id) {
+	public void issue(final long issue_id) {
 		if (logged_in) {
 			if (issue_screens.containsKey(issue_id) && !issue_screens.get(issue_id).isVisible()) {
 
@@ -2473,11 +2542,11 @@ public class Main {
 					height = 640;
 					articles.setSize(960, 640);
 				}
-				HashMap<Integer, JFrame> issue_articles = new HashMap<Integer, JFrame>();
+				HashMap<Long, JFrame> issue_articles = new HashMap<Long, JFrame>();
 				articles.getContentPane().setBackground(new Color(128, 128, 128));
 
 				articles.setLocationRelativeTo(null);
-				articles.setTitle("Issue <" + Integer.toString(issue_id) + ">");
+				articles.setTitle("Issue <" + Long.toString(issue_id) + ">");
 				articles.addWindowListener(new WindowAdapter() {
 					@Override
 					public void windowClosing(WindowEvent e) {
@@ -2488,18 +2557,18 @@ public class Main {
 
 				SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
 				Issue current_issue = issue_storage.get(issue_id);
-				HashMap<Integer, Article> current_articles = current_issue.getArticles_list();
-				Set<Integer> art_keys = current_articles.keySet();
+				HashMap<Long, Article> current_articles = current_issue.getArticles_list();
+				Set<Long> art_keys = current_articles.keySet();
 				ArrayList<List<Object>> rowData = new ArrayList<List<Object>>();
 				Object[][] rows = new Object[art_keys.size()][11];
 				int i = 0;
-				for (int id : art_keys) {
+				for (long id : art_keys) {
 					ArrayList<Object> data = new ArrayList<Object>();
 					issue_articles.put(id, new JFrame());
 
-					data.add(Integer.toString(current_articles.get(id).getId()));
-					data.add(Integer.toString(issue_id));
-					data.add(Integer.toString((current_articles.get(id).getSection_id())));
+					data.add(Long.toString(current_articles.get(id).getId()));
+					data.add(Long.toString(issue_id));
+					data.add(Long.toString((current_articles.get(id).getSection_id())));
 					data.add(current_articles.get(id).getTitle());
 					data.add(Integer.toString(current_articles.get(id).getPages()));
 					data.add(current_articles.get(id).getAbstract_text());
@@ -2528,67 +2597,28 @@ public class Main {
 				btnSync.setBounds(width - 155, 21, 70, 24);
 				btnSync.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
-						System.out.println("sync");
-						HttpResponse response = null;
+						int dialogResult = JOptionPane.showConfirmDialog (null, "Would You Like to replace local data (Yes) or update remote data (No)","Warning",1);
+						if(dialogResult == JOptionPane.NO_OPTION){
+					
 						try {
-							response = httpClient.execute(new HttpGet("http://127.0.0.1:8000/issues/"), httpContext);
-						} catch (ClientProtocolException e2) {
+							update_issue_intersect(current_issue,encoding);
+						
+						} catch (IllegalStateException | IOException e1) {
 							// TODO Auto-generated catch block
-							e2.printStackTrace();
-						} catch (IOException e2) {
-							// TODO Auto-generated catch block
-							e2.printStackTrace();
+							e1.printStackTrace();
 						}
-						System.out.println("get");
-						System.out.println(httpContext);
-						cookieStore = httpClient.getCookieStore();
-						List<org.apache.http.cookie.Cookie> cookies = cookieStore.getCookies();
-						System.out.println(cookies);
-						String csrf = "";
-
-						for (org.apache.http.cookie.Cookie cookie : cookies) {
-							if (cookie.getName().compareTo("csrftoken") == 0) {
-								System.out.println(cookie.getValue());
-								csrf = cookie.getValue();
+						}else if (dialogResult == JOptionPane.YES_OPTION){
+							System.out.println("update local");
+							
+							try {
+								Issue updated_issue = update_issue_local(current_issue,encoding);
+								issue_storage.put(issue_id, updated_issue);
+								articles.dispose();
+								issue(issue_id);
+							} catch (IllegalStateException | IOException e1) {
+								// TODO Auto-generated catch block
+								e1.printStackTrace();
 							}
-
-						}
-
-						System.out.println(csrf);
-
-						HttpEntity entity = response.getEntity();
-						try {
-							InputStream is = entity.getContent();
-							is.close();
-						} catch (IOException exc) {
-							// TODO Auto-generated catch block
-							exc.printStackTrace();
-						}
-						Gson gson = new Gson();
-						HttpPost post = new HttpPost("http://127.0.0.1:8000/issues/");
-
-						post.setHeader("X-CSRFToken", csrf);
-						StringEntity postingString = null;
-						try {
-							postingString = new StringEntity(gson.toJson(current_issue));
-						} catch (UnsupportedEncodingException e1) {
-							// TODO Auto-generated catch block
-							e1.printStackTrace();
-						} // convert your pojo to json
-						post.setEntity(postingString);
-						System.out.println(postingString);
-						post.setHeader("Content-type", "application/json");
-						System.out.println(post);
-						try {
-							response = httpClient.execute(post, httpContext);
-
-							System.out.println(response);
-						} catch (ClientProtocolException e1) {
-							// TODO Auto-generated catch block
-							e1.printStackTrace();
-						} catch (IOException e1) {
-							// TODO Auto-generated catch block
-							e1.printStackTrace();
 						}
 					}
 				});
@@ -2793,7 +2823,7 @@ public class Main {
 				lblIssueId.setForeground(new Color(240, 255, 255));
 				lblIssueId.setFont(new Font("Dialog", Font.BOLD, 28));
 				lblIssueId.setBounds(136, 60, 50, 30);
-				lblIssueId.setText(Integer.toString(issue_id));
+				lblIssueId.setText(Long.toString(issue_id));
 				lblIssueId.setOpaque(true);
 				articles.getContentPane().add(lblIssueId);
 
@@ -2966,7 +2996,7 @@ public class Main {
 		}
 	}
 
-	public void article(final int issue_id, final int article_id) {
+	public void article(final long issue_id, final long article_id) {
 		if (logged_in) {
 			if (article_screens.containsKey(issue_id) && article_screens.get(issue_id).containsKey(article_id)
 					&& !article_screens.get(issue_id).get(article_id).isVisible()) {
@@ -3384,12 +3414,12 @@ public class Main {
 				lblIssue.setForeground(Color.BLACK);
 				lblIssue.setFont(new Font("Dialog", Font.BOLD, 14));
 
-				JLabel lblIssueId = new JLabel(Integer.toString(issue_id));
+				JLabel lblIssueId = new JLabel(Long.toString(issue_id));
 				lblIssueId.setBounds(160, 48, 94, 30);
 				panel.add(lblIssueId);
 				lblIssueId.setForeground(Color.BLACK);
 				lblIssueId.setFont(new Font("Dialog", Font.BOLD, 14));
-				lblIssueId.setText(Integer.toString(issue_id));
+				lblIssueId.setText(Long.toString(issue_id));
 
 				final JLabel lblDateAccepted = new JLabel("Date Accepted:");
 				lblDateAccepted.setForeground(Color.BLACK);
@@ -3417,12 +3447,12 @@ public class Main {
 				lblDateAccept.setFont(new Font("Dialog", Font.BOLD, 14));
 				lblDateAccept.setBounds(160, 207, 125, 30);
 				panel.add(lblDateAccept);
-				JLabel lblArticleId = new JLabel(Integer.toString(current_article.getId()));
+				JLabel lblArticleId = new JLabel(Long.toString(current_article.getId()));
 				lblArticleId.setBounds(160, 19, 94, 30);
 				panel.add(lblArticleId);
 				lblArticleId.setForeground(Color.BLACK);
 				lblArticleId.setFont(new Font("Dialog", Font.BOLD, 14));
-				lblArticleId.setText(Integer.toString(article_id));
+				lblArticleId.setText(Long.toString(article_id));
 
 				JLabel lblPages = new JLabel("Pages:");
 				lblPages.setForeground(Color.BLACK);
@@ -3430,7 +3460,7 @@ public class Main {
 				lblPages.setBounds(24, 165, 94, 30);
 				panel.add(lblPages);
 
-				JLabel lblPageNum = new JLabel(Integer.toString(current_article.getPages()));
+				JLabel lblPageNum = new JLabel(Long.toString(current_article.getPages()));
 				lblPageNum.setVerticalAlignment(SwingConstants.TOP);
 				lblPageNum.setForeground(Color.BLACK);
 				lblPageNum.setFont(new Font("Dialog", Font.BOLD, 14));
@@ -3461,7 +3491,7 @@ public class Main {
 				titleSection.createHorizontalScrollBar();
 				panel.add(titleSection);
 
-				JLabel lblSectionId = new JLabel(Integer.toString(current_article.getSection_id()));
+				JLabel lblSectionId = new JLabel(Long.toString(current_article.getSection_id()));
 				lblSectionId.setForeground(Color.BLACK);
 				lblSectionId.setFont(new Font("Dialog", Font.BOLD, 14));
 				lblSectionId.setBounds(160, 81, 94, 30);
@@ -3485,10 +3515,10 @@ public class Main {
 				String label_text = "";
 				System.out.println(file_storage.keySet().toString());
 				if (file_storage.containsKey(article_id)) {
-					HashMap<Integer, ArticleFile> files = file_storage.get(article_id);
-					Set<Integer> keys = files.keySet();
+					HashMap<Long, ArticleFile> files = file_storage.get(article_id);
+					Set<Long> keys = files.keySet();
 					int y_f = 23;
-					for (int key : keys) {
+					for (long key : keys) {
 						ImageIcon deleteicon = new ImageIcon("src/lib/remove_xs.png");
 						JButton btnDeleteFile = new JButton(deleteicon);
 						btnDeleteFile.setMargin(new Insets(0, 0, 0, 0));
@@ -3556,7 +3586,7 @@ public class Main {
 
 								File f = new File(files.get(key).getPath());
 								f.delete();
-								HashMap<Integer, ArticleFile> deleted = file_storage.get(article_id);
+								HashMap<Long, ArticleFile> deleted = file_storage.get(article_id);
 								deleted.remove(key);
 								file_storage.put(article_id, deleted);
 								article.dispose();
@@ -3633,7 +3663,7 @@ public class Main {
 
 				article.setVisible(true);
 				if (article_screens.containsKey(issue_id)) {
-					HashMap<Integer, JFrame> issue_articles = article_screens.get(issue_id);
+					HashMap<Long, JFrame> issue_articles = article_screens.get(issue_id);
 					issue_articles.put(article_id, article);
 					article_screens.put(issue_id, issue_articles);
 				}
@@ -3644,12 +3674,12 @@ public class Main {
 		}
 	}
 
-	public void edit_article(final int issue_id, final int article_id) {
+	public void edit_article(final long issue_id, final long article_id) {
 		if (logged_in) {
 			if (article_screens.containsKey(issue_id) && article_screens.get(issue_id).containsKey(article_id)
 					&& !article_screens.get(issue_id).get(article_id).isVisible()) {
 				Article current_article = issue_storage.get(issue_id).getArticles_list().get(article_id);
-				int initial_file_num = file_id;
+				long initial_file_num = file_id;
 				int width_small = 0;
 				int height_small = 0;
 				if (height >= 768 && width >= 640) {
@@ -3832,15 +3862,15 @@ public class Main {
 				btnAddAuthors.setBounds(165, 6, 125, 25);
 				panel6.add(btnAddAuthors);
 
-				Set<Integer> author_keys = author_storage.keySet();
+				Set<Long> author_keys = author_storage.keySet();
 				DefaultListModel listModel = new DefaultListModel();
-				ArrayList<Integer> author_list = new ArrayList<Integer>();
+				ArrayList<Long> author_list = new ArrayList<Long>();
 				String listData[] = new String[author_keys.size()];
 				int j = 0;
 				int a = 0;
 				int selections = 0;
 
-				for (int key : author_keys) {
+				for (long key : author_keys) {
 					listModel.addElement(author_storage.get(key).getFull_name());
 					listData[j] = author_storage.get(key).getFull_name();
 					author_list.add(key);
@@ -3857,7 +3887,7 @@ public class Main {
 				;
 				j = 0;
 				int[] selected = new int[selections];
-				for (int key : author_keys) {
+				for (long key : author_keys) {
 					Article current_art = issue_storage.get(issue_id).getArticles_list().get(article_id);
 					ArrayList<Author> current_athors = current_art.getAuthors();
 					for (int b = 0; b < current_athors.size(); b++) {
@@ -3898,18 +3928,18 @@ public class Main {
 							SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
 							Issue current_issue = issue_storage.get(issue_id);
 
-							ArrayList<Integer> removed_authors = new ArrayList<Integer>();
-							ArrayList<Integer> new_authors = new ArrayList<Integer>();
+							ArrayList<Long> removed_authors = new ArrayList<Long>();
+							ArrayList<Long> new_authors = new ArrayList<Long>();
 							for (int index : selections) {
 								new_authors.add(author_list.get(index));
 							}
-							Set<Integer> previous_authors = author_primary_storage.get(article_id).keySet();
-							for (int index : previous_authors) {
+							Set<Long> previous_authors = author_primary_storage.get(article_id).keySet();
+							for (long index : previous_authors) {
 								if (!new_authors.contains(index)) {
 									removed_authors.add(index);
 								}
 							}
-							HashMap<Integer, Boolean> primary_storage = author_primary_storage.get(article_id);
+							HashMap<Long, Boolean> primary_storage = author_primary_storage.get(article_id);
 							for (int i = 0; i < removed_authors.size(); i++) {
 								primary_storage.remove(removed_authors.get(i));
 							}
@@ -3986,12 +4016,12 @@ public class Main {
 					panel.add(btnAddMetadata);
 					article.getContentPane().add(btnAddMetadata);
 				}
-				final HashMap<Integer, HashMap<Integer, JTextField>> author_fields = new HashMap<Integer, HashMap<Integer, JTextField>>();
-				final HashMap<Integer, JTextArea> authors_bio = new HashMap<Integer, JTextArea>();
+				final HashMap<Long, HashMap<Long, JTextField>> author_fields = new HashMap<Long, HashMap<Long, JTextField>>();
+				final HashMap<Long, JTextArea> authors_bio = new HashMap<Long, JTextArea>();
 
 				ArrayList<Author> authors = current_article.getAuthors();
-				final HashMap<Integer, JButton> primary_buttons = new HashMap<Integer, JButton>();
-				final HashMap<Integer, JLabel> primary_labels = new HashMap<Integer, JLabel>();
+				final HashMap<Long, JButton> primary_buttons = new HashMap<Long, JButton>();
+				final HashMap<Long, JLabel> primary_labels = new HashMap<Long, JLabel>();
 
 				int author_x = 16;
 				int author_y = 60;
@@ -4017,14 +4047,14 @@ public class Main {
 
 						JButton author_primary_btn = new JButton("Make Primary");
 						author_primary_btn.setBounds(60 + author_x, 33, 120, 25);
-						int a_id = author.getId();
+						long a_id = author.getId();
 						author_primary_btn.addActionListener(new ActionListener() {
 							public void actionPerformed(ActionEvent arg0) {
 
-								HashMap<Integer, Boolean> update_primary = author_primary_storage.get(article_id);
+								HashMap<Long, Boolean> update_primary = author_primary_storage.get(article_id);
 
-								Set<Integer> primary_keys = update_primary.keySet();
-								for (int pkey : primary_keys) {
+								Set<Long> primary_keys = update_primary.keySet();
+								for (long pkey : primary_keys) {
 									if (pkey != a_id) {
 										update_primary.put(pkey, false);
 									} else {
@@ -4040,8 +4070,8 @@ public class Main {
 
 								System.out.println(a_id + " " + author_primary_storage.get(article_id).get(a_id));
 
-								Set<Integer> label_keys = primary_labels.keySet();
-								for (int key_lbl : label_keys) {
+								Set<Long> label_keys = primary_labels.keySet();
+								for (long key_lbl : label_keys) {
 									if (primary_labels.get(key_lbl).getParent() == panel6) {
 										panel6.remove(primary_labels.get(key_lbl));
 
@@ -4063,14 +4093,14 @@ public class Main {
 						JButton author_primary_btn = new JButton("Make Primary");
 						author_primary_btn.setBounds(60 + author_x, 33, 120, 25);
 						panel6.add(author_primary_btn);
-						int a_id = author.getId();
+						long a_id = author.getId();
 						author_primary_btn.addActionListener(new ActionListener() {
 							public void actionPerformed(ActionEvent arg0) {
 
-								HashMap<Integer, Boolean> update_primary = author_primary_storage.get(article_id);
+								HashMap<Long, Boolean> update_primary = author_primary_storage.get(article_id);
 
-								Set<Integer> primary_keys = update_primary.keySet();
-								for (int pkey : primary_keys) {
+								Set<Long> primary_keys = update_primary.keySet();
+								for (long pkey : primary_keys) {
 									if (pkey != a_id) {
 										update_primary.put(pkey, false);
 									} else {
@@ -4085,8 +4115,8 @@ public class Main {
 								System.out.println(a_id + " " + update_primary.get(a_id));
 								System.out.println(a_id + " " + author_primary_storage.get(article_id).get(a_id));
 
-								Set<Integer> label_keys = primary_labels.keySet();
-								for (int key_lbl : label_keys) {
+								Set<Long> label_keys = primary_labels.keySet();
+								for (long key_lbl : label_keys) {
 									if (primary_labels.get(key_lbl).getParent() == panel6) {
 										panel6.remove(primary_labels.get(key_lbl));
 
@@ -4102,7 +4132,7 @@ public class Main {
 
 						primary_buttons.put(a_id, author_primary_btn);
 					}
-					HashMap<Integer, JTextField> author_components = new HashMap<Integer, JTextField>();
+					HashMap<Long, JTextField> author_components = new HashMap<Long, JTextField>();
 
 					JLabel field_label = new JLabel("First name:");
 					field_label.setBounds(author_x, author_y, 75, 30); // white
@@ -4114,7 +4144,7 @@ public class Main {
 																								// box
 					field.setOpaque(true);
 					panel6.add(field);
-					author_components.put(1, field);
+					author_components.put((long)1, field);
 					author_y = author_y + separation_vertical;
 
 					field_label = new JLabel("Middle name:");
@@ -4127,7 +4157,7 @@ public class Main {
 																								// box
 					field.setOpaque(true);
 					panel6.add(field);
-					author_components.put(2, field);
+					author_components.put((long) 2, field);
 					author_fields.put(author.getId(), author_components);
 					author_y = author_y + separation_vertical;
 
@@ -4141,7 +4171,7 @@ public class Main {
 																								// box
 					field.setOpaque(true);
 					panel6.add(field);
-					author_components.put(3, field);
+					author_components.put((long) 3, field);
 					author_fields.put(author.getId(), author_components);
 					author_y = author_y + separation_vertical;
 
@@ -4155,7 +4185,7 @@ public class Main {
 																								// box
 					field.setOpaque(true);
 					panel6.add(field);
-					author_components.put(4, field);
+					author_components.put((long) 4, field);
 					author_fields.put(author.getId(), author_components);
 					author_y = author_y + separation_vertical;
 
@@ -4169,7 +4199,7 @@ public class Main {
 																								// box
 					field.setOpaque(true);
 					panel6.add(field);
-					author_components.put(5, field);
+					author_components.put((long) 5, field);
 					author_fields.put(author.getId(), author_components);
 					author_y = author_y + separation_vertical;
 
@@ -4201,7 +4231,7 @@ public class Main {
 																								// box
 					field.setOpaque(true);
 					panel6.add(field);
-					author_components.put(7, field);
+					author_components.put((long) 7, field);
 					author_fields.put(author.getId(), author_components);
 					author_y = author_y + separation_vertical;
 
@@ -4215,7 +4245,7 @@ public class Main {
 																								// box
 					field.setOpaque(true);
 					panel6.add(field);
-					author_components.put(8, field);
+					author_components.put((long) 8, field);
 					author_fields.put(author.getId(), author_components);
 					author_y = author_y + separation_vertical;
 
@@ -4229,7 +4259,7 @@ public class Main {
 																								// box
 					field.setOpaque(true);
 					panel6.add(field);
-					author_components.put(9, field);
+					author_components.put((long) 9, field);
 					author_fields.put(author.getId(), author_components);
 					author_y = author_y + separation_vertical;
 
@@ -4266,12 +4296,12 @@ public class Main {
 				lblIssue.setForeground(Color.BLACK);
 				lblIssue.setFont(new Font("Dialog", Font.BOLD, 14));
 
-				JLabel lblIssueId = new JLabel(Integer.toString(issue_id));
+				JLabel lblIssueId = new JLabel(Long.toString(issue_id));
 				lblIssueId.setBounds(160, 48, 94, 30);
 				panel.add(lblIssueId);
 				lblIssueId.setForeground(Color.BLACK);
 				lblIssueId.setFont(new Font("Dialog", Font.BOLD, 14));
-				lblIssueId.setText(Integer.toString(issue_id));
+				lblIssueId.setText(Long.toString(issue_id));
 
 				final JLabel lblDateAccepted = new JLabel("Date Accepted:");
 				lblDateAccepted.setForeground(Color.BLACK);
@@ -4300,7 +4330,7 @@ public class Main {
 				panel.add(lblArticleId);
 				lblArticleId.setForeground(Color.BLACK);
 				lblArticleId.setFont(new Font("Dialog", Font.BOLD, 14));
-				lblArticleId.setText(Integer.toString(article_id));
+				lblArticleId.setText(Long.toString(article_id));
 
 				JLabel lblPages = new JLabel("Pages:");
 				lblPages.setForeground(Color.BLACK);
@@ -4338,11 +4368,11 @@ public class Main {
 				panel.add(titleSection);
 
 				final JComboBox<String> lblSectionId = new JComboBox();
-				Set<Integer> section_keys = section_storage.keySet();
+				Set<Long> section_keys = section_storage.keySet();
 				ArrayList<Section> sections = new ArrayList<Section>();
 				int selected_section = 0;
 				int count = 0;
-				for (int key : section_keys) {
+				for (long key : section_keys) {
 					lblSectionId.addItem(section_storage.get(key).getTitle());
 					sections.add(section_storage.get(key));
 					System.out.println("Count: " + count + " Section: " + current_article.getSection_id());
@@ -4442,7 +4472,7 @@ public class Main {
 				btnSave.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent arg0) {
 						Boolean validation = true;
-						int entered_sectionID = 0;
+						long entered_sectionID = 0;
 						int entered_pages = 0;
 						try {
 							entered_sectionID = sections.get(lblSectionId.getSelectedIndex()).getId();
@@ -4500,7 +4530,7 @@ public class Main {
 							ArrayList<Author> updated_authors = a.getAuthors();
 							for (int i = 0; i < updated_authors.size(); i++) {
 								Author author = updated_authors.get(i);
-								HashMap<Integer, JTextField> a_fields = author_fields
+								HashMap<Long, JTextField> a_fields = author_fields
 										.get(updated_authors.get(i).getId());
 								author.setFirst_name(a_fields.get(1).getText());
 								author.setMiddle_name(a_fields.get(2).getText());
@@ -4532,9 +4562,9 @@ public class Main {
 				panel10.setBackground(new Color(153, 102, 51));
 				panel10.setBounds(115, 310, 225, 160);
 				if (file_storage.containsKey(article_id)) {
-					HashMap<Integer, ArticleFile> files = file_storage.get(article_id);
-					Set<Integer> keys = files.keySet();
-					for (int key : keys) {
+					HashMap<Long, ArticleFile> files = file_storage.get(article_id);
+					Set<Long> keys = files.keySet();
+					for (long key : keys) {
 						String path = files.get(key).getPath();
 						label_text = label_text + path.substring(path.lastIndexOf("/") + 1) + "\n";
 					}
@@ -4598,12 +4628,12 @@ public class Main {
 						select.setEnabled(false);
 						btnClear.setEnabled(false);
 						upload.setEnabled(false);
-						HashMap<Integer, ArticleFile> files = null;
+						HashMap<Long, ArticleFile> files = null;
 						if (file_storage.containsKey(article_id)) {
 							files = file_storage.get(article_id);
 						} else {
 
-							files = new HashMap<Integer, ArticleFile>();
+							files = new HashMap<Long, ArticleFile>();
 						}
 						for (File f : uploaded_files) {
 							file_copy(article_id, f.getPath().toString());
@@ -4615,9 +4645,9 @@ public class Main {
 						}
 						if (file_storage.containsKey(article_id)) {
 							String label_text = "";
-							HashMap<Integer, ArticleFile> files_existing = file_storage.get(article_id);
-							Set<Integer> keys = files_existing.keySet();
-							for (int k : keys) {
+							HashMap<Long, ArticleFile> files_existing = file_storage.get(article_id);
+							Set<Long> keys = files_existing.keySet();
+							for (long k : keys) {
 								ArticleFile a_file = files_existing.get(k);
 								System.out.println("Files: " + keys.size());
 								label_text = label_text
@@ -4634,9 +4664,9 @@ public class Main {
 						uploaded_files.clear();
 						if (file_storage.containsKey(article_id)) {
 							String label_text = "";
-							HashMap<Integer, ArticleFile> files_existing = file_storage.get(article_id);
-							Set<Integer> keys = files_existing.keySet();
-							for (int k : keys) {
+							HashMap<Long, ArticleFile> files_existing = file_storage.get(article_id);
+							Set<Long> keys = files_existing.keySet();
+							for (long k : keys) {
 								ArticleFile a_file = files_existing.get(k);
 								label_text = label_text
 										+ a_file.getPath().substring(a_file.getPath().lastIndexOf("/") + 1) + "\n";
@@ -4667,7 +4697,7 @@ public class Main {
 				panel.add(upload);
 				article.getContentPane().add(btnSave);
 				if (article_screens.containsKey(issue_id)) {
-					HashMap<Integer, JFrame> issue_articles = article_screens.get(issue_id);
+					HashMap<Long, JFrame> issue_articles = article_screens.get(issue_id);
 					issue_articles.put(article_id, article);
 					article_screens.put(issue_id, issue_articles);
 				}
@@ -4678,7 +4708,7 @@ public class Main {
 		}
 	}
 
-	public void add_article(final int issue_id) {
+	public void add_article(final long issue_id) {
 		if (logged_in) {
 			issue_screens.get(issue_id).dispose();
 			int width_small = 0;
@@ -4692,8 +4722,8 @@ public class Main {
 			}
 
 			String setting_meta = list_settings.get("Metadata");
-			int current_id = articles_id + 1;
-			int initial_file_num = file_id;
+			long current_id = articles_id + 1;
+			long initial_file_num = file_id;
 			final JFrame article = new JFrame();
 			article.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 			// article.setSize(width_small, height_small);
@@ -4758,10 +4788,10 @@ public class Main {
 			btnGoBack.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent arg0) {
 					if (file_storage.containsKey(current_id)) {
-						HashMap<Integer, ArticleFile> up_files = file_storage.get(current_id);
-						Set<Integer> keys = up_files.keySet();
+						HashMap<Long, ArticleFile> up_files = file_storage.get(current_id);
+						Set<Long> keys = up_files.keySet();
 						file_id = initial_file_num;
-						for (int key : keys) {
+						for (long key : keys) {
 							File f = new File(up_files.get(key).getPath());
 							f.delete();
 						}
@@ -4946,12 +4976,12 @@ public class Main {
 			 * 34, 205 * 2, 175); // white box lblAuthorInfo.setOpaque(true);
 			 * panel6.add(lblAuthorInfo)
 			 */
-			Set<Integer> author_keys = author_storage.keySet();
+			Set<Long> author_keys = author_storage.keySet();
 			DefaultListModel listModel = new DefaultListModel();
-			ArrayList<Integer> author_list = new ArrayList<Integer>();
+			ArrayList<Long> author_list = new ArrayList<Long>();
 			String listData[] = new String[author_keys.size()];
 			int j = 0;
-			for (int key : author_keys) {
+			for (long key : author_keys) {
 				listModel.addElement(author_storage.get(key).getFull_name());
 				listData[j] = author_storage.get(key).getFull_name();
 				author_list.add(key);
@@ -5107,12 +5137,12 @@ public class Main {
 			lblIssue.setForeground(Color.BLACK);
 			lblIssue.setFont(new Font("Dialog", Font.BOLD, 14));
 
-			JLabel lblIssueId = new JLabel(Integer.toString(issue_id));
+			JLabel lblIssueId = new JLabel(Long.toString(issue_id));
 			lblIssueId.setBounds(160, 48, 94, 30);
 			panel.add(lblIssueId);
 			lblIssueId.setForeground(Color.BLACK);
 			lblIssueId.setFont(new Font("Dialog", Font.BOLD, 14));
-			lblIssueId.setText(Integer.toString(issue_id));
+			lblIssueId.setText(Long.toString(issue_id));
 
 			final JLabel lblDateAccepted = new JLabel("Date Accepted:");
 			lblDateAccepted.setForeground(Color.BLACK);
@@ -5179,9 +5209,9 @@ public class Main {
 			panel.add(titleSection);
 
 			final JComboBox<String> lblSectionId = new JComboBox();
-			Set<Integer> section_keys = section_storage.keySet();
+			Set<Long> section_keys = section_storage.keySet();
 			ArrayList<Section> sections = new ArrayList<Section>();
-			for (int key : section_keys) {
+			for (long key : section_keys) {
 				lblSectionId.addItem(section_storage.get(key).getTitle());
 				sections.add(section_storage.get(key));
 			}
@@ -5269,7 +5299,7 @@ public class Main {
 			btnSave.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent arg0) {
 					Boolean validation = true;
-					int entered_sectionID = 0;
+					long entered_sectionID = 0;
 					int entered_pages = 0;
 					try {
 						entered_sectionID = sections.get(lblSectionId.getSelectedIndex()).getId();
@@ -5333,7 +5363,7 @@ public class Main {
 										lblAbstract.getText(), datePickerAccepted.getDate(), datePicker.getDate(),
 										current_issue));
 						int[] selections = listbox.getSelectedIndices();
-						HashMap<Integer, Boolean> author_primary = new HashMap<Integer, Boolean>();
+						HashMap<Long, Boolean> author_primary = new HashMap<Long, Boolean>();
 						author_primary_storage.put(articles_id, author_primary);
 						for (int index : selections) {
 							current_issue.add_author(articles_id, author_storage.get(author_list.get(index)));
@@ -5344,7 +5374,7 @@ public class Main {
 						issue_storage.put(issue_id, current_issue);
 						Object[] new_row = { articles_id, issue_id, 1, "title", 1, "abstract", sdf.format(current),
 								"View", "Edit", "Delete" };
-						HashMap<Integer, JFrame> issue_articles = article_screens.get(issue_id);
+						HashMap<Long, JFrame> issue_articles = article_screens.get(issue_id);
 						System.out.println(articles_id);
 						issue_articles.put(articles_id, new JFrame());
 
@@ -5441,9 +5471,9 @@ public class Main {
 					}
 					if (file_storage.containsKey(current_id)) {
 						String label_text = "";
-						HashMap<Integer, ArticleFile> files_existing = file_storage.get(current_id);
-						Set<Integer> keys = files_existing.keySet();
-						for (int k : keys) {
+						HashMap<Long, ArticleFile> files_existing = file_storage.get(current_id);
+						Set<Long> keys = files_existing.keySet();
+						for (long k : keys) {
 							ArticleFile a_file = files_existing.get(k);
 							label_text = label_text + a_file.getPath().substring(a_file.getPath().lastIndexOf("/") + 1)
 									+ "\n";
@@ -5459,10 +5489,10 @@ public class Main {
 			btnClear.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent arg0) {
 					if (file_storage.containsKey(current_id)) {
-						HashMap<Integer, ArticleFile> up_files = file_storage.get(current_id);
-						Set<Integer> keys = up_files.keySet();
+						HashMap<Long, ArticleFile> up_files = file_storage.get(current_id);
+						Set<Long> keys = up_files.keySet();
 						file_id = initial_file_num;
-						for (int key : keys) {
+						for (long key : keys) {
 							File f = new File(up_files.get(key).getPath());
 							f.delete();
 						}
@@ -5488,11 +5518,11 @@ public class Main {
 				@Override
 				public void windowClosing(WindowEvent e) {
 					if (file_storage.containsKey(current_id) && current_id != articles_id) {
-						HashMap<Integer, ArticleFile> up_files = file_storage.get(current_id);
-						Set<Integer> keys = up_files.keySet();
+						HashMap<Long, ArticleFile> up_files = file_storage.get(current_id);
+						Set<Long> keys = up_files.keySet();
 						file_id = initial_file_num;
 
-						for (int key : keys) {
+						for (long key : keys) {
 							File f = new File(up_files.get(key).getPath());
 							f.delete();
 						}
@@ -5509,10 +5539,10 @@ public class Main {
 				@Override
 				public void windowClosed(WindowEvent e) {
 					if (file_storage.containsKey(current_id) && current_id != articles_id) {
-						HashMap<Integer, ArticleFile> up_files = file_storage.get(current_id);
-						Set<Integer> keys = up_files.keySet();
+						HashMap<Long, ArticleFile> up_files = file_storage.get(current_id);
+						Set<Long> keys = up_files.keySet();
 						file_id = initial_file_num;
-						for (int key : keys) {
+						for (Long key : keys) {
 							File f = new File(up_files.get(key).getPath());
 							f.delete();
 						}
@@ -5530,7 +5560,7 @@ public class Main {
 			article.repaint();
 			panel6.repaint();
 			if (article_screens.containsKey(issue_id)) {
-				HashMap<Integer, JFrame> issue_articles = article_screens.get(issue_id);
+				HashMap<Long, JFrame> issue_articles = article_screens.get(issue_id);
 				issue_articles.put(current_id, article);
 				article_screens.put(issue_id, issue_articles);
 			}
@@ -5659,6 +5689,48 @@ public void update_issue_intersect(Issue issue, String credentials) throws Illeg
 		e2.printStackTrace();
 	}*/
 }
+
+public Issue update_issue_local(Issue issue, String credentials) throws IllegalStateException, IOException{
+	HttpGet httpGet = new HttpGet("http://127.0.0.1:8000/issues/6987/?format=json");
+	httpGet.addHeader("Authorization", "Basic " + credentials);
+	httpGet.setHeader("Accept", "application/json");
+	httpGet.addHeader("Content-type", "application/json");
+
+	HttpResponse response = null;
+	try {
+		response = httpClient.execute(httpGet);
+	} catch (ClientProtocolException e2) {
+		// TODO Auto-generated catch block
+		e2.printStackTrace();
+	} catch (IOException e2) {
+		// TODO Auto-generated catch block
+		e2.printStackTrace();
+	}
+	JsonFactory jsonf = new JsonFactory();
+	InputStream result = response.getEntity().getContent();
+	org.json.simple.parser.JSONParser jsonParser = new JSONParser();
+	boolean exists= true;
+	JSONObject issue_json = new JSONObject();
+	try {
+		JSONObject issue_obj = (JSONObject) jsonParser.parse(IOUtils.toString(result));
+		System.out.println(issue_obj.get("count"));
+		System.out.println(issue_obj);
+		String detail = (String) issue_obj.get("detail");
+		if (detail==null){
+			exists = false;
+		}else{
+			JSONArray results = (JSONArray) issue_obj.get("results");
+			System.out.println(results.get(0));
+			issue_json = (JSONObject) results.get(0);
+			System.out.println(issue_json.get("id"));
+			issue = JSONToIssue(issue_json,issue);
+		}
+	} catch (ParseException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	}
+	return issue;
+}
 public JSONObject IssueSettingToJSON(Issue issue, String name, String value, String type, String locale){
 	JSONObject obj = new JSONObject();
 	obj.put("issue", String.format("%s/issues/%s/", base_url,issue.getId()));
@@ -5668,6 +5740,20 @@ public JSONObject IssueSettingToJSON(Issue issue, String name, String value, Str
 	obj.put("setting_value", value);
 	obj.put("setting_type", type);
 	return obj;
+}
+public Issue JSONToIssue (JSONObject obj, Issue issue){
+	issue.setVolume((int) obj.get("volume"));
+	issue.setNumber(Integer.parseInt((String) obj.get("number")));
+	issue.setYear((int) obj.get("year"));
+	issue.setPublished((int) obj.get("published"));
+	issue.setShow_volume((int) obj.get("show_volume"));
+	issue.setShow_number((int) obj.get("show_number"));
+	issue.setShow_year((int) obj.get("show_year"));
+	issue.setShow_title(Integer.toString((int) obj.get("show_title")));
+	issue.setCurrent((int) obj.get("current"));
+	issue.setPublished((int) obj.get("published"));
+	issue.setAccess_status((int) obj.get("access_status"));
+	return issue;
 }
 public JSONObject IssueToJSON (Issue issue){
 	JSONObject obj = new JSONObject();
@@ -5764,9 +5850,7 @@ public JSONObject IssueToJSON (Issue issue){
 			// TODO Auto-generated catch block
 			exc.printStackTrace();
 		}
-		BASE64Encoder encoder = new BASE64Encoder();
-
-		String encoding = encoder.encode("ioannis:root".getBytes());
+		
 		HttpPost httppost = new HttpPost("http://127.0.0.1:8000/api-auth/login/");
 		httppost.setHeader("Authorization", "Basic " + encoding);
 		System.out.println("Authorization" + "Basic " + encoding);
@@ -5821,24 +5905,23 @@ public JSONObject IssueToJSON (Issue issue){
 		httpContext.setAttribute(ClientContext.COOKIE_STORE, cookieStore);
 		
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
-		Issue test_issue = new Issue(6987,"title",1,1,2016,"0",2,2,2015,sdf.parse("2016/01/11"),sdf.parse("2016/01/11"),0,0,0,new Journal(1,"up",(float) 2.0,"en_US",0));
-		update_issue_intersect(test_issue,encoding);
+	
 		author_id = 6;
-		author_storage.put(1, new Author(1, "Peter", "M.", "FakeAuthor", "fake_author@fakeaddress.com", "affiliation",
+		author_storage.put((long) 1, new Author((long) 1, "Peter", "M.", "FakeAuthor", "fake_author@fakeaddress.com", "affiliation",
 				"bio", "orcid", "testing", "gb"));
-		author_storage.put(2, new Author(2, "Paul", "C.", "FakeAuthor", "fake_author@fakeaddress.com", "affiliation",
+		author_storage.put((long) 2, new Author((long) 2, "Paul", "C.", "FakeAuthor", "fake_author@fakeaddress.com", "affiliation",
 				"bio", "orcid", "testing", "gb"));
-		author_storage.put(3, new Author(3, "Celia", "C.", "FakeAuthor", "fake_author@fakeaddress.com", "affiliation",
+		author_storage.put((long) 3, new Author((long) 3, "Celia", "C.", "FakeAuthor", "fake_author@fakeaddress.com", "affiliation",
 				"bio", "orcid", "testing", "gb"));
-		author_storage.put(4, new Author(4, "Sen", "C.", "FakeAuthor", "fake_author@fakeaddress.com", "affiliation",
+		author_storage.put((long) 4, new Author((long) 4, "Sen", "C.", "FakeAuthor", "fake_author@fakeaddress.com", "affiliation",
 				"bio", "orcid", "testing", "gb"));
-		author_storage.put(5, new Author(5, "Chihiro", "C.", "FakeAuthor", "fake_author@fakeaddress.com", "affiliation",
+		author_storage.put((long) 5, new Author((long) 5, "Chihiro", "C.", "FakeAuthor", "fake_author@fakeaddress.com", "affiliation",
 				"bio", "orcid", "testing", "gb"));
-		author_storage.put(6, new Author(6, "Morty", "C.", "FakeAuthor", "fake_author@fakeaddress.com", "affiliation",
+		author_storage.put((long) 6, new Author((long) 6, "Morty", "C.", "FakeAuthor", "fake_author@fakeaddress.com", "affiliation",
 				"bio", "orcid", "testing", "gb"));
 		section_db_id = 2;
-		section_storage.put(1, new Section(1, "Section 1"));
-		section_storage.put(2, new Section(2, "Section 2"));
+		section_storage.put((long) 1, new Section((long) 1, "Section 1"));
+		section_storage.put((long) 2, new Section((long) 2, "Section 2"));
 		dashboard();
 	}
 
@@ -5968,16 +6051,16 @@ public JSONObject IssueToJSON (Issue issue){
 
 	}
 
-	public static void file_copy(int art_id, String source) {
+	public static void file_copy(long art_id, String source) {
 		try {
 			String filename = source.substring(source.lastIndexOf("/") + 1);
 			System.out.print(String.format("src/files/%d/%s", art_id, filename));
 			File dir = new File(String.format("src/files/%d/", art_id));
 			dir.mkdirs();
 			file_id++;
-			HashMap<Integer, ArticleFile> article_files = null;
+			HashMap<Long, ArticleFile> article_files = null;
 			if (!file_storage.containsKey(art_id)) {
-				article_files = new HashMap<Integer, ArticleFile>();
+				article_files = new HashMap<Long, ArticleFile>();
 			} else {
 				article_files = file_storage.get(art_id);
 			}
@@ -5994,7 +6077,8 @@ public JSONObject IssueToJSON (Issue issue){
 	}
 
 	public static void main(String[] args) throws ParseException, java.text.ParseException, IOException {
-
+		BASE64Encoder encoder = new BASE64Encoder();
+		encoding = encoder.encode("ioannis:root".getBytes());
 		database_setup();
 		populate_variables();
 

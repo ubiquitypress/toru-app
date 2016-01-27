@@ -10,9 +10,9 @@ public class Author {
 	private String orcid; 
 	private String department;
 	private String country;
-	private int id;
+	private long id;
 	
-	public Author(int id, String first_name, String middle_name, String last_name, String email, String affiliation, String bio,
+	public Author(long id, String first_name, String middle_name, String last_name, String email, String affiliation, String bio,
 			String orcid, String department, String country) {
 		this.id = id;
 		this.first_name = first_name;
@@ -25,7 +25,7 @@ public class Author {
 		this.department = department;
 		this.country = country;
 	}
-	public int getId() {
+	public long getId() {
 		return id;
 	}
 	public String getFull_name() {
