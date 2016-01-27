@@ -6,6 +6,10 @@ import org.apache.http.HttpEntity;
 import org.apache.http.HttpHost;
 import org.apache.http.HttpResponse;
 import sun.misc.BASE64Encoder;
+
+import org.apache.commons.io.IOUtils;
+
+
 import javax.ws.rs.ext.MessageBodyWorkers;
 import org.apache.http.HttpVersion;
 import org.apache.http.auth.AuthSchemeRegistry;
@@ -41,6 +45,7 @@ import org.apache.http.params.HttpProtocolParams;
 import org.apache.http.protocol.BasicHttpContext;
 import org.apache.http.protocol.HttpContext;
 import org.apache.http.util.EntityUtils;
+import org.codehaus.jackson.JsonFactory;
 
 import java.awt.Color;
 import java.awt.Dimension;
@@ -133,6 +138,7 @@ import org.json.simple.parser.ParseException;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonParser;
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
@@ -5533,15 +5539,84 @@ public class Main {
 			login("dashboard");
 		}
 	}
-public void update_issue_intersect(Issue issue, String credentials) throws UnsupportedEncodingException{
+public void update_issue_intersect(Issue issue, String credentials) throws IllegalStateException, IOException{
 	JSONObject obj = IssueToJSON(issue);
-	HttpPut httpPost = new HttpPut("http://127.0.0.1:8000/issues/6987/");
+	HttpPut httpPut = new HttpPut("http://127.0.0.1:8000/issues/6987/");
+	httpPut.setEntity(new StringEntity(obj.toJSONString()));
+	httpPut.addHeader("Authorization", "Basic " + credentials);
+	httpPut.setHeader("Accept", "application/json");
+	httpPut.addHeader("Content-type", "application/json");
+
+	HttpResponse response = null;
+	try {
+		response = httpClient.execute(httpPut);
+	} catch (ClientProtocolException e2) {
+		// TODO Auto-generated catch block
+		e2.printStackTrace();
+	} catch (IOException e2) {
+		// TODO Auto-generated catch block
+		e2.printStackTrace();
+	}
+	try {
+		InputStream is = response.getEntity().getContent();
+		is.close();
+	} catch (IOException exc) {
+		// TODO Auto-generated catch block
+		exc.printStackTrace();
+	}
+	System.out.println(response.toString());
+	HttpGet settingCheck = new HttpGet(String.format("http://127.0.0.1:8000/get/setting/title/issue/%s/?format=json",issue.getId()));
+//	settingCheck.setEntity(new StringEntity(obj.toJSONString()));
+	settingCheck.addHeader("Authorization", "Basic " + credentials);
+	settingCheck.setHeader("Accept", "application/json");
+	settingCheck.addHeader("Content-type", "application/json");
+	
+	response = null;
+	try {
+		response = httpClient.execute(settingCheck);
+	} catch (ClientProtocolException e2) {
+		// TODO Auto-generated catch block
+		e2.printStackTrace();
+	} catch (IOException e2) {
+		// TODO Auto-generated catch block
+		e2.printStackTrace();
+	}
+	JsonFactory jsonf = new JsonFactory();
+	InputStream result = response.getEntity().getContent();
+	Long setting_pk = (long) -1;
+	 org.json.simple.parser.JSONParser jsonParser = new JSONParser();
+	 boolean exists= true;
+	 JSONObject setting_json = new JSONObject();
+	try {
+		JSONObject setting = (JSONObject) jsonParser.parse(IOUtils.toString(result));
+		System.out.println(setting.get("count"));
+		System.out.println(setting);
+		Long count = (Long) setting.get("count");
+		if (count == 0){
+			exists = false;
+		}else{
+			JSONArray results = (JSONArray) setting.get("results");
+			System.out.println(results.get(0));
+			setting_json = (JSONObject) results.get(0);
+			System.out.println(setting_json.get("pk"));
+			System.out.println(setting_json.get("setting_name"));
+			System.out.println(setting_json.get("setting_value"));
+			setting_pk = (long) setting_json.get("pk");
+		}
+	} catch (ParseException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	}
+	System.out.println(setting_json.isEmpty());
+	System.out.println(exists);
+	System.out.println(setting_pk);
+	HttpPost httpPost = new HttpPost("http://127.0.0.1:8000/issue-setting/");
 	httpPost.setEntity(new StringEntity(obj.toJSONString()));
 	httpPost.addHeader("Authorization", "Basic " + credentials);
 	httpPost.setHeader("Accept", "application/json");
 	httpPost.addHeader("Content-type", "application/json");
 
-	HttpResponse response = null;
+	/*response = null;
 	try {
 		response = httpClient.execute(httpPost);
 	} catch (ClientProtocolException e2) {
@@ -5550,9 +5625,16 @@ public void update_issue_intersect(Issue issue, String credentials) throws Unsup
 	} catch (IOException e2) {
 		// TODO Auto-generated catch block
 		e2.printStackTrace();
-	}
-
-	System.out.println(response.toString());
+	}*/
+}
+public JSONObject IssueSettingToJSON(Issue issue, String name, String value, String type, String locale){
+	JSONObject obj = new JSONObject();
+	obj.put("issue", null);
+	obj.put("locale", locale );
+	obj.put("setting_name", name);
+	obj.put("setting_value", value);
+	obj.put("setting_type", type);
+	return obj;
 }
 public JSONObject IssueToJSON (Issue issue){
 	JSONObject obj = new JSONObject();
