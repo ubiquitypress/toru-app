@@ -258,7 +258,23 @@ public class Main {
 				}
 
 			}
-
+			JSONObject json_settings = new JSONObject();
+			Set<String> access_settings = app_settings.keySet();
+			for (String key : access_settings) {
+				json_settings.put(key, app_settings.get(key));
+			}
+			StringWriter out_app = new StringWriter();
+			try {
+				json_settings.writeJSONString(out_app);
+				String s = json_settings.toJSONString();
+				FileWriter new_jsn = new FileWriter("./app_settings.json");
+				new_jsn.write(out_app.toString());
+				new_jsn.flush();
+				new_jsn.close();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 			StringWriter out = new StringWriter();
 			try {
 				json_file.writeJSONString(out);
@@ -432,6 +448,7 @@ public class Main {
 		author_primary_storage = new HashMap<Long, HashMap<Long, Boolean>>();
 		metadata_storage = new HashMap<Long, Metadata>();
 		journal_storage = new HashMap<Long, Journal>();
+		app_settings = new HashMap<String,String>();
 		// Journal test_journal = new Journal(1, "up", (float) 2.0, "en_US", 0);
 		// journal_storage.put((long)1, test_journal);
 		try {
@@ -444,8 +461,60 @@ public class Main {
 			}
 			JSONParser parser = new JSONParser();
 
+			Object obj = null;
 			try {
-				Object obj = null;
+				obj = parser.parse(new FileReader("./app_settings.json"));
+				JSONObject array = (JSONObject) obj;
+
+				Set<Map> keys = array.keySet();
+				System.out.println("Keys");
+				System.out.println(keys.isEmpty());
+				Object jsn_keys[] = keys.toArray();
+				
+				System.out.println("Loading settings....");
+				for (Object k : jsn_keys) {
+					System.out.println(k);
+					String setting_name = k.toString();
+					String value = "";
+					if (array.get(k)!=null){
+					value = array.get(k).toString();
+					}else{
+						value = null;
+					}
+					app_settings.put(setting_name, value);
+
+				}
+			} catch (FileNotFoundException e1) {
+				// TODO Auto-generated catch block
+				JSONObject json_settings = new JSONObject();
+
+				json_settings.put("user", null);
+				json_settings.put("journal", null);
+				json_settings.put("key", null);
+
+				StringWriter out_app = new StringWriter();
+				try {
+					json_settings.writeJSONString(out_app);
+					String s = json_settings.toJSONString();
+					FileWriter new_jsn = new FileWriter("./app_settings.json");
+					new_jsn.write(out_app.toString());
+					new_jsn.flush();
+					new_jsn.close();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			} catch (IOException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			} catch (ParseException pe) {
+
+				System.out.println("position: " + pe.getPosition());
+				System.out.println(pe);
+			}
+
+			try {
+				obj = null;
 				try {
 					obj = parser.parse(new FileReader("./settings.json"));
 				} catch (FileNotFoundException e1) {
@@ -945,7 +1014,7 @@ public class Main {
 					String user = username.getText();
 					String pass = String.valueOf(passwordField.getPassword());
 					BASE64Encoder encoder = new BASE64Encoder();
-					encoding = encoder.encode(String.format("%s:%s",user,pass).getBytes());
+					encoding = encoder.encode(String.format("%s:%s", user, pass).getBytes());
 					if (pass.compareTo("root") == 0 && user.compareTo("user") == 0) {
 						login.setVisible(false);
 						if (source_api.compareTo("") == 0 && source_access_key.compareTo("") == 0) {
@@ -5939,7 +6008,7 @@ public class Main {
 		Set<Long> article_keys = articles.keySet();
 		for (long key : article_keys) {
 			Article current_article = articles.get(key);
-			JSONObject obj = ArticleToJSON(current_article,issue.getJournal());
+			JSONObject obj = ArticleToJSON(current_article, issue.getJournal());
 			HttpGet issue_exists = new HttpGet(String.format("http://127.0.0.1:8000/issues/%s/", issue.getId()));
 
 			issue_exists.addHeader("Authorization", "Basic " + credentials);
@@ -6268,7 +6337,7 @@ public class Main {
 		obj.put("id", article.getId());
 		obj.put("journal", String.format("http://localhost:8000/journals/%s/", journal.getId()));
 		obj.put("section_id", article.getSection_id());
-		
+
 		return obj;
 	}
 
@@ -6488,12 +6557,24 @@ public class Main {
 			e.printStackTrace();
 		}
 	}
-	public String decodeSetting(String value){
+	public static int generateHash(String userpass){
+		return (userpass.hashCode())+64;
+	}
+	public static int originalHash(String encodedpassword){
+		int restore_hash = Integer.parseInt(StringUtils.newStringUtf8(Base64.decodeBase64(encodedpassword)));
+		return (restore_hash-64);
+	}
+	
+	public String decodeSetting(String value) {
 		return StringUtils.newStringUtf8(Base64.decodeBase64(value));
 	}
+
 	public static void main(String[] args) throws ParseException, java.text.ParseException, IOException {
 		BASE64Encoder encoder = new BASE64Encoder();
-		encoding = encoder.encode("ioannis:root".getBytes());
+		encoding = encoder.encode("ioannis:testing".getBytes());
+		String encodedpassword = encoder.encode(Integer.toString(generateHash("ioannis:testing")).getBytes());
+		System.out.println(originalHash(encodedpassword));
+		System.out.println("ioannis:testing".hashCode());
 		database_setup();
 		populate_variables();
 		System.out.println();
