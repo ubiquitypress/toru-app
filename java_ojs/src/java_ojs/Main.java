@@ -74,9 +74,11 @@ import java.io.UnsupportedEncodingException;
 import java.net.Authenticator;
 import java.net.ConnectException;
 import java.net.HttpURLConnection;
+import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.MalformedURLException;
 import java.net.PasswordAuthentication;
+import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.URL;
 import java.nio.file.Files;
@@ -634,7 +636,7 @@ public class Main {
 public static boolean status_online(){
 	try {
 		Socket sock = new Socket();
-		InetSocketAddress addr = new InetSocketAddress(base_url+"/heartbeat", 80);
+		InetSocketAddress addr = new InetSocketAddress("www.google.com", 80);
 		sock.setSoTimeout(500);
 		sock.connect(addr, 3000);
 		sock.close();
@@ -648,6 +650,7 @@ public static boolean status_online(){
 		
 		long latest = 1;
 		boolean status = status_online();
+System.out.println(status);
 		if (!status){
 			return latest;
 		}
@@ -724,6 +727,9 @@ public static boolean status_online(){
 		if (remote_journal_id > journal_id) {
 			journal_id = remote_journal_id;
 		}
+		System.out.println(remote_issue_id);
+		System.out.println(remote_article_id);
+		System.out.println(remote_journal_id);
 	}
 
 	public static void database_setup() {
@@ -932,7 +938,7 @@ public static boolean status_online(){
 				public void actionPerformed(ActionEvent evt) {
 					try {
 						Socket sock = new Socket();
-						InetSocketAddress addr = new InetSocketAddress(base_url, 80);
+						InetSocketAddress addr = new InetSocketAddress("www.google.com", 80);
 						sock.setSoTimeout(500);
 						sock.connect(addr, 3000);
 						sock.close();
@@ -1227,7 +1233,7 @@ public static boolean status_online(){
 					public void actionPerformed(ActionEvent evt) {
 						try {
 							Socket sock = new Socket();
-							InetSocketAddress addr = new InetSocketAddress(base_url, 80);
+							InetSocketAddress addr = new InetSocketAddress("www.google.com", 80);
 							sock.setSoTimeout(500);
 							sock.connect(addr, 3000);
 
@@ -1390,7 +1396,7 @@ public static boolean status_online(){
 					public void actionPerformed(ActionEvent evt) {
 						try {
 							Socket sock = new Socket();
-							InetSocketAddress addr = new InetSocketAddress(base_url, 80);
+							InetSocketAddress addr = new InetSocketAddress("www.google.com", 80);
 							sock.setSoTimeout(500);
 							sock.connect(addr, 3000);
 
@@ -1518,6 +1524,7 @@ public static boolean status_online(){
 
 								try {
 									Issue updated_issue = update_issue_local(current_issue, encoding);
+									
 									issue_storage.put(issue_id, updated_issue);
 									System.out.println(updated_issue);
 
@@ -1526,31 +1533,35 @@ public static boolean status_online(){
 									e1.printStackTrace();
 								}
 							}
-							Set<Long> update_issue_keys = issue_storage.keySet();
-							ArrayList<List<Object>> rowData = new ArrayList<List<Object>>();
-							Object[][] rows = new Object[update_issue_keys.size()][6];
-							int i = 0;
-							for (long id : update_issue_keys) {
-								((DefaultTableModel)issues_table.getModel()).removeRow(i);
-								i++;
-							}
-							i = 0;
-							for (long id : update_issue_keys) {
-								Issue row_issue = issue_storage.get(id);
-								issue_screens.put(id, new JFrame());
-								article_screens.put(id, new HashMap<Long, JFrame>());
-
-								Object[] row = { row_issue.getId(), row_issue.getShow_title(), row_issue.getShow_volume(),
-										row_issue.getShow_number(), row_issue.getShow_year(),
-										sdf.format(row_issue.getDate_accepted()), sdf.format(row_issue.getDate_published()), "View",
-										"Edit", "Delete" };
-								rows[i] = row;
-								i++;
-								((DefaultTableModel)issues_table.getModel()).addRow(row);
-								
-							}
-							issues.repaint();
+							
+							
 						}
+						issues.repaint();
+						Set<Long> update_issue_keys = issue_storage.keySet();
+						ArrayList<List<Object>> rowData = new ArrayList<List<Object>>();
+						Object[][] rows = new Object[update_issue_keys.size()][6];
+						
+
+						int i = 0;
+						for (long id : update_issue_keys) {
+							Issue row_issue = issue_storage.get(id);
+							issue_screens.put(id, new JFrame());
+							article_screens.put(id, new HashMap<Long, JFrame>());
+
+							Object[] row = { row_issue.getId(), row_issue.getShow_title(), row_issue.getShow_volume(),
+									row_issue.getShow_number(), row_issue.getShow_year(),
+									sdf.format(row_issue.getDate_accepted()), sdf.format(row_issue.getDate_published()), "View",
+									"Edit", "Delete" };
+							rows[i] = row;
+							((DefaultTableModel)issues_table.getModel()).removeRow(i);
+							((DefaultTableModel)issues_table.getModel()).insertRow(0, row);
+							i++;
+							
+						}
+						((DefaultTableModel)issues_table.getModel()).fireTableRowsUpdated(0, update_issue_keys.size()-1);
+						issues_table.repaint();
+						issues.getContentPane().repaint();
+						issues.repaint();
 					}
 				});
 
@@ -1673,7 +1684,7 @@ public static boolean status_online(){
 					public void actionPerformed(ActionEvent evt) {
 						try {
 							Socket sock = new Socket();
-							InetSocketAddress addr = new InetSocketAddress(base_url, 80);
+							InetSocketAddress addr = new InetSocketAddress("www.google.com", 80);
 							sock.setSoTimeout(500);
 							sock.connect(addr, 3000);
 
@@ -2178,7 +2189,7 @@ public static boolean status_online(){
 						issue.setShow_volume(entered_show_volume);
 						issue.setShow_year(entered_show_year);
 						issue.setShow_number(entered_show_number);
-
+						issue.setJournal(new Journal(1, "up", (float) 2.0, "en_US", 0));
 						// JOptionPane.showMessageDialog(null, "Deleted");
 
 						list_issues.put(i_id, (long) 1);
@@ -2813,7 +2824,7 @@ public static boolean status_online(){
 					public void actionPerformed(ActionEvent evt) {
 						try {
 							Socket sock = new Socket();
-							InetSocketAddress addr = new InetSocketAddress(base_url, 80);
+							InetSocketAddress addr = new InetSocketAddress("www.google.com", 80);
 							sock.setSoTimeout(500);
 							sock.connect(addr, 3000);
 
@@ -3161,7 +3172,7 @@ public static boolean status_online(){
 				 * ActionListener taskPerformer1 = new ActionListener() { public
 				 * void actionPerformed(ActionEvent evt) { try { Socket sock =
 				 * new Socket(); InetSocketAddress addr = new
-				 * InetSocketAddress(base_url, 80);
+				 * InetSocketAddress("www.google.com", 80);
 				 * sock.setSoTimeout(500); sock.connect(addr, 3000);
 				 * 
 				 * internetCheck.setBackground(Color.GREEN);
@@ -3841,7 +3852,7 @@ public static boolean status_online(){
 				 * ActionListener taskPerformer1 = new ActionListener() { public
 				 * void actionPerformed(ActionEvent evt) { try { Socket sock =
 				 * new Socket(); InetSocketAddress addr = new
-				 * InetSocketAddress(base_url, 80);
+				 * InetSocketAddress("www.google.com", 80);
 				 * sock.setSoTimeout(500); sock.connect(addr, 3000);
 				 * 
 				 * internetCheck.setBackground(Color.GREEN);
@@ -4856,7 +4867,7 @@ public static boolean status_online(){
 			 * ActionListener taskPerformer1 = new ActionListener() { public
 			 * void actionPerformed(ActionEvent evt) { try { Socket sock = new
 			 * Socket(); InetSocketAddress addr = new
-			 * InetSocketAddress(base_url, 80); sock.setSoTimeout(500);
+			 * InetSocketAddress("www.google.com", 80); sock.setSoTimeout(500);
 			 * sock.connect(addr, 3000);
 			 * 
 			 * internetCheck.setBackground(Color.GREEN);
@@ -5944,6 +5955,7 @@ public static boolean status_online(){
 				System.out.println(results.get(0));
 				setting_json = (JSONObject) results.get(0);
 				issue.setTitle((String) setting_json.get("setting_value"));
+				issue.setShow_title((String) setting_json.get("setting_value"));
 			}
 		} catch (ParseException e) {
 			// TODO Auto-generated catch block
@@ -6223,7 +6235,7 @@ public static boolean status_online(){
 
 		// file copy to use for file upload
 		// file_copy(1,"src/lib/db_xxs.png");
-
+	
 		new Main();
 	}
 }
