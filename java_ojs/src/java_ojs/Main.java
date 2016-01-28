@@ -787,7 +787,7 @@ public class Main {
 		}
 
 		try {
-			HttpGet httpGet = new HttpGet(String.format("http://127.0.0.1:8000/get/latest/%s/?format=json", type));
+			HttpGet httpGet = new HttpGet(String.format("%s/get/latest/%s/?format=json",base_url, type));
 			httpGet.addHeader("Authorization", "Basic " + encoding);
 			httpGet.setHeader("Accept", "application/json");
 			httpGet.addHeader("Content-type", "application/json");
@@ -5798,7 +5798,7 @@ public class Main {
 			return;
 		}
 		JSONObject obj = IssueToJSON(issue);
-		HttpGet issue_exists = new HttpGet(String.format("http://127.0.0.1:8000/issues/%s/", issue.getId()));
+		HttpGet issue_exists = new HttpGet(String.format("%s/issues/%s/",base_url, issue.getId()));
 
 		issue_exists.addHeader("Authorization", "Basic " + credentials);
 		issue_exists.setHeader("Accept", "application/json");
@@ -5826,7 +5826,7 @@ public class Main {
 			exc.printStackTrace();
 		}
 		if (issue_created) {
-			HttpPut httpPut = new HttpPut(String.format("http://127.0.0.1:8000/issues/%s/", issue.getId()));
+			HttpPut httpPut = new HttpPut(String.format("%s/issues/%s/", base_url, issue.getId()));
 			httpPut.setEntity(new StringEntity(obj.toJSONString()));
 			httpPut.addHeader("Authorization", "Basic " + credentials);
 			httpPut.setHeader("Accept", "application/json");
@@ -5850,7 +5850,7 @@ public class Main {
 				exc.printStackTrace();
 			}
 		} else {
-			HttpPost createIssue = new HttpPost("http://127.0.0.1:8000/issues/");
+			HttpPost createIssue = new HttpPost(String.format("%s/issues/",base_url));
 			createIssue.setEntity(new StringEntity(obj.toJSONString()));
 			createIssue.addHeader("Authorization", "Basic " + credentials);
 			createIssue.setHeader("Accept", "application/json");
@@ -5876,7 +5876,7 @@ public class Main {
 		}
 		System.out.println(response.toString());
 		HttpGet settingCheck = new HttpGet(
-				String.format("http://127.0.0.1:8000/get/setting/title/issue/%s/?format=json", issue.getId()));
+				String.format("%s/get/setting/title/issue/%s/?format=json", base_url, issue.getId()));
 		// settingCheck.setEntity(new StringEntity(obj.toJSONString()));
 		settingCheck.addHeader("Authorization", "Basic " + credentials);
 		settingCheck.setHeader("Accept", "application/json");
@@ -5934,7 +5934,7 @@ public class Main {
 		}
 		System.out.println(setting_json);
 		if (!exists) {
-			HttpPost httpPost = new HttpPost("http://127.0.0.1:8000/issue-settings/");
+			HttpPost httpPost = new HttpPost(String.format("%s/issue-settings/", base_url));
 			httpPost.setEntity(new StringEntity(setting_json.toJSONString()));
 			httpPost.addHeader("Authorization", "Basic " + credentials);
 			httpPost.setHeader("Accept", "application/json");
@@ -5951,7 +5951,7 @@ public class Main {
 		} else {
 			setting_json.put("setting_value", "updated-title");
 			HttpPut httpPost = new HttpPut(
-					String.format("http://127.0.0.1:8000/update/issue/setting/%s/", setting_json.get("pk")));
+					String.format("%s/update/issue/setting/%s/", base_url, setting_json.get("pk")));
 			httpPost.setEntity(new StringEntity(setting_json.toJSONString()));
 			httpPost.addHeader("Authorization", "Basic " + credentials);
 			httpPost.setHeader("Accept", "application/json");
@@ -5992,7 +5992,7 @@ public class Main {
 		for (long key : article_keys) {
 			Article current_article = articles.get(key);
 			JSONObject obj = ArticleToJSON(current_article, issue.getJournal());
-			HttpGet issue_exists = new HttpGet(String.format("http://127.0.0.1:8000/issues/%s/", issue.getId()));
+			HttpGet issue_exists = new HttpGet(String.format("%s/issues/%s/", base_url, issue.getId()));
 
 			issue_exists.addHeader("Authorization", "Basic " + credentials);
 			issue_exists.setHeader("Accept", "application/json");
@@ -6020,7 +6020,7 @@ public class Main {
 				exc.printStackTrace();
 			}
 			if (issue_created) {
-				HttpPut httpPut = new HttpPut(String.format("http://127.0.0.1:8000/issues/%s/", issue.getId()));
+				HttpPut httpPut = new HttpPut(String.format("%s/issues/%s/", base_url, issue.getId()));
 				httpPut.setEntity(new StringEntity(obj.toJSONString()));
 				httpPut.addHeader("Authorization", "Basic " + credentials);
 				httpPut.setHeader("Accept", "application/json");
@@ -6044,7 +6044,7 @@ public class Main {
 					exc.printStackTrace();
 				}
 			} else {
-				HttpPost createIssue = new HttpPost("http://127.0.0.1:8000/issues/");
+				HttpPost createIssue = new HttpPost(String.format("%s/issues/", base_url));
 				createIssue.setEntity(new StringEntity(obj.toJSONString()));
 				createIssue.addHeader("Authorization", "Basic " + credentials);
 				createIssue.setHeader("Accept", "application/json");
@@ -6070,7 +6070,7 @@ public class Main {
 			}
 			System.out.println(response.toString());
 			HttpGet settingCheck = new HttpGet(
-					String.format("http://127.0.0.1:8000/get/setting/title/issue/%s/?format=json", issue.getId()));
+					String.format("%s/get/setting/title/issue/%s/?format=json", base_url, issue.getId()));
 			// settingCheck.setEntity(new StringEntity(obj.toJSONString()));
 			settingCheck.addHeader("Authorization", "Basic " + credentials);
 			settingCheck.setHeader("Accept", "application/json");
@@ -6128,7 +6128,7 @@ public class Main {
 			}
 			System.out.println(setting_json);
 			if (!exists) {
-				HttpPost httpPost = new HttpPost("http://127.0.0.1:8000/issue-settings/");
+				HttpPost httpPost = new HttpPost(String.format("%s/issue-settings/", base_url));
 				httpPost.setEntity(new StringEntity(setting_json.toJSONString()));
 				httpPost.addHeader("Authorization", "Basic " + credentials);
 				httpPost.setHeader("Accept", "application/json");
@@ -6145,7 +6145,7 @@ public class Main {
 			} else {
 				setting_json.put("setting_value", "updated-title");
 				HttpPut httpPost = new HttpPut(
-						String.format("http://127.0.0.1:8000/update/issue/setting/%s/", setting_json.get("pk")));
+						String.format("%s/update/issue/setting/%s/", base_url, setting_json.get("pk")));
 				httpPost.setEntity(new StringEntity(setting_json.toJSONString()));
 				httpPost.addHeader("Authorization", "Basic " + credentials);
 				httpPost.setHeader("Accept", "application/json");
@@ -6181,7 +6181,7 @@ public class Main {
 		if (!status) {
 			return issue;
 		}
-		HttpGet httpGet = new HttpGet(String.format("http://127.0.0.1:8000/issues/%s/?format=json", issue.getId()));
+		HttpGet httpGet = new HttpGet(String.format("%s/issues/%s/?format=json", base_url, issue.getId()));
 		httpGet.addHeader("Authorization", "Basic " + credentials);
 		httpGet.setHeader("Accept", "application/json");
 		httpGet.addHeader("Content-type", "application/json");
@@ -6228,7 +6228,7 @@ public class Main {
 		}
 		System.out.println(response.toString());
 		HttpGet settingCheck = new HttpGet(
-				String.format("http://127.0.0.1:8000/get/setting/title/issue/%s/?format=json", issue.getId()));
+				String.format("%s/get/setting/title/issue/%s/?format=json", base_url, issue.getId()));
 		// settingCheck.setEntity(new StringEntity(obj.toJSONString()));
 		settingCheck.addHeader("Authorization", "Basic " + credentials);
 		settingCheck.setHeader("Accept", "application/json");
@@ -6300,7 +6300,7 @@ public class Main {
 	public JSONObject IssueToJSON(Issue issue) {
 		JSONObject obj = new JSONObject();
 		obj.put("id", issue.getId());
-		obj.put("journal", String.format("http://localhost:8000/journals/%s/", issue.getJournal().getId()));
+		obj.put("journal", String.format("%s/journals/%s/", base_url, issue.getJournal().getId()));
 		obj.put("volume", issue.getVolume());
 		obj.put("number", issue.getNumber());
 		obj.put("year", issue.getYear());
@@ -6318,7 +6318,7 @@ public class Main {
 	public JSONObject ArticleToJSON(Article article, Journal journal) {
 		JSONObject obj = new JSONObject();
 		obj.put("id", article.getId());
-		obj.put("journal", String.format("http://localhost:8000/journals/%s/", journal.getId()));
+		obj.put("journal", String.format("%s/journals/%s/", base_url, journal.getId()));
 		obj.put("section_id", article.getSection_id());
 
 		return obj;
@@ -6556,10 +6556,10 @@ public class Main {
 
 	public static void main(String[] args) throws ParseException, java.text.ParseException, IOException {
 		BASE64Encoder encoder = new BASE64Encoder();
-		encoding = encoder.encode("ioannis:testing".getBytes());
-		String encodedpassword = encodeHash("ioannis:testing");
+		encoding = encoder.encode("ioannis:root".getBytes());
+		String encodedpassword = encodeHash("ioannis:root");
 		System.out.println(decodeHash(encodedpassword));
-		System.out.println("ioannis:testing".hashCode());
+		System.out.println("ioannis:root".hashCode());
 		database_setup();
 		populate_variables();
 		System.out.println();
