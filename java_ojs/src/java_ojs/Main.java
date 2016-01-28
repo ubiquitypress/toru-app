@@ -311,6 +311,18 @@ public class Main {
 					file_prep.executeUpdate();
 				}
 			}
+			Set<Long> journal_keys = journal_storage.keySet();
+			for (long key : journal_keys) {
+				Journal current_journal = journal_storage.get(key);
+				PreparedStatement journal_prep = c.prepareStatement(journal_insert_or_replace_statement);
+				journal_prep.setInt(1, (int) (long) current_journal.getId());
+				journal_prep.setString(2, current_journal.getPath());
+				journal_prep.setFloat(3, current_journal.getSeq());
+				journal_prep.setString(4, current_journal.getPrimary_locale());
+				journal_prep.setInt(5, current_journal.getEnabled());
+				journal_prep.executeUpdate();
+			}
+			int journal_issue_count = 0;
 			Set<Long> issue_keys = issue_storage.keySet();
 			for (long key : issue_keys) {
 				Issue save_issue = issue_storage.get(key);
@@ -334,6 +346,13 @@ public class Main {
 				issue_prep.setInt(12, save_issue.getCurrent());
 
 				issue_prep.executeUpdate();
+				Journal issue_journal = save_issue.getJournal();
+				PreparedStatement issue_journal_prep = c.prepareStatement(issue_journal_insert_or_replace_statement);
+				issue_journal_prep.setInt(1, journal_issue_count);
+				issue_journal_prep.setInt(2, (int) (long) issue_journal.getId());
+				issue_journal_prep.setInt(3, (int) (long) save_issue.getId());
+				issue_journal_prep.executeUpdate();
+				journal_issue_count++;
 				int i = 1;
 				int j = 1;
 				for (long art_key : article_keys) {
@@ -410,6 +429,8 @@ public class Main {
 		author_primary_storage = new HashMap<Long, HashMap<Long, Boolean>>();
 		metadata_storage = new HashMap<Long, Metadata>();
 		journal_storage = new HashMap<Long, Journal>();
+	//	Journal test_journal = new Journal(1, "up", (float) 2.0, "en_US", 0);
+		//journal_storage.put((long)1, test_journal);
 		try {
 			ResultSet rs = c.createStatement().executeQuery("SELECT * FROM API WHERE URL=" + "'api'" + ";");
 			while (rs.next()) {
@@ -462,15 +483,19 @@ public class Main {
 				float seq = rs.getFloat("seq");
 				String primary_locale = rs.getString("primary_locale");
 				int enabled = rs.getInt("enabled");
-				
+
 				Journal journal = null;
-				journal =new Journal(id,path, seq, primary_locale, enabled);
+				journal = new Journal(id, path, seq, primary_locale, enabled);
 
 				// JOptionPane.showMessageDialog(null, "Deleted");
 
 				journal_storage.put(id, journal);
+
+				System.out.println(journal_storage);
 				journal_id = id;
 			}
+
+			System.out.println(journal_storage);
 			rs.close();
 			rs = c.createStatement().executeQuery("SELECT * FROM ISSUE ORDER BY id ASC;");
 			while (rs.next()) {
@@ -655,85 +680,87 @@ public class Main {
 
 		System.out.println("Done.");
 	}
-public static boolean status_online(){
-	try {
-		Socket sock = new Socket();
-		InetSocketAddress addr = new InetSocketAddress("www.google.com", 80);
-		sock.setSoTimeout(500);
-		sock.connect(addr, 3000);
-		sock.close();
-		return true;
 
-	}catch (Exception e) {
-		return false;
+	public static boolean status_online() {
+		try {
+			Socket sock = new Socket();
+			InetSocketAddress addr = new InetSocketAddress("www.google.com", 80);
+			sock.setSoTimeout(500);
+			sock.connect(addr, 3000);
+			sock.close();
+			return true;
+
+		} catch (Exception e) {
+			return false;
+		}
 	}
-}
+
 	public static Long get_remote_id(String type) throws IllegalStateException, IOException {
-		
+
 		long latest = 1;
 		boolean status = status_online();
-System.out.println(status);
-		if (!status){
+		System.out.println(status);
+		if (!status) {
 			return latest;
 		}
-		if (type.compareTo("article")==0){
+		if (type.compareTo("article") == 0) {
 			latest = articles_id;
-		}else if (type.compareTo("issue")==0){
+		} else if (type.compareTo("issue") == 0) {
 			latest = i_id;
-		}else if (type.compareTo("journal")==0){
+		} else if (type.compareTo("journal") == 0) {
 			latest = journal_id;
-		}else{
+		} else {
 			latest = 1;
 		}
-		
-		try{
-		HttpGet httpGet = new HttpGet(String.format("http://127.0.0.1:8000/get/latest/%s/?format=json", type));
-		httpGet.addHeader("Authorization", "Basic " + encoding);
-		httpGet.setHeader("Accept", "application/json");
-		httpGet.addHeader("Content-type", "application/json");
 
-		HttpResponse response = null;
 		try {
-			response = httpClient.execute(httpGet);
-		} catch (ClientProtocolException e2) {
-			// TODO Auto-generated catch block
-			e2.printStackTrace();
-		} catch (IOException e2) {
-			// TODO Auto-generated catch block
-			e2.printStackTrace();
-		}
-		JsonFactory jsonf = new JsonFactory();
-		InputStream result = response.getEntity().getContent();
-		org.json.simple.parser.JSONParser jsonParser = new JSONParser();
-		boolean exists = true;
-		JSONObject latest_json = new JSONObject();
-		try {
-			JSONObject latest_obj = (JSONObject) jsonParser.parse(IOUtils.toString(result));
-			String detail = (String) latest_obj.get("detail");
-			System.out.println(latest_obj);
-			if (detail != null) {
-				exists = false;
-			} else {
-				JSONArray results = (JSONArray) latest_obj.get("results");
-				System.out.println(latest_obj);
-				System.out.println(results.get(0));
-				latest_json = (JSONObject) results.get(0);
-				latest = (long) latest_json.get("id");
-				System.out.println(latest);
+			HttpGet httpGet = new HttpGet(String.format("http://127.0.0.1:8000/get/latest/%s/?format=json", type));
+			httpGet.addHeader("Authorization", "Basic " + encoding);
+			httpGet.setHeader("Accept", "application/json");
+			httpGet.addHeader("Content-type", "application/json");
+
+			HttpResponse response = null;
+			try {
+				response = httpClient.execute(httpGet);
+			} catch (ClientProtocolException e2) {
+				// TODO Auto-generated catch block
+				e2.printStackTrace();
+			} catch (IOException e2) {
+				// TODO Auto-generated catch block
+				e2.printStackTrace();
 			}
-		} catch (ParseException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			JsonFactory jsonf = new JsonFactory();
+			InputStream result = response.getEntity().getContent();
+			org.json.simple.parser.JSONParser jsonParser = new JSONParser();
+			boolean exists = true;
+			JSONObject latest_json = new JSONObject();
+			try {
+				JSONObject latest_obj = (JSONObject) jsonParser.parse(IOUtils.toString(result));
+				String detail = (String) latest_obj.get("detail");
+				System.out.println(latest_obj);
+				if (detail != null) {
+					exists = false;
+				} else {
+					JSONArray results = (JSONArray) latest_obj.get("results");
+					System.out.println(latest_obj);
+					System.out.println(results.get(0));
+					latest_json = (JSONObject) results.get(0);
+					latest = (long) latest_json.get("id");
+					System.out.println(latest);
+				}
+			} catch (ParseException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			System.out.println(latest);
+		} catch (ConnectException e) {
+			throw e;
 		}
-		System.out.println(latest);
-	}catch(ConnectException e){
-		throw e;
-	}
 		return latest;
 	}
 
 	public static void latest_ids() throws IllegalStateException, IOException {
-		
+
 		long remote_issue_id = 0;
 		long remote_article_id = 0;
 		long remote_journal_id = 0;
@@ -1553,7 +1580,7 @@ System.out.println(status);
 
 								try {
 									Issue updated_issue = update_issue_local(current_issue, encoding);
-									
+
 									issue_storage.put(issue_id, updated_issue);
 									System.out.println(updated_issue);
 
@@ -1562,14 +1589,12 @@ System.out.println(status);
 									e1.printStackTrace();
 								}
 							}
-							
-							
+
 						}
 						issues.repaint();
 						Set<Long> update_issue_keys = issue_storage.keySet();
 						ArrayList<List<Object>> rowData = new ArrayList<List<Object>>();
 						Object[][] rows = new Object[update_issue_keys.size()][6];
-						
 
 						int i = 0;
 						for (long id : update_issue_keys) {
@@ -1579,15 +1604,16 @@ System.out.println(status);
 
 							Object[] row = { row_issue.getId(), row_issue.getShow_title(), row_issue.getShow_volume(),
 									row_issue.getShow_number(), row_issue.getShow_year(),
-									sdf.format(row_issue.getDate_accepted()), sdf.format(row_issue.getDate_published()), "View",
-									"Edit", "Delete" };
+									sdf.format(row_issue.getDate_accepted()), sdf.format(row_issue.getDate_published()),
+									"View", "Edit", "Delete" };
 							rows[i] = row;
-							((DefaultTableModel)issues_table.getModel()).removeRow(i);
-							((DefaultTableModel)issues_table.getModel()).insertRow(0, row);
+							((DefaultTableModel) issues_table.getModel()).removeRow(i);
+							((DefaultTableModel) issues_table.getModel()).insertRow(0, row);
 							i++;
-							
+
 						}
-						((DefaultTableModel)issues_table.getModel()).fireTableRowsUpdated(0, update_issue_keys.size()-1);
+						((DefaultTableModel) issues_table.getModel()).fireTableRowsUpdated(0,
+								update_issue_keys.size() - 1);
 						issues_table.repaint();
 						issues.getContentPane().repaint();
 						issues.repaint();
@@ -5709,14 +5735,14 @@ System.out.println(status);
 	}
 
 	public void update_issue_intersect(Issue issue, String credentials) throws IllegalStateException, IOException {
-		
+
 		boolean status = status_online();
-		if (!status){
+		if (!status) {
 			return;
 		}
 		JSONObject obj = IssueToJSON(issue);
 		HttpGet issue_exists = new HttpGet(String.format("http://127.0.0.1:8000/issues/%s/", issue.getId()));
-	
+
 		issue_exists.addHeader("Authorization", "Basic " + credentials);
 		issue_exists.setHeader("Accept", "application/json");
 		issue_exists.addHeader("Content-type", "application/json");
@@ -5731,8 +5757,8 @@ System.out.println(status);
 			// TODO Auto-generated catch block
 			e2.printStackTrace();
 		}
-		boolean issue_created=false;
-		if (response.getStatusLine().getStatusCode()==200){
+		boolean issue_created = false;
+		if (response.getStatusLine().getStatusCode() == 200) {
 			issue_created = true;
 		}
 		try {
@@ -5742,31 +5768,31 @@ System.out.println(status);
 			// TODO Auto-generated catch block
 			exc.printStackTrace();
 		}
-		if (issue_created){
-		HttpPut httpPut = new HttpPut(String.format("http://127.0.0.1:8000/issues/%s/", issue.getId()));
-		httpPut.setEntity(new StringEntity(obj.toJSONString()));
-		httpPut.addHeader("Authorization", "Basic " + credentials);
-		httpPut.setHeader("Accept", "application/json");
-		httpPut.addHeader("Content-type", "application/json");
+		if (issue_created) {
+			HttpPut httpPut = new HttpPut(String.format("http://127.0.0.1:8000/issues/%s/", issue.getId()));
+			httpPut.setEntity(new StringEntity(obj.toJSONString()));
+			httpPut.addHeader("Authorization", "Basic " + credentials);
+			httpPut.setHeader("Accept", "application/json");
+			httpPut.addHeader("Content-type", "application/json");
 
-		response = null;
-		try {
-			response = httpClient.execute(httpPut);
-		} catch (ClientProtocolException e2) {
-			// TODO Auto-generated catch block
-			e2.printStackTrace();
-		} catch (IOException e2) {
-			// TODO Auto-generated catch block
-			e2.printStackTrace();
-		}
-		try {
-			InputStream is = response.getEntity().getContent();
-			is.close();
-		} catch (IOException exc) {
-			// TODO Auto-generated catch block
-			exc.printStackTrace();
-		}
-		}else{
+			response = null;
+			try {
+				response = httpClient.execute(httpPut);
+			} catch (ClientProtocolException e2) {
+				// TODO Auto-generated catch block
+				e2.printStackTrace();
+			} catch (IOException e2) {
+				// TODO Auto-generated catch block
+				e2.printStackTrace();
+			}
+			try {
+				InputStream is = response.getEntity().getContent();
+				is.close();
+			} catch (IOException exc) {
+				// TODO Auto-generated catch block
+				exc.printStackTrace();
+			}
+		} else {
 			HttpPost createIssue = new HttpPost("http://127.0.0.1:8000/issues/");
 			createIssue.setEntity(new StringEntity(obj.toJSONString()));
 			createIssue.addHeader("Authorization", "Basic " + credentials);
@@ -5900,10 +5926,10 @@ System.out.println(status);
 
 	public Issue update_issue_local(Issue issue, String credentials) throws IllegalStateException, IOException {
 		boolean status = status_online();
-		if (!status){
+		if (!status) {
 			return issue;
 		}
-		HttpGet httpGet = new HttpGet(String.format("http://127.0.0.1:8000/issues/%s/?format=json",issue.getId()));
+		HttpGet httpGet = new HttpGet(String.format("http://127.0.0.1:8000/issues/%s/?format=json", issue.getId()));
 		httpGet.addHeader("Authorization", "Basic " + credentials);
 		httpGet.setHeader("Accept", "application/json");
 		httpGet.addHeader("Content-type", "application/json");
@@ -6081,8 +6107,6 @@ System.out.println(status);
 
 		httpClient.getCredentialsProvider().setCredentials(new AuthScope(AuthScope.ANY_HOST, AuthScope.ANY_PORT),
 				new UsernamePasswordCredentials("ioannis", "root"));
-
-		
 
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
 
@@ -6264,7 +6288,7 @@ System.out.println(status);
 
 		// file copy to use for file upload
 		// file_copy(1,"src/lib/db_xxs.png");
-	
+
 		new Main();
 	}
 }

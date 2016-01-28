@@ -18,6 +18,11 @@ public class Journal {
 	public float getSeq() {
 		return seq;
 	}
+	@Override
+	public String toString() {
+		return "Journal [id=" + id + ", path=" + path + ", seq=" + seq + ", primary_locale=" + primary_locale
+				+ ", enabled=" + enabled + "]";
+	}
 	public void setSeq(float seq) {
 		this.seq = seq;
 	}
