@@ -161,7 +161,7 @@ import models.Section;
 
 public class Main {
 	JFrame login, api, issues, settings;
-	private JTextField access_key, api_url, username;
+	private JTextField access_key, username;
 	private JXTable issues_table;
 	private int delay = 2000; // milliseconds
 	private static String source_api = "";
@@ -199,7 +199,7 @@ public class Main {
 	private String delete_issue_statement = "DELETE FROM ISSUE WHERE id=?";
 	int width = 800;
 	private int height = 600;
-	private Boolean logged_in = false;
+	private Boolean logged_in = true;
 	private static long i_id = 0;
 	private static long journal_id = 0;
 	private static long articles_id = 0;
@@ -263,6 +263,7 @@ public class Main {
 			for (String key : access_settings) {
 				json_settings.put(key, app_settings.get(key));
 			}
+			System.out.println(json_settings.toJSONString());
 			StringWriter out_app = new StringWriter();
 			try {
 				json_settings.writeJSONString(out_app);
@@ -990,7 +991,7 @@ public class Main {
 						logged_in = true;
 						login.setVisible(false);
 						login.dispose();
-						if (source_api.compareTo("") == 0 && source_access_key.compareTo("") == 0) {
+						if (source_access_key.compareTo("") == 0) {
 							api(false);
 						} else {
 							System.out.println(returning_view);
@@ -1017,7 +1018,7 @@ public class Main {
 					encoding = encoder.encode(String.format("%s:%s", user, pass).getBytes());
 					if (pass.compareTo("root") == 0 && user.compareTo("user") == 0) {
 						login.setVisible(false);
-						if (source_api.compareTo("") == 0 && source_access_key.compareTo("") == 0) {
+						if (source_access_key.compareTo("") == 0) {
 							api(false);
 						} else {
 							System.out.println(returning_view);
@@ -1086,7 +1087,7 @@ public class Main {
 			new Timer(delay, taskPerformer1).start();
 			login.setVisible(true);// making the frame visible
 		} else {
-			if (source_api.compareTo("") == 0 && source_access_key.compareTo("") == 0) {
+			if (source_access_key.compareTo("") == 0) {
 				api(false);
 			} else {
 				System.out.println(returning_view);
@@ -1422,17 +1423,7 @@ public class Main {
 
 				lblNewLabel.setBounds((width_small / 2) - 34, 15, 95, 25);
 				api.getContentPane().add(lblNewLabel);
-				api_url = new JTextField();
-				api_url.setBounds(100, 218, width_small - 200, 26);
-				api_url.setText(source_api);
-				api.getContentPane().add(api_url);
-				api_url.setColumns(10);
-
-				JLabel lblApi = new JLabel("API URL");
-				lblApi.setForeground(new Color(245, 255, 250));
-				lblApi.setHorizontalAlignment(SwingConstants.CENTER);
-				lblApi.setBounds(74, 200, width_small - 151, 16);
-				api.getContentPane().add(lblApi);
+							
 				JPanel title_background = new JPanel();
 				title_background.setBackground(new Color(0, 0, 0));
 				title_background.setBounds(-17, 0, width_small + 33, 54);
@@ -1440,10 +1431,10 @@ public class Main {
 
 				access_key = new JTextField();
 				access_key.setColumns(10);
-				access_key.setText(source_access_key);
+				access_key.setText("");
 				access_key.setBounds(100, 270, width_small - 200, 26);
 				api.getContentPane().add(access_key);
-				JLabel lblAccessKey = new JLabel("Access Key");
+				JLabel lblAccessKey = new JLabel("Enter access key for future offline and online access:");
 				lblAccessKey.setHorizontalAlignment(SwingConstants.CENTER);
 				lblAccessKey.setForeground(new Color(245, 255, 250));
 				lblAccessKey.setBounds(80, 250, width_small - 161, 16);
@@ -1456,38 +1447,30 @@ public class Main {
 				Action actionSubmit = new AbstractAction() {
 					@Override
 					public void actionPerformed(ActionEvent e) {
-						String url = api_url.getText();
 						String key = access_key.getText();
-						if (key.compareTo("enter") == 0 && url.compareTo("api") == 0) {
+						app_settings.put("key", encodeHash(key));
+						System.out.println(app_settings);
 							api.setVisible(false);
-							source_api = url;
 							source_access_key = key;
 							database_save();
 							if (!edit) {
 								dashboard();
 							}
-						} else {
-							JOptionPane.showMessageDialog(null, "Wrong access key or API url");
-						}
+						
 					}
 				};
 				access_key.addActionListener(actionSubmit);
-				api_url.addActionListener(actionSubmit);
 				btnSubmit.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
-						String url = api_url.getText();
 						String key = access_key.getText();
-						if (key.compareTo("enter") == 0 && url.compareTo("api") == 0) {
 							api.setVisible(false);
 							dashboard();
-							source_api = url;
+							app_settings.put("key", encodeHash(key));
+
+							System.out.println(app_settings);
 							source_access_key = key;
 
-						} else {
-							JOptionPane.showMessageDialog(null, "Wrong access key or API url");
-						}
-
-					}
+										}
 				});
 				if (height_small - 150 > 300) {
 					btnSubmit.setBounds(((width_small / 3) * 2) / 2, height_small - 150, width_small / 3, 29);
@@ -6404,7 +6387,7 @@ public class Main {
 		section_db_id = 2;
 		section_storage.put((long) 1, new Section((long) 1, "Section 1"));
 		section_storage.put((long) 2, new Section((long) 2, "Section 2"));
-		login("dashboard");
+		dashboard();
 	}
 
 	public void add_author() {
