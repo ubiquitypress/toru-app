@@ -6557,14 +6557,16 @@ public class Main {
 			e.printStackTrace();
 		}
 	}
-	public static int generateHash(String userpass){
-		return (userpass.hashCode())+64;
-	}
-	public static int originalHash(String encodedpassword){
+
+	public static int decodeHash(String encodedpassword){
 		int restore_hash = Integer.parseInt(StringUtils.newStringUtf8(Base64.decodeBase64(encodedpassword)));
 		return (restore_hash-64);
 	}
-	
+	public static String encodeHash(String userpass){
+		BASE64Encoder encoder = new BASE64Encoder();
+		return encoder.encode(Integer.toString((userpass.hashCode())+64).getBytes());
+
+	}
 	public String decodeSetting(String value) {
 		return StringUtils.newStringUtf8(Base64.decodeBase64(value));
 	}
@@ -6572,8 +6574,8 @@ public class Main {
 	public static void main(String[] args) throws ParseException, java.text.ParseException, IOException {
 		BASE64Encoder encoder = new BASE64Encoder();
 		encoding = encoder.encode("ioannis:testing".getBytes());
-		String encodedpassword = encoder.encode(Integer.toString(generateHash("ioannis:testing")).getBytes());
-		System.out.println(originalHash(encodedpassword));
+		String encodedpassword = encodeHash("ioannis:testing");
+		System.out.println(decodeHash(encodedpassword));
 		System.out.println("ioannis:testing".hashCode());
 		database_setup();
 		populate_variables();
