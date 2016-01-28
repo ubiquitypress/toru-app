@@ -1,10 +1,13 @@
 package java_ojs;
 
 import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.codec.binary.StringUtils;
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpHost;
 import org.apache.http.HttpResponse;
+
+import sun.misc.BASE64Decoder;
 import sun.misc.BASE64Encoder;
 
 import org.apache.commons.io.IOUtils;
@@ -168,7 +171,7 @@ public class Main {
 	private static HashMap<Long, Long> list_issues;
 	private static HashMap<Long, JFrame> issue_screens;
 	private static HashMap<Long, Issue> issue_storage;
-
+	private static HashMap<String, String> app_settings;
 	private static HashMap<Long, Metadata> metadata_storage;
 	private static HashMap<Long, Section> section_storage;
 	private static HashMap<Long, Journal> journal_storage;
@@ -196,7 +199,7 @@ public class Main {
 	private String delete_issue_statement = "DELETE FROM ISSUE WHERE id=?";
 	int width = 800;
 	private int height = 600;
-	private Boolean logged_in = true;
+	private Boolean logged_in = false;
 	private static long i_id = 0;
 	private static long journal_id = 0;
 	private static long articles_id = 0;
@@ -429,8 +432,8 @@ public class Main {
 		author_primary_storage = new HashMap<Long, HashMap<Long, Boolean>>();
 		metadata_storage = new HashMap<Long, Metadata>();
 		journal_storage = new HashMap<Long, Journal>();
-	//	Journal test_journal = new Journal(1, "up", (float) 2.0, "en_US", 0);
-		//journal_storage.put((long)1, test_journal);
+		// Journal test_journal = new Journal(1, "up", (float) 2.0, "en_US", 0);
+		// journal_storage.put((long)1, test_journal);
 		try {
 			ResultSet rs = c.createStatement().executeQuery("SELECT * FROM API WHERE URL=" + "'api'" + ";");
 			while (rs.next()) {
@@ -914,7 +917,7 @@ public class Main {
 				public void actionPerformed(ActionEvent e) {
 					String user = username.getText();
 					String pass = String.valueOf(passwordField.getPassword());
-					if (pass.compareTo("root") == 0 && user.compareTo("user") == 0) {
+					if (pass.compareTo("root") == 0 && user.compareTo("ioannis") == 0) {
 						logged_in = true;
 						login.setVisible(false);
 						login.dispose();
@@ -941,6 +944,8 @@ public class Main {
 				public void actionPerformed(ActionEvent e) {
 					String user = username.getText();
 					String pass = String.valueOf(passwordField.getPassword());
+					BASE64Encoder encoder = new BASE64Encoder();
+					encoding = encoder.encode(String.format("%s:%s",user,pass).getBytes());
 					if (pass.compareTo("root") == 0 && user.compareTo("user") == 0) {
 						login.setVisible(false);
 						if (source_api.compareTo("") == 0 && source_access_key.compareTo("") == 0) {
@@ -5873,7 +5878,7 @@ public class Main {
 		System.out.println(exists);
 		System.out.println(setting_pk);
 		if (setting_json.isEmpty()) {
-			setting_json = IssueSettingToJSON(issue, "title", issue.getTitle(), "string", "en_US");
+			setting_json = SettingToJSON("issues", issue.getId(), "title", issue.getTitle(), "string", "en_US");
 		}
 		System.out.println(setting_json);
 		if (!exists) {
@@ -5922,6 +5927,201 @@ public class Main {
 		 * block e2.printStackTrace(); } catch (IOException e2) { // TODO
 		 * Auto-generated catch block e2.printStackTrace(); }
 		 */
+	}
+
+	public void update_articles_intersect(Issue issue, String credentials) throws IllegalStateException, IOException {
+
+		boolean status = status_online();
+		if (!status) {
+			return;
+		}
+		HashMap<Long, Article> articles = issue.getArticles_list();
+		Set<Long> article_keys = articles.keySet();
+		for (long key : article_keys) {
+			Article current_article = articles.get(key);
+			JSONObject obj = ArticleToJSON(current_article,issue.getJournal());
+			HttpGet issue_exists = new HttpGet(String.format("http://127.0.0.1:8000/issues/%s/", issue.getId()));
+
+			issue_exists.addHeader("Authorization", "Basic " + credentials);
+			issue_exists.setHeader("Accept", "application/json");
+			issue_exists.addHeader("Content-type", "application/json");
+
+			HttpResponse response = null;
+			try {
+				response = httpClient.execute(issue_exists);
+			} catch (ClientProtocolException e2) {
+				// TODO Auto-generated catch block
+				e2.printStackTrace();
+			} catch (IOException e2) {
+				// TODO Auto-generated catch block
+				e2.printStackTrace();
+			}
+			boolean issue_created = false;
+			if (response.getStatusLine().getStatusCode() == 200) {
+				issue_created = true;
+			}
+			try {
+				InputStream is = response.getEntity().getContent();
+				is.close();
+			} catch (IOException exc) {
+				// TODO Auto-generated catch block
+				exc.printStackTrace();
+			}
+			if (issue_created) {
+				HttpPut httpPut = new HttpPut(String.format("http://127.0.0.1:8000/issues/%s/", issue.getId()));
+				httpPut.setEntity(new StringEntity(obj.toJSONString()));
+				httpPut.addHeader("Authorization", "Basic " + credentials);
+				httpPut.setHeader("Accept", "application/json");
+				httpPut.addHeader("Content-type", "application/json");
+
+				response = null;
+				try {
+					response = httpClient.execute(httpPut);
+				} catch (ClientProtocolException e2) {
+					// TODO Auto-generated catch block
+					e2.printStackTrace();
+				} catch (IOException e2) {
+					// TODO Auto-generated catch block
+					e2.printStackTrace();
+				}
+				try {
+					InputStream is = response.getEntity().getContent();
+					is.close();
+				} catch (IOException exc) {
+					// TODO Auto-generated catch block
+					exc.printStackTrace();
+				}
+			} else {
+				HttpPost createIssue = new HttpPost("http://127.0.0.1:8000/issues/");
+				createIssue.setEntity(new StringEntity(obj.toJSONString()));
+				createIssue.addHeader("Authorization", "Basic " + credentials);
+				createIssue.setHeader("Accept", "application/json");
+				createIssue.addHeader("Content-type", "application/json");
+
+				response = null;
+				try {
+					response = httpClient.execute(createIssue);
+				} catch (ClientProtocolException e2) {
+					// TODO Auto-generated catch block
+					e2.printStackTrace();
+				} catch (IOException e2) {
+					// TODO Auto-generated catch block
+					e2.printStackTrace();
+				}
+				try {
+					InputStream is = response.getEntity().getContent();
+					is.close();
+				} catch (IOException exc) {
+					// TODO Auto-generated catch block
+					exc.printStackTrace();
+				}
+			}
+			System.out.println(response.toString());
+			HttpGet settingCheck = new HttpGet(
+					String.format("http://127.0.0.1:8000/get/setting/title/issue/%s/?format=json", issue.getId()));
+			// settingCheck.setEntity(new StringEntity(obj.toJSONString()));
+			settingCheck.addHeader("Authorization", "Basic " + credentials);
+			settingCheck.setHeader("Accept", "application/json");
+			settingCheck.addHeader("Content-type", "application/json");
+
+			response = null;
+			try {
+				response = httpClient.execute(settingCheck);
+			} catch (ClientProtocolException e2) {
+				// TODO Auto-generated catch block
+				e2.printStackTrace();
+			} catch (IOException e2) {
+				// TODO Auto-generated catch block
+				e2.printStackTrace();
+			}
+			JsonFactory jsonf = new JsonFactory();
+			InputStream result = response.getEntity().getContent();
+			Long setting_pk = (long) -1;
+			org.json.simple.parser.JSONParser jsonParser = new JSONParser();
+			boolean exists = true;
+			JSONObject setting_json = new JSONObject();
+			try {
+				JSONObject setting = (JSONObject) jsonParser.parse(IOUtils.toString(result));
+				System.out.println(setting.get("count"));
+				System.out.println(setting);
+				Long count = (Long) setting.get("count");
+				if (count == 0) {
+					exists = false;
+				} else {
+					JSONArray results = (JSONArray) setting.get("results");
+					System.out.println(results.get(0));
+					setting_json = (JSONObject) results.get(0);
+					System.out.println(setting_json.get("pk"));
+					System.out.println(setting_json.get("setting_name"));
+					System.out.println(setting_json.get("setting_value"));
+					setting_pk = (long) setting_json.get("pk");
+					setting_json.put("setting_value", issue.getTitle());
+				}
+			} catch (ParseException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			try {
+				InputStream is = response.getEntity().getContent();
+				is.close();
+			} catch (IOException exc) {
+				// TODO Auto-generated catch block
+				exc.printStackTrace();
+			}
+			System.out.println(setting_json.isEmpty());
+			System.out.println(exists);
+			System.out.println(setting_pk);
+			if (setting_json.isEmpty()) {
+				setting_json = SettingToJSON("issues", issue.getId(), "title", issue.getTitle(), "string", "en_US");
+			}
+			System.out.println(setting_json);
+			if (!exists) {
+				HttpPost httpPost = new HttpPost("http://127.0.0.1:8000/issue-settings/");
+				httpPost.setEntity(new StringEntity(setting_json.toJSONString()));
+				httpPost.addHeader("Authorization", "Basic " + credentials);
+				httpPost.setHeader("Accept", "application/json");
+				httpPost.addHeader("Content-type", "application/json");
+				try {
+					response = httpClient.execute(httpPost);
+				} catch (ClientProtocolException e2) {
+					// TODO Auto-generated catch block
+					e2.printStackTrace();
+				} catch (IOException e2) {
+					// TODO Auto-generated catch block
+					e2.printStackTrace();
+				}
+			} else {
+				setting_json.put("setting_value", "updated-title");
+				HttpPut httpPost = new HttpPut(
+						String.format("http://127.0.0.1:8000/update/issue/setting/%s/", setting_json.get("pk")));
+				httpPost.setEntity(new StringEntity(setting_json.toJSONString()));
+				httpPost.addHeader("Authorization", "Basic " + credentials);
+				httpPost.setHeader("Accept", "application/json");
+				httpPost.addHeader("Content-type", "application/json");
+				try {
+					response = httpClient.execute(httpPost);
+				} catch (ClientProtocolException e2) {
+					// TODO Auto-generated catch block
+					e2.printStackTrace();
+				} catch (IOException e2) {
+					// TODO Auto-generated catch block
+					e2.printStackTrace();
+				}
+			}
+			try {
+				InputStream is = response.getEntity().getContent();
+				is.close();
+			} catch (IOException exc) {
+				// TODO Auto-generated catch block
+				exc.printStackTrace();
+			}
+			/*
+			 * response = null; try { response = httpClient.execute(httpPost); }
+			 * catch (ClientProtocolException e2) { // TODO Auto-generated catch
+			 * block e2.printStackTrace(); } catch (IOException e2) { // TODO
+			 * Auto-generated catch block e2.printStackTrace(); }
+			 */
+		}
 	}
 
 	public Issue update_issue_local(Issue issue, String credentials) throws IllegalStateException, IOException {
@@ -6019,9 +6219,9 @@ public class Main {
 		return issue;
 	}
 
-	public JSONObject IssueSettingToJSON(Issue issue, String name, String value, String type, String locale) {
+	public JSONObject SettingToJSON(String model, long id, String name, String value, String type, String locale) {
 		JSONObject obj = new JSONObject();
-		obj.put("issue", String.format("%s/issues/%s/", base_url, issue.getId()));
+		obj.put("issue", String.format("%s/%s/%s/", base_url, model, id));
 		System.out.println(obj.get("issue"));
 		obj.put("locale", locale);
 		obj.put("setting_name", name);
@@ -6060,6 +6260,15 @@ public class Main {
 		obj.put("current", issue.getCurrent());
 		obj.put("published", issue.getPublished());
 		obj.put("access_status", issue.getAccess_status());
+		return obj;
+	}
+
+	public JSONObject ArticleToJSON(Article article, Journal journal) {
+		JSONObject obj = new JSONObject();
+		obj.put("id", article.getId());
+		obj.put("journal", String.format("http://localhost:8000/journals/%s/", journal.getId()));
+		obj.put("section_id", article.getSection_id());
+		
 		return obj;
 	}
 
@@ -6126,7 +6335,7 @@ public class Main {
 		section_db_id = 2;
 		section_storage.put((long) 1, new Section((long) 1, "Section 1"));
 		section_storage.put((long) 2, new Section((long) 2, "Section 2"));
-		dashboard();
+		login("dashboard");
 	}
 
 	public void add_author() {
@@ -6279,12 +6488,15 @@ public class Main {
 			e.printStackTrace();
 		}
 	}
-
+	public String decodeSetting(String value){
+		return StringUtils.newStringUtf8(Base64.decodeBase64(value));
+	}
 	public static void main(String[] args) throws ParseException, java.text.ParseException, IOException {
 		BASE64Encoder encoder = new BASE64Encoder();
 		encoding = encoder.encode("ioannis:root".getBytes());
 		database_setup();
 		populate_variables();
+		System.out.println();
 
 		// file copy to use for file upload
 		// file_copy(1,"src/lib/db_xxs.png");
