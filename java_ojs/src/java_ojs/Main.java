@@ -171,6 +171,7 @@ public class Main {
 
 	private static HashMap<Long, Metadata> metadata_storage;
 	private static HashMap<Long, Section> section_storage;
+	private static HashMap<Long, Journal> journal_storage;
 	private static HashMap<Long, Author> author_storage;
 
 	private static HashMap<Long, HashMap<Long, Boolean>> author_primary_storage;
@@ -180,12 +181,14 @@ public class Main {
 	private static Connection c = null;
 	private static Statement stmt = null;
 	private String api_insert_or_replace_statement = "INSERT OR REPLACE INTO API(URL,ACCESS_KEY) VALUES (?,?)";
+	private String journal_insert_or_replace_statement = "INSERT OR REPLACE INTO JOURNAL(id,path,seq,primary_locale,enabled) VALUES (?,?,?,?,?)";
 	private String settings_insert_or_replace_statement = "INSERT OR REPLACE INTO SETTING(NAME,VALUE) VALUES (?,?)";
 	private String issue_insert_or_replace_statement = "INSERT OR REPLACE INTO ISSUE(id,title,volume,number,year,show_title,show_volume,show_number,show_year,date_published,date_accepted, published, current, access_status) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
 	private String section_insert_or_replace_statement = "INSERT OR REPLACE INTO SECTION(id,title) VALUES (?,?)";
 	private String author_insert_or_replace_statement = "INSERT OR REPLACE INTO AUTHOR(id,first_name,middle_name,last_name,email,affiliation,bio,orcid,department,country) VALUES (?,?,?,?,?,?,?,?,?,?)";
 	private String article_insert_or_replace_statement = "INSERT OR REPLACE INTO ARTICLE(id,title,section_id,pages,abstract,date_published,date_accepted) VALUES (?,?,?,?,?,?,?)";
 	private String article_author_insert_or_replace_statement = "INSERT OR REPLACE INTO ARTICLE_AUTHOR(id,article_id,author_id,primary_author) VALUES (?,?,?,?)";
+	private String issue_journal_insert_or_replace_statement = "INSERT OR REPLACE INTO ISSUE_JOURNAL(id,journal_id,issue_id) VALUES (?,?,?)";
 	private String issue_article_insert_or_replace_statement = "INSERT OR REPLACE INTO ISSUE_ARTICLE(id,article_id,issue_id) VALUES (?,?,?)";
 	private String file_insert_or_replace_statement = "INSERT OR REPLACE INTO FILE(id,article_id,path) VALUES (?,?,?)";
 	private String metadata_insert_or_replace_statement = "INSERT OR REPLACE INTO METADATA(id,article_id,competing_interests,funding) VALUES (?,?,?,?)";
@@ -225,6 +228,7 @@ public class Main {
 			stmt.executeUpdate("DELETE FROM ARTICLE");
 			stmt.executeUpdate("DELETE FROM SECTION");
 			stmt.executeUpdate("DELETE FROM ISSUE");
+			stmt.executeUpdate("DELETE FROM JOURNAL");
 			stmt.executeUpdate("DELETE FROM API");
 			stmt.executeUpdate("DELETE FROM FILE");
 			stmt.executeUpdate("DELETE FROM METADATA");
@@ -405,6 +409,7 @@ public class Main {
 		section_storage = new HashMap<Long, Section>();
 		author_primary_storage = new HashMap<Long, HashMap<Long, Boolean>>();
 		metadata_storage = new HashMap<Long, Metadata>();
+		journal_storage = new HashMap<Long, Journal>();
 		try {
 			ResultSet rs = c.createStatement().executeQuery("SELECT * FROM API WHERE URL=" + "'api'" + ";");
 			while (rs.next()) {
@@ -450,6 +455,23 @@ public class Main {
 
 			System.out.println("Loading Issue data....");
 			SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
+			rs = c.createStatement().executeQuery("SELECT * FROM JOURNAL ORDER BY id ASC;");
+			while (rs.next()) {
+				long id = rs.getInt("id");
+				String path = rs.getString("path");
+				float seq = rs.getFloat("seq");
+				String primary_locale = rs.getString("primary_locale");
+				int enabled = rs.getInt("enabled");
+				
+				Journal journal = null;
+				journal =new Journal(id,path, seq, primary_locale, enabled);
+
+				// JOptionPane.showMessageDialog(null, "Deleted");
+
+				journal_storage.put(id, journal);
+				journal_id = id;
+			}
+			rs.close();
 			rs = c.createStatement().executeQuery("SELECT * FROM ISSUE ORDER BY id ASC;");
 			while (rs.next()) {
 				long id = rs.getInt("id");
@@ -742,11 +764,18 @@ System.out.println(status);
 			String sql = "CREATE TABLE IF NOT EXISTS API" + "(URL CHAR(250) PRIMARY KEY NOT NULL,"
 					+ " ACCESS_KEY CHAR(100) NOT NULL)";
 			stmt.executeUpdate(sql);
+			sql = "CREATE TABLE IF NOT EXISTS JOURNAL" + "(id INTEGER PRIMARY KEY," + " path CHAR(32) UNIQUE,"
+					+ "seq REAL," + "primary_locale CHAR(5)," + "enabled INTEGER)";
+			stmt.executeUpdate(sql);
 			sql = "CREATE TABLE IF NOT EXISTS ISSUE" + "(id INTEGER PRIMARY KEY," + " title CHAR(500) NOT NULL,"
 					+ "volume INTEGER," + "number INTEGER," + "year INTEGER," + "published INTEGER,"
 					+ " show_title CHAR(500) NOT NULL," + "show_volume INTEGER," + "show_number INTEGER,"
 					+ "show_year INTEGER," + "access_status INTEGER," + "current INTEGER," + "date_published CHAR(50),"
 					+ "date_accepted CHAR(50)" + ")";
+			stmt.executeUpdate(sql);
+			sql = "CREATE TABLE IF NOT EXISTS ISSUE_JOURNAL" + "(id INTEGER PRIMARY KEY," + " journal_id INTEGER,"
+					+ " issue_id INTEGER," + "FOREIGN KEY (journal_id) REFERENCES JOURNAL(id),"
+					+ "FOREIGN KEY (issue_id) REFERENCES ISSUE(id)" + ")";
 			stmt.executeUpdate(sql);
 			sql = "CREATE TABLE IF NOT EXISTS SECTION" + "(id INTEGER PRIMARY KEY," + " title CHAR(250) NOT NULL)";
 			stmt.executeUpdate(sql);
@@ -5874,7 +5903,7 @@ System.out.println(status);
 		if (!status){
 			return issue;
 		}
-		HttpGet httpGet = new HttpGet("http://127.0.0.1:8000/issues/6987/?format=json");
+		HttpGet httpGet = new HttpGet(String.format("http://127.0.0.1:8000/issues/%s/?format=json",issue.getId()));
 		httpGet.addHeader("Authorization", "Basic " + credentials);
 		httpGet.setHeader("Accept", "application/json");
 		httpGet.addHeader("Content-type", "application/json");
