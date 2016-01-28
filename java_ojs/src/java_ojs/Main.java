@@ -72,6 +72,7 @@ import java.io.OutputStream;
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.Authenticator;
+import java.net.ConnectException;
 import java.net.HttpURLConnection;
 import java.net.InetSocketAddress;
 import java.net.MalformedURLException;
@@ -630,9 +631,37 @@ public class Main {
 
 		System.out.println("Done.");
 	}
+public static boolean status_online(){
+	try {
+		Socket sock = new Socket();
+		InetSocketAddress addr = new InetSocketAddress(base_url+"/heartbeat", 80);
+		sock.setSoTimeout(500);
+		sock.connect(addr, 3000);
+		sock.close();
+		return true;
 
+	}catch (Exception e) {
+		return false;
+	}
+}
 	public static Long get_remote_id(String type) throws IllegalStateException, IOException {
+		
 		long latest = 1;
+		boolean status = status_online();
+		if (!status){
+			return latest;
+		}
+		if (type.compareTo("article")==0){
+			latest = articles_id;
+		}else if (type.compareTo("issue")==0){
+			latest = i_id;
+		}else if (type.compareTo("journal")==0){
+			latest = journal_id;
+		}else{
+			latest = 1;
+		}
+		
+		try{
 		HttpGet httpGet = new HttpGet(String.format("http://127.0.0.1:8000/get/latest/%s/?format=json", type));
 		httpGet.addHeader("Authorization", "Basic " + encoding);
 		httpGet.setHeader("Accept", "application/json");
@@ -672,10 +701,14 @@ public class Main {
 			e.printStackTrace();
 		}
 		System.out.println(latest);
+	}catch(ConnectException e){
+		throw e;
+	}
 		return latest;
 	}
 
 	public static void latest_ids() throws IllegalStateException, IOException {
+		
 		long remote_issue_id = 0;
 		long remote_article_id = 0;
 		long remote_journal_id = 0;
@@ -899,7 +932,7 @@ public class Main {
 				public void actionPerformed(ActionEvent evt) {
 					try {
 						Socket sock = new Socket();
-						InetSocketAddress addr = new InetSocketAddress("www.google.com", 80);
+						InetSocketAddress addr = new InetSocketAddress(base_url, 80);
 						sock.setSoTimeout(500);
 						sock.connect(addr, 3000);
 						sock.close();
@@ -1194,7 +1227,7 @@ public class Main {
 					public void actionPerformed(ActionEvent evt) {
 						try {
 							Socket sock = new Socket();
-							InetSocketAddress addr = new InetSocketAddress("www.google.com", 80);
+							InetSocketAddress addr = new InetSocketAddress(base_url, 80);
 							sock.setSoTimeout(500);
 							sock.connect(addr, 3000);
 
@@ -1357,7 +1390,7 @@ public class Main {
 					public void actionPerformed(ActionEvent evt) {
 						try {
 							Socket sock = new Socket();
-							InetSocketAddress addr = new InetSocketAddress("www.google.com", 80);
+							InetSocketAddress addr = new InetSocketAddress(base_url, 80);
 							sock.setSoTimeout(500);
 							sock.connect(addr, 3000);
 
@@ -1493,8 +1526,30 @@ public class Main {
 									e1.printStackTrace();
 								}
 							}
-							issues.dispose();
-							dashboard();
+							Set<Long> update_issue_keys = issue_storage.keySet();
+							ArrayList<List<Object>> rowData = new ArrayList<List<Object>>();
+							Object[][] rows = new Object[update_issue_keys.size()][6];
+							int i = 0;
+							for (long id : update_issue_keys) {
+								((DefaultTableModel)issues_table.getModel()).removeRow(i);
+								i++;
+							}
+							i = 0;
+							for (long id : update_issue_keys) {
+								Issue row_issue = issue_storage.get(id);
+								issue_screens.put(id, new JFrame());
+								article_screens.put(id, new HashMap<Long, JFrame>());
+
+								Object[] row = { row_issue.getId(), row_issue.getShow_title(), row_issue.getShow_volume(),
+										row_issue.getShow_number(), row_issue.getShow_year(),
+										sdf.format(row_issue.getDate_accepted()), sdf.format(row_issue.getDate_published()), "View",
+										"Edit", "Delete" };
+								rows[i] = row;
+								i++;
+								((DefaultTableModel)issues_table.getModel()).addRow(row);
+								
+							}
+							issues.repaint();
 						}
 					}
 				});
@@ -1618,7 +1673,7 @@ public class Main {
 					public void actionPerformed(ActionEvent evt) {
 						try {
 							Socket sock = new Socket();
-							InetSocketAddress addr = new InetSocketAddress("www.google.com", 80);
+							InetSocketAddress addr = new InetSocketAddress(base_url, 80);
 							sock.setSoTimeout(500);
 							sock.connect(addr, 3000);
 
@@ -2758,7 +2813,7 @@ public class Main {
 					public void actionPerformed(ActionEvent evt) {
 						try {
 							Socket sock = new Socket();
-							InetSocketAddress addr = new InetSocketAddress("www.google.com", 80);
+							InetSocketAddress addr = new InetSocketAddress(base_url, 80);
 							sock.setSoTimeout(500);
 							sock.connect(addr, 3000);
 
@@ -3106,7 +3161,7 @@ public class Main {
 				 * ActionListener taskPerformer1 = new ActionListener() { public
 				 * void actionPerformed(ActionEvent evt) { try { Socket sock =
 				 * new Socket(); InetSocketAddress addr = new
-				 * InetSocketAddress("www.google.com", 80);
+				 * InetSocketAddress(base_url, 80);
 				 * sock.setSoTimeout(500); sock.connect(addr, 3000);
 				 * 
 				 * internetCheck.setBackground(Color.GREEN);
@@ -3786,7 +3841,7 @@ public class Main {
 				 * ActionListener taskPerformer1 = new ActionListener() { public
 				 * void actionPerformed(ActionEvent evt) { try { Socket sock =
 				 * new Socket(); InetSocketAddress addr = new
-				 * InetSocketAddress("www.google.com", 80);
+				 * InetSocketAddress(base_url, 80);
 				 * sock.setSoTimeout(500); sock.connect(addr, 3000);
 				 * 
 				 * internetCheck.setBackground(Color.GREEN);
@@ -4801,7 +4856,7 @@ public class Main {
 			 * ActionListener taskPerformer1 = new ActionListener() { public
 			 * void actionPerformed(ActionEvent evt) { try { Socket sock = new
 			 * Socket(); InetSocketAddress addr = new
-			 * InetSocketAddress("www.google.com", 80); sock.setSoTimeout(500);
+			 * InetSocketAddress(base_url, 80); sock.setSoTimeout(500);
 			 * sock.connect(addr, 3000);
 			 * 
 			 * internetCheck.setBackground(Color.GREEN);
@@ -5614,6 +5669,11 @@ public class Main {
 	}
 
 	public void update_issue_intersect(Issue issue, String credentials) throws IllegalStateException, IOException {
+		
+		boolean status = status_online();
+		if (!status){
+			return;
+		}
 		JSONObject obj = IssueToJSON(issue);
 		HttpGet issue_exists = new HttpGet(String.format("http://127.0.0.1:8000/issues/%s/", issue.getId()));
 	
@@ -5799,6 +5859,10 @@ public class Main {
 	}
 
 	public Issue update_issue_local(Issue issue, String credentials) throws IllegalStateException, IOException {
+		boolean status = status_online();
+		if (!status){
+			return issue;
+		}
 		HttpGet httpGet = new HttpGet("http://127.0.0.1:8000/issues/6987/?format=json");
 		httpGet.addHeader("Authorization", "Basic " + credentials);
 		httpGet.setHeader("Accept", "application/json");
@@ -5977,92 +6041,7 @@ public class Main {
 		httpClient.getCredentialsProvider().setCredentials(new AuthScope(AuthScope.ANY_HOST, AuthScope.ANY_PORT),
 				new UsernamePasswordCredentials("ioannis", "root"));
 
-		HttpResponse response = null;
-		try {
-			response = httpClient.execute(new HttpGet("http://127.0.0.1:8000/api-auth/login/"), httpContext);
-		} catch (ClientProtocolException e2) {
-			// TODO Auto-generated catch block
-			e2.printStackTrace();
-		} catch (IOException e2) {
-			// TODO Auto-generated catch block
-			e2.printStackTrace();
-		}
-		HttpEntity entity = response.getEntity();
-		CookieStore cookieStore2 = httpClient.getCookieStore();
-		List<org.apache.http.cookie.Cookie> biscuits = cookieStore2.getCookies();
-		for (int i = 0; i < biscuits.size(); i++) {
-			cookieStore.addCookie(biscuits.get(i));
-		}
-		System.out.println(biscuits);
-		String csrf = "";
-		for (org.apache.http.cookie.Cookie cookie : biscuits) {
-			if (cookie.getName().compareTo("csrftoken") == 0) {
-				System.out.println(cookie.getValue());
-				csrf = cookie.getValue();
-			}
-
-		}
-
-		try {
-			InputStream is = entity.getContent();
-			is.close();
-		} catch (IOException exc) {
-			// TODO Auto-generated catch block
-			exc.printStackTrace();
-		}
-
-		HttpPost httppost = new HttpPost("http://127.0.0.1:8000/api-auth/login/");
-		httppost.setHeader("Authorization", "Basic " + encoding);
-		System.out.println("Authorization" + "Basic " + encoding);
-		httppost.setHeader("X-CSRFToken", csrf);
-		httppost.setHeader("Connection", "keep-alive");
-		System.out.println("executing request " + httppost.getRequestLine());
-		response = null;
-
-		try {
-			httpClient.getParams().setBooleanParameter("http.protocol.expect-continue", false);
-
-			response = httpClient.execute(httppost, httpContext);
-
-		} catch (ClientProtocolException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-
-		httpContext.setAttribute(ClientContext.COOKIE_STORE, cookieStore);
-		cookieStore2 = httpClient.getCookieStore();
-		biscuits = cookieStore2.getCookies();
-		for (int i = 0; i < biscuits.size(); i++) {
-			cookieStore.addCookie(biscuits.get(i));
-		}
-
-		System.out.println(httppost.getAllHeaders().toString());
-		entity = response.getEntity();
-		System.out.println(response.toString());
-
-		try {
-			InputStream is = entity.getContent();
-			is.close();
-		} catch (IOException exc) {
-			// TODO Auto-generated catch block
-			exc.printStackTrace();
-		}
-
-		cookieStore2 = httpClient.getCookieStore();
-		biscuits = cookieStore2.getCookies();
-		for (int i = 0; i < biscuits.size(); i++) {
-			cookieStore.addCookie(biscuits.get(i));
-		}
-		Authenticator.setDefault(new Authenticator() {
-			protected PasswordAuthentication getPasswordAuthentication() {
-				return new PasswordAuthentication("ioannis", "root".toCharArray());
-			}
-		});
-
-		httpContext.setAttribute(ClientContext.COOKIE_STORE, cookieStore);
+		
 
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
 
