@@ -8,7 +8,7 @@ public class Journal {
 	private String path;
 	private float seq;
 	private String primary_locale;
-	private int enabled;
+	private long enabled;
 	public String getPath() {
 		return path;
 	}
@@ -32,16 +32,16 @@ public class Journal {
 	public void setPrimary_locale(String primary_locale) {
 		this.primary_locale = primary_locale;
 	}
-	public int getEnabled() {
+	public long getEnabled() {
 		return enabled;
 	}
-	public void setEnabled(int enabled) {
+	public void setEnabled(long enabled) {
 		this.enabled = enabled;
 	}
 	public long getId() {
 		return id;
 	}
-	public Journal(long id, String path, float seq, String primary_locale, int enabled) {
+	public Journal(long id, String path, float seq, String primary_locale, long enabled) {
 		this.id = id;
 		this.path = path;
 		this.seq = seq;

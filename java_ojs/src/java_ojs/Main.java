@@ -174,7 +174,8 @@ public class Main {
 	private static HashMap<Long, Section> section_storage;
 	private static HashMap<Long, Journal> journal_storage;
 	private static HashMap<Long, Author> author_storage;
-
+	private static String journal_url = "";
+	private static String user_url = "";
 	private static HashMap<Long, HashMap<Long, Boolean>> author_primary_storage;
 	private static HashMap<Long, HashMap<Long, ArticleFile>> file_storage;
 	private static HashMap<Long, HashMap<Long, JFrame>> article_screens;
@@ -234,6 +235,7 @@ public class Main {
 			stmt.executeUpdate("DELETE FROM API");
 			stmt.executeUpdate("DELETE FROM FILE");
 			stmt.executeUpdate("DELETE FROM METADATA");
+			
 			PreparedStatement prep = c.prepareStatement(api_insert_or_replace_statement);
 			prep.setFloat(1, Long.parseLong(app_settings.get("journal_id")));
 			prep.setFloat(2, Long.parseLong(app_settings.get("intersect_user_id")));
@@ -274,11 +276,7 @@ public class Main {
 
 			SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
 
-			PreparedStatement api_prep = c.prepareStatement(api_insert_or_replace_statement);
-			api_prep.setFloat(1, Float.parseFloat(app_settings.get("journal_id")));
-			api_prep.setFloat(2, Float.parseFloat(app_settings.get("user_id")));
-			api_prep.setString(3, app_settings.get("key"));
-			api_prep.executeUpdate();
+	
 
 			Set<Long> section_keys = section_storage.keySet();
 			for (long key : section_keys) {
@@ -328,7 +326,7 @@ public class Main {
 				journal_prep.setString(2, current_journal.getPath());
 				journal_prep.setFloat(3, current_journal.getSeq());
 				journal_prep.setString(4, current_journal.getPrimary_locale());
-				journal_prep.setInt(5, current_journal.getEnabled());
+				journal_prep.setFloat(5, current_journal.getEnabled());
 				journal_prep.executeUpdate();
 			}
 			int journal_issue_count = 0;
@@ -447,10 +445,25 @@ public class Main {
 			has = true;
 		}
 		if (!has) {
-			app_settings.put("user_id", null);
-			app_settings.put("intersect_user_id", null);
-			app_settings.put("journal_id", null);
-			app_settings.put("key", null);
+			boolean profile_exists = false;
+			try {
+				profile_exists = get_profile_details(Long.parseLong(user_id));
+			} catch (NumberFormatException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IllegalStateException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			if (!profile_exists) {
+				app_settings.put("user_id", null);
+				app_settings.put("intersect_user_id", null);
+				app_settings.put("journal_id", null);
+				app_settings.put("key", null);
+			}
 
 		}
 	}
@@ -728,8 +741,139 @@ public class Main {
 			return false;
 		}
 	}
+
+	public static boolean get_profile_details(long id) throws IllegalStateException, IOException {
+		boolean exists = false;
+		try {
+			HttpGet httpGet = new HttpGet(String.format("%s/profiles/%s/?format=json", base_url, id));
+			httpGet.addHeader("Authorization", "Basic " + encoding);
+			httpGet.setHeader("Accept", "application/json");
+			httpGet.addHeader("Content-type", "application/json");
+
+			HttpResponse response = null;
+			try {
+				response = httpClient.execute(httpGet);
+			} catch (ClientProtocolException e2) {
+				// TODO Auto-generated catch block
+				e2.printStackTrace();
+			} catch (IOException e2) {
+				// TODO Auto-generated catch block
+				e2.printStackTrace();
+			}
+			JsonFactory jsonf = new JsonFactory();
+			InputStream result = response.getEntity().getContent();
+			org.json.simple.parser.JSONParser jsonParser = new JSONParser();
+
+			JSONObject latest_json = new JSONObject();
+			journal_url = "";
+			user_url = "";
+			try {
+				JSONObject latest_obj = (JSONObject) jsonParser.parse(IOUtils.toString(result));
+
+				journal_url = (String) latest_obj.get("journal");
+				user_url = (String) latest_obj.get("user");
+				exists = true;
+			} catch (ParseException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
+			try {
+				InputStream is = response.getEntity().getContent();
+				is.close();
+			} catch (IOException exc) {
+				// TODO Auto-generated catch block
+				exc.printStackTrace();
+			}
+			httpGet = new HttpGet(user_url);
+			httpGet.addHeader("Authorization", "Basic " + encoding);
+			httpGet.setHeader("Accept", "application/json");
+			httpGet.addHeader("Content-type", "application/json");
+
+			response = null;
+			try {
+				response = httpClient.execute(httpGet);
+			} catch (ClientProtocolException e2) {
+				// TODO Auto-generated catch block
+				e2.printStackTrace();
+			} catch (IOException e2) {
+				// TODO Auto-generated catch block
+				e2.printStackTrace();
+			}
+			jsonf = new JsonFactory();
+			result = response.getEntity().getContent();
+			jsonParser = new JSONParser();
+
+			latest_json = new JSONObject();
+			try {
+				JSONObject latest_obj = (JSONObject) jsonParser.parse(IOUtils.toString(result));
+
+				app_settings.put("user_id",Long.toString((long) latest_obj.get("id")));
+				exists = true;
+			} catch (ParseException e) {
+				// TODO Auto-generated catch block
+				
+				e.printStackTrace();
+			}
+
+			try {
+				InputStream is = response.getEntity().getContent();
+				is.close();
+			} catch (IOException exc) {
+				// TODO Auto-generated catch block
+				exc.printStackTrace();
+			}
+			httpGet = new HttpGet(journal_url);
+			httpGet.addHeader("Authorization", "Basic " + encoding);
+			httpGet.setHeader("Accept", "application/json");
+			httpGet.addHeader("Content-type", "application/json");
+
+			response = null;
+			try {
+				response = httpClient.execute(httpGet);
+			} catch (ClientProtocolException e2) {
+				// TODO Auto-generated catch block
+				e2.printStackTrace();
+			} catch (IOException e2) {
+				// TODO Auto-generated catch block
+				e2.printStackTrace();
+			}
+			jsonf = new JsonFactory();
+			result = response.getEntity().getContent();
+			jsonParser = new JSONParser();
+
+			latest_json = new JSONObject();
+			try {
+				JSONObject latest_obj = (JSONObject) jsonParser.parse(IOUtils.toString(result));
+				String  journal = Long.toString((long)  latest_obj.get("id"));
+				app_settings.put("journal_id",journal);
+				if(!journal_storage.containsKey(Long.parseLong(journal))){
+					Journal j = new Journal (Long.parseLong(journal),(String) latest_obj.get("path"),Float.parseFloat(Double.toString((double)latest_obj.get("seq"))),(String) latest_obj.get("primary_locale"), (long) latest_obj.get("enabled"));
+					journal_storage.put(Long.parseLong(journal), j);
+				}
+				exists = true;
+			} catch (ParseException e) {
+				// TODO Auto-generated catch block
+				
+				e.printStackTrace();
+			}
+
+			try {
+				InputStream is = response.getEntity().getContent();
+				is.close();
+			} catch (IOException exc) {
+				// TODO Auto-generated catch block
+				exc.printStackTrace();
+			}
+		} catch (ConnectException e) {
+			throw e;
+		}
+		System.out.println(app_settings);
+		return exists;
+	}
+
 	public static Long get_intersect_id() throws IllegalStateException, IOException {
-		long id = -1 ;
+		long id = -1;
 		try {
 			HttpGet httpGet = new HttpGet(String.format("%s/get/user_id/?format=json", base_url));
 			httpGet.addHeader("Authorization", "Basic " + encoding);
@@ -865,11 +1009,12 @@ public class Main {
 			c = DriverManager.getConnection("jdbc:sqlite:local_datatabse.db");
 			stmt = c.createStatement();
 
-			String sql = "CREATE TABLE IF NOT EXISTS API" + "(journal_id REAL, intersect_user_id REAL NOT NULL, user_id REAL PRIMARY KEY,"
+			String sql = "CREATE TABLE IF NOT EXISTS API"
+					+ "(journal_id REAL, intersect_user_id REAL NOT NULL, user_id REAL PRIMARY KEY,"
 					+ " key CHAR(256) NOT NULL)";
 			stmt.executeUpdate(sql);
 			sql = "CREATE TABLE IF NOT EXISTS JOURNAL" + "(id INTEGER PRIMARY KEY," + " path CHAR(32) UNIQUE,"
-					+ "seq REAL," + "primary_locale CHAR(5)," + "enabled INTEGER)";
+					+ "seq REAL," + "primary_locale CHAR(5)," + "enabled REAL)";
 			stmt.executeUpdate(sql);
 			sql = "CREATE TABLE IF NOT EXISTS ISSUE" + "(id INTEGER PRIMARY KEY," + " title CHAR(500) NOT NULL,"
 					+ "volume INTEGER," + "number INTEGER," + "year INTEGER," + "published INTEGER,"
@@ -1009,13 +1154,13 @@ public class Main {
 						// TODO Auto-generated catch block
 						e1.printStackTrace();
 					}
+					app_settings.put("intersect_user_id", Long.toString(user_id));
 					if (pass.compareTo("root") == 0 && user.compareTo("ioannis") == 0) {
 						logged_in = true;
 						login.setVisible(false);
 						login.dispose();
 						System.out.println(app_settings);
-						if (app_settings.get("key") == null
-								|| app_settings.get("key").compareTo("") == 0) {
+						if (app_settings.get("key") == null || app_settings.get("key").compareTo("") == 0) {
 							api(false);
 						} else {
 							System.out.println(returning_view);
@@ -1043,6 +1188,7 @@ public class Main {
 					long user_id = -1;
 					try {
 						user_id = get_intersect_id();
+						
 					} catch (IllegalStateException e1) {
 						// TODO Auto-generated catch block
 						e1.printStackTrace();
@@ -1056,10 +1202,11 @@ public class Main {
 						// TODO Auto-generated catch block
 						e1.printStackTrace();
 					}
+
+					app_settings.put("intersect_user_id", Long.toString(user_id));
 					if (pass.compareTo("root") == 0 && user.compareTo("user") == 0) {
 						login.setVisible(false);
-						if (app_settings.get("key")== null
-								|| app_settings.get("key").compareTo("") == 0) {
+						if (app_settings.get("key") == null || app_settings.get("key").compareTo("") == 0) {
 							api(false);
 						} else {
 							System.out.println(returning_view);
