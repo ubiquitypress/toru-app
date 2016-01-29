@@ -164,8 +164,6 @@ public class Main {
 	private JTextField access_key, username;
 	private JXTable issues_table;
 	private int delay = 2000; // milliseconds
-	private static String source_api = "";
-	private static String source_access_key = "";
 	private JPasswordField passwordField;
 	private static HashMap<String, String> list_settings;
 	private static HashMap<Long, Long> list_issues;
@@ -183,7 +181,7 @@ public class Main {
 	private static ArrayList<String> setting_keys = new ArrayList<String>();
 	private static Connection c = null;
 	private static Statement stmt = null;
-	private String api_insert_or_replace_statement = "INSERT OR REPLACE INTO API(URL,ACCESS_KEY) VALUES (?,?)";
+	private String api_insert_or_replace_statement = "INSERT OR REPLACE INTO API(journal_id, intersect_user_id, user_id, key) VALUES (?,?,?,?)";
 	private String journal_insert_or_replace_statement = "INSERT OR REPLACE INTO JOURNAL(id,path,seq,primary_locale,enabled) VALUES (?,?,?,?,?)";
 	private String settings_insert_or_replace_statement = "INSERT OR REPLACE INTO SETTING(NAME,VALUE) VALUES (?,?)";
 	private String issue_insert_or_replace_statement = "INSERT OR REPLACE INTO ISSUE(id,title,volume,number,year,show_title,show_volume,show_number,show_year,date_published,date_accepted, published, current, access_status) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
@@ -199,7 +197,7 @@ public class Main {
 	private String delete_issue_statement = "DELETE FROM ISSUE WHERE id=?";
 	int width = 800;
 	private int height = 600;
-	private Boolean logged_in = true;
+	private Boolean logged_in = false;
 	private static long i_id = 0;
 	private static long journal_id = 0;
 	private static long articles_id = 0;
@@ -230,14 +228,17 @@ public class Main {
 			stmt.executeUpdate("DELETE FROM AUTHOR");
 			stmt.executeUpdate("DELETE FROM ARTICLE");
 			stmt.executeUpdate("DELETE FROM SECTION");
+			stmt.executeUpdate("DELETE FROM ISSUE_JOURNAL");
 			stmt.executeUpdate("DELETE FROM ISSUE");
 			stmt.executeUpdate("DELETE FROM JOURNAL");
 			stmt.executeUpdate("DELETE FROM API");
 			stmt.executeUpdate("DELETE FROM FILE");
 			stmt.executeUpdate("DELETE FROM METADATA");
 			PreparedStatement prep = c.prepareStatement(api_insert_or_replace_statement);
-			prep.setString(1, source_api);
-			prep.setString(2, source_access_key);
+			prep.setFloat(1, Long.parseLong(app_settings.get("journal_id")));
+			prep.setFloat(2, Long.parseLong(app_settings.get("intersect_user_id")));
+			prep.setFloat(3, Long.parseLong(app_settings.get("user_id")));
+			prep.setString(4, app_settings.get("key"));
 			prep.executeUpdate();
 
 			JSONObject json_file = new JSONObject();
@@ -258,24 +259,6 @@ public class Main {
 				}
 
 			}
-			JSONObject json_settings = new JSONObject();
-			Set<String> access_settings = app_settings.keySet();
-			for (String key : access_settings) {
-				json_settings.put(key, app_settings.get(key));
-			}
-			System.out.println(json_settings.toJSONString());
-			StringWriter out_app = new StringWriter();
-			try {
-				json_settings.writeJSONString(out_app);
-				String s = json_settings.toJSONString();
-				FileWriter new_jsn = new FileWriter("./app_settings.json");
-				new_jsn.write(out_app.toString());
-				new_jsn.flush();
-				new_jsn.close();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
 			StringWriter out = new StringWriter();
 			try {
 				json_file.writeJSONString(out);
@@ -290,6 +273,12 @@ public class Main {
 			}
 
 			SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
+
+			PreparedStatement api_prep = c.prepareStatement(api_insert_or_replace_statement);
+			api_prep.setFloat(1, Float.parseFloat(app_settings.get("journal_id")));
+			api_prep.setFloat(2, Float.parseFloat(app_settings.get("user_id")));
+			api_prep.setString(3, app_settings.get("key"));
+			api_prep.executeUpdate();
 
 			Set<Long> section_keys = section_storage.keySet();
 			for (long key : section_keys) {
@@ -436,6 +425,36 @@ public class Main {
 
 	}
 
+	public static void populate_api(String user_id) throws SQLException {
+		// Journal test_journal = new Journal(1, "up", (float) 2.0, "en_US", 0);
+		// journal_storage.put((long)1, test_journal);
+		try {
+			Class.forName("org.sqlite.JDBC");
+		} catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		c = DriverManager.getConnection("jdbc:sqlite:local_datatabse.db");
+		stmt = c.createStatement();
+		app_settings = new HashMap<String, String>();
+		ResultSet rs = c.createStatement().executeQuery("SELECT * FROM API WHERE user_id='" + user_id + "';");
+		boolean has = false;
+		while (rs.next()) {
+			app_settings.put("user_id", Long.toString((long) rs.getFloat("user_id")));
+			app_settings.put("intersect_user_id", Long.toString((long) rs.getFloat("intersect_user_id")));
+			app_settings.put("journal_id", Long.toString((long) rs.getFloat("journal_id")));
+			app_settings.put("key", rs.getString("key"));
+			has = true;
+		}
+		if (!has) {
+			app_settings.put("user_id", null);
+			app_settings.put("intersect_user_id", null);
+			app_settings.put("journal_id", null);
+			app_settings.put("key", null);
+
+		}
+	}
+
 	public static void populate_variables() throws ParseException, java.text.ParseException {
 		System.out.println("Retrieving data from local database");
 		list_settings = new HashMap<String, String>();
@@ -449,71 +468,13 @@ public class Main {
 		author_primary_storage = new HashMap<Long, HashMap<Long, Boolean>>();
 		metadata_storage = new HashMap<Long, Metadata>();
 		journal_storage = new HashMap<Long, Journal>();
-		app_settings = new HashMap<String,String>();
 		// Journal test_journal = new Journal(1, "up", (float) 2.0, "en_US", 0);
 		// journal_storage.put((long)1, test_journal);
 		try {
-			ResultSet rs = c.createStatement().executeQuery("SELECT * FROM API WHERE URL=" + "'api'" + ";");
-			while (rs.next()) {
-				source_api = rs.getString("url");
-				source_access_key = rs.getString("access_key");
-				System.out.println("URL: " + source_api);
-				System.out.println("ACCESS KEY: " + source_access_key);
-			}
+
 			JSONParser parser = new JSONParser();
 
 			Object obj = null;
-			try {
-				obj = parser.parse(new FileReader("./app_settings.json"));
-				JSONObject array = (JSONObject) obj;
-
-				Set<Map> keys = array.keySet();
-				System.out.println("Keys");
-				System.out.println(keys.isEmpty());
-				Object jsn_keys[] = keys.toArray();
-				
-				System.out.println("Loading settings....");
-				for (Object k : jsn_keys) {
-					System.out.println(k);
-					String setting_name = k.toString();
-					String value = "";
-					if (array.get(k)!=null){
-					value = array.get(k).toString();
-					}else{
-						value = null;
-					}
-					app_settings.put(setting_name, value);
-
-				}
-			} catch (FileNotFoundException e1) {
-				// TODO Auto-generated catch block
-				JSONObject json_settings = new JSONObject();
-
-				json_settings.put("user", null);
-				json_settings.put("journal", null);
-				json_settings.put("key", null);
-
-				StringWriter out_app = new StringWriter();
-				try {
-					json_settings.writeJSONString(out_app);
-					String s = json_settings.toJSONString();
-					FileWriter new_jsn = new FileWriter("./app_settings.json");
-					new_jsn.write(out_app.toString());
-					new_jsn.flush();
-					new_jsn.close();
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			} catch (IOException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			} catch (ParseException pe) {
-
-				System.out.println("position: " + pe.getPosition());
-				System.out.println(pe);
-			}
-
 			try {
 				obj = null;
 				try {
@@ -549,7 +510,7 @@ public class Main {
 
 			System.out.println("Loading Issue data....");
 			SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
-			rs = c.createStatement().executeQuery("SELECT * FROM JOURNAL ORDER BY id ASC;");
+			ResultSet rs = c.createStatement().executeQuery("SELECT * FROM JOURNAL ORDER BY id ASC;");
 			while (rs.next()) {
 				long id = rs.getInt("id");
 				String path = rs.getString("path");
@@ -767,6 +728,49 @@ public class Main {
 			return false;
 		}
 	}
+	public static Long get_intersect_id() throws IllegalStateException, IOException {
+		long id = -1 ;
+		try {
+			HttpGet httpGet = new HttpGet(String.format("%s/get/user_id/?format=json", base_url));
+			httpGet.addHeader("Authorization", "Basic " + encoding);
+			httpGet.setHeader("Accept", "application/json");
+			httpGet.addHeader("Content-type", "application/json");
+
+			HttpResponse response = null;
+			try {
+				response = httpClient.execute(httpGet);
+			} catch (ClientProtocolException e2) {
+				// TODO Auto-generated catch block
+				e2.printStackTrace();
+			} catch (IOException e2) {
+				// TODO Auto-generated catch block
+				e2.printStackTrace();
+			}
+			JsonFactory jsonf = new JsonFactory();
+			InputStream result = response.getEntity().getContent();
+			org.json.simple.parser.JSONParser jsonParser = new JSONParser();
+			boolean exists = true;
+			JSONObject latest_json = new JSONObject();
+			try {
+				JSONObject latest_obj = (JSONObject) jsonParser.parse(IOUtils.toString(result));
+				String detail = (String) latest_obj.get("detail");
+				System.out.println(latest_obj);
+				if (detail != null) {
+					exists = false;
+				} else {
+					id = (long) latest_obj.get("id");
+					System.out.println(id);
+				}
+			} catch (ParseException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			System.out.println(id);
+		} catch (ConnectException e) {
+			throw e;
+		}
+		return id;
+	}
 
 	public static Long get_remote_id(String type) throws IllegalStateException, IOException {
 
@@ -787,7 +791,7 @@ public class Main {
 		}
 
 		try {
-			HttpGet httpGet = new HttpGet(String.format("%s/get/latest/%s/?format=json",base_url, type));
+			HttpGet httpGet = new HttpGet(String.format("%s/get/latest/%s/?format=json", base_url, type));
 			httpGet.addHeader("Authorization", "Basic " + encoding);
 			httpGet.setHeader("Accept", "application/json");
 			httpGet.addHeader("Content-type", "application/json");
@@ -861,8 +865,8 @@ public class Main {
 			c = DriverManager.getConnection("jdbc:sqlite:local_datatabse.db");
 			stmt = c.createStatement();
 
-			String sql = "CREATE TABLE IF NOT EXISTS API" + "(URL CHAR(250) PRIMARY KEY NOT NULL,"
-					+ " ACCESS_KEY CHAR(100) NOT NULL)";
+			String sql = "CREATE TABLE IF NOT EXISTS API" + "(journal_id REAL, intersect_user_id REAL NOT NULL, user_id REAL PRIMARY KEY,"
+					+ " key CHAR(256) NOT NULL)";
 			stmt.executeUpdate(sql);
 			sql = "CREATE TABLE IF NOT EXISTS JOURNAL" + "(id INTEGER PRIMARY KEY," + " path CHAR(32) UNIQUE,"
 					+ "seq REAL," + "primary_locale CHAR(5)," + "enabled INTEGER)";
@@ -987,11 +991,31 @@ public class Main {
 				public void actionPerformed(ActionEvent e) {
 					String user = username.getText();
 					String pass = String.valueOf(passwordField.getPassword());
+					BASE64Encoder encoder = new BASE64Encoder();
+					encoding = encoder.encode(String.format("%s:%s", user, pass).getBytes());
+					long user_id = -1;
+					try {
+						user_id = get_intersect_id();
+					} catch (IllegalStateException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					} catch (IOException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
+					try {
+						populate_api(Long.toString(user_id));
+					} catch (SQLException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
 					if (pass.compareTo("root") == 0 && user.compareTo("ioannis") == 0) {
 						logged_in = true;
 						login.setVisible(false);
 						login.dispose();
-						if (source_access_key.compareTo("") == 0) {
+						System.out.println(app_settings);
+						if (app_settings.get("key") == null
+								|| app_settings.get("key").compareTo("") == 0) {
 							api(false);
 						} else {
 							System.out.println(returning_view);
@@ -1016,9 +1040,26 @@ public class Main {
 					String pass = String.valueOf(passwordField.getPassword());
 					BASE64Encoder encoder = new BASE64Encoder();
 					encoding = encoder.encode(String.format("%s:%s", user, pass).getBytes());
+					long user_id = -1;
+					try {
+						user_id = get_intersect_id();
+					} catch (IllegalStateException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					} catch (IOException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
+					try {
+						populate_api(Long.toString(user_id));
+					} catch (SQLException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
 					if (pass.compareTo("root") == 0 && user.compareTo("user") == 0) {
 						login.setVisible(false);
-						if (source_access_key.compareTo("") == 0) {
+						if (app_settings.get("key")== null
+								|| app_settings.get("key").compareTo("") == 0) {
 							api(false);
 						} else {
 							System.out.println(returning_view);
@@ -1087,7 +1128,7 @@ public class Main {
 			new Timer(delay, taskPerformer1).start();
 			login.setVisible(true);// making the frame visible
 		} else {
-			if (source_access_key.compareTo("") == 0) {
+			if (app_settings.get("key") == null || app_settings.get("key").compareTo("") == 0) {
 				api(false);
 			} else {
 				System.out.println(returning_view);
@@ -1423,7 +1464,7 @@ public class Main {
 
 				lblNewLabel.setBounds((width_small / 2) - 34, 15, 95, 25);
 				api.getContentPane().add(lblNewLabel);
-							
+
 				JPanel title_background = new JPanel();
 				title_background.setBackground(new Color(0, 0, 0));
 				title_background.setBounds(-17, 0, width_small + 33, 54);
@@ -1450,27 +1491,25 @@ public class Main {
 						String key = access_key.getText();
 						app_settings.put("key", encodeHash(key));
 						System.out.println(app_settings);
-							api.setVisible(false);
-							source_access_key = key;
-							database_save();
-							if (!edit) {
-								dashboard();
-							}
-						
+						api.setVisible(false);
+						database_save();
+						if (!edit) {
+							dashboard();
+						}
+
 					}
 				};
 				access_key.addActionListener(actionSubmit);
 				btnSubmit.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
 						String key = access_key.getText();
-							api.setVisible(false);
-							dashboard();
-							app_settings.put("key", encodeHash(key));
+						api.setVisible(false);
+						dashboard();
+						app_settings.put("key", encodeHash(key));
 
-							System.out.println(app_settings);
-							source_access_key = key;
+						System.out.println(app_settings);
 
-										}
+					}
 				});
 				if (height_small - 150 > 300) {
 					btnSubmit.setBounds(((width_small / 3) * 2) / 2, height_small - 150, width_small / 3, 29);
@@ -5798,7 +5837,7 @@ public class Main {
 			return;
 		}
 		JSONObject obj = IssueToJSON(issue);
-		HttpGet issue_exists = new HttpGet(String.format("%s/issues/%s/",base_url, issue.getId()));
+		HttpGet issue_exists = new HttpGet(String.format("%s/issues/%s/", base_url, issue.getId()));
 
 		issue_exists.addHeader("Authorization", "Basic " + credentials);
 		issue_exists.setHeader("Accept", "application/json");
@@ -5850,7 +5889,7 @@ public class Main {
 				exc.printStackTrace();
 			}
 		} else {
-			HttpPost createIssue = new HttpPost(String.format("%s/issues/",base_url));
+			HttpPost createIssue = new HttpPost(String.format("%s/issues/", base_url));
 			createIssue.setEntity(new StringEntity(obj.toJSONString()));
 			createIssue.addHeader("Authorization", "Basic " + credentials);
 			createIssue.setHeader("Accept", "application/json");
@@ -6541,15 +6580,17 @@ public class Main {
 		}
 	}
 
-	public static int decodeHash(String encodedpassword){
+	public static int decodeHash(String encodedpassword) {
 		int restore_hash = Integer.parseInt(StringUtils.newStringUtf8(Base64.decodeBase64(encodedpassword)));
-		return (restore_hash-64);
+		return (restore_hash - 64);
 	}
-	public static String encodeHash(String userpass){
+
+	public static String encodeHash(String userpass) {
 		BASE64Encoder encoder = new BASE64Encoder();
-		return encoder.encode(Integer.toString((userpass.hashCode())+64).getBytes());
+		return encoder.encode(Integer.toString((userpass.hashCode()) + 64).getBytes());
 
 	}
+
 	public String decodeSetting(String value) {
 		return StringUtils.newStringUtf8(Base64.decodeBase64(value));
 	}
