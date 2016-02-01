@@ -201,6 +201,7 @@ public class Main {
 	private static Boolean logged_in = false;
 	private static Boolean has_app_settings = false;
 	private static long i_id = 0;
+	private static SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
 	private static long journal_id = 0;
 	private static long articles_id = 0;
 	private static long file_id = 0;
@@ -236,7 +237,7 @@ public class Main {
 			stmt.executeUpdate("DELETE FROM API");
 			stmt.executeUpdate("DELETE FROM FILE");
 			stmt.executeUpdate("DELETE FROM METADATA");
-			
+
 			PreparedStatement prep = c.prepareStatement(api_insert_or_replace_statement);
 			prep.setFloat(1, Long.parseLong(app_settings.get("journal_id")));
 			prep.setFloat(2, Long.parseLong(app_settings.get("intersect_user_id")));
@@ -274,10 +275,6 @@ public class Main {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-
-			SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
-
-	
 
 			Set<Long> section_keys = section_storage.keySet();
 			for (long key : section_keys) {
@@ -423,7 +420,8 @@ public class Main {
 				JOptionPane.INFORMATION_MESSAGE);
 
 	}
-	public static void app_settings_exist() throws SQLException{
+
+	public static void app_settings_exist() throws SQLException {
 		try {
 			Class.forName("org.sqlite.JDBC");
 		} catch (ClassNotFoundException e) {
@@ -444,10 +442,11 @@ public class Main {
 		}
 		has_app_settings = has;
 	}
+
 	public static void populate_api(String user_id) throws SQLException {
 		// Journal test_journal = new Journal(1, "up", (float) 2.0, "en_US", 0);
 		// journal_storage.put((long)1, test_journal);
-		
+
 		if (!has_app_settings) {
 			boolean profile_exists = false;
 			try {
@@ -533,7 +532,6 @@ public class Main {
 			}
 
 			System.out.println("Loading Issue data....");
-			SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
 			ResultSet rs = c.createStatement().executeQuery("SELECT * FROM JOURNAL ORDER BY id ASC;");
 			while (rs.next()) {
 				long id = rs.getInt("id");
@@ -819,11 +817,11 @@ public class Main {
 			try {
 				JSONObject latest_obj = (JSONObject) jsonParser.parse(IOUtils.toString(result));
 
-				app_settings.put("user_id",Long.toString((long) latest_obj.get("id")));
+				app_settings.put("user_id", Long.toString((long) latest_obj.get("id")));
 				exists = true;
 			} catch (ParseException e) {
 				// TODO Auto-generated catch block
-				
+
 				e.printStackTrace();
 			}
 
@@ -856,16 +854,18 @@ public class Main {
 			latest_json = new JSONObject();
 			try {
 				JSONObject latest_obj = (JSONObject) jsonParser.parse(IOUtils.toString(result));
-				String  journal = Long.toString((long)  latest_obj.get("id"));
-				app_settings.put("journal_id",journal);
-				if(!journal_storage.containsKey(Long.parseLong(journal))){
-					Journal j = new Journal (Long.parseLong(journal),(String) latest_obj.get("path"),Float.parseFloat(Double.toString((double)latest_obj.get("seq"))),(String) latest_obj.get("primary_locale"), (long) latest_obj.get("enabled"));
+				String journal = Long.toString((long) latest_obj.get("id"));
+				app_settings.put("journal_id", journal);
+				if (!journal_storage.containsKey(Long.parseLong(journal))) {
+					Journal j = new Journal(Long.parseLong(journal), (String) latest_obj.get("path"),
+							Float.parseFloat(Double.toString((double) latest_obj.get("seq"))),
+							(String) latest_obj.get("primary_locale"), (long) latest_obj.get("enabled"));
 					journal_storage.put(Long.parseLong(journal), j);
 				}
 				exists = true;
 			} catch (ParseException e) {
 				// TODO Auto-generated catch block
-				
+
 				e.printStackTrace();
 			}
 
@@ -1083,214 +1083,215 @@ public class Main {
 
 	public void login(final String returning_view) {
 		if (!logged_in) {
-			if (has_app_settings){
+			if (has_app_settings) {
 				logged_in = true;
 				api(true);
-			}else{
-				
-			
-			int width_small = 0;
-			int height_small = 0;
-			if (width >= 640) {
-				width_small = (int) (960 - (960 * (37.5 / 100)));
 			} else {
-				width_small = (int) (640 - (640 * (37.5 / 100)));
-			}
-			height_small = (int) (480 - (480 * (5 / 100)));
 
-			login = new JFrame();
-			login.setTitle("TORU - Log In");
-			login.addWindowListener(new WindowAdapter() {
-				@Override
-				public void windowClosing(WindowEvent e) {
-					// database_save();
+				int width_small = 0;
+				int height_small = 0;
+				if (width >= 640) {
+					width_small = (int) (960 - (960 * (37.5 / 100)));
+				} else {
+					width_small = (int) (640 - (640 * (37.5 / 100)));
 				}
-			});
-			login.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-			login.getContentPane().setForeground(Color.WHITE);
-			login.getContentPane().setBackground(new Color(128, 128, 128));
+				height_small = (int) (480 - (480 * (5 / 100)));
 
-			login.setLocationRelativeTo(null);
-			login.setSize(width_small, height_small);// 400 width and 500 height
-			login.getContentPane().setLayout(null);// using no layout managers
-			JLabel lblNewLabel = new JLabel("TORU");
-
-			lblNewLabel.setForeground(new Color(255, 250, 250));
-			lblNewLabel.setBackground(new Color(230, 230, 250));
-			lblNewLabel.setFont(new Font("Trattatello", Font.BOLD, 24));
-			lblNewLabel.setToolTipText("Welcome\n");
-			lblNewLabel.setBounds((width_small / 2) - 34, 15, 95, 25);
-			login.getContentPane().add(lblNewLabel);
-			username = new JTextField();
-			username.setBounds(80, 220, width_small - 161, 26);
-			login.getContentPane().add(username);
-			username.setColumns(10);
-			JLabel lblUsername = new JLabel("Username");
-			lblUsername.setForeground(new Color(245, 255, 250));
-			lblUsername.setHorizontalAlignment(SwingConstants.CENTER);
-			lblUsername.setBounds(80, 200, width_small - 161, 16);
-			login.getContentPane().add(lblUsername);
-			JPanel title_background = new JPanel();
-			title_background.setBackground(new Color(0, 0, 0));
-			title_background.setBounds(-17, 0, width - 67, 54);
-			login.getContentPane().add(title_background);
-			JLabel lblPassword = new JLabel("Password");
-			lblPassword.setHorizontalAlignment(SwingConstants.CENTER);
-			lblPassword.setForeground(new Color(245, 255, 250));
-			lblPassword.setBounds(80, 260, width_small - 161, 16);
-			login.getContentPane().add(lblPassword);
-			passwordField = new JPasswordField();
-			passwordField.setBounds(80, 280, width_small - 161, 26);
-			login.getContentPane().add(passwordField);
-			JButton btnLogin = new JButton("Login");
-			Action actionSubmit = new AbstractAction() {
-				/**
-				 * 
-				 */
-				private static final long serialVersionUID = 1L;
-
-				@Override
-				public void actionPerformed(ActionEvent e) {
-					String user = username.getText();
-					String pass = String.valueOf(passwordField.getPassword());
-					BASE64Encoder encoder = new BASE64Encoder();
-					encoding = encoder.encode(String.format("%s:%s", user, pass).getBytes());
-					long user_id = -1;
-					try {
-						user_id = get_intersect_id();
-					} catch (IllegalStateException e1) {
-						// TODO Auto-generated catch block
-						e1.printStackTrace();
-					} catch (IOException e1) {
-						// TODO Auto-generated catch block
-						e1.printStackTrace();
+				login = new JFrame();
+				login.setTitle("TORU - Log In");
+				login.addWindowListener(new WindowAdapter() {
+					@Override
+					public void windowClosing(WindowEvent e) {
+						// database_save();
 					}
-					try {
-						populate_api(Long.toString(user_id));
-					} catch (SQLException e1) {
-						// TODO Auto-generated catch block
-						e1.printStackTrace();
-					}
-					app_settings.put("intersect_user_id", Long.toString(user_id));
-					if (user_id!=-1) {
-						logged_in = true;
-						login.setVisible(false);
-						login.dispose();
-						System.out.println(app_settings);
-						if (app_settings.get("key") == null || app_settings.get("key").compareTo("") == 0) {
-							api(false);
-						} else {
-							System.out.println(returning_view);
-							if (returning_view.compareTo("api") == 0) {
-								api(true);
-							} else if (returning_view.compareTo("settings") == 0) {
-								settings();
-							} else {
-								dashboard();
-							}
+				});
+				login.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+				login.getContentPane().setForeground(Color.WHITE);
+				login.getContentPane().setBackground(new Color(128, 128, 128));
+
+				login.setLocationRelativeTo(null);
+				login.setSize(width_small, height_small);// 400 width and 500
+															// height
+				login.getContentPane().setLayout(null);// using no layout
+														// managers
+				JLabel lblNewLabel = new JLabel("TORU");
+
+				lblNewLabel.setForeground(new Color(255, 250, 250));
+				lblNewLabel.setBackground(new Color(230, 230, 250));
+				lblNewLabel.setFont(new Font("Trattatello", Font.BOLD, 24));
+				lblNewLabel.setToolTipText("Welcome\n");
+				lblNewLabel.setBounds((width_small / 2) - 34, 15, 95, 25);
+				login.getContentPane().add(lblNewLabel);
+				username = new JTextField();
+				username.setBounds(80, 220, width_small - 161, 26);
+				login.getContentPane().add(username);
+				username.setColumns(10);
+				JLabel lblUsername = new JLabel("Username");
+				lblUsername.setForeground(new Color(245, 255, 250));
+				lblUsername.setHorizontalAlignment(SwingConstants.CENTER);
+				lblUsername.setBounds(80, 200, width_small - 161, 16);
+				login.getContentPane().add(lblUsername);
+				JPanel title_background = new JPanel();
+				title_background.setBackground(new Color(0, 0, 0));
+				title_background.setBounds(-17, 0, width - 67, 54);
+				login.getContentPane().add(title_background);
+				JLabel lblPassword = new JLabel("Password");
+				lblPassword.setHorizontalAlignment(SwingConstants.CENTER);
+				lblPassword.setForeground(new Color(245, 255, 250));
+				lblPassword.setBounds(80, 260, width_small - 161, 16);
+				login.getContentPane().add(lblPassword);
+				passwordField = new JPasswordField();
+				passwordField.setBounds(80, 280, width_small - 161, 26);
+				login.getContentPane().add(passwordField);
+				JButton btnLogin = new JButton("Login");
+				Action actionSubmit = new AbstractAction() {
+					/**
+					 * 
+					 */
+					private static final long serialVersionUID = 1L;
+
+					@Override
+					public void actionPerformed(ActionEvent e) {
+						String user = username.getText();
+						String pass = String.valueOf(passwordField.getPassword());
+						BASE64Encoder encoder = new BASE64Encoder();
+						encoding = encoder.encode(String.format("%s:%s", user, pass).getBytes());
+						long user_id = -1;
+						try {
+							user_id = get_intersect_id();
+						} catch (IllegalStateException e1) {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						} catch (IOException e1) {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
 						}
-					} else {
-						JOptionPane.showMessageDialog(null, "Wrong username or password");
-					}
-				}
-			};
-			username.addActionListener(actionSubmit);
-			passwordField.addActionListener(actionSubmit);
-			btnLogin.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent e) {
-					String user = username.getText();
-					String pass = String.valueOf(passwordField.getPassword());
-					BASE64Encoder encoder = new BASE64Encoder();
-					encoding = encoder.encode(String.format("%s:%s", user, pass).getBytes());
-					long user_id = -1;
-					try {
-						user_id = get_intersect_id();
-						
-					} catch (IllegalStateException e1) {
-						// TODO Auto-generated catch block
-						e1.printStackTrace();
-					} catch (IOException e1) {
-						// TODO Auto-generated catch block
-						e1.printStackTrace();
-					}
-					try {
-						populate_api(Long.toString(user_id));
-					} catch (SQLException e1) {
-						// TODO Auto-generated catch block
-						e1.printStackTrace();
-					}
-
-					app_settings.put("intersect_user_id", Long.toString(user_id));
-					if (user_id!=-1) {
-						login.setVisible(false);
-						if (app_settings.get("key") == null || app_settings.get("key").compareTo("") == 0) {
-							api(false);
-						} else {
-							System.out.println(returning_view);
-							if (returning_view.compareTo("api") == 0) {
-								api(true);
-							} else if (returning_view.compareTo("settings") == 0) {
-								settings();
+						try {
+							populate_api(Long.toString(user_id));
+						} catch (SQLException e1) {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						}
+						app_settings.put("intersect_user_id", Long.toString(user_id));
+						if (user_id != -1) {
+							logged_in = true;
+							login.setVisible(false);
+							login.dispose();
+							System.out.println(app_settings);
+							if (app_settings.get("key") == null || app_settings.get("key").compareTo("") == 0) {
+								api(false);
 							} else {
-								dashboard();
+								System.out.println(returning_view);
+								if (returning_view.compareTo("api") == 0) {
+									api(true);
+								} else if (returning_view.compareTo("settings") == 0) {
+									settings();
+								} else {
+									dashboard();
+								}
 							}
+						} else {
+							JOptionPane.showMessageDialog(null, "Wrong username or password");
+						}
+					}
+				};
+				username.addActionListener(actionSubmit);
+				passwordField.addActionListener(actionSubmit);
+				btnLogin.addActionListener(new ActionListener() {
+					public void actionPerformed(ActionEvent e) {
+						String user = username.getText();
+						String pass = String.valueOf(passwordField.getPassword());
+						BASE64Encoder encoder = new BASE64Encoder();
+						encoding = encoder.encode(String.format("%s:%s", user, pass).getBytes());
+						long user_id = -1;
+						try {
+							user_id = get_intersect_id();
+
+						} catch (IllegalStateException e1) {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						} catch (IOException e1) {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						}
+						try {
+							populate_api(Long.toString(user_id));
+						} catch (SQLException e1) {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
 						}
 
-					} else {
-						JOptionPane.showMessageDialog(null, "Wrong username or password");
+						app_settings.put("intersect_user_id", Long.toString(user_id));
+						if (user_id != -1) {
+							login.setVisible(false);
+							if (app_settings.get("key") == null || app_settings.get("key").compareTo("") == 0) {
+								api(false);
+							} else {
+								System.out.println(returning_view);
+								if (returning_view.compareTo("api") == 0) {
+									api(true);
+								} else if (returning_view.compareTo("settings") == 0) {
+									settings();
+								} else {
+									dashboard();
+								}
+							}
+
+						} else {
+							JOptionPane.showMessageDialog(null, "Wrong username or password");
+						}
+
 					}
+				});
 
-				}
-			});
+				btnLogin.setBounds(width_small / 3, 340, width_small / 3, 29);
+				login.getContentPane().add(btnLogin);
 
-			btnLogin.setBounds(width_small / 3, 340, width_small / 3, 29);
-			login.getContentPane().add(btnLogin);
+				final JButton btnSync1 = new JButton("Sync");
+				btnSync1.setBounds(width_small - 155, 68, 70, 25);
+				login.getContentPane().add(btnSync1);
 
-			final JButton btnSync1 = new JButton("Sync");
-			btnSync1.setBounds(width_small - 155, 68, 70, 25);
-			login.getContentPane().add(btnSync1);
+				JLabel lblLogIn = new JLabel("Log in");
+				lblLogIn.setForeground(new Color(224, 255, 255));
+				lblLogIn.setFont(new Font("URW Gothic L", Font.BOLD, 24));
+				lblLogIn.setHorizontalAlignment(SwingConstants.CENTER);
+				lblLogIn.setBounds((width_small / 2) - 40, 150, 80, 30);
+				login.getContentPane().add(lblLogIn);
 
-			JLabel lblLogIn = new JLabel("Log in");
-			lblLogIn.setForeground(new Color(224, 255, 255));
-			lblLogIn.setFont(new Font("URW Gothic L", Font.BOLD, 24));
-			lblLogIn.setHorizontalAlignment(SwingConstants.CENTER);
-			lblLogIn.setBounds((width_small / 2) - 40, 150, 80, 30);
-			login.getContentPane().add(lblLogIn);
+				final Label internetCheck = new Label("   ONLINE");
+				internetCheck.setFont(new Font("Dialog", Font.BOLD | Font.ITALIC, 12));
+				internetCheck.setBackground(Color.GREEN);
+				internetCheck.setForeground(new Color(255, 255, 255));
+				internetCheck.setAlignment(1);
+				internetCheck.setBounds(width_small - 85, 70, 65, 22);
+				login.getContentPane().add(internetCheck);
 
-			final Label internetCheck = new Label("   ONLINE");
-			internetCheck.setFont(new Font("Dialog", Font.BOLD | Font.ITALIC, 12));
-			internetCheck.setBackground(Color.GREEN);
-			internetCheck.setForeground(new Color(255, 255, 255));
-			internetCheck.setAlignment(1);
-			internetCheck.setBounds(width_small - 85, 70, 65, 22);
-			login.getContentPane().add(internetCheck);
+				Panel panel = new Panel();
+				panel.setBackground(new Color(204, 51, 51));
+				panel.setBounds(0, 54, width_small, 5);
+				login.getContentPane().add(panel);
 
-			Panel panel = new Panel();
-			panel.setBackground(new Color(204, 51, 51));
-			panel.setBounds(0, 54, width_small, 5);
-			login.getContentPane().add(panel);
+				ActionListener taskPerformer1 = new ActionListener() {
+					public void actionPerformed(ActionEvent evt) {
+						try {
+							Socket sock = new Socket();
+							InetSocketAddress addr = new InetSocketAddress("www.google.com", 80);
+							sock.setSoTimeout(500);
+							sock.connect(addr, 3000);
+							sock.close();
+							internetCheck.setBackground(Color.GREEN);
+							internetCheck.setText("ONLINE");
+							btnSync1.setEnabled(true);
 
-			ActionListener taskPerformer1 = new ActionListener() {
-				public void actionPerformed(ActionEvent evt) {
-					try {
-						Socket sock = new Socket();
-						InetSocketAddress addr = new InetSocketAddress("www.google.com", 80);
-						sock.setSoTimeout(500);
-						sock.connect(addr, 3000);
-						sock.close();
-						internetCheck.setBackground(Color.GREEN);
-						internetCheck.setText("ONLINE");
-						btnSync1.setEnabled(true);
-
-					} catch (Exception e) {
-						internetCheck.setBackground(Color.RED);
-						internetCheck.setText("OFFLINE");
-						btnSync1.setEnabled(false);
+						} catch (Exception e) {
+							internetCheck.setBackground(Color.RED);
+							internetCheck.setText("OFFLINE");
+							btnSync1.setEnabled(false);
+						}
 					}
-				}
-			};
-			new Timer(delay, taskPerformer1).start();
-			login.setVisible(true);// making the frame visible
+				};
+				new Timer(delay, taskPerformer1).start();
+				login.setVisible(true);// making the frame visible
 			}
 		} else {
 			if (app_settings.get("key") == null || app_settings.get("key").compareTo("") == 0) {
@@ -1597,7 +1598,7 @@ public class Main {
 
 	public void api(final boolean exists) {
 		if (logged_in) {
-			if (exists){
+			if (exists) {
 				if (api == null || !api.isVisible()) {
 					int width_small = 0;
 					int height_small = 0;
@@ -1621,7 +1622,8 @@ public class Main {
 					});
 					api.setSize(width_small, height_small);// 400 width and 500
 															// height
-					api.getContentPane().setLayout(null);// using no layout managers
+					api.getContentPane().setLayout(null);// using no layout
+															// managers
 					JLabel lblNewLabel = new JLabel("TORU");
 					lblNewLabel.setForeground(new Color(255, 250, 250));
 					lblNewLabel.setBackground(new Color(230, 230, 250));
@@ -1651,32 +1653,32 @@ public class Main {
 					Action actionSubmit = new AbstractAction() {
 						@Override
 						public void actionPerformed(ActionEvent e) {
-							String key = String.valueOf(access_key.getPassword()); 
+							String key = String.valueOf(access_key.getPassword());
 							System.out.println(key.hashCode());
 							System.out.println(decodeHash(app_settings.get("key")));
-							if (key.hashCode() == decodeHash(app_settings.get("key"))){
+							if (key.hashCode() == decodeHash(app_settings.get("key"))) {
 								api.setVisible(false);
 								dashboard();
-							}else{
+							} else {
 								JOptionPane.showMessageDialog(null, "Wrong access key");
-								
-							}						
+
+							}
 
 						}
 					};
 					access_key.addActionListener(actionSubmit);
 					btnSubmit.addActionListener(new ActionListener() {
 						public void actionPerformed(ActionEvent e) {
-							String key = String.valueOf(access_key.getPassword()); 
+							String key = String.valueOf(access_key.getPassword());
 
 							System.out.println(key.hashCode());
 							System.out.println(decodeHash(app_settings.get("key")));
-							if (key.hashCode() == decodeHash(app_settings.get("key"))){
+							if (key.hashCode() == decodeHash(app_settings.get("key"))) {
 								api.setVisible(false);
 								dashboard();
-							}else{
+							} else {
 								JOptionPane.showMessageDialog(null, "Wrong access key");
-							}						
+							}
 
 						}
 					});
@@ -1745,155 +1747,156 @@ public class Main {
 					panel_1.setBounds(0, 105, width_small, 45);
 					api.getContentPane().add(panel_1);
 				}
-			
+
 			}
-			
-			else{
-			if (api == null || !api.isVisible()) {
-				int width_small = 0;
-				int height_small = 0;
-				if (height >= 480 && width >= 640) {
-					width_small = (int) (900 - (900 * (37.5 / 100)));
-				} else {
-					width_small = (int) (640 - (640 * (37.5 / 100)));
-				}
 
-				height_small = (int) (480 - (480 * (5 / 100)));
-				api = new JFrame();
-				api.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-				api.getContentPane().setBackground(new Color(128, 128, 128));
-				api.setTitle("API Information");
-
-				api.addWindowListener(new WindowAdapter() {
-					@Override
-					public void windowClosing(WindowEvent e) {
-						// database_save();
+			else {
+				if (api == null || !api.isVisible()) {
+					int width_small = 0;
+					int height_small = 0;
+					if (height >= 480 && width >= 640) {
+						width_small = (int) (900 - (900 * (37.5 / 100)));
+					} else {
+						width_small = (int) (640 - (640 * (37.5 / 100)));
 					}
-				});
-				api.setSize(width_small, height_small);// 400 width and 500
-														// height
-				api.getContentPane().setLayout(null);// using no layout managers
-				JLabel lblNewLabel = new JLabel("TORU");
-				lblNewLabel.setForeground(new Color(255, 250, 250));
-				lblNewLabel.setBackground(new Color(230, 230, 250));
-				lblNewLabel.setFont(new Font("Trattatello", Font.BOLD, 24));
-				lblNewLabel.setToolTipText("Welcome\n");
 
-				lblNewLabel.setBounds((width_small / 2) - 34, 15, 95, 25);
-				api.getContentPane().add(lblNewLabel);
+					height_small = (int) (480 - (480 * (5 / 100)));
+					api = new JFrame();
+					api.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+					api.getContentPane().setBackground(new Color(128, 128, 128));
+					api.setTitle("API Information");
 
-				JPanel title_background = new JPanel();
-				title_background.setBackground(new Color(0, 0, 0));
-				title_background.setBounds(-17, 0, width_small + 33, 54);
-				api.getContentPane().add(title_background);
+					api.addWindowListener(new WindowAdapter() {
+						@Override
+						public void windowClosing(WindowEvent e) {
+							// database_save();
+						}
+					});
+					api.setSize(width_small, height_small);// 400 width and 500
+															// height
+					api.getContentPane().setLayout(null);// using no layout
+															// managers
+					JLabel lblNewLabel = new JLabel("TORU");
+					lblNewLabel.setForeground(new Color(255, 250, 250));
+					lblNewLabel.setBackground(new Color(230, 230, 250));
+					lblNewLabel.setFont(new Font("Trattatello", Font.BOLD, 24));
+					lblNewLabel.setToolTipText("Welcome\n");
 
-				access_key = new JTextField();
-				access_key.setColumns(10);
-				access_key.setText("");
-				access_key.setBounds(100, 270, width_small - 200, 26);
-				api.getContentPane().add(access_key);
-				JLabel lblAccessKey = new JLabel("Enter access key for future offline and online access:");
-				lblAccessKey.setHorizontalAlignment(SwingConstants.CENTER);
-				lblAccessKey.setForeground(new Color(245, 255, 250));
-				lblAccessKey.setBounds(80, 250, width_small - 161, 16);
-				api.getContentPane().add(lblAccessKey);
+					lblNewLabel.setBounds((width_small / 2) - 34, 15, 95, 25);
+					api.getContentPane().add(lblNewLabel);
 
-				JButton btnSubmit = new JButton("Submit");
-				if (exists) {
-					btnSubmit.setText("Save");
-				}
-				Action actionSubmit = new AbstractAction() {
-					@Override
-					public void actionPerformed(ActionEvent e) {
-						String key = access_key.getText();
-						app_settings.put("key", encodeHash(key));
-						System.out.println(app_settings);
-						api.setVisible(false);
-						database_save();
-						if (!exists) {
+					JPanel title_background = new JPanel();
+					title_background.setBackground(new Color(0, 0, 0));
+					title_background.setBounds(-17, 0, width_small + 33, 54);
+					api.getContentPane().add(title_background);
+
+					access_key = new JTextField();
+					access_key.setColumns(10);
+					access_key.setText("");
+					access_key.setBounds(100, 270, width_small - 200, 26);
+					api.getContentPane().add(access_key);
+					JLabel lblAccessKey = new JLabel("Enter access key for future offline and online access:");
+					lblAccessKey.setHorizontalAlignment(SwingConstants.CENTER);
+					lblAccessKey.setForeground(new Color(245, 255, 250));
+					lblAccessKey.setBounds(80, 250, width_small - 161, 16);
+					api.getContentPane().add(lblAccessKey);
+
+					JButton btnSubmit = new JButton("Submit");
+					if (exists) {
+						btnSubmit.setText("Save");
+					}
+					Action actionSubmit = new AbstractAction() {
+						@Override
+						public void actionPerformed(ActionEvent e) {
+							String key = access_key.getText();
+							app_settings.put("key", encodeHash(key));
+							System.out.println(app_settings);
+							api.setVisible(false);
+							database_save();
+							if (!exists) {
+								dashboard();
+							}
+
+						}
+					};
+					access_key.addActionListener(actionSubmit);
+					btnSubmit.addActionListener(new ActionListener() {
+						public void actionPerformed(ActionEvent e) {
+							String key = access_key.getText();
+							api.setVisible(false);
 							dashboard();
+							app_settings.put("key", encodeHash(key));
+
+							System.out.println(app_settings);
+
 						}
-
+					});
+					if (height_small - 150 > 300) {
+						btnSubmit.setBounds(((width_small / 3) * 2) / 2, height_small - 150, width_small / 3, 29);
+					} else {
+						btnSubmit.setBounds(((width_small / 3) * 2) / 2, 310, width_small / 3, 29);
 					}
-				};
-				access_key.addActionListener(actionSubmit);
-				btnSubmit.addActionListener(new ActionListener() {
-					public void actionPerformed(ActionEvent e) {
-						String key = access_key.getText();
-						api.setVisible(false);
-						dashboard();
-						app_settings.put("key", encodeHash(key));
 
-						System.out.println(app_settings);
+					api.getContentPane().add(btnSubmit);
 
-					}
-				});
-				if (height_small - 150 > 300) {
-					btnSubmit.setBounds(((width_small / 3) * 2) / 2, height_small - 150, width_small / 3, 29);
-				} else {
-					btnSubmit.setBounds(((width_small / 3) * 2) / 2, 310, width_small / 3, 29);
+					final JButton btnSync1 = new JButton("Sync");
+					btnSync1.setBounds(width_small - 150, 68, 70, 24);
+					api.getContentPane().add(btnSync1);
+
+					JLabel lblApiInformation = new JLabel("API Information");
+					lblApiInformation.setBackground(new Color(51, 102, 204));
+					lblApiInformation.setHorizontalAlignment(SwingConstants.CENTER);
+					lblApiInformation.setForeground(new Color(255, 255, 255));
+					lblApiInformation.setFont(new Font("Dialog", Font.BOLD, 20));
+					lblApiInformation.setBounds((width_small / 2) - 145, 108, 309, 40);
+					lblApiInformation.setOpaque(true);
+					api.getContentPane().add(lblApiInformation);
+					final Label internetCheck = new Label("  ONLINE");
+					internetCheck.setFont(new Font("Dialog", Font.BOLD | Font.ITALIC, 12));
+					internetCheck.setBackground(Color.GREEN);
+					internetCheck.setBounds(width_small - 80, 70, 65, 22);
+					internetCheck.setForeground(new Color(255, 255, 255));
+					internetCheck.setAlignment(1);
+					api.getContentPane().add(internetCheck);
+
+					Panel panel = new Panel();
+					panel.setBackground(new Color(204, 51, 51));
+					panel.setBounds(0, 54, width_small, 5);
+					api.getContentPane().add(panel);
+
+					ActionListener taskPerformer1 = new ActionListener() {
+						public void actionPerformed(ActionEvent evt) {
+							try {
+								Socket sock = new Socket();
+								InetSocketAddress addr = new InetSocketAddress("www.google.com", 80);
+								sock.setSoTimeout(500);
+								sock.connect(addr, 3000);
+
+								internetCheck.setBackground(Color.GREEN);
+								internetCheck.setText("ONLINE");
+								btnSync1.setEnabled(true);
+								sock.close();
+
+							} catch (Exception e) {
+								internetCheck.setBackground(Color.RED);
+								internetCheck.setText("OFFLINE");
+								btnSync1.setEnabled(false);
+							}
+						}
+					};
+					new Timer(delay, taskPerformer1).start();
+					api.setVisible(true);// making the frame visible
+
+					Panel panel_2 = new Panel();
+					panel_2.setBackground(new Color(51, 51, 204));
+					panel_2.setBounds(0, 150, width_small, 5);
+					api.getContentPane().add(panel_2);
+					Panel panel_1 = new Panel();
+					panel_1.setBackground(new Color(51, 102, 204));
+					panel_1.setBounds(0, 105, width_small, 45);
+					api.getContentPane().add(panel_1);
 				}
-
-				api.getContentPane().add(btnSubmit);
-
-				final JButton btnSync1 = new JButton("Sync");
-				btnSync1.setBounds(width_small - 150, 68, 70, 24);
-				api.getContentPane().add(btnSync1);
-
-				JLabel lblApiInformation = new JLabel("API Information");
-				lblApiInformation.setBackground(new Color(51, 102, 204));
-				lblApiInformation.setHorizontalAlignment(SwingConstants.CENTER);
-				lblApiInformation.setForeground(new Color(255, 255, 255));
-				lblApiInformation.setFont(new Font("Dialog", Font.BOLD, 20));
-				lblApiInformation.setBounds((width_small / 2) - 145, 108, 309, 40);
-				lblApiInformation.setOpaque(true);
-				api.getContentPane().add(lblApiInformation);
-				final Label internetCheck = new Label("  ONLINE");
-				internetCheck.setFont(new Font("Dialog", Font.BOLD | Font.ITALIC, 12));
-				internetCheck.setBackground(Color.GREEN);
-				internetCheck.setBounds(width_small - 80, 70, 65, 22);
-				internetCheck.setForeground(new Color(255, 255, 255));
-				internetCheck.setAlignment(1);
-				api.getContentPane().add(internetCheck);
-
-				Panel panel = new Panel();
-				panel.setBackground(new Color(204, 51, 51));
-				panel.setBounds(0, 54, width_small, 5);
-				api.getContentPane().add(panel);
-
-				ActionListener taskPerformer1 = new ActionListener() {
-					public void actionPerformed(ActionEvent evt) {
-						try {
-							Socket sock = new Socket();
-							InetSocketAddress addr = new InetSocketAddress("www.google.com", 80);
-							sock.setSoTimeout(500);
-							sock.connect(addr, 3000);
-
-							internetCheck.setBackground(Color.GREEN);
-							internetCheck.setText("ONLINE");
-							btnSync1.setEnabled(true);
-							sock.close();
-
-						} catch (Exception e) {
-							internetCheck.setBackground(Color.RED);
-							internetCheck.setText("OFFLINE");
-							btnSync1.setEnabled(false);
-						}
-					}
-				};
-				new Timer(delay, taskPerformer1).start();
-				api.setVisible(true);// making the frame visible
-
-				Panel panel_2 = new Panel();
-				panel_2.setBackground(new Color(51, 51, 204));
-				panel_2.setBounds(0, 150, width_small, 5);
-				api.getContentPane().add(panel_2);
-				Panel panel_1 = new Panel();
-				panel_1.setBackground(new Color(51, 102, 204));
-				panel_1.setBounds(0, 105, width_small, 45);
-				api.getContentPane().add(panel_1);
 			}
-		}
 		}
 	}
 
@@ -1917,7 +1920,6 @@ public class Main {
 					height = 640;
 					issues.setSize(900, 640);
 				}
-				SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
 				issues.getContentPane().setBackground(new Color(105, 105, 105));
 				issues.setVisible(true);
 				issues.setTitle("Dashboard");
@@ -2004,10 +2006,26 @@ public class Main {
 
 						}
 						issues.repaint();
+
+						try {
+							update_get_issues_from_remote(encoding,false);
+						} catch (IllegalStateException e1) {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						} catch (IOException e1) {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						}
 						Set<Long> update_issue_keys = issue_storage.keySet();
 						ArrayList<List<Object>> rowData = new ArrayList<List<Object>>();
 						Object[][] rows = new Object[update_issue_keys.size()][6];
-
+						boolean empty_table = false;
+						int num_rows = ((DefaultTableModel) issues_table.getModel()).getRowCount();
+						if (num_rows!=0){
+							for(int i=num_rows-1;i>=0;i--){
+							((DefaultTableModel) issues_table.getModel()).removeRow(i);
+							}
+							}
 						int i = 0;
 						for (long id : update_issue_keys) {
 							Issue row_issue = issue_storage.get(id);
@@ -2019,7 +2037,6 @@ public class Main {
 									sdf.format(row_issue.getDate_accepted()), sdf.format(row_issue.getDate_published()),
 									"View", "Edit", "Delete" };
 							rows[i] = row;
-							((DefaultTableModel) issues_table.getModel()).removeRow(i);
 							((DefaultTableModel) issues_table.getModel()).insertRow(0, row);
 							i++;
 
@@ -2260,15 +2277,13 @@ public class Main {
 				btnSettings.setBounds(15, 20, 90, 29);
 				issues.getContentPane().add(btnSettings);
 
-			/*	JButton btnApi = new JButton("API");
-				btnApi.addActionListener(new ActionListener() {
-					public void actionPerformed(ActionEvent e) {
-						api(true);
-					}
-				});
-				btnApi.setBounds(103, 20, 90, 29);
-				issues.getContentPane().add(btnApi);
-*/
+				/*
+				 * JButton btnApi = new JButton("API");
+				 * btnApi.addActionListener(new ActionListener() { public void
+				 * actionPerformed(ActionEvent e) { api(true); } });
+				 * btnApi.setBounds(103, 20, 90, 29);
+				 * issues.getContentPane().add(btnApi);
+				 */
 				ImageIcon db_icon = new ImageIcon("src/lib/db_xxs.png");
 				JButton btnSaveData = new JButton(db_icon);
 				btnSaveData.setFont(new Font("Dialog", Font.BOLD, 24));
@@ -2427,7 +2442,6 @@ public class Main {
 			lblyear.setBounds(50, 347, 250, 16);
 			edit_issue.getContentPane().add(lblyear);
 
-			SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
 			JLabel lblDateAccepted = new JLabel("Date Accepted");
 			lblDateAccepted.setHorizontalAlignment(SwingConstants.CENTER);
 			lblDateAccepted.setForeground(new Color(245, 255, 250));
@@ -2636,7 +2650,7 @@ public class Main {
 						JOptionPane.showMessageDialog(null,
 								"Use only numbers in fields: Show_Volume, Show_Number, Show_Year ");
 					}
-					SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
+
 					try {
 
 						String test_accepted = sdf.format(datePicker.getDate());
@@ -2800,7 +2814,6 @@ public class Main {
 				lblyear.setBounds(50, 347, 250, 16);
 				edit_issue.getContentPane().add(lblyear);
 
-				SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
 				JLabel lblDateAccepted = new JLabel("Date Accepted");
 				lblDateAccepted.setHorizontalAlignment(SwingConstants.CENTER);
 				lblDateAccepted.setForeground(new Color(245, 255, 250));
@@ -2945,7 +2958,7 @@ public class Main {
 							JOptionPane.showMessageDialog(null,
 									"Use only numbers in fields: Show_Volume, Show_Number, Show_Year ");
 						}
-						SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
+
 						try {
 
 							String test_accepted = sdf.format(datePicker.getDate());
@@ -3034,7 +3047,7 @@ public class Main {
 							JOptionPane.showMessageDialog(null,
 									"Use only numbers in fields: Show_Volume, Show_Number, Show_Year ");
 						}
-						SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
+
 						try {
 
 							String test_accepted = sdf.format(datePicker.getDate());
@@ -3131,7 +3144,6 @@ public class Main {
 				});
 				Date current = new Date();
 
-				SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
 				Issue current_issue = issue_storage.get(issue_id);
 				HashMap<Long, Article> current_articles = current_issue.getArticles_list();
 				Set<Long> art_keys = current_articles.keySet();
@@ -4010,8 +4022,6 @@ public class Main {
 				panel.add(lblDatePublished);
 				Date current = new Date();
 
-				SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
-
 				JLabel lblDate = new JLabel(sdf.format(current_article.getDate_published()));
 				lblDate.setVerticalAlignment(SwingConstants.TOP);
 				lblDate.setForeground(Color.BLACK);
@@ -4502,7 +4512,6 @@ public class Main {
 								JOptionPane.OK_CANCEL_OPTION);
 						if (result == JOptionPane.OK_OPTION) {
 							int[] selections = listbox.getSelectedIndices();
-							SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
 							Issue current_issue = issue_storage.get(issue_id);
 
 							ArrayList<Long> removed_authors = new ArrayList<Long>();
@@ -5070,7 +5079,6 @@ public class Main {
 									"Use only numbers in the Pages field and select a valid section item from the dropdown list. ");
 						}
 
-						SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
 						try {
 
 							String test_accepted = sdf.format(datePickerAccepted.getDate());
@@ -5895,7 +5903,7 @@ public class Main {
 						JOptionPane.showMessageDialog(null,
 								"Use only numbers in the Pages field and select a valid section item from the dropdown list. ");
 					}
-					SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
+
 					try {
 
 						String test_accepted = sdf.format(datePickerAccepted.getDate());
@@ -6531,7 +6539,131 @@ public class Main {
 		}
 	}
 
-	public Issue update_issue_local(Issue issue, String credentials) throws IllegalStateException, IOException {
+	public static void update_get_issues_from_remote(String credentials, boolean update_local)
+			throws IllegalStateException, IOException {
+		boolean status = status_online();
+		if (!status) {
+			return;
+		}
+		HttpGet httpGet = new HttpGet(String.format("%s/issues/?format=json", base_url));
+		httpGet.addHeader("Authorization", "Basic " + credentials);
+		httpGet.setHeader("Accept", "application/json");
+		httpGet.addHeader("Content-type", "application/json");
+
+		HttpResponse response = null;
+		try {
+			response = httpClient.execute(httpGet);
+		} catch (ClientProtocolException e2) {
+			// TODO Auto-generated catch block
+			e2.printStackTrace();
+		} catch (IOException e2) {
+			// TODO Auto-generated catch block
+			e2.printStackTrace();
+		}
+		JsonFactory jsonf = new JsonFactory();
+		InputStream result = response.getEntity().getContent();
+		org.json.simple.parser.JSONParser jsonParser = new JSONParser();
+		boolean exists = true;
+		JSONObject issue_json = new JSONObject();
+		Issue issue = null;
+		try {
+			JSONObject issue_obj = (JSONObject) jsonParser.parse(IOUtils.toString(result));
+			JSONArray array = (JSONArray) issue_obj.get("results");
+			System.out.println(array);
+			for (int i = 0; i < array.size(); i++) {
+				issue_json = (JSONObject) array.get(i);
+				long issue_id = (long) issue_json.get("id");
+				if (issue_storage.containsKey(issue_id)) {
+					if (update_local) {
+						update_issue_local(issue_storage.get(issue_id), credentials);
+					}
+					continue;
+				} else {
+					Issue new_issue = new Issue(issue_id);
+
+					new_issue = JSONToIssue(issue_json, new_issue);
+					String journal_link = (String) issue_json.get("journal");
+					journal_link = journal_link.substring(0,journal_link.lastIndexOf("/"));
+					System.out.println(journal_link);
+					journal_link = journal_link.substring(journal_link.lastIndexOf("/") + 1);
+					System.out.println(journal_link);
+					new_issue.setJournal(journal_storage.get(Long.parseLong(journal_link)));
+					System.out.println(new_issue);
+
+					System.out.println(issue_id);
+					System.out.println(response.toString());
+					HttpGet settingCheck = new HttpGet(
+							String.format("%s/get/setting/title/issue/%s/?format=json", base_url, new_issue.getId()));
+					// settingCheck.setEntity(new
+					// StringEntity(obj.toJSONString()));
+					settingCheck.addHeader("Authorization", "Basic " + credentials);
+					settingCheck.setHeader("Accept", "application/json");
+					settingCheck.addHeader("Content-type", "application/json");
+
+					response = null;
+					try {
+						response = httpClient.execute(settingCheck);
+					} catch (ClientProtocolException e2) {
+						// TODO Auto-generated catch block
+						e2.printStackTrace();
+					} catch (IOException e2) {
+						// TODO Auto-generated catch block
+						e2.printStackTrace();
+					}
+					jsonf = new JsonFactory();
+					result = response.getEntity().getContent();
+					Long setting_pk = (long) -1;
+					jsonParser = new JSONParser();
+					exists = true;
+					JSONObject setting_json = new JSONObject();
+					try {
+						JSONObject setting = (JSONObject) jsonParser.parse(IOUtils.toString(result));
+						System.out.println(setting.get("count"));
+						System.out.println(setting);
+						Long count = (Long) setting.get("count");
+						if (count == 0) {
+							exists = false;
+						} else {
+							JSONArray results = (JSONArray) setting.get("results");
+							System.out.println(results.get(0));
+							setting_json = (JSONObject) results.get(0);
+							new_issue.setTitle((String) setting_json.get("setting_value"));
+							new_issue.setShow_title((String) setting_json.get("setting_value"));
+						}
+					} catch (ParseException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					issue_storage.put(issue_id, new_issue);
+					issue_screens.put(issue_id, new JFrame());
+					article_screens.put(issue_id, new HashMap<Long, JFrame>());
+
+				}
+			}
+			/*
+			 * System.out.println(issue_obj.get("count"));
+			 * System.out.println(issue_obj); String detail = (String)
+			 * issue_obj.get("detail"); if (detail == null) { exists = false; }
+			 * else { JSONArray results = (JSONArray) issue_obj.get("results");
+			 * System.out.println(results.get(0)); issue_json = (JSONObject)
+			 * results.get(0); System.out.println(issue_json.get("id")); issue =
+			 * JSONToIssue(issue_json, issue); }
+			 */
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		try {
+			InputStream is = response.getEntity().getContent();
+			is.close();
+		} catch (IOException exc) {
+			// TODO Auto-generated catch block
+			exc.printStackTrace();
+		}
+
+	}
+
+	public static Issue update_issue_local(Issue issue, String credentials) throws IllegalStateException, IOException {
 		boolean status = status_online();
 		if (!status) {
 			return issue;
@@ -6637,18 +6769,29 @@ public class Main {
 		return obj;
 	}
 
-	public Issue JSONToIssue(JSONObject obj, Issue issue) {
-		issue.setVolume((int) obj.get("volume"));
+	public static Issue JSONToIssue(JSONObject obj, Issue issue) {
+		issue.setVolume((int) (long) obj.get("volume"));
 		issue.setNumber(Integer.parseInt((String) obj.get("number")));
-		issue.setYear((int) obj.get("year"));
-		issue.setPublished((int) obj.get("published"));
-		issue.setShow_volume((int) obj.get("show_volume"));
-		issue.setShow_number((int) obj.get("show_number"));
-		issue.setShow_year((int) obj.get("show_year"));
-		issue.setShow_title(Integer.toString((int) obj.get("show_title")));
-		issue.setCurrent((int) obj.get("current"));
-		issue.setPublished((int) obj.get("published"));
-		issue.setAccess_status((int) obj.get("access_status"));
+		issue.setYear((int) (long) obj.get("year"));
+		issue.setPublished((int) (long) obj.get("published"));
+		issue.setShow_volume((int) (long) obj.get("show_volume"));
+		issue.setShow_number((int) (long) obj.get("show_number"));
+		issue.setShow_year((int) (long) obj.get("show_year"));
+		issue.setShow_title(Integer.toString((int) (long) obj.get("show_title")));
+		issue.setCurrent((int) (long) obj.get("current"));
+		issue.setPublished((int) (long) obj.get("published"));
+		issue.setAccess_status((int) (long) obj.get("access_status"));
+		String date_p = (String) obj.get("date_published");
+
+		if (date_p != null && date_p.compareTo("") != 0) {
+
+			try {
+				issue.setDate_published((Date) sdf.parse(date_p.substring(0, 10).replace('-', '/')));
+			} catch (java.text.ParseException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
 		return issue;
 	}
 
@@ -6723,8 +6866,6 @@ public class Main {
 
 		httpClient.getCredentialsProvider().setCredentials(new AuthScope(AuthScope.ANY_HOST, AuthScope.ANY_PORT),
 				new UsernamePasswordCredentials("ioannis", "root"));
-
-		SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
 
 		author_id = 6;
 		author_storage.put((long) 1, new Author((long) 1, "Peter", "M.", "FakeAuthor", "fake_author@fakeaddress.com",
@@ -6921,7 +7062,6 @@ public class Main {
 		database_setup();
 		populate_variables();
 		System.out.println();
-
 		// file copy to use for file upload
 		// file_copy(1,"src/lib/db_xxs.png");
 

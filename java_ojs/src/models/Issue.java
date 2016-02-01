@@ -1,5 +1,6 @@
 package models;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 
@@ -35,6 +36,27 @@ public class Issue {
 		this.show_year = show_year;
 		this.date_accepted=date_accepted;
 		this.date_published = date_published;
+		this.articles_list = new  HashMap<Long, Article>();
+		this.published = 0;
+		this.access_status = 0;
+		this.current = 0;
+	}
+	public Issue(long id) {
+
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
+		
+		Date today = new Date();
+		this.title = "";
+		this.id = id;
+		this.volume = 0;
+		this.number = 0;
+		this.year = 0;
+		this.show_title = "";
+		this.show_volume = 0;
+		this.show_number = 0;
+		this.show_year = 0;
+		this.date_accepted=today;
+		this.date_published = today;
 		this.articles_list = new  HashMap<Long, Article>();
 		this.published = 0;
 		this.access_status = 0;
