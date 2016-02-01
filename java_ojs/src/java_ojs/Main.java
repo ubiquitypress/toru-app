@@ -6761,6 +6761,8 @@ public class Main {
 				
 				try {
 					setting = (JSONObject) jsonParser.parse(IOUtils.toString(result));
+					Article new_article  = JSONToArticle(setting,issue);
+					System.out.println(new_article);
 					try {
 						InputStream is = response.getEntity().getContent();
 						is.close();
@@ -6768,7 +6770,36 @@ public class Main {
 						// TODO Auto-generated catch block
 						exc.printStackTrace();
 					}
-					System.out.println(setting);
+					HttpGet article_settings = new HttpGet(
+							String.format("%s/get/setting/abstract/article/%s/?format=json", base_url, new_article.getId()));
+					// settingCheck.setEntity(new StringEntity(obj.toJSONString()));
+					article_settings.addHeader("Authorization", "Basic " + credentials);
+					article_settings.setHeader("Accept", "application/json");
+					article_settings.addHeader("Content-type", "application/json");
+
+					response = null;
+					try {
+						response = httpClient.execute(article_settings);
+					} catch (ClientProtocolException e2) {
+						// TODO Auto-generated catch block
+						e2.printStackTrace();
+					} catch (IOException e2) {
+						// TODO Auto-generated catch block
+						e2.printStackTrace();
+					}
+					result = response.getEntity().getContent();
+					jsonParser = new JSONParser();
+					exists = true;
+					setting_json = new JSONObject();
+					
+					try {
+						setting = (JSONObject) jsonParser.parse(IOUtils.toString(result));
+						JSONArray results = (JSONArray) setting.get("results");
+						System.out.println(results.get(0));
+						setting_json = (JSONObject) results.get(0);
+						System.out.println(setting_json.get("setting_value"));
+					}catch(Exception e){e.printStackTrace();}
+					
 				}catch (ParseException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -7080,10 +7111,15 @@ public class Main {
 
 	public static Article JSONToArticle(JSONObject obj, Issue issue) {
 		String date_p = (String) obj.get("date_submitted");
-		Article new_article = new Article((long) obj.get("id"), (long) obj.get("section_id"), (int) obj.get("pages"),
-				(long) obj.get("usr"), (String) obj.get("locale"), (String) obj.get("language"),
-				(int) obj.get("status"), (int) obj.get("submission_progress"), (int) obj.get("current_round"),
-				(int) obj.get("fast_tracked"), (int) obj.get("hide_author"), (int) obj.get("comments_status"), issue);
+		String user_id = (String) obj.get("user");
+		user_id = user_id.substring(0,user_id.lastIndexOf("/"));
+		user_id = user_id.substring(user_id.lastIndexOf("/")+1);
+		System.out.println(user_id);
+		Article new_article = new Article((long) obj.get("id"), (long) obj.get("section_id"), (int)( obj.get("pages") == null ? obj.get("pages"):0),
+				Long.parseLong(user_id), (String) obj.get("locale"), (String) obj.get("language"),
+				(int) (long) obj.get("status"), (int) (long)  obj.get("submission_progress"), (int) (long)  obj.get("current_round"),
+				(int) (long)  obj.get("fast_tracked"), (int) (long)  obj.get("hide_author"), (int) (long) 
+				obj.get("comments_status"), issue);
 		if (date_p != null && date_p.compareTo("") != 0) {
 
 			try {
