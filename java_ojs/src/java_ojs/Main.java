@@ -198,7 +198,8 @@ public class Main {
 	private String delete_issue_statement = "DELETE FROM ISSUE WHERE id=?";
 	int width = 800;
 	private int height = 600;
-	private Boolean logged_in = false;
+	private static Boolean logged_in = false;
+	private static Boolean has_app_settings = false;
 	private static long i_id = 0;
 	private static long journal_id = 0;
 	private static long articles_id = 0;
@@ -422,10 +423,7 @@ public class Main {
 				JOptionPane.INFORMATION_MESSAGE);
 
 	}
-
-	public static void populate_api(String user_id) throws SQLException {
-		// Journal test_journal = new Journal(1, "up", (float) 2.0, "en_US", 0);
-		// journal_storage.put((long)1, test_journal);
+	public static void app_settings_exist() throws SQLException{
 		try {
 			Class.forName("org.sqlite.JDBC");
 		} catch (ClassNotFoundException e) {
@@ -435,7 +433,7 @@ public class Main {
 		c = DriverManager.getConnection("jdbc:sqlite:local_datatabse.db");
 		stmt = c.createStatement();
 		app_settings = new HashMap<String, String>();
-		ResultSet rs = c.createStatement().executeQuery("SELECT * FROM API WHERE user_id='" + user_id + "';");
+		ResultSet rs = c.createStatement().executeQuery("SELECT * FROM API ;");
 		boolean has = false;
 		while (rs.next()) {
 			app_settings.put("user_id", Long.toString((long) rs.getFloat("user_id")));
@@ -444,7 +442,13 @@ public class Main {
 			app_settings.put("key", rs.getString("key"));
 			has = true;
 		}
-		if (!has) {
+		has_app_settings = has;
+	}
+	public static void populate_api(String user_id) throws SQLException {
+		// Journal test_journal = new Journal(1, "up", (float) 2.0, "en_US", 0);
+		// journal_storage.put((long)1, test_journal);
+		
+		if (!has_app_settings) {
 			boolean profile_exists = false;
 			try {
 				profile_exists = get_profile_details(Long.parseLong(user_id));
@@ -483,6 +487,17 @@ public class Main {
 		journal_storage = new HashMap<Long, Journal>();
 		// Journal test_journal = new Journal(1, "up", (float) 2.0, "en_US", 0);
 		// journal_storage.put((long)1, test_journal);
+		try {
+			app_settings_exist();
+		} catch (SQLException e2) {
+			// TODO Auto-generated catch block
+			e2.printStackTrace();
+		}
+		if (has_app_settings){
+			logged_in = true;
+		}else{
+			logged_in = false;
+		}
 		try {
 
 			JSONParser parser = new JSONParser();
