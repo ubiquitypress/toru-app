@@ -493,11 +493,7 @@ public class Main {
 			// TODO Auto-generated catch block
 			e2.printStackTrace();
 		}
-		if (has_app_settings){
-			logged_in = true;
-		}else{
-			logged_in = false;
-		}
+
 		try {
 
 			JSONParser parser = new JSONParser();
@@ -1087,6 +1083,12 @@ public class Main {
 
 	public void login(final String returning_view) {
 		if (!logged_in) {
+			if (has_app_settings){
+				logged_in = true;
+				api(true);
+			}else{
+				
+			
 			int width_small = 0;
 			int height_small = 0;
 			if (width >= 640) {
@@ -1170,7 +1172,7 @@ public class Main {
 						e1.printStackTrace();
 					}
 					app_settings.put("intersect_user_id", Long.toString(user_id));
-					if (pass.compareTo("root") == 0 && user.compareTo("ioannis") == 0) {
+					if (user_id!=-1) {
 						logged_in = true;
 						login.setVisible(false);
 						login.dispose();
@@ -1219,7 +1221,7 @@ public class Main {
 					}
 
 					app_settings.put("intersect_user_id", Long.toString(user_id));
-					if (pass.compareTo("root") == 0 && user.compareTo("user") == 0) {
+					if (user_id!=-1) {
 						login.setVisible(false);
 						if (app_settings.get("key") == null || app_settings.get("key").compareTo("") == 0) {
 							api(false);
@@ -1289,6 +1291,7 @@ public class Main {
 			};
 			new Timer(delay, taskPerformer1).start();
 			login.setVisible(true);// making the frame visible
+			}
 		} else {
 			if (app_settings.get("key") == null || app_settings.get("key").compareTo("") == 0) {
 				api(false);
@@ -1592,8 +1595,160 @@ public class Main {
 		}
 	}
 
-	public void api(final boolean edit) {
+	public void api(final boolean exists) {
 		if (logged_in) {
+			if (exists){
+				if (api == null || !api.isVisible()) {
+					int width_small = 0;
+					int height_small = 0;
+					if (height >= 480 && width >= 640) {
+						width_small = (int) (900 - (900 * (37.5 / 100)));
+					} else {
+						width_small = (int) (640 - (640 * (37.5 / 100)));
+					}
+
+					height_small = (int) (480 - (480 * (5 / 100)));
+					api = new JFrame();
+					api.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+					api.getContentPane().setBackground(new Color(128, 128, 128));
+					api.setTitle("API Information");
+
+					api.addWindowListener(new WindowAdapter() {
+						@Override
+						public void windowClosing(WindowEvent e) {
+							// database_save();
+						}
+					});
+					api.setSize(width_small, height_small);// 400 width and 500
+															// height
+					api.getContentPane().setLayout(null);// using no layout managers
+					JLabel lblNewLabel = new JLabel("TORU");
+					lblNewLabel.setForeground(new Color(255, 250, 250));
+					lblNewLabel.setBackground(new Color(230, 230, 250));
+					lblNewLabel.setFont(new Font("Trattatello", Font.BOLD, 24));
+					lblNewLabel.setToolTipText("Welcome\n");
+
+					lblNewLabel.setBounds((width_small / 2) - 34, 15, 95, 25);
+					api.getContentPane().add(lblNewLabel);
+
+					JPanel title_background = new JPanel();
+					title_background.setBackground(new Color(0, 0, 0));
+					title_background.setBounds(-17, 0, width_small + 33, 54);
+					api.getContentPane().add(title_background);
+
+					access_key = new JTextField();
+					access_key.setColumns(10);
+					access_key.setText("");
+					access_key.setBounds(100, 270, width_small - 200, 26);
+					api.getContentPane().add(access_key);
+					JLabel lblAccessKey = new JLabel("Enter access key:");
+					lblAccessKey.setHorizontalAlignment(SwingConstants.CENTER);
+					lblAccessKey.setForeground(new Color(245, 255, 250));
+					lblAccessKey.setBounds(80, 250, width_small - 161, 16);
+					api.getContentPane().add(lblAccessKey);
+
+					JButton btnSubmit = new JButton("Enter");
+					Action actionSubmit = new AbstractAction() {
+						@Override
+						public void actionPerformed(ActionEvent e) {
+							String key = access_key.getText();
+							System.out.println(key.hashCode());
+							System.out.println(decodeHash(app_settings.get("key")));
+							if (key.hashCode() == decodeHash(app_settings.get("key"))){
+								api.setVisible(false);
+								dashboard();
+							}else{
+								JOptionPane.showMessageDialog(null, "Wrong access key");
+								
+							}						
+
+						}
+					};
+					access_key.addActionListener(actionSubmit);
+					btnSubmit.addActionListener(new ActionListener() {
+						public void actionPerformed(ActionEvent e) {
+							String key = access_key.getText();
+
+							System.out.println(key.hashCode());
+							System.out.println(decodeHash(app_settings.get("key")));
+							if (key.hashCode() == decodeHash(app_settings.get("key"))){
+								api.setVisible(false);
+								dashboard();
+							}else{
+								JOptionPane.showMessageDialog(null, "Wrong access key");
+							}						
+
+						}
+					});
+					if (height_small - 150 > 300) {
+						btnSubmit.setBounds(((width_small / 3) * 2) / 2, height_small - 150, width_small / 3, 29);
+					} else {
+						btnSubmit.setBounds(((width_small / 3) * 2) / 2, 310, width_small / 3, 29);
+					}
+
+					api.getContentPane().add(btnSubmit);
+
+					final JButton btnSync1 = new JButton("Sync");
+					btnSync1.setBounds(width_small - 150, 68, 70, 24);
+					api.getContentPane().add(btnSync1);
+
+					JLabel lblApiInformation = new JLabel("API Information");
+					lblApiInformation.setBackground(new Color(51, 102, 204));
+					lblApiInformation.setHorizontalAlignment(SwingConstants.CENTER);
+					lblApiInformation.setForeground(new Color(255, 255, 255));
+					lblApiInformation.setFont(new Font("Dialog", Font.BOLD, 20));
+					lblApiInformation.setBounds((width_small / 2) - 145, 108, 309, 40);
+					lblApiInformation.setOpaque(true);
+					api.getContentPane().add(lblApiInformation);
+					final Label internetCheck = new Label("  ONLINE");
+					internetCheck.setFont(new Font("Dialog", Font.BOLD | Font.ITALIC, 12));
+					internetCheck.setBackground(Color.GREEN);
+					internetCheck.setBounds(width_small - 80, 70, 65, 22);
+					internetCheck.setForeground(new Color(255, 255, 255));
+					internetCheck.setAlignment(1);
+					api.getContentPane().add(internetCheck);
+
+					Panel panel = new Panel();
+					panel.setBackground(new Color(204, 51, 51));
+					panel.setBounds(0, 54, width_small, 5);
+					api.getContentPane().add(panel);
+
+					ActionListener taskPerformer1 = new ActionListener() {
+						public void actionPerformed(ActionEvent evt) {
+							try {
+								Socket sock = new Socket();
+								InetSocketAddress addr = new InetSocketAddress("www.google.com", 80);
+								sock.setSoTimeout(500);
+								sock.connect(addr, 3000);
+
+								internetCheck.setBackground(Color.GREEN);
+								internetCheck.setText("ONLINE");
+								btnSync1.setEnabled(true);
+								sock.close();
+
+							} catch (Exception e) {
+								internetCheck.setBackground(Color.RED);
+								internetCheck.setText("OFFLINE");
+								btnSync1.setEnabled(false);
+							}
+						}
+					};
+					new Timer(delay, taskPerformer1).start();
+					api.setVisible(true);// making the frame visible
+
+					Panel panel_2 = new Panel();
+					panel_2.setBackground(new Color(51, 51, 204));
+					panel_2.setBounds(0, 150, width_small, 5);
+					api.getContentPane().add(panel_2);
+					Panel panel_1 = new Panel();
+					panel_1.setBackground(new Color(51, 102, 204));
+					panel_1.setBounds(0, 105, width_small, 45);
+					api.getContentPane().add(panel_1);
+				}
+			
+			}
+			
+			else{
 			if (api == null || !api.isVisible()) {
 				int width_small = 0;
 				int height_small = 0;
@@ -1644,7 +1799,7 @@ public class Main {
 				api.getContentPane().add(lblAccessKey);
 
 				JButton btnSubmit = new JButton("Submit");
-				if (edit) {
+				if (exists) {
 					btnSubmit.setText("Save");
 				}
 				Action actionSubmit = new AbstractAction() {
@@ -1655,7 +1810,7 @@ public class Main {
 						System.out.println(app_settings);
 						api.setVisible(false);
 						database_save();
-						if (!edit) {
+						if (!exists) {
 							dashboard();
 						}
 
@@ -1738,8 +1893,7 @@ public class Main {
 				panel_1.setBounds(0, 105, width_small, 45);
 				api.getContentPane().add(panel_1);
 			}
-		} else {
-			login("api");
+		}
 		}
 	}
 
@@ -2187,6 +2341,7 @@ public class Main {
 				issues.repaint();
 			}
 		} else {
+			System.out.println("Loading log in window.");
 			login("dashboard");
 		}
 
@@ -6588,6 +6743,7 @@ public class Main {
 		section_db_id = 2;
 		section_storage.put((long) 1, new Section((long) 1, "Section 1"));
 		section_storage.put((long) 2, new Section((long) 2, "Section 2"));
+		System.out.println("Loading dashboard");
 		dashboard();
 	}
 
