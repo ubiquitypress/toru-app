@@ -6697,16 +6697,16 @@ public class Main {
 		}
 
 		System.out.println(response.toString());
-		HttpGet settingCheck = new HttpGet(
+		HttpGet published_articles = new HttpGet(
 				String.format("%s/get/published-articles/%s/?format=json", base_url, issue.getId()));
 		// settingCheck.setEntity(new StringEntity(obj.toJSONString()));
-		settingCheck.addHeader("Authorization", "Basic " + credentials);
-		settingCheck.setHeader("Accept", "application/json");
-		settingCheck.addHeader("Content-type", "application/json");
+		published_articles.addHeader("Authorization", "Basic " + credentials);
+		published_articles.setHeader("Accept", "application/json");
+		published_articles.addHeader("Content-type", "application/json");
 
 		response = null;
 		try {
-			response = httpClient.execute(settingCheck);
+			response = httpClient.execute(published_articles);
 		} catch (ClientProtocolException e2) {
 			// TODO Auto-generated catch block
 			e2.printStackTrace();
@@ -6720,9 +6720,16 @@ public class Main {
 		org.json.simple.parser.JSONParser jsonParser = new JSONParser();
 		boolean exists = true;
 		JSONObject setting_json = new JSONObject();
+	
 		try {
 			JSONObject setting = (JSONObject) jsonParser.parse(IOUtils.toString(result));
-
+			try {
+				InputStream is = response.getEntity().getContent();
+				is.close();
+			} catch (IOException exc) {
+				// TODO Auto-generated catch block
+				exc.printStackTrace();
+			}
 			System.out.println(setting);
 			if (setting == null) {
 				exists = false;
@@ -6730,19 +6737,48 @@ public class Main {
 				String[] article_ids = ((String)setting.get("articles")).split(",");
 				for(String id: article_ids){
 				System.out.println(id);
+				HttpGet single_article = new HttpGet(
+						String.format("%s/articles/%s/?format=json", base_url, id));
+				// settingCheck.setEntity(new StringEntity(obj.toJSONString()));
+				single_article.addHeader("Authorization", "Basic " + credentials);
+				single_article.setHeader("Accept", "application/json");
+				single_article.addHeader("Content-type", "application/json");
+
+				response = null;
+				try {
+					response = httpClient.execute(single_article);
+				} catch (ClientProtocolException e2) {
+					// TODO Auto-generated catch block
+					e2.printStackTrace();
+				} catch (IOException e2) {
+					// TODO Auto-generated catch block
+					e2.printStackTrace();
 				}
-			}
-		} catch (ParseException e) {
+				result = response.getEntity().getContent();
+				jsonParser = new JSONParser();
+				exists = true;
+				setting_json = new JSONObject();
+				
+				try {
+					setting = (JSONObject) jsonParser.parse(IOUtils.toString(result));
+					try {
+						InputStream is = response.getEntity().getContent();
+						is.close();
+					} catch (IOException exc) {
+						// TODO Auto-generated catch block
+						exc.printStackTrace();
+					}
+					System.out.println(setting);
+				}catch (ParseException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				}
+			}} catch (ParseException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		try {
-			InputStream is = response.getEntity().getContent();
-			is.close();
-		} catch (IOException exc) {
-			// TODO Auto-generated catch block
-			exc.printStackTrace();
-		}
+		
 
 	}
 
