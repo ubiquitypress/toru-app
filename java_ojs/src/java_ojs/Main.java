@@ -7032,10 +7032,25 @@ public class Main {
 		obj.put("fast_tracked", article.getFast_tracked());
 		obj.put("hide_author", article.getHide_author());
 		obj.put("comments_status", article.getComments_status());
-		
 		return obj;
 	}
+	public static Article JSONToArticle(JSONObject obj, Issue issue) {
+		String date_p= (String) obj.get("date_submitted");
+		Article new_article = new Article( (long) obj.get("id"),(long) obj.get("section_id"),
+				(int) obj.get("pages"), (long) obj.get("usr"), (String) obj.get("locale"), (String) obj.get("language"),
+				 (int) obj.get("status"), (int) obj.get("submission_progress"), (int) obj.get("current_round"), (int) obj.get("fast_tracked"),
+				  (int) obj.get("hide_author"),(int) obj.get("comments_status"),issue);
+		if (date_p != null && date_p.compareTo("") != 0) {
 
+			try {
+				new_article.setDate_submitted((Date) sdf.parse(date_p.substring(0, 10).replace('-', '/')));
+			} catch (java.text.ParseException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		return new_article;
+	}
 	/**
 	 * @throws IOException
 	 * @throws java.text.ParseException

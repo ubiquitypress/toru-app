@@ -244,6 +244,24 @@ public class Article {
 		this.issue_fk = issue_fk;
 		this.authors = authors;
 	}
+	public Article(long id, long section_id, int pages, long user_id, String locale, String language,
+			int status, int submission_progress, int current_round, int fast_tracked, int hide_author,
+			int comments_status, Issue issue_fk) {
+		super();
+		this.id = id;
+		this.section_id = section_id;
+		this.pages = pages;
+		this.user_id = user_id;
+		this.locale = locale;
+		this.language = language;
+		this.status = status;
+		this.submission_progress = submission_progress;
+		this.current_round = current_round;
+		this.fast_tracked = fast_tracked;
+		this.hide_author = hide_author;
+		this.comments_status = comments_status;
+		this.issue_fk = issue_fk;
+	}
 	
 	
 
