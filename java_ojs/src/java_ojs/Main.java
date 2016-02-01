@@ -1636,7 +1636,7 @@ public class Main {
 					title_background.setBounds(-17, 0, width_small + 33, 54);
 					api.getContentPane().add(title_background);
 
-					access_key = new JTextField();
+					JPasswordField access_key = new JPasswordField();
 					access_key.setColumns(10);
 					access_key.setText("");
 					access_key.setBounds(100, 270, width_small - 200, 26);
@@ -1651,7 +1651,7 @@ public class Main {
 					Action actionSubmit = new AbstractAction() {
 						@Override
 						public void actionPerformed(ActionEvent e) {
-							String key = access_key.getText();
+							String key = String.valueOf(access_key.getPassword()); 
 							System.out.println(key.hashCode());
 							System.out.println(decodeHash(app_settings.get("key")));
 							if (key.hashCode() == decodeHash(app_settings.get("key"))){
@@ -1667,7 +1667,7 @@ public class Main {
 					access_key.addActionListener(actionSubmit);
 					btnSubmit.addActionListener(new ActionListener() {
 						public void actionPerformed(ActionEvent e) {
-							String key = access_key.getText();
+							String key = String.valueOf(access_key.getPassword()); 
 
 							System.out.println(key.hashCode());
 							System.out.println(decodeHash(app_settings.get("key")));
@@ -2260,7 +2260,7 @@ public class Main {
 				btnSettings.setBounds(15, 20, 90, 29);
 				issues.getContentPane().add(btnSettings);
 
-				JButton btnApi = new JButton("API");
+			/*	JButton btnApi = new JButton("API");
 				btnApi.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
 						api(true);
@@ -2268,6 +2268,7 @@ public class Main {
 				});
 				btnApi.setBounds(103, 20, 90, 29);
 				issues.getContentPane().add(btnApi);
+*/
 				ImageIcon db_icon = new ImageIcon("src/lib/db_xxs.png");
 				JButton btnSaveData = new JButton(db_icon);
 				btnSaveData.setFont(new Font("Dialog", Font.BOLD, 24));
@@ -2277,8 +2278,6 @@ public class Main {
 					}
 				});
 				btnSaveData.setBounds(26, height - 117, 70, 40);
-				issues.getContentPane().add(btnApi);
-
 				issues.getContentPane().add(btnSaveData);
 
 				JLabel lblUpdateDb = new JLabel("Update");
