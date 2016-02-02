@@ -1147,7 +1147,7 @@ public class Main {
 				username = new JTextField();
 				username.setBounds(80, 220, width_small - 161, 26);
 				login.getContentPane().add(username);
-				username.setColumns(10);
+				username.setColumns(4);
 				JLabel lblUsername = new JLabel("Username");
 				lblUsername.setForeground(new Color(245, 255, 250));
 				lblUsername.setHorizontalAlignment(SwingConstants.CENTER);
@@ -1661,7 +1661,7 @@ public class Main {
 					api.getContentPane().add(title_background);
 
 					JPasswordField access_key = new JPasswordField();
-					access_key.setColumns(10);
+					access_key.setColumns(4);
 					access_key.setText("");
 					access_key.setBounds(100, 270, width_small - 200, 26);
 					api.getContentPane().add(access_key);
@@ -1813,7 +1813,7 @@ public class Main {
 					api.getContentPane().add(title_background);
 
 					access_key = new JTextField();
-					access_key.setColumns(10);
+					access_key.setColumns(4);
 					access_key.setText("");
 					access_key.setBounds(100, 270, width_small - 200, 26);
 					api.getContentPane().add(access_key);
@@ -2426,7 +2426,7 @@ public class Main {
 			final JTextField title = new JTextField();
 			title.setBounds(50, 218, 250, 26);
 			edit_issue.getContentPane().add(title);
-			title.setColumns(10);
+			title.setColumns(4);
 
 			JLabel lblTitleText = new JLabel("Title");
 			lblTitleText.setForeground(new Color(245, 255, 250));
@@ -2439,7 +2439,7 @@ public class Main {
 			edit_issue.getContentPane().add(title_background);
 
 			final JTextField volume = new JTextField();
-			volume.setColumns(10);
+			volume.setColumns(4);
 			volume.setBounds(50, 270, 250, 26);
 			edit_issue.getContentPane().add(volume);
 			JLabel lblvolume = new JLabel("Volume");
@@ -2449,7 +2449,7 @@ public class Main {
 			edit_issue.getContentPane().add(lblvolume);
 
 			final JTextField number = new JTextField();
-			number.setColumns(10);
+			number.setColumns(4);
 			number.setBounds(50, 317, 250, 26);
 			edit_issue.getContentPane().add(number);
 			JLabel lblnumber = new JLabel("Number");
@@ -2459,7 +2459,7 @@ public class Main {
 			edit_issue.getContentPane().add(lblnumber);
 
 			final JTextField year = new JTextField();
-			year.setColumns(10);
+			year.setColumns(4);
 			year.setBounds(50, 364, 250, 26);
 			edit_issue.getContentPane().add(year);
 			JLabel lblyear = new JLabel("Year");
@@ -2513,7 +2513,7 @@ public class Main {
 			final JTextField show_title = new JTextField();
 			show_title.setBounds(340, 218, 250, 26);
 			edit_issue.getContentPane().add(show_title);
-			show_title.setColumns(10);
+			show_title.setColumns(4);
 
 			JLabel lblShowTitleText = new JLabel("Show Title");
 			lblShowTitleText.setForeground(new Color(245, 255, 250));
@@ -2524,7 +2524,7 @@ public class Main {
 			final JTextField show_volume = new JTextField();
 			show_volume.setBounds(340, 270, 250, 26);
 			edit_issue.getContentPane().add(show_volume);
-			show_volume.setColumns(10);
+			show_volume.setColumns(4);
 
 			JLabel lblShowVolume = new JLabel("Show Volume");
 			lblShowVolume.setForeground(new Color(245, 255, 250));
@@ -2535,7 +2535,7 @@ public class Main {
 			final JTextField show_number = new JTextField();
 			show_number.setBounds(340, 317, 250, 26);
 			edit_issue.getContentPane().add(show_number);
-			show_number.setColumns(10);
+			show_number.setColumns(4);
 
 			JLabel lblShowNumber = new JLabel("Show Number");
 			lblShowNumber.setForeground(new Color(245, 255, 250));
@@ -2546,7 +2546,7 @@ public class Main {
 			final JTextField show_year = new JTextField();
 			show_year.setBounds(340, 364, 250, 26);
 			edit_issue.getContentPane().add(show_year);
-			show_year.setColumns(10);
+			show_year.setColumns(4);
 
 			JLabel lblShowYear = new JLabel("Show Year");
 			lblShowYear.setForeground(new Color(245, 255, 250));
@@ -2796,7 +2796,7 @@ public class Main {
 				title.setBounds(50, 218, 250, 26);
 				title.setText(current_issue.getTitle());
 				edit_issue.getContentPane().add(title);
-				title.setColumns(10);
+				title.setColumns(4);
 
 				JLabel lblTitleText = new JLabel("Title");
 				lblTitleText.setForeground(new Color(245, 255, 250));
@@ -2809,7 +2809,7 @@ public class Main {
 				edit_issue.getContentPane().add(title_background);
 
 				final JTextField volume = new JTextField();
-				volume.setColumns(10);
+				volume.setColumns(4);
 				volume.setText(Integer.toString(current_issue.getVolume()));
 				volume.setBounds(50, 270, 250, 26);
 				edit_issue.getContentPane().add(volume);
@@ -2820,7 +2820,7 @@ public class Main {
 				edit_issue.getContentPane().add(lblvolume);
 
 				final JTextField number = new JTextField();
-				number.setColumns(10);
+				number.setColumns(4);
 				number.setText(Integer.toString(current_issue.getNumber()));
 				number.setBounds(50, 317, 250, 26);
 				edit_issue.getContentPane().add(number);
@@ -2831,7 +2831,7 @@ public class Main {
 				edit_issue.getContentPane().add(lblnumber);
 
 				final JTextField year = new JTextField();
-				year.setColumns(10);
+				year.setColumns(4);
 				year.setText(Integer.toString(current_issue.getYear()));
 				year.setBounds(50, 364, 250, 26);
 				edit_issue.getContentPane().add(year);
@@ -2890,7 +2890,7 @@ public class Main {
 				final JTextField show_title = new JTextField(current_issue.getShow_title());
 				show_title.setBounds(340, 218, 250, 26);
 				edit_issue.getContentPane().add(show_title);
-				show_title.setColumns(10);
+				show_title.setColumns(4);
 
 				JLabel lblShowTitleText = new JLabel("Show Title");
 				lblShowTitleText.setForeground(new Color(245, 255, 250));
@@ -2901,7 +2901,7 @@ public class Main {
 				final JTextField show_volume = new JTextField(Integer.toString(current_issue.getShow_volume()));
 				show_volume.setBounds(340, 270, 250, 26);
 				edit_issue.getContentPane().add(show_volume);
-				show_volume.setColumns(10);
+				show_volume.setColumns(4);
 
 				JLabel lblShowVolume = new JLabel("Show Volume");
 				lblShowVolume.setForeground(new Color(245, 255, 250));
@@ -2912,7 +2912,7 @@ public class Main {
 				final JTextField show_number = new JTextField(Integer.toString(current_issue.getShow_number()));
 				show_number.setBounds(340, 317, 250, 26);
 				edit_issue.getContentPane().add(show_number);
-				show_number.setColumns(10);
+				show_number.setColumns(4);
 
 				JLabel lblShowNumber = new JLabel("Show Number");
 				lblShowNumber.setForeground(new Color(245, 255, 250));
@@ -2923,7 +2923,7 @@ public class Main {
 				final JTextField show_year = new JTextField(Integer.toString(current_issue.getShow_year()));
 				show_year.setBounds(340, 364, 250, 26);
 				edit_issue.getContentPane().add(show_year);
-				show_year.setColumns(10);
+				show_year.setColumns(4);
 
 				JLabel lblShowYear = new JLabel("Show Year");
 				lblShowYear.setForeground(new Color(245, 255, 250));
@@ -3568,7 +3568,8 @@ public class Main {
 				Date date = new Date();
 				Issue row_issue = issue_storage.get(issue_id);
 				Object issue_rowData[][] = { { row_issue.getId(), row_issue.getTitle(), row_issue.getVolume(),
-						row_issue.getNumber(), row_issue.getYear(), row_issue.getDate_accepted() == null ? "/" : sdf.format(row_issue.getDate_accepted()),
+						row_issue.getNumber(), row_issue.getYear(),
+						row_issue.getDate_accepted() == null ? "/" : sdf.format(row_issue.getDate_accepted()),
 						sdf.format(row_issue.getDate_published()) } };
 				Object issue_columnNames[] = { "ID", "Title", "Volume", "Number", "Year", "Date Accepted",
 						"Date Published" };
@@ -3788,7 +3789,7 @@ public class Main {
 				if (meta != null) {
 					txtCompetingInterests.setText(meta.getCompeting_interests());
 				}
-				txtCompetingInterests.setColumns(10);
+				txtCompetingInterests.setColumns(4);
 				txtCompetingInterests.setEditable(false);
 				txtCompetingInterests.setBounds(35, 70, 145, 100);
 
@@ -3804,7 +3805,7 @@ public class Main {
 				if (meta != null) {
 					txtFunding.setText(meta.getFunding());
 				}
-				txtFunding.setColumns(10);
+				txtFunding.setColumns(4);
 				txtFunding.setEditable(false);
 				txtFunding.setBounds(35, 195, 145, 100);
 
@@ -4063,13 +4064,15 @@ public class Main {
 				panel.add(lblDatePublished);
 				Date current = new Date();
 
-				JLabel lblDate = new JLabel(current_article.getDate_published() == null ? "/":sdf.format(current_article.getDate_published()));
+				JLabel lblDate = new JLabel(current_article.getDate_published() == null ? "/"
+						: sdf.format(current_article.getDate_published()));
 				lblDate.setVerticalAlignment(SwingConstants.TOP);
 				lblDate.setForeground(Color.BLACK);
 				lblDate.setFont(new Font("Dialog", Font.BOLD, 14));
 				lblDate.setBounds(160, 240, 125, 30);
 				panel.add(lblDate);
-				JLabel lblDateAccept = new JLabel(current_article.getDate_accepted() == null ? "/" : sdf.format(current_article.getDate_accepted()));
+				JLabel lblDateAccept = new JLabel(current_article.getDate_accepted() == null ? "/"
+						: sdf.format(current_article.getDate_accepted()));
 				lblDateAccept.setVerticalAlignment(SwingConstants.TOP);
 				lblDateAccept.setForeground(Color.BLACK);
 				lblDateAccept.setFont(new Font("Dialog", Font.BOLD, 14));
@@ -4603,7 +4606,7 @@ public class Main {
 				if (meta != null) {
 					txtCompetingInterests.setText(meta.getCompeting_interests());
 				}
-				txtCompetingInterests.setColumns(10);
+				txtCompetingInterests.setColumns(4);
 				txtCompetingInterests.setBounds(35, 70, 145, 100);
 
 				JScrollPane cmptinterests = new JScrollPane(txtCompetingInterests);
@@ -4619,7 +4622,7 @@ public class Main {
 				if (meta != null) {
 					txtFunding.setText(meta.getFunding());
 				}
-				txtFunding.setColumns(10);
+				txtFunding.setColumns(4);
 				txtFunding.setBounds(35, 195, 145, 100);
 
 				JScrollPane funding = new JScrollPane(txtFunding);
@@ -5027,7 +5030,7 @@ public class Main {
 				JTextField txtSectionTitle = new JTextField();
 				txtSectionTitle.setBounds(90, 65, 300, 30);
 				panelSection.add(txtSectionTitle);
-				txtSectionTitle.setColumns(10);
+				txtSectionTitle.setColumns(4);
 
 				JLabel lblTitleSection = new JLabel("Title");
 				lblTitleSection.setHorizontalAlignment(SwingConstants.CENTER);
@@ -5100,10 +5103,10 @@ public class Main {
 					public void actionPerformed(ActionEvent arg0) {
 						Boolean validation = true;
 						long entered_sectionID = 0;
-						int entered_pages = 0;
+						String entered_pages = lblPageNum.getText();
+
 						try {
 							entered_sectionID = sections.get(lblSectionId.getSelectedIndex()).getId();
-							entered_pages = Integer.parseInt(lblPageNum.getText());
 
 							System.out.println("Section id: " + entered_sectionID);
 
@@ -5116,8 +5119,7 @@ public class Main {
 
 							lblPageNum.setBackground(new Color(255, 0, 0));
 							lblPageNum.setForeground(new Color(255, 255, 255));
-							JOptionPane.showMessageDialog(null,
-									"Use only numbers in the Pages field and select a valid section item from the dropdown list. ");
+							JOptionPane.showMessageDialog(null, "Select a valid section item from the dropdown list. ");
 						}
 
 						try {
@@ -5471,7 +5473,7 @@ public class Main {
 			lblCompetingInterests.setBounds(35, 40, 145, 15);
 			panelMetadata.add(lblCompetingInterests);
 			JTextArea txtCompetingInterests = new JTextArea();
-			txtCompetingInterests.setColumns(10);
+			txtCompetingInterests.setColumns(4);
 			txtCompetingInterests.setBounds(35, 70, 145, 100);
 
 			JScrollPane cmptinterests = new JScrollPane(txtCompetingInterests);
@@ -5484,7 +5486,7 @@ public class Main {
 			panelMetadata.add(lblFunding);
 
 			JTextArea txtFunding = new JTextArea();
-			txtFunding.setColumns(10);
+			txtFunding.setColumns(4);
 			txtFunding.setBounds(35, 195, 145, 100);
 
 			JScrollPane funding = new JScrollPane(txtFunding);
@@ -5631,7 +5633,7 @@ public class Main {
 			JTextField txtFirstName = new JTextField();
 			txtFirstName.setBounds(90, 65, 300, 30);
 			panelAuthor.add(txtFirstName);
-			txtFirstName.setColumns(10);
+			txtFirstName.setColumns(4);
 
 			JLabel lblFirstName = new JLabel("First name");
 			lblFirstName.setHorizontalAlignment(SwingConstants.CENTER);
@@ -5644,7 +5646,7 @@ public class Main {
 			panelAuthor.add(lblMiddleName);
 
 			JTextField txtMiddleName = new JTextField();
-			txtMiddleName.setColumns(10);
+			txtMiddleName.setColumns(4);
 			txtMiddleName.setBounds(90, 117, 300, 30);
 			panelAuthor.add(txtMiddleName);
 
@@ -5654,7 +5656,7 @@ public class Main {
 			panelAuthor.add(lblLastName);
 
 			JTextField txtLastName = new JTextField();
-			txtLastName.setColumns(10);
+			txtLastName.setColumns(4);
 			txtLastName.setBounds(90, 169, 300, 30);
 			panelAuthor.add(txtLastName);
 
@@ -5664,7 +5666,7 @@ public class Main {
 			panelAuthor.add(lblEmail);
 
 			JTextField txtEmail = new JTextField();
-			txtEmail.setColumns(10);
+			txtEmail.setColumns(4);
 			txtEmail.setBounds(90, 221, 300, 30);
 			panelAuthor.add(txtEmail);
 
@@ -5674,7 +5676,7 @@ public class Main {
 			panelAuthor.add(lblAffiliation);
 
 			JTextField txtAffiliation = new JTextField();
-			txtAffiliation.setColumns(10);
+			txtAffiliation.setColumns(4);
 			txtAffiliation.setBounds(90, 273, 300, 30);
 			panelAuthor.add(txtAffiliation);
 
@@ -5684,7 +5686,7 @@ public class Main {
 			panelAuthor.add(lblBio);
 
 			JTextArea txtBio = new JTextArea();
-			txtBio.setColumns(10);
+			txtBio.setColumns(4);
 			txtBio.setBounds(90, 325, 300, 60);
 			panelAuthor.add(txtBio);
 
@@ -5694,7 +5696,7 @@ public class Main {
 			panelAuthor.add(lblOrcID);
 
 			JTextField txtOrcID = new JTextField();
-			txtOrcID.setColumns(10);
+			txtOrcID.setColumns(4);
 			txtOrcID.setBounds(90, 407, 300, 30);
 			panelAuthor.add(txtOrcID);
 
@@ -5704,7 +5706,7 @@ public class Main {
 			panelAuthor.add(lblDepartment);
 
 			JTextField txtDepartment = new JTextField();
-			txtDepartment.setColumns(10);
+			txtDepartment.setColumns(4);
 			txtDepartment.setBounds(90, 459, 300, 30);
 			panelAuthor.add(txtDepartment);
 
@@ -5714,7 +5716,7 @@ public class Main {
 			panelAuthor.add(lblCountry);
 
 			JTextField txtCountry = new JTextField();
-			txtCountry.setColumns(10);
+			txtCountry.setColumns(4);
 			txtCountry.setBounds(90, 511, 300, 30);
 			panelAuthor.add(txtCountry);
 			panelAuthor.setVisible(true);
@@ -5856,7 +5858,7 @@ public class Main {
 			JTextField txtSectionTitle = new JTextField();
 			txtSectionTitle.setBounds(90, 65, 300, 30);
 			panelSection.add(txtSectionTitle);
-			txtSectionTitle.setColumns(10);
+			txtSectionTitle.setColumns(4);
 
 			JLabel lblTitleSection = new JLabel("Title");
 			lblTitleSection.setHorizontalAlignment(SwingConstants.CENTER);
@@ -5925,10 +5927,10 @@ public class Main {
 				public void actionPerformed(ActionEvent arg0) {
 					Boolean validation = true;
 					long entered_sectionID = 0;
-					String entered_pages = "";
+					String entered_pages = lblPageNum.getText();
+
 					try {
 						entered_sectionID = sections.get(lblSectionId.getSelectedIndex()).getId();
-						entered_pages = lblPageNum.getText();
 
 						System.out.println("Section id: " + entered_sectionID);
 
@@ -5941,8 +5943,7 @@ public class Main {
 
 						lblPageNum.setBackground(new Color(255, 0, 0));
 						lblPageNum.setForeground(new Color(255, 255, 255));
-						JOptionPane.showMessageDialog(null,
-								"Use only numbers in the Pages field and select a valid section item from the dropdown list. ");
+						JOptionPane.showMessageDialog(null, "Select a valid section item from the dropdown list. ");
 					}
 
 					try {
@@ -6826,8 +6827,20 @@ public class Main {
 								JSONArray results = (JSONArray) setting.get("results");
 								System.out.println(results.get(0));
 								setting_json = (JSONObject) results.get(0);
-								new_article.setAbstract_text(
-										Jsoup.parse((String) setting_json.get("setting_value")).text());
+								System.out.println("ABSTRACT");
+								System.out.println(setting_json.get("setting_value"));
+								String abs = Jsoup.parse((String) setting_json.get("setting_value")).text();
+								String[] words = abs.split(" ");
+								String new_abs = "";
+								int j=0;
+								for(String word:words){
+									new_abs = new_abs +" "+word;
+									if (j % 8 == 0  && j!=0){
+										new_abs = new_abs+"\r\n";
+									}
+									j++;
+								}	
+								new_article.setAbstract_text(new_abs);
 								System.out.println(setting_json.get("setting_value"));
 							} catch (Exception e) {
 								e.printStackTrace();
@@ -6942,6 +6955,56 @@ public class Main {
 		issue_storage.put(issue.getId(), issue);
 	}
 
+	public static Journal get_journal(long journal_id, String credentials) throws IOException {
+		Journal journal = null;
+		if (journal_storage.containsKey(journal_id)) {
+			return journal_storage.get(journal_id);
+		} else {
+			HttpGet settingCheck = new HttpGet(String.format("%s/journals/%s/?format=json", base_url, journal_id));
+			// settingCheck.setEntity(new
+			// StringEntity(obj.toJSONString()));
+			settingCheck.addHeader("Authorization", "Basic " + credentials);
+			settingCheck.setHeader("Accept", "application/json");
+			settingCheck.addHeader("Content-type", "application/json");
+
+			HttpResponse response = null;
+			try {
+				response = httpClient.execute(settingCheck);
+			} catch (ClientProtocolException e2) {
+				// TODO Auto-generated catch block
+				e2.printStackTrace();
+			} catch (IOException e2) {
+				// TODO Auto-generated catch block
+				e2.printStackTrace();
+			}
+			JsonFactory jsonf = new JsonFactory();
+			InputStream result = response.getEntity().getContent();
+			org.json.simple.parser.JSONParser jsonParser = new JSONParser();
+			Long setting_pk = (long) -1;
+			jsonParser = new JSONParser();
+			boolean exists = true;
+			JSONObject setting_json = new JSONObject();
+			try {
+				JSONObject journal_json = (JSONObject) jsonParser.parse(IOUtils.toString(result));
+				journal = new Journal((long) journal_json.get("id"), (String) journal_json.get("path"),
+						Float.parseFloat(Double.toString((double) journal_json.get("seq"))),
+						(String) journal_json.get("primary_locale"), (long) journal_json.get("enabled"));
+				journal_storage.put(journal.getId(), journal);
+				try {
+					InputStream is = response.getEntity().getContent();
+					is.close();
+				} catch (IOException exc) {
+					// TODO Auto-generated catch block
+					exc.printStackTrace();
+				}
+			} catch (ParseException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			return journal;
+		}
+	}
+
 	public static void get_issue_from_remote(String credentials, long issue_id, boolean update_local)
 			throws IllegalStateException, IOException {
 		boolean status = status_online();
@@ -6986,54 +7049,9 @@ public class Main {
 				System.out.println(journal_link);
 				journal_link = journal_link.substring(journal_link.lastIndexOf("/") + 1);
 				System.out.println(journal_link);
-				if (journal_storage.containsKey(Long.parseLong(journal_link))) {
+				Journal journal = get_journal(Long.parseLong(journal_link), credentials);
+				new_issue.setJournal(journal);
 
-					new_issue.setJournal(journal_storage.get(Long.parseLong(journal_link)));
-
-				} else {
-					HttpGet settingCheck = new HttpGet(
-							String.format("%s/journals/%s/?format=json", base_url, journal_link));
-					// settingCheck.setEntity(new
-					// StringEntity(obj.toJSONString()));
-					settingCheck.addHeader("Authorization", "Basic " + credentials);
-					settingCheck.setHeader("Accept", "application/json");
-					settingCheck.addHeader("Content-type", "application/json");
-
-					response = null;
-					try {
-						response = httpClient.execute(settingCheck);
-					} catch (ClientProtocolException e2) {
-						// TODO Auto-generated catch block
-						e2.printStackTrace();
-					} catch (IOException e2) {
-						// TODO Auto-generated catch block
-						e2.printStackTrace();
-					}
-					jsonf = new JsonFactory();
-					result = response.getEntity().getContent();
-					Long setting_pk = (long) -1;
-					jsonParser = new JSONParser();
-					exists = true;
-					JSONObject setting_json = new JSONObject();
-					try {
-						JSONObject journal_json = (JSONObject) jsonParser.parse(IOUtils.toString(result));
-						Journal journal = new Journal((long) journal_json.get("id"), (String) journal_json.get("path"),
-								Float.parseFloat(Double.toString((double) journal_json.get("seq"))),
-								(String) journal_json.get("primary_locale"), (long) journal_json.get("enabled"));
-						journal_storage.put(journal.getId(), journal);
-						try {
-							InputStream is = response.getEntity().getContent();
-							is.close();
-						} catch (IOException exc) {
-							// TODO Auto-generated catch block
-							exc.printStackTrace();
-						}
-					} catch (ParseException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-					new_issue.setJournal(journal_storage.get(Long.parseLong(journal_link)));
-				}
 				System.out.println(new_issue);
 
 				System.out.println(issue_id);
@@ -7156,7 +7174,8 @@ public class Main {
 					System.out.println(journal_link);
 					journal_link = journal_link.substring(journal_link.lastIndexOf("/") + 1);
 					System.out.println(journal_link);
-					new_issue.setJournal(journal_storage.get(Long.parseLong(journal_link)));
+					Journal journal = get_journal(Long.parseLong(journal_link), credentials);
+					new_issue.setJournal(journal);
 					System.out.println(new_issue);
 
 					System.out.println(issue_id);
@@ -7390,7 +7409,8 @@ public class Main {
 		obj.put("section_id", article.getSection_id());
 		obj.put("user", String.format("%s/users/%s/", base_url, article.getUser_id()));
 		SimpleDateFormat upload_sdf = new SimpleDateFormat("yyyy-MM-dd");
-		String formated_date = upload_sdf.format(article.getDate_submitted() == null ? new Date():article.getDate_submitted());
+		String formated_date = upload_sdf
+				.format(article.getDate_submitted() == null ? new Date() : article.getDate_submitted());
 		obj.put("date_submitted", formated_date + "T00:00:00Z");
 		obj.put("pages", article.getPages());
 		obj.put("locale", article.getLocale());
@@ -7522,7 +7542,7 @@ public class Main {
 		lblCompetingInterests.setBounds(35, 40, 131, 15);
 		panelMetadata.add(lblCompetingInterests);
 		JTextArea txtCompetingInterests = new JTextArea();
-		txtCompetingInterests.setColumns(10);
+		txtCompetingInterests.setColumns(4);
 		txtCompetingInterests.setBounds(35, 70, 131, 100);
 
 		JScrollPane cmptinterests = new JScrollPane(txtCompetingInterests);
@@ -7538,7 +7558,7 @@ public class Main {
 		panelMetadata.add(lblFunding);
 
 		JTextArea txtFunding = new JTextArea();
-		txtFunding.setColumns(10);
+		txtFunding.setColumns(4);
 		txtFunding.setBounds(35, 195, 131, 100);
 
 		JScrollPane funding = new JScrollPane(txtFunding);
@@ -7552,7 +7572,7 @@ public class Main {
 		 * panelSection.add(lblMiddleName);
 		 * 
 		 * JTextField txtMiddleName = new JTextField();
-		 * txtMiddleName.setColumns(10); txtMiddleName.setBounds(90, 117, 300,
+		 * txtMiddleName.setColumns(4); txtMiddleName.setBounds(90, 117, 300,
 		 * 30); panelSection.add(txtMiddleName);
 		 * 
 		 * JLabel lblLastName = new JLabel("Last name");
@@ -7561,14 +7581,14 @@ public class Main {
 		 * panelSection.add(lblLastName);
 		 * 
 		 * JTextField txtLastName = new JTextField();
-		 * txtLastName.setColumns(10); txtLastName.setBounds(90, 169, 300, 30);
+		 * txtLastName.setColumns(4); txtLastName.setBounds(90, 169, 300, 30);
 		 * panelSection.add(txtLastName);
 		 * 
 		 * JLabel lblEmail = new JLabel("Email");
 		 * lblEmail.setHorizontalAlignment(SwingConstants.CENTER);
 		 * lblEmail.setBounds(190, 200, 100, 20); panelSection.add(lblEmail);
 		 * 
-		 * JTextField txtEmail = new JTextField(); txtEmail.setColumns(10);
+		 * JTextField txtEmail = new JTextField(); txtEmail.setColumns(4);
 		 * txtEmail.setBounds(90, 221, 300, 30); panelSection.add(txtEmail);
 		 * 
 		 * JLabel lblAffiliation = new JLabel("Affiliation");
@@ -7577,21 +7597,21 @@ public class Main {
 		 * panelSection.add(lblAffiliation);
 		 * 
 		 * JTextField txtAffiliation = new JTextField();
-		 * txtAffiliation.setColumns(10); txtAffiliation.setBounds(90, 273, 300,
+		 * txtAffiliation.setColumns(4); txtAffiliation.setBounds(90, 273, 300,
 		 * 30); panelSection.add(txtAffiliation);
 		 * 
 		 * JLabel lblBio = new JLabel("Bio");
 		 * lblBio.setHorizontalAlignment(SwingConstants.CENTER);
 		 * lblBio.setBounds(190, 304, 100, 20); panelSection.add(lblBio);
 		 * 
-		 * JTextArea txtBio = new JTextArea(); txtBio.setColumns(10);
+		 * JTextArea txtBio = new JTextArea(); txtBio.setColumns(4);
 		 * txtBio.setBounds(90, 325, 300, 60); panelSection.add(txtBio);
 		 * 
 		 * JLabel lblOrcID = new JLabel("OrcID");
 		 * lblOrcID.setHorizontalAlignment(SwingConstants.CENTER);
 		 * lblOrcID.setBounds(190, 386, 100, 20); panelSection.add(lblOrcID);
 		 * 
-		 * JTextField txtOrcID = new JTextField(); txtOrcID.setColumns(10);
+		 * JTextField txtOrcID = new JTextField(); txtOrcID.setColumns(4);
 		 * txtOrcID.setBounds(90, 407, 300, 30); panelSection.add(txtOrcID);
 		 * 
 		 * JLabel lblDepartment = new JLabel("Department");
@@ -7600,7 +7620,7 @@ public class Main {
 		 * panelSection.add(lblDepartment);
 		 * 
 		 * JTextField txtDepartment = new JTextField();
-		 * txtDepartment.setColumns(10); txtDepartment.setBounds(90, 459, 300,
+		 * txtDepartment.setColumns(4); txtDepartment.setBounds(90, 459, 300,
 		 * 30); panelSection.add(txtDepartment);
 		 * 
 		 * JLabel lblCountry = new JLabel("Country");
@@ -7608,7 +7628,7 @@ public class Main {
 		 * lblCountry.setBounds(190, 490, 100, 20);
 		 * panelSection.add(lblCountry);
 		 * 
-		 * JTextField txtCountry = new JTextField(); txtCountry.setColumns(10);
+		 * JTextField txtCountry = new JTextField(); txtCountry.setColumns(4);
 		 * txtCountry.setBounds(90, 511, 300, 30); panelSection.add(txtCountry);
 		 * panelSection.setBounds(0, 0, 480, 150); panelSection.setSize(new
 		 * Dimension(480,150)); panelSection.setPreferredSize(new
@@ -7668,9 +7688,9 @@ public class Main {
 		database_setup();
 		populate_variables();
 
-		// get_issue_from_remote(encoding,(long) 5, false);
+		get_issue_from_remote(encoding, (long) 5, false);
 
-		// update_articles_local(issue_storage.get((long) 5), encoding);
+		update_articles_local(issue_storage.get((long) 5), encoding);
 		System.out.println();
 		// file copy to use for file upload
 		// file_copy(1,"src/lib/db_xxs.png");
