@@ -3829,6 +3829,7 @@ public class Main {
 					panel.add(btnAddMetadata);
 					article.getContentPane().add(btnAddMetadata);
 				}
+							// scrollSettings.setViewportView(scrollFrame);
 				JPanel panel3 = new JPanel();
 				panel3.setBackground(SystemColor.window);
 				panel3.setBounds(50, height_small - 260, 320, 120);
@@ -3836,17 +3837,22 @@ public class Main {
 				panel3.setLayout(null);
 				panel3.setAutoscrolls(true);
 
-				panel3.setPreferredSize(new Dimension(320, settings_height));
+				panel3.setPreferredSize(new Dimension(640, 640));
 				JScrollPane abstractSection = new JScrollPane(panel3);
+				abstractSection.setHorizontalScrollBarPolicy(abstractSection.HORIZONTAL_SCROLLBAR_ALWAYS);
+
+				abstractSection.setPreferredSize(new Dimension(600, 8));
+				abstractSection.setBounds(width_small / 2 - 40, 132 + height_small / 2 - 130, width_small / 2,height_small / 2 - 150);
 				panel3.setAutoscrolls(true);
 
 				JLabel lblNewLabel_1 = new JLabel("Abstract");
 				lblNewLabel_1.setBounds(16, 6, 61, 16);
 				panel3.add(lblNewLabel_1);
-
+				String [] lines = current_article.getAbstract_text().split("\r\n");
+				
 				JTextArea lblAbstract = new JTextArea(current_article.getAbstract_text());
 				lblAbstract.setEditable(false);
-				lblAbstract.setBounds(16, 28, 400, 180);
+				lblAbstract.setBounds(16, 28, 560, 24*lines.length);
 				lblAbstract.setOpaque(true);
 				lblAbstract.setBackground(SystemColor.window);
 				panel3.add(lblAbstract);
@@ -7688,9 +7694,9 @@ public class Main {
 		database_setup();
 		populate_variables();
 
-		get_issue_from_remote(encoding, (long) 5, false);
+		//get_issue_from_remote(encoding, (long) 5, false);
 
-		update_articles_local(issue_storage.get((long) 5), encoding);
+		//update_articles_local(issue_storage.get((long) 5), encoding);
 		System.out.println();
 		// file copy to use for file upload
 		// file_copy(1,"src/lib/db_xxs.png");
