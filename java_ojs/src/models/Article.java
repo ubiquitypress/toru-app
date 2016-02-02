@@ -7,7 +7,7 @@ public class Article {
 	private long id;
 	private String title;
 	private long section_id;
-	private int pages;
+	private String pages;
 	private String abstract_text;
 	private Journal journal;
 	private long user_id;
@@ -25,7 +25,7 @@ public class Article {
 	private Issue issue_fk;
 	private ArrayList<Author> authors;
 
-	public Article(long id, String title, long section_id, int pages, String abstract_text, Date date_accepted, Date date_published,
+	public Article(long id, String title, long section_id, String pages, String abstract_text, Date date_accepted, Date date_published,
 			Issue issue_fk, Date date_submitted, Journal journal) {
 
 		this.title = title;
@@ -49,7 +49,7 @@ public class Article {
 		this.comments_status = 0;
 		this.date_submitted = date_submitted;
 	}
-	public Article(long id, String title, long section_id, int pages, String abstract_text, Date date_accepted, Date date_published, Date date_submitted, Journal journal) {
+	public Article(long id, String title, long section_id, String pages, String abstract_text, Date date_accepted, Date date_published, Date date_submitted, Journal journal) {
 
 		this.title = title;
 		this.id = id;
@@ -115,11 +115,11 @@ public class Article {
 		this.section_id = section_id;
 	}
 
-	public int getPages() {
+	public String getPages() {
 		return pages;
 	}
 
-	public void setPages(int pages) {
+	public void setPages(String pages) {
 		this.pages = pages;
 	}
 
@@ -218,7 +218,7 @@ public class Article {
 	public void setDate_submitted(Date date_submitted) {
 		this.date_submitted = date_submitted;
 	}
-	public Article(long id, String title, long section_id, int pages, String abstract_text, Journal journal,
+	public Article(long id, String title, long section_id, String pages, String abstract_text, Journal journal,
 			long user_id, String locale, String language, int status, int submission_progress, int current_round,
 			int fast_tracked, int hide_author, int comments_status, Date date_submitted, Date date_accepted,
 			Date date_published, Issue issue_fk, ArrayList<Author> authors) {
@@ -244,7 +244,7 @@ public class Article {
 		this.issue_fk = issue_fk;
 		this.authors = authors;
 	}
-	public Article(long id, long section_id, int pages, long user_id, String locale, String language,
+	public Article(long id, long section_id, String pages, long user_id, String locale, String language,
 			int status, int submission_progress, int current_round, int fast_tracked, int hide_author,
 			int comments_status, Issue issue_fk) {
 		super();
@@ -261,6 +261,7 @@ public class Article {
 		this.hide_author = hide_author;
 		this.comments_status = comments_status;
 		this.issue_fk = issue_fk;
+		this.authors = new ArrayList<Author>();
 	}
 	@Override
 	public String toString() {

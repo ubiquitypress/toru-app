@@ -344,9 +344,12 @@ public class Main {
 				issue_prep.setInt(7, save_issue.getShow_volume());
 				issue_prep.setInt(8, save_issue.getShow_number());
 				issue_prep.setInt(9, save_issue.getShow_year());
-				issue_prep.setString(10, sdf.format(save_issue.getDate_published()));
 
-				issue_prep.setString(11, sdf.format(save_issue.getDate_accepted()));
+				issue_prep.setString(10, sdf
+						.format(save_issue.getDate_published() == null ? new Date() : save_issue.getDate_published()));
+
+				issue_prep.setString(11,
+						sdf.format(save_issue.getDate_accepted() == null ? new Date() : save_issue.getDate_accepted()));
 				issue_prep.setInt(12, save_issue.getPublished());
 				issue_prep.setInt(12, save_issue.getAccess_status());
 				issue_prep.setInt(12, save_issue.getCurrent());
@@ -367,12 +370,15 @@ public class Main {
 					article_prep.setInt(1, (int) (long) save_article.getId());
 					article_prep.setString(2, save_article.getTitle());
 					article_prep.setInt(3, (int) (long) save_article.getSection_id());
-					article_prep.setInt(4, save_article.getPages());
+					article_prep.setString(4, save_article.getPages());
 					article_prep.setString(5, save_article.getAbstract_text());
-					article_prep.setString(6, sdf.format(save_article.getDate_published()));
+					article_prep.setString(6, sdf.format(
+							save_article.getDate_published() == null ? new Date() : save_article.getDate_published()));
 
-					article_prep.setString(7, sdf.format(save_article.getDate_accepted()));
-					article_prep.setString(8, sdf.format(save_article.getDate_submitted()));
+					article_prep.setString(7, sdf.format(
+							save_article.getDate_accepted() == null ? new Date() : save_article.getDate_accepted()));
+					article_prep.setString(8, sdf.format(
+							save_article.getDate_submitted() == null ? new Date() : save_article.getDate_submitted()));
 					article_prep.setString(9, save_article.getLocale());
 					article_prep.setString(10, save_article.getLanguage());
 					article_prep.setInt(11, save_article.getStatus());
@@ -616,7 +622,7 @@ public class Main {
 				author_primary_storage.put(id, new HashMap<Long, Boolean>());
 				HashMap<Long, ArticleFile> files = new HashMap<Long, ArticleFile>();
 				file_storage.put(id, files);
-				int pages = art_s.getInt(rsmd.getColumnName(4));
+				String pages = art_s.getString(rsmd.getColumnName(4));
 				String abstract_text = art_s.getString(rsmd.getColumnName(5));
 
 				String date = art_s.getString(rsmd.getColumnName(6));
@@ -1057,7 +1063,7 @@ public class Main {
 					+ " orcid CHAR(100)," + " department CHAR(300) NOT NULL," + " country CHAR(300) NOT NULL" + ")";
 			stmt.executeUpdate(sql);
 			sql = "CREATE TABLE IF NOT EXISTS ARTICLE" + "(id INTEGER PRIMARY KEY," + " title CHAR(500) NOT NULL,"
-					+ "section_id INTEGER," + "pages INTEGER," + " abstract CHAR(2000)," + "date_published CHAR(50),"
+					+ "section_id INTEGER," + "pages CHAR(255)," + " abstract CHAR(2000)," + "date_published CHAR(50),"
 					+ "date_accepted CHAR(50)," + "date_submitted CHAR(50)," + "status INTEGER,"
 					+ "submission_progress INTEGER," + "current_round INTEGER," + "fast_tracked INTEGER,"
 					+ "hide_author INTEGER," + "comments_status INTEGER," + " language CHAR(50) NOT NULL,"
@@ -1964,14 +1970,15 @@ public class Main {
 					data.add(Integer.toString(row_issue.getShow_volume()));
 					data.add(Integer.toString(row_issue.getShow_number()));
 					data.add(Integer.toString(row_issue.getShow_year()));
-					data.add(sdf.format(row_issue.getDate_published()));
+					data.add(row_issue.getDate_published() == null ? "/" : sdf.format(row_issue.getDate_published()));
 					data.add("View");
 					data.add("Edit");
 					data.add("Delete");
 					Object[] row = { row_issue.getId(), row_issue.getShow_title(), row_issue.getShow_volume(),
 							row_issue.getShow_number(), row_issue.getShow_year(),
-							sdf.format(row_issue.getDate_accepted()), sdf.format(row_issue.getDate_published()), "View",
-							"Edit", "Delete" };
+							row_issue.getDate_accepted() == null ? "/" : sdf.format(row_issue.getDate_accepted()),
+							row_issue.getDate_published() == null ? "/" : sdf.format(row_issue.getDate_published()),
+							"View", "Edit", "Delete" };
 					rows[i] = row;
 					i++;
 					rowData.add(data);
@@ -2050,7 +2057,10 @@ public class Main {
 
 							Object[] row = { row_issue.getId(), row_issue.getShow_title(), row_issue.getShow_volume(),
 									row_issue.getShow_number(), row_issue.getShow_year(),
-									sdf.format(row_issue.getDate_accepted()), sdf.format(row_issue.getDate_published()),
+									row_issue.getDate_accepted() == null ? "/"
+											: sdf.format(row_issue.getDate_accepted()),
+									row_issue.getDate_published() == null ? "/"
+											: sdf.format(row_issue.getDate_published()),
 									"View", "Edit", "Delete" };
 							rows[i] = row;
 							((DefaultTableModel) issues_table.getModel()).insertRow(0, row);
@@ -2694,7 +2704,8 @@ public class Main {
 						article_screens.put(i_id, new HashMap<Long, JFrame>());
 						issue_storage.put(i_id, issue);
 						Object[] new_row = { i_id, title.getText(), Integer.parseInt(volume.getText()),
-								Integer.parseInt(number.getText()), sdf.format(datePicker.getDate()), "View", "Edit",
+								Integer.parseInt(number.getText()),
+								datePicker.getDate() == null ? "/" : sdf.format(datePicker.getDate()), "View", "Edit",
 								"Delete" };
 
 						((DefaultTableModel) issues_table.getModel()).addRow(new_row);
@@ -3174,7 +3185,8 @@ public class Main {
 					data.add(Long.toString(issue_id));
 					data.add(Long.toString((current_articles.get(id).getSection_id())));
 					data.add(current_articles.get(id).getTitle());
-					data.add(Integer.toString(current_articles.get(id).getPages()));
+					data.add(current_articles.get(id).getPages() == null ? current_articles.get(id).getPages() == null
+							: "/");
 					data.add(current_articles.get(id).getAbstract_text());
 					data.add(sdf.format(current));
 					data.add("View");
@@ -3556,7 +3568,7 @@ public class Main {
 				Date date = new Date();
 				Issue row_issue = issue_storage.get(issue_id);
 				Object issue_rowData[][] = { { row_issue.getId(), row_issue.getTitle(), row_issue.getVolume(),
-						row_issue.getNumber(), row_issue.getYear(), sdf.format(row_issue.getDate_accepted()),
+						row_issue.getNumber(), row_issue.getYear(), row_issue.getDate_accepted() == null ? "/" : sdf.format(row_issue.getDate_accepted()),
 						sdf.format(row_issue.getDate_published()) } };
 				Object issue_columnNames[] = { "ID", "Title", "Volume", "Number", "Year", "Date Accepted",
 						"Date Published" };
@@ -4051,13 +4063,13 @@ public class Main {
 				panel.add(lblDatePublished);
 				Date current = new Date();
 
-				JLabel lblDate = new JLabel(sdf.format(current_article.getDate_published()));
+				JLabel lblDate = new JLabel(current_article.getDate_published() == null ? "/":sdf.format(current_article.getDate_published()));
 				lblDate.setVerticalAlignment(SwingConstants.TOP);
 				lblDate.setForeground(Color.BLACK);
 				lblDate.setFont(new Font("Dialog", Font.BOLD, 14));
 				lblDate.setBounds(160, 240, 125, 30);
 				panel.add(lblDate);
-				JLabel lblDateAccept = new JLabel(sdf.format(current_article.getDate_accepted()));
+				JLabel lblDateAccept = new JLabel(current_article.getDate_accepted() == null ? "/" : sdf.format(current_article.getDate_accepted()));
 				lblDateAccept.setVerticalAlignment(SwingConstants.TOP);
 				lblDateAccept.setForeground(Color.BLACK);
 				lblDateAccept.setFont(new Font("Dialog", Font.BOLD, 14));
@@ -4076,7 +4088,7 @@ public class Main {
 				lblPages.setBounds(24, 165, 94, 30);
 				panel.add(lblPages);
 
-				JLabel lblPageNum = new JLabel(Long.toString(current_article.getPages()));
+				JLabel lblPageNum = new JLabel(current_article.getPages());
 				lblPageNum.setVerticalAlignment(SwingConstants.TOP);
 				lblPageNum.setForeground(Color.BLACK);
 				lblPageNum.setFont(new Font("Dialog", Font.BOLD, 14));
@@ -4953,7 +4965,7 @@ public class Main {
 				lblPages.setBounds(24, 165, 94, 30);
 				panel.add(lblPages);
 
-				final JTextField lblPageNum = new JTextField(Integer.toString(current_article.getPages()));
+				final JTextField lblPageNum = new JTextField(current_article.getPages());
 				lblPageNum.setForeground(Color.BLACK);
 				lblPageNum.setFont(new Font("Dialog", Font.BOLD, 14));
 				lblPageNum.setBounds(156, 171, 125, 30);
@@ -5160,7 +5172,7 @@ public class Main {
 							a.setAuthors(updated_authors);
 							a.setAbstract_text(lblAbstract.getText());
 							a.setSection_id(sections.get(lblSectionId.getSelectedIndex()).getId());
-							a.setPages(Integer.parseInt(lblPageNum.getText()));
+							a.setPages(lblPageNum.getText());
 							a.setDate_published(datePicker.getDate());
 							a.setDate_accepted(datePickerAccepted.getDate());
 							Issue current_issue = issue_storage.get(issue_id);
@@ -5913,10 +5925,10 @@ public class Main {
 				public void actionPerformed(ActionEvent arg0) {
 					Boolean validation = true;
 					long entered_sectionID = 0;
-					int entered_pages = 0;
+					String entered_pages = "";
 					try {
 						entered_sectionID = sections.get(lblSectionId.getSelectedIndex()).getId();
-						entered_pages = Integer.parseInt(lblPageNum.getText());
+						entered_pages = lblPageNum.getText();
 
 						System.out.println("Section id: " + entered_sectionID);
 
@@ -6875,6 +6887,44 @@ public class Main {
 						} else {
 							new_article.setTitle("None.");
 						}
+						HttpGet published_art = new HttpGet(String.format("%s/get/article/published/%s/?format=json",
+								base_url, new_article.getId()));
+						published_art.addHeader("Authorization", "Basic " + credentials);
+						published_art.setHeader("Accept", "application/json");
+						published_art.addHeader("Content-type", "application/json");
+
+						response = null;
+						try {
+							response = httpClient.execute(published_art);
+						} catch (ClientProtocolException e2) {
+							// TODO Auto-generated catch block
+							e2.printStackTrace();
+						} catch (IOException e2) {
+							// TODO Auto-generated catch block
+							e2.printStackTrace();
+						}
+						if (response.getStatusLine().getStatusCode() == 200) {
+							result = response.getEntity().getContent();
+							jsonParser = new JSONParser();
+							exists = true;
+							setting_json = new JSONObject();
+
+							try {
+								setting = (JSONObject) jsonParser.parse(IOUtils.toString(result));
+
+								new_article.setDate_published(
+										sdf.parse(((String) setting.get("date_published")).replace("-", "/")));
+							} catch (Exception e) {
+								e.printStackTrace();
+							}
+							try {
+								InputStream is = response.getEntity().getContent();
+								is.close();
+							} catch (IOException exc) {
+								// TODO Auto-generated catch block
+								exc.printStackTrace();
+							}
+						}
 						articles_list.add(new_article);
 					} catch (ParseException e) {
 						// TODO Auto-generated catch block
@@ -6890,6 +6940,172 @@ public class Main {
 			issue.add_article(a.getId(), a);
 		}
 		issue_storage.put(issue.getId(), issue);
+	}
+
+	public static void get_issue_from_remote(String credentials, long issue_id, boolean update_local)
+			throws IllegalStateException, IOException {
+		boolean status = status_online();
+		if (!status) {
+			return;
+		}
+		HttpGet httpGet = new HttpGet(String.format("%s/issues/%s/?format=json", base_url, issue_id));
+		httpGet.addHeader("Authorization", "Basic " + credentials);
+		httpGet.setHeader("Accept", "application/json");
+		httpGet.addHeader("Content-type", "application/json");
+
+		HttpResponse response = null;
+		try {
+			response = httpClient.execute(httpGet);
+		} catch (ClientProtocolException e2) {
+			// TODO Auto-generated catch block
+			e2.printStackTrace();
+		} catch (IOException e2) {
+			// TODO Auto-generated catch block
+			e2.printStackTrace();
+		}
+		JsonFactory jsonf = new JsonFactory();
+		InputStream result = response.getEntity().getContent();
+		org.json.simple.parser.JSONParser jsonParser = new JSONParser();
+		boolean exists = true;
+		JSONObject issue_json = new JSONObject();
+		Issue issue = null;
+		try {
+			issue_json = (JSONObject) jsonParser.parse(IOUtils.toString(result));
+
+			issue_id = (long) issue_json.get("id");
+			if (issue_storage.containsKey(issue_id)) {
+				if (update_local) {
+					update_issue_local(issue_storage.get(issue_id), credentials);
+				}
+			} else {
+				Issue new_issue = new Issue(issue_id);
+
+				new_issue = JSONToIssue(issue_json, new_issue);
+				String journal_link = (String) issue_json.get("journal");
+				journal_link = journal_link.substring(0, journal_link.lastIndexOf("/"));
+				System.out.println(journal_link);
+				journal_link = journal_link.substring(journal_link.lastIndexOf("/") + 1);
+				System.out.println(journal_link);
+				if (journal_storage.containsKey(Long.parseLong(journal_link))) {
+
+					new_issue.setJournal(journal_storage.get(Long.parseLong(journal_link)));
+
+				} else {
+					HttpGet settingCheck = new HttpGet(
+							String.format("%s/journals/%s/?format=json", base_url, journal_link));
+					// settingCheck.setEntity(new
+					// StringEntity(obj.toJSONString()));
+					settingCheck.addHeader("Authorization", "Basic " + credentials);
+					settingCheck.setHeader("Accept", "application/json");
+					settingCheck.addHeader("Content-type", "application/json");
+
+					response = null;
+					try {
+						response = httpClient.execute(settingCheck);
+					} catch (ClientProtocolException e2) {
+						// TODO Auto-generated catch block
+						e2.printStackTrace();
+					} catch (IOException e2) {
+						// TODO Auto-generated catch block
+						e2.printStackTrace();
+					}
+					jsonf = new JsonFactory();
+					result = response.getEntity().getContent();
+					Long setting_pk = (long) -1;
+					jsonParser = new JSONParser();
+					exists = true;
+					JSONObject setting_json = new JSONObject();
+					try {
+						JSONObject journal_json = (JSONObject) jsonParser.parse(IOUtils.toString(result));
+						Journal journal = new Journal((long) journal_json.get("id"), (String) journal_json.get("path"),
+								Float.parseFloat(Double.toString((double) journal_json.get("seq"))),
+								(String) journal_json.get("primary_locale"), (long) journal_json.get("enabled"));
+						journal_storage.put(journal.getId(), journal);
+						try {
+							InputStream is = response.getEntity().getContent();
+							is.close();
+						} catch (IOException exc) {
+							// TODO Auto-generated catch block
+							exc.printStackTrace();
+						}
+					} catch (ParseException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					new_issue.setJournal(journal_storage.get(Long.parseLong(journal_link)));
+				}
+				System.out.println(new_issue);
+
+				System.out.println(issue_id);
+				System.out.println(response.toString());
+				HttpGet settingCheck = new HttpGet(
+						String.format("%s/get/setting/title/issue/%s/?format=json", base_url, new_issue.getId()));
+				// settingCheck.setEntity(new
+				// StringEntity(obj.toJSONString()));
+				settingCheck.addHeader("Authorization", "Basic " + credentials);
+				settingCheck.setHeader("Accept", "application/json");
+				settingCheck.addHeader("Content-type", "application/json");
+
+				response = null;
+				try {
+					response = httpClient.execute(settingCheck);
+				} catch (ClientProtocolException e2) {
+					// TODO Auto-generated catch block
+					e2.printStackTrace();
+				} catch (IOException e2) {
+					// TODO Auto-generated catch block
+					e2.printStackTrace();
+				}
+				jsonf = new JsonFactory();
+				result = response.getEntity().getContent();
+				Long setting_pk = (long) -1;
+				jsonParser = new JSONParser();
+				exists = true;
+				JSONObject setting_json = new JSONObject();
+				try {
+					JSONObject setting = (JSONObject) jsonParser.parse(IOUtils.toString(result));
+					System.out.println(setting.get("count"));
+					System.out.println(setting);
+					Long count = (Long) setting.get("count");
+					if (count == 0) {
+						exists = false;
+					} else {
+						JSONArray results = (JSONArray) setting.get("results");
+						System.out.println(results.get(0));
+						setting_json = (JSONObject) results.get(0);
+						new_issue.setTitle((String) setting_json.get("setting_value"));
+						new_issue.setShow_title((String) setting_json.get("setting_value"));
+					}
+				} catch (ParseException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				issue_storage.put(issue_id, new_issue);
+				issue_screens.put(issue_id, new JFrame());
+				article_screens.put(issue_id, new HashMap<Long, JFrame>());
+
+			}
+			/*
+			 * System.out.println(issue_obj.get("count"));
+			 * System.out.println(issue_obj); String detail = (String)
+			 * issue_obj.get("detail"); if (detail == null) { exists = false; }
+			 * else { JSONArray results = (JSONArray) issue_obj.get("results");
+			 * System.out.println(results.get(0)); issue_json = (JSONObject)
+			 * results.get(0); System.out.println(issue_json.get("id")); issue =
+			 * JSONToIssue(issue_json, issue); }
+			 */
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		try {
+			InputStream is = response.getEntity().getContent();
+			is.close();
+		} catch (IOException exc) {
+			// TODO Auto-generated catch block
+			exc.printStackTrace();
+		}
+
 	}
 
 	public static void update_get_issues_from_remote(String credentials, boolean update_local)
@@ -7174,7 +7390,7 @@ public class Main {
 		obj.put("section_id", article.getSection_id());
 		obj.put("user", String.format("%s/users/%s/", base_url, article.getUser_id()));
 		SimpleDateFormat upload_sdf = new SimpleDateFormat("yyyy-MM-dd");
-		String formated_date = upload_sdf.format(article.getDate_submitted());
+		String formated_date = upload_sdf.format(article.getDate_submitted() == null ? new Date():article.getDate_submitted());
 		obj.put("date_submitted", formated_date + "T00:00:00Z");
 		obj.put("pages", article.getPages());
 		obj.put("locale", article.getLocale());
@@ -7194,12 +7410,12 @@ public class Main {
 		user_id = user_id.substring(0, user_id.lastIndexOf("/"));
 		user_id = user_id.substring(user_id.lastIndexOf("/") + 1);
 		System.out.println(user_id);
-		Article new_article = new Article((long) obj.get("id"), (long) obj.get("section_id"),
-				(int) (obj.get("pages") == null ? obj.get("pages") : 0), Long.parseLong(user_id),
-				(String) obj.get("locale"), (String) obj.get("language"), (int) (long) obj.get("status"),
-				(int) (long) obj.get("submission_progress"), (int) (long) obj.get("current_round"),
-				(int) (long) obj.get("fast_tracked"), (int) (long) obj.get("hide_author"),
-				(int) (long) obj.get("comments_status"), issue);
+
+		Article new_article = new Article((long) obj.get("id"), (long) obj.get("section_id"), (String) obj.get("pages"),
+				Long.parseLong(user_id), (String) obj.get("locale"), (String) obj.get("language"),
+				(int) (long) obj.get("status"), (int) (long) obj.get("submission_progress"),
+				(int) (long) obj.get("current_round"), (int) (long) obj.get("fast_tracked"),
+				(int) (long) obj.get("hide_author"), (int) (long) obj.get("comments_status"), issue);
 		if (date_p != null && date_p.compareTo("") != 0) {
 
 			try {
@@ -7451,8 +7667,10 @@ public class Main {
 		System.out.println("ioannis:root".hashCode());
 		database_setup();
 		populate_variables();
-		System.out.println(issue_storage.get((long) 5));
-		update_articles_local(issue_storage.get((long) 5), encoding);
+
+		// get_issue_from_remote(encoding,(long) 5, false);
+
+		// update_articles_local(issue_storage.get((long) 5), encoding);
 		System.out.println();
 		// file copy to use for file upload
 		// file_copy(1,"src/lib/db_xxs.png");
