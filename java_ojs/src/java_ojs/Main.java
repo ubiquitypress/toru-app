@@ -667,7 +667,7 @@ public class Main {
 				Author author = null;
 				author = new Author(id, first_name, middle_name, last_name, email, affiliation, bio, orcid, department,
 						country);
-
+				author_id = id;
 				author_storage.put(id, author);
 				System.out.println(author_storage.size());
 			}
@@ -1032,9 +1032,11 @@ public class Main {
 		long remote_issue_id = 0;
 		long remote_article_id = 0;
 		long remote_journal_id = 0;
+		long remote_author_id = 0;
 		remote_issue_id = get_remote_id("issue");
 		remote_article_id = get_remote_id("article");
 		remote_journal_id = get_remote_id("journal");
+		remote_author_id = get_remote_id("author");
 		if (remote_issue_id > i_id) {
 			i_id = remote_issue_id;
 		}
@@ -1044,9 +1046,13 @@ public class Main {
 		if (remote_journal_id > journal_id) {
 			journal_id = remote_journal_id;
 		}
+		if (remote_author_id > author_id) {
+			author_id = remote_author_id;
+		}
 		System.out.println(remote_issue_id);
 		System.out.println(remote_article_id);
 		System.out.println(remote_journal_id);
+		System.out.println(remote_author_id);
 	}
 
 	public static void database_setup() {
@@ -7378,7 +7384,117 @@ public class Main {
 		}
 
 	}
+	public static void get_authors_remote(String credentials, boolean update_local)
+			throws IllegalStateException, IOException {
+		boolean status = status_online();
+		if (!status) {
+			return;
+		}
+		HttpGet httpGet = new HttpGet(String.format("%s/authors/?format=json", base_url));
+		httpGet.addHeader("Authorization", "Basic " + credentials);
+		httpGet.setHeader("Accept", "application/json");
+		httpGet.addHeader("Content-type", "application/json");
 
+		HttpResponse response = null;
+		try {
+			response = httpClient.execute(httpGet);
+		} catch (ClientProtocolException e2) {
+			// TODO Auto-generated catch block
+			e2.printStackTrace();
+		} catch (IOException e2) {
+			// TODO Auto-generated catch block
+			e2.printStackTrace();
+		}
+		JsonFactory jsonf = new JsonFactory();
+		InputStream result = response.getEntity().getContent();
+		org.json.simple.parser.JSONParser jsonParser = new JSONParser();
+		boolean exists = true;
+		JSONObject author_json = new JSONObject();
+		try {
+			JSONObject issue_obj = (JSONObject) jsonParser.parse(IOUtils.toString(result));
+			JSONArray array = (JSONArray) issue_obj.get("results");
+			System.out.println(array);
+			for (int i = 0; i < array.size(); i++) {
+				author_json = (JSONObject) array.get(i);
+				long author_id = (long) author_json.get("id");
+				if (author_storage.containsKey(author_id)) {
+					if (update_local) {
+				//		update_issue_local(issue_storage.get(issue_id), credentials);
+					}
+					continue;
+				} else {
+					Author new_author = new Author(author_id);
+
+					new_author = JSONToAuthor(author_json, new_author);
+				
+					System.out.println(response.toString());
+					HttpGet settingCheck = new HttpGet(
+							String.format("%s/get/setting/biography/author/%s/?format=json", base_url, new_author.getId()));
+					// settingCheck.setEntity(new
+					// StringEntity(obj.toJSONString()));
+					settingCheck.addHeader("Authorization", "Basic " + credentials);
+					settingCheck.setHeader("Accept", "application/json");
+					settingCheck.addHeader("Content-type", "application/json");
+
+					response = null;
+					try {
+						response = httpClient.execute(settingCheck);
+					} catch (ClientProtocolException e2) {
+						// TODO Auto-generated catch block
+						e2.printStackTrace();
+					} catch (IOException e2) {
+						// TODO Auto-generated catch block
+						e2.printStackTrace();
+					}
+					jsonf = new JsonFactory();
+					result = response.getEntity().getContent();
+					Long setting_pk = (long) -1;
+					jsonParser = new JSONParser();
+					exists = true;
+					JSONObject setting_json = new JSONObject();
+					try {
+						JSONObject setting = (JSONObject) jsonParser.parse(IOUtils.toString(result));
+						System.out.println(setting.get("count"));
+						System.out.println(setting);
+						Long count = (Long) setting.get("count");
+						if (count == 0) {
+							exists = false;
+						} else {
+							JSONArray results = (JSONArray) setting.get("results");
+							System.out.println(results.get(0));
+							setting_json = (JSONObject) results.get(0);
+							new_author.setBio((String) setting_json.get("setting_value"));
+						}
+					} catch (ParseException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					author_storage.put(new_author.getArticle_id(), new_author);
+					System.out.println(new_author);
+				}
+			}
+			/*
+			 * System.out.println(issue_obj.get("count"));
+			 * System.out.println(issue_obj); String detail = (String)
+			 * issue_obj.get("detail"); if (detail == null) { exists = false; }
+			 * else { JSONArray results = (JSONArray) issue_obj.get("results");
+			 * System.out.println(results.get(0)); issue_json = (JSONObject)
+			 * results.get(0); System.out.println(issue_json.get("id")); issue =
+			 * JSONToIssue(issue_json, issue); }
+			 */
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		try {
+			InputStream is = response.getEntity().getContent();
+			is.close();
+		} catch (IOException exc) {
+			// TODO Auto-generated catch block
+			exc.printStackTrace();
+		}
+
+	}
 	public static Issue update_issue_local(Issue issue, String credentials) throws IllegalStateException, IOException {
 		boolean status = status_online();
 		if (!status) {
@@ -7575,6 +7691,30 @@ public class Main {
 		}
 		return new_article;
 	}
+	public static Author JSONToAuthor(JSONObject obj, Author author) {
+		long id = (long) obj.get("id");
+		String article_url = (String) obj.get("article");
+		article_url = article_url.substring(0, article_url.lastIndexOf("/"));
+	
+		article_url = article_url.substring(article_url.lastIndexOf("/") + 1);
+		
+		long article_id = Long.parseLong(article_url);
+
+		String first_name = (String) obj.get("first_name");
+
+		String middle_name = (String) obj.get("middle_name");
+		String last_name = (String) obj.get("last_name");
+		String email = (String) obj.get("email");
+		String country = (String) obj.get("country");
+		author.setArticle_id(article_id);
+		author.setFirst_name(first_name);
+		author.setMiddle_name(middle_name);
+		author.setLast_name(last_name);
+		author.setEmail(email);
+		author.setCountry(country);
+				
+		return author;
+	}
 
 	/**
 	 * @throws IOException
@@ -7620,25 +7760,8 @@ public class Main {
 
 		httpClient.getCredentialsProvider().setCredentials(new AuthScope(AuthScope.ANY_HOST, AuthScope.ANY_PORT),
 				new UsernamePasswordCredentials("ioannis", "root"));
-
-		author_id = 6;
-		author_storage.put((long) 1, new Author((long) 1, "Peter", "M.", "FakeAuthor", "fake_author@fakeaddress.com",
-				"affiliation", "bio", "orcid", "testing", "gb"));
-		author_storage.put((long) 2, new Author((long) 2, "Paul", "C.", "FakeAuthor", "fake_author@fakeaddress.com",
-				"affiliation", "bio", "orcid", "testing", "gb"));
-		author_storage.put((long) 3, new Author((long) 3, "Celia", "C.", "FakeAuthor", "fake_author@fakeaddress.com",
-				"affiliation", "bio", "orcid", "testing", "gb"));
-		author_storage.put((long) 4, new Author((long) 4, "Sen", "C.", "FakeAuthor", "fake_author@fakeaddress.com",
-				"affiliation", "bio", "orcid", "testing", "gb"));
-		author_storage.put((long) 5, new Author((long) 5, "Chihiro", "C.", "FakeAuthor", "fake_author@fakeaddress.com",
-				"affiliation", "bio", "orcid", "testing", "gb"));
-		author_storage.put((long) 6, new Author((long) 6, "Morty", "C.", "FakeAuthor", "fake_author@fakeaddress.com",
-				"affiliation", "bio", "orcid", "testing", "gb"));
-		section_db_id = 2;
-		section_storage.put((long) 1, new Section((long) 1, "Section 1"));
-		section_storage.put((long) 2, new Section((long) 2, "Section 2"));
 		System.out.println("Loading dashboard");
-		issue(6989);
+		dashboard();
 	}
 
 	public void add_author() {
@@ -7822,7 +7945,7 @@ public class Main {
 		System.out.println();
 		// file copy to use for file upload
 		// file_copy(1,"src/lib/db_xxs.png");
-
+		get_authors_remote(encoding,false);
 		new Main();
 	}
 }

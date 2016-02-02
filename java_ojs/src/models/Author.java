@@ -11,6 +11,9 @@ public class Author {
 	private String department;
 	private String country;
 	private long id;
+	private long article_id;
+	private long primary_contact=0;
+	private long seq=0;
 	
 	public Author(long id, String first_name, String middle_name, String last_name, String email, String affiliation, String bio,
 			String orcid, String department, String country) {
@@ -89,6 +92,38 @@ public class Author {
 	}
 	public void setCountry(String country) {
 		this.country = country;
+	}
+	public Author(long id) {
+		super();
+		this.id = id;
+	}
+	public long getArticle_id() {
+		return article_id;
+	}
+	public void setArticle_id(long article_id) {
+		this.article_id = article_id;
+	}
+	public Author(String first_name, String middle_name, String last_name, String email, String affiliation, String bio,
+			String orcid, String department, String country, long id, long article_id) {
+		super();
+		this.first_name = first_name;
+		this.middle_name = middle_name;
+		this.last_name = last_name;
+		this.email = email;
+		this.affiliation = affiliation;
+		this.bio = bio;
+		this.orcid = orcid;
+		this.department = department;
+		this.country = country;
+		this.id = id;
+		this.article_id = article_id;
+	}
+	@Override
+	public String toString() {
+		return "Author [first_name=" + first_name + ", middle_name=" + middle_name + ", last_name=" + last_name
+				+ ", email=" + email + ", affiliation=" + affiliation + ", bio=" + bio + ", orcid=" + orcid
+				+ ", department=" + department + ", country=" + country + ", id=" + id + ", article_id=" + article_id
+				+ ", primary_contact=" + primary_contact + ", seq=" + seq + "]";
 	}
 	
 	
