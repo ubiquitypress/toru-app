@@ -164,7 +164,7 @@ public class Main {
 	JFrame login, api, issues, settings;
 	private JTextField access_key, username;
 	private JXTable issues_table, article_table;
-	private int delay = 2000; // milliseconds
+	private static int delay = 1000; // milliseconds
 	private JPasswordField passwordField;
 	private static HashMap<String, String> list_settings;
 	private static HashMap<Long, Long> list_issues;
@@ -756,17 +756,35 @@ public class Main {
 	}
 
 	public static boolean status_online() {
-		try {
-			Socket sock = new Socket();
-			InetSocketAddress addr = new InetSocketAddress("www.google.com", 80);
-			sock.setSoTimeout(500);
-			sock.connect(addr, 3000);
-			sock.close();
-			return true;
+			boolean online = true;
+			HttpGet issue_exists = new HttpGet(String.format("%s/", base_url));
 
-		} catch (Exception e) {
-			return false;
-		}
+			issue_exists.addHeader("Authorization", "Basic " + encoding);
+			issue_exists.setHeader("Accept", "application/json");
+			issue_exists.addHeader("Content-type", "application/json");
+
+			HttpResponse response = null;
+			try {
+				response = httpClient.execute(issue_exists);
+			} catch (ClientProtocolException e2) {
+				// TODO Auto-generated catch block
+				delay=1000;
+				return false;
+			} catch (IOException e2) {
+				// TODO Auto-generated catch block
+				delay=1000;
+				return false;
+			}
+			try {
+				InputStream is = response.getEntity().getContent();
+				is.close();
+			} catch (IOException exc) {
+				// TODO Auto-generated catch block
+				exc.printStackTrace();
+			}
+			
+			delay=2500;
+		return online;
 	}
 
 	public static boolean get_profile_details(long id) throws IllegalStateException, IOException {
@@ -974,10 +992,10 @@ public class Main {
 				response = httpClient.execute(httpGet);
 			} catch (ClientProtocolException e2) {
 				// TODO Auto-generated catch block
-				e2.printStackTrace();
+				return latest=1;
 			} catch (IOException e2) {
 				// TODO Auto-generated catch block
-				e2.printStackTrace();
+				return latest=1;
 			}
 			JsonFactory jsonf = new JsonFactory();
 			InputStream result = response.getEntity().getContent();
@@ -1295,17 +1313,12 @@ public class Main {
 
 				ActionListener taskPerformer1 = new ActionListener() {
 					public void actionPerformed(ActionEvent evt) {
-						try {
-							Socket sock = new Socket();
-							InetSocketAddress addr = new InetSocketAddress("www.google.com", 80);
-							sock.setSoTimeout(500);
-							sock.connect(addr, 3000);
-							sock.close();
+						if(status_online()){
 							internetCheck.setBackground(Color.GREEN);
 							internetCheck.setText("ONLINE");
 							btnSync1.setEnabled(true);
 
-						} catch (Exception e) {
+						} else {
 							internetCheck.setBackground(Color.RED);
 							internetCheck.setText("OFFLINE");
 							btnSync1.setEnabled(false);
@@ -1591,18 +1604,12 @@ public class Main {
 
 				ActionListener taskPerformer1 = new ActionListener() {
 					public void actionPerformed(ActionEvent evt) {
-						try {
-							Socket sock = new Socket();
-							InetSocketAddress addr = new InetSocketAddress("www.google.com", 80);
-							sock.setSoTimeout(500);
-							sock.connect(addr, 3000);
-
+						if(status_online()){
 							internetCheck.setBackground(Color.GREEN);
 							internetCheck.setText("ONLINE");
 							btnSync1.setEnabled(true);
-							sock.close();
 
-						} catch (Exception e) {
+						} else {
 							internetCheck.setBackground(Color.RED);
 							internetCheck.setText("OFFLINE");
 							btnSync1.setEnabled(false);
@@ -1739,18 +1746,12 @@ public class Main {
 
 					ActionListener taskPerformer1 = new ActionListener() {
 						public void actionPerformed(ActionEvent evt) {
-							try {
-								Socket sock = new Socket();
-								InetSocketAddress addr = new InetSocketAddress("www.google.com", 80);
-								sock.setSoTimeout(500);
-								sock.connect(addr, 3000);
-
+							if(status_online()){
 								internetCheck.setBackground(Color.GREEN);
 								internetCheck.setText("ONLINE");
 								btnSync1.setEnabled(true);
-								sock.close();
 
-							} catch (Exception e) {
+							} else {
 								internetCheck.setBackground(Color.RED);
 								internetCheck.setText("OFFLINE");
 								btnSync1.setEnabled(false);
@@ -1888,18 +1889,12 @@ public class Main {
 
 					ActionListener taskPerformer1 = new ActionListener() {
 						public void actionPerformed(ActionEvent evt) {
-							try {
-								Socket sock = new Socket();
-								InetSocketAddress addr = new InetSocketAddress("www.google.com", 80);
-								sock.setSoTimeout(500);
-								sock.connect(addr, 3000);
-
+							if(status_online()){
 								internetCheck.setBackground(Color.GREEN);
 								internetCheck.setText("ONLINE");
 								btnSync1.setEnabled(true);
-								sock.close();
 
-							} catch (Exception e) {
+							} else {
 								internetCheck.setBackground(Color.RED);
 								internetCheck.setText("OFFLINE");
 								btnSync1.setEnabled(false);
@@ -2192,18 +2187,12 @@ public class Main {
 
 				ActionListener taskPerformer1 = new ActionListener() {
 					public void actionPerformed(ActionEvent evt) {
-						try {
-							Socket sock = new Socket();
-							InetSocketAddress addr = new InetSocketAddress("www.google.com", 80);
-							sock.setSoTimeout(500);
-							sock.connect(addr, 3000);
-
+						if(status_online()){
 							internetCheck.setBackground(Color.GREEN);
 							internetCheck.setText("ONLINE");
 							btnSync.setEnabled(true);
-							sock.close();
 
-						} catch (Exception e) {
+						} else {
 							internetCheck.setBackground(Color.RED);
 							internetCheck.setText("OFFLINE");
 							btnSync.setEnabled(false);
@@ -3226,51 +3215,66 @@ public class Main {
 				btnSync.setBounds(width - 155, 21, 70, 24);
 				btnSync.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
-						int dialogResult = JOptionPane.showConfirmDialog(null,
-								"Would You Like to replace local data (Yes) or update remote data (No)", "Warning", 1);
-						if (dialogResult == JOptionPane.NO_OPTION) {
+						System.out.println(current_issue.getArticles_list().isEmpty());
+						if (!current_issue.getArticles_list().isEmpty()) {
+							int dialogResult = JOptionPane.showConfirmDialog(null,
+									"Would You Like to replace local data (Yes) or update remote data (No)", "Warning",
+									1);
+							if (dialogResult == JOptionPane.NO_OPTION) {
 
-							try {
-								update_articles_intersect(current_issue, encoding);
+								try {
+									update_articles_intersect(current_issue, encoding);
 
-							} catch (IllegalStateException | IOException e1) {
-								// TODO Auto-generated catch block
-								e1.printStackTrace();
+								} catch (IllegalStateException | IOException e1) {
+									// TODO Auto-generated catch block
+									e1.printStackTrace();
+								}
+							} else if (dialogResult == JOptionPane.YES_OPTION) {
+								System.out.println("update local");
+
+								try {
+									update_articles_local(current_issue, encoding);
+									articles.dispose();
+									issue(issue_id);
+								} catch (IllegalStateException | IOException e1) {
+									// TODO Auto-generated catch block
+									e1.printStackTrace();
+								}
+								articles.repaint();
+
+							} 
 							}
-						} else if (dialogResult == JOptionPane.YES_OPTION) {
-							System.out.println("update local");
-
-							try {
-								update_articles_local(current_issue, encoding);
-								articles.dispose();
-								issue(issue_id);
-							} catch (IllegalStateException | IOException e1) {
-								// TODO Auto-generated catch block
-								e1.printStackTrace();
-							}
-							articles.repaint();
-
-							try {
-								update_get_issues_from_remote(encoding, false);
-							} catch (IllegalStateException e1) {
-								// TODO Auto-generated catch block
-								e1.printStackTrace();
-							} catch (IOException e1) {
-								// TODO Auto-generated catch block
-								e1.printStackTrace();
+						else {
+								System.out.println("Local");
+								try {
+									update_articles_local(current_issue, encoding);
+									articles.dispose();
+									issue(issue_id);
+								} catch (IllegalStateException e1) {
+									// TODO Auto-generated catch block
+									e1.printStackTrace();
+								} catch (IOException e1) {
+									// TODO Auto-generated catch block
+									e1.printStackTrace();
+								}
 							}
 							HashMap<Long, Article> all_articles = current_issue.getArticles_list();
 							Set<Long> keys = all_articles.keySet();
 							ArrayList<List<Object>> rowData = new ArrayList<List<Object>>();
 							Object[][] rows = new Object[all_articles.size()][11];
 							boolean empty_table = false;
-							int num_rows = ((DefaultTableModel) article_table.getModel()).getRowCount();
+							int num_rows = 0;
+							try {
+								num_rows = article_table.getRowCount();
+							} catch (NullPointerException n_e) {
+							}
 							if (num_rows != 0) {
 								for (int i = num_rows - 1; i >= 0; i--) {
 									System.out.println(num_rows);
 									((DefaultTableModel) article_table.getModel()).removeRow(i);
 
-									System.out.println("--"+((DefaultTableModel) article_table.getModel()).getRowCount());
+									System.out.println(
+											"--" + ((DefaultTableModel) article_table.getModel()).getRowCount());
 								}
 							}
 							int i = 0;
@@ -3307,22 +3311,23 @@ public class Main {
 								}
 								Object[] row = { all_articles.get(id).getId(), issue_id,
 										all_articles.get(id).getSection_id(), current_articles.get(id).getTitle(),
-										all_articles.get(id).getPages(),
-										all_articles.get(id).getAbstract_text(), date_submit, date_pub, "View",
-										"Edit", "Delete" };
+										all_articles.get(id).getPages(), all_articles.get(id).getAbstract_text(),
+										date_submit, date_pub, "View", "Edit", "Delete" };
 								rows[i] = row;
 								rowData.add(data);
-								
+
 								((DefaultTableModel) article_table.getModel()).insertRow(0, row);
 								i++;
 
 							}
-							((DefaultTableModel) article_table.getModel()).fireTableRowsUpdated(0, all_articles.size() - 1);
+							((DefaultTableModel) article_table.getModel()).fireTableRowsUpdated(0,
+									all_articles.size() - 1);
 							article_table.repaint();
 							articles.getContentPane().repaint();
 							articles.repaint();
 						}
-					}
+					
+					
 				});
 				articles.getContentPane().add(btnSync);
 
@@ -3414,18 +3419,12 @@ public class Main {
 
 				ActionListener taskPerformer1 = new ActionListener() {
 					public void actionPerformed(ActionEvent evt) {
-						try {
-							Socket sock = new Socket();
-							InetSocketAddress addr = new InetSocketAddress("www.google.com", 80);
-							sock.setSoTimeout(500);
-							sock.connect(addr, 3000);
-
+						if(status_online()){
 							internetCheck.setBackground(Color.GREEN);
 							internetCheck.setText("ONLINE");
 							btnSync.setEnabled(true);
-							sock.close();
 
-						} catch (Exception e) {
+						} else {
 							internetCheck.setBackground(Color.RED);
 							internetCheck.setText("OFFLINE");
 							btnSync.setEnabled(false);
