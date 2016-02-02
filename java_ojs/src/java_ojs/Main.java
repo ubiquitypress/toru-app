@@ -163,7 +163,7 @@ import models.Section;
 public class Main {
 	JFrame login, api, issues, settings;
 	private JTextField access_key, username;
-	private JXTable issues_table;
+	private JXTable issues_table, article_table;
 	private int delay = 2000; // milliseconds
 	private JPasswordField passwordField;
 	private static HashMap<String, String> list_settings;
@@ -3231,7 +3231,7 @@ public class Main {
 						if (dialogResult == JOptionPane.NO_OPTION) {
 
 							try {
-								update_issue_intersect(current_issue, encoding);
+								update_articles_intersect(current_issue, encoding);
 
 							} catch (IllegalStateException | IOException e1) {
 								// TODO Auto-generated catch block
@@ -3241,14 +3241,83 @@ public class Main {
 							System.out.println("update local");
 
 							try {
-								Issue updated_issue = update_issue_local(current_issue, encoding);
-								issue_storage.put(issue_id, updated_issue);
+								update_articles_local(current_issue, encoding);
 								articles.dispose();
 								issue(issue_id);
 							} catch (IllegalStateException | IOException e1) {
 								// TODO Auto-generated catch block
 								e1.printStackTrace();
 							}
+							articles.repaint();
+
+							try {
+								update_get_issues_from_remote(encoding, false);
+							} catch (IllegalStateException e1) {
+								// TODO Auto-generated catch block
+								e1.printStackTrace();
+							} catch (IOException e1) {
+								// TODO Auto-generated catch block
+								e1.printStackTrace();
+							}
+							HashMap<Long, Article> all_articles = current_issue.getArticles_list();
+							Set<Long> keys = all_articles.keySet();
+							ArrayList<List<Object>> rowData = new ArrayList<List<Object>>();
+							Object[][] rows = new Object[all_articles.size()][11];
+							boolean empty_table = false;
+							int num_rows = ((DefaultTableModel) issues_table.getModel()).getRowCount();
+							if (num_rows != 0) {
+								for (int i = num_rows - 1; i >= 0; i--) {
+									((DefaultTableModel) article_table.getModel()).removeRow(i);
+								}
+							}
+							int i = 0;
+							for (long id : keys) {
+								Article row_article = all_articles.get(id);
+
+								ArrayList<Object> data = new ArrayList<Object>();
+								issue_articles.put(id, new JFrame());
+
+								data.add(Long.toString(all_articles.get(id).getId()));
+								data.add(Long.toString(current_issue.getId()));
+								data.add(Long.toString((all_articles.get(id).getSection_id())));
+								data.add(all_articles.get(id).getTitle());
+								data.add(all_articles.get(id).getPages() == null ? "/"
+										: all_articles.get(id).getPages());
+								data.add(all_articles.get(id).getAbstract_text());
+								data.add(sdf.format(current));
+								data.add("View");
+								data.add("Edit");
+								data.add("Delete");
+								Date date_submitted = all_articles.get(id).getDate_submitted();
+								String date_submit = "";
+								if (date_submitted == null) {
+									date_submit = "/";
+								} else {
+									date_submit = sdf.format(all_articles.get(id).getDate_submitted());
+								}
+								Date date_published = all_articles.get(id).getDate_published();
+								String date_pub = "";
+								if (date_published == null) {
+									date_pub = "/";
+								} else {
+									date_pub = sdf.format(all_articles.get(id).getDate_published());
+								}
+								Object[] row = { all_articles.get(id).getId(), issue_id,
+										all_articles.get(id).getSection_id(), current_articles.get(id).getTitle(),
+										all_articles.get(id).getPages(),
+										all_articles.get(id).getAbstract_text(), date_submit, date_pub, "View",
+										"Edit", "Delete" };
+								rows[i] = row;
+								rowData.add(data);
+								
+								((DefaultTableModel) article_table.getModel()).insertRow(0, row);
+								i++;
+
+							}
+							((DefaultTableModel) article_table.getModel()).fireTableRowsUpdated(0, all_articles.size() - 1);
+							article_table.repaint();
+							articles.getContentPane().repaint();
+							articles.repaint();
 						}
 					}
 				});
@@ -6207,197 +6276,6 @@ public class Main {
 		} else {
 			login("dashboard");
 		}
-	}
-
-	public void update_article_intersect(Issue issue, Article article, String credentials)
-			throws IllegalStateException, IOException {
-
-		boolean status = status_online();
-		if (!status) {
-			return;
-		}
-		JSONObject obj = IssueToJSON(issue);
-		HttpGet issue_exists = new HttpGet(String.format("%s/issues/%s/", base_url, issue.getId()));
-
-		issue_exists.addHeader("Authorization", "Basic " + credentials);
-		issue_exists.setHeader("Accept", "application/json");
-		issue_exists.addHeader("Content-type", "application/json");
-
-		HttpResponse response = null;
-		try {
-			response = httpClient.execute(issue_exists);
-		} catch (ClientProtocolException e2) {
-			// TODO Auto-generated catch block
-			e2.printStackTrace();
-		} catch (IOException e2) {
-			// TODO Auto-generated catch block
-			e2.printStackTrace();
-		}
-		boolean issue_created = false;
-		if (response.getStatusLine().getStatusCode() == 200) {
-			issue_created = true;
-		}
-		try {
-			InputStream is = response.getEntity().getContent();
-			is.close();
-		} catch (IOException exc) {
-			// TODO Auto-generated catch block
-			exc.printStackTrace();
-		}
-		if (issue_created) {
-			HttpPut httpPut = new HttpPut(String.format("%s/issues/%s/", base_url, issue.getId()));
-			httpPut.setEntity(new StringEntity(obj.toJSONString()));
-			httpPut.addHeader("Authorization", "Basic " + credentials);
-			httpPut.setHeader("Accept", "application/json");
-			httpPut.addHeader("Content-type", "application/json");
-
-			response = null;
-			try {
-				response = httpClient.execute(httpPut);
-			} catch (ClientProtocolException e2) {
-				// TODO Auto-generated catch block
-				e2.printStackTrace();
-			} catch (IOException e2) {
-				// TODO Auto-generated catch block
-				e2.printStackTrace();
-			}
-			try {
-				InputStream is = response.getEntity().getContent();
-				is.close();
-			} catch (IOException exc) {
-				// TODO Auto-generated catch block
-				exc.printStackTrace();
-			}
-		} else {
-			HttpPost createIssue = new HttpPost(String.format("%s/issues/", base_url));
-			createIssue.setEntity(new StringEntity(obj.toJSONString()));
-			createIssue.addHeader("Authorization", "Basic " + credentials);
-			createIssue.setHeader("Accept", "application/json");
-			createIssue.addHeader("Content-type", "application/json");
-
-			response = null;
-			try {
-				response = httpClient.execute(createIssue);
-			} catch (ClientProtocolException e2) {
-				// TODO Auto-generated catch block
-				e2.printStackTrace();
-			} catch (IOException e2) {
-				// TODO Auto-generated catch block
-				e2.printStackTrace();
-			}
-			try {
-				InputStream is = response.getEntity().getContent();
-				is.close();
-			} catch (IOException exc) {
-				// TODO Auto-generated catch block
-				exc.printStackTrace();
-			}
-		}
-		System.out.println(response.toString());
-		HttpGet settingCheck = new HttpGet(
-				String.format("%s/get/setting/title/issue/%s/?format=json", base_url, issue.getId()));
-		// settingCheck.setEntity(new StringEntity(obj.toJSONString()));
-		settingCheck.addHeader("Authorization", "Basic " + credentials);
-		settingCheck.setHeader("Accept", "application/json");
-		settingCheck.addHeader("Content-type", "application/json");
-
-		response = null;
-		try {
-			response = httpClient.execute(settingCheck);
-		} catch (ClientProtocolException e2) {
-			// TODO Auto-generated catch block
-			e2.printStackTrace();
-		} catch (IOException e2) {
-			// TODO Auto-generated catch block
-			e2.printStackTrace();
-		}
-		JsonFactory jsonf = new JsonFactory();
-		InputStream result = response.getEntity().getContent();
-		Long setting_pk = (long) -1;
-		org.json.simple.parser.JSONParser jsonParser = new JSONParser();
-		boolean exists = true;
-		JSONObject setting_json = new JSONObject();
-		try {
-			JSONObject setting = (JSONObject) jsonParser.parse(IOUtils.toString(result));
-			System.out.println(setting.get("count"));
-			System.out.println(setting);
-			Long count = (Long) setting.get("count");
-			if (count == 0) {
-				exists = false;
-			} else {
-				JSONArray results = (JSONArray) setting.get("results");
-				System.out.println(results.get(0));
-				setting_json = (JSONObject) results.get(0);
-				System.out.println(setting_json.get("pk"));
-				System.out.println(setting_json.get("setting_name"));
-				System.out.println(setting_json.get("setting_value"));
-				setting_pk = (long) setting_json.get("pk");
-				setting_json.put("setting_value", issue.getTitle());
-			}
-		} catch (ParseException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		try {
-			InputStream is = response.getEntity().getContent();
-			is.close();
-		} catch (IOException exc) {
-			// TODO Auto-generated catch block
-			exc.printStackTrace();
-		}
-		System.out.println(setting_json.isEmpty());
-		System.out.println(exists);
-		System.out.println(setting_pk);
-		if (setting_json.isEmpty()) {
-			setting_json = SettingToJSON("issues", issue.getId(), "title", issue.getTitle(), "string", "en_US");
-		}
-		System.out.println(setting_json);
-		if (!exists) {
-			HttpPost httpPost = new HttpPost(String.format("%s/issue-settings/", base_url));
-			httpPost.setEntity(new StringEntity(setting_json.toJSONString()));
-			httpPost.addHeader("Authorization", "Basic " + credentials);
-			httpPost.setHeader("Accept", "application/json");
-			httpPost.addHeader("Content-type", "application/json");
-			try {
-				response = httpClient.execute(httpPost);
-			} catch (ClientProtocolException e2) {
-				// TODO Auto-generated catch block
-				e2.printStackTrace();
-			} catch (IOException e2) {
-				// TODO Auto-generated catch block
-				e2.printStackTrace();
-			}
-		} else {
-			setting_json.put("setting_value", "updated-title");
-			HttpPut httpPost = new HttpPut(
-					String.format("%s/update/issue/setting/%s/", base_url, setting_json.get("pk")));
-			httpPost.setEntity(new StringEntity(setting_json.toJSONString()));
-			httpPost.addHeader("Authorization", "Basic " + credentials);
-			httpPost.setHeader("Accept", "application/json");
-			httpPost.addHeader("Content-type", "application/json");
-			try {
-				response = httpClient.execute(httpPost);
-			} catch (ClientProtocolException e2) {
-				// TODO Auto-generated catch block
-				e2.printStackTrace();
-			} catch (IOException e2) {
-				// TODO Auto-generated catch block
-				e2.printStackTrace();
-			}
-		}
-		try {
-			InputStream is = response.getEntity().getContent();
-			is.close();
-		} catch (IOException exc) {
-			// TODO Auto-generated catch block
-			exc.printStackTrace();
-		}
-		/*
-		 * response = null; try { response = httpClient.execute(httpPost); }
-		 * catch (ClientProtocolException e2) { // TODO Auto-generated catch
-		 * block e2.printStackTrace(); } catch (IOException e2) { // TODO
-		 * Auto-generated catch block e2.printStackTrace(); }
-		 */
 	}
 
 	public static void update_article_intersect(Article article, String credentials)
