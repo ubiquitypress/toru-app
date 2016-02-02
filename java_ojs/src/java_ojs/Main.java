@@ -4460,7 +4460,7 @@ public class Main {
 				panel3.setLayout(null);
 				panel3.setAutoscrolls(true);
 
-				panel3.setPreferredSize(new Dimension(320, settings_height));
+				panel3.setPreferredSize(new Dimension(640, 960));
 				JScrollPane abstractSection = new JScrollPane(panel3);
 				panel3.setAutoscrolls(true);
 
@@ -4470,14 +4470,19 @@ public class Main {
 
 				final JTextArea lblAbstract = new JTextArea(current_article.getAbstract_text());
 				lblAbstract.setEditable(true);
-				lblAbstract.setBounds(16, 28, 400, 180);
+				String [] lines = current_article.getAbstract_text().split("\r\n");
+				lblAbstract.setBounds(16, 28, 560, 48*lines.length);
 				lblAbstract.setOpaque(true);
 				panel3.add(lblAbstract);
-				abstractSection.setPreferredSize(new Dimension(320, 200));
+				abstractSection.setHorizontalScrollBarPolicy(abstractSection.HORIZONTAL_SCROLLBAR_ALWAYS);
+
+				abstractSection.setPreferredSize(new Dimension(600, 800));
 				abstractSection.setBounds(width_small / 2 - 40, 132, width_small / 2, height_small / 2 - 150);
 				// scrollSettings.setViewportView(scrollFrame);
 				article.getContentPane().add(abstractSection);
-
+				
+			
+				
 				JPanel panel6 = new JPanel();
 				panel6.setBackground(SystemColor.window);
 				panel6.setBounds(50, 107, 180 * 2, 307);
@@ -5531,7 +5536,7 @@ public class Main {
 			panel3.setLayout(null);
 			panel3.setAutoscrolls(true);
 
-			panel3.setPreferredSize(new Dimension(320, settings_height));
+			panel3.setPreferredSize(new Dimension(640, 960));
 			JScrollPane abstractSection = new JScrollPane(panel3);
 			panel3.setAutoscrolls(true);
 
@@ -5541,10 +5546,12 @@ public class Main {
 
 			final JTextArea lblAbstract = new JTextArea();
 			lblAbstract.setEditable(true);
-			lblAbstract.setBounds(16, 28, 400, 180);
+			lblAbstract.setBounds(16, 28, 400, 800);
 			lblAbstract.setOpaque(true);
 			panel3.add(lblAbstract);
-			abstractSection.setPreferredSize(new Dimension(320, 200));
+			abstractSection.setHorizontalScrollBarPolicy(abstractSection.HORIZONTAL_SCROLLBAR_ALWAYS);
+
+			abstractSection.setPreferredSize(new Dimension(600, 800));
 			abstractSection.setBounds(width_small / 2 - 40, 132, width_small / 2, height_small / 2 - 150);
 			// scrollSettings.setViewportView(scrollFrame);
 			article.getContentPane().add(abstractSection);
