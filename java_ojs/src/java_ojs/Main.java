@@ -3264,10 +3264,13 @@ public class Main {
 							ArrayList<List<Object>> rowData = new ArrayList<List<Object>>();
 							Object[][] rows = new Object[all_articles.size()][11];
 							boolean empty_table = false;
-							int num_rows = ((DefaultTableModel) issues_table.getModel()).getRowCount();
+							int num_rows = ((DefaultTableModel) article_table.getModel()).getRowCount();
 							if (num_rows != 0) {
 								for (int i = num_rows - 1; i >= 0; i--) {
+									System.out.println(num_rows);
 									((DefaultTableModel) article_table.getModel()).removeRow(i);
+
+									System.out.println("--"+((DefaultTableModel) article_table.getModel()).getRowCount());
 								}
 							}
 							int i = 0;
