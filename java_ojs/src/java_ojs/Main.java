@@ -174,7 +174,6 @@ public class Main {
 	private static HashMap<Long, Metadata> metadata_storage;
 	private static HashMap<Long, Section> section_storage;
 	private static HashMap<Long, Journal> journal_storage;
-	private static HashMap<String, Author> unique_author_storage;
 	private static HashMap<Long, Author> author_storage;
 	private static String journal_url = "";
 	private static String user_url = "";
@@ -228,7 +227,7 @@ public class Main {
 				c = DriverManager.getConnection("jdbc:sqlite:local_datatabse.db");
 				stmt = c.createStatement();
 			}
-
+			c.setAutoCommit(false);
 			stmt.executeUpdate("DELETE FROM ISSUE_ARTICLE");
 			stmt.executeUpdate("DELETE FROM ARTICLE_AUTHOR");
 			stmt.executeUpdate("DELETE FROM AUTHOR");
@@ -287,36 +286,22 @@ public class Main {
 				section_prep.setString(2, save_section.getTitle());
 				section_prep.executeUpdate();
 			}
-			Set<String> unique_author_keys = unique_author_storage.keySet();
-			for (String key : unique_author_keys) {
-				Author save_author = unique_author_storage.get(key);
-				PreparedStatement author_prep = c.prepareStatement(unique_authors_insert_or_replace_statement);
-				author_prep.setString(1, save_author.getFirst_name());
-				author_prep.setString(2, save_author.getMiddle_name());
-				author_prep.setString(3, save_author.getLast_name());
-				author_prep.setString(4, save_author.getEmail());
-				author_prep.setString(5, save_author.getAffiliation());
-				author_prep.setString(6, save_author.getBio());
-				author_prep.setString(7, save_author.getOrcid());
-				author_prep.setString(8, save_author.getDepartment());
-				author_prep.setString(9, save_author.getCountry());
-				author_prep.executeUpdate();
 
-			}
 			Set<Long> author_keys = author_storage.keySet();
 			for (long key : author_keys) {
 				Author save_author = author_storage.get(key);
+				System.out.println("Author: "+ key);
 				PreparedStatement author_prep = c.prepareStatement(author_insert_or_replace_statement);
 				author_prep.setInt(1, (int) (long) save_author.getId());
 				author_prep.setString(2, save_author.getFirst_name());
 				author_prep.setString(3, save_author.getMiddle_name());
 				author_prep.setString(4, save_author.getLast_name());
 				author_prep.setString(5, save_author.getEmail());
-				author_prep.setString(6, save_author.getAffiliation());
-				author_prep.setString(7, save_author.getBio());
-				author_prep.setString(8, save_author.getOrcid());
-				author_prep.setString(9, save_author.getDepartment());
-				author_prep.setString(10, save_author.getCountry());
+				author_prep.setString(6, save_author.getAffiliation()==null ? "":save_author.getAffiliation());
+				author_prep.setString(7, save_author.getBio()==null ? "":save_author.getBio());
+				author_prep.setString(8, save_author.getOrcid()==null ? "":save_author.getOrcid());
+				author_prep.setString(9, save_author.getDepartment()==null ? "":save_author.getDepartment());
+				author_prep.setString(10, save_author.getCountry()==null ? "":save_author.getCountry());
 				author_prep.executeUpdate();
 
 			}
@@ -443,6 +428,7 @@ public class Main {
 				meta_prep.executeUpdate();
 
 			}
+			c.commit();
 			c.close();
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
@@ -514,7 +500,6 @@ public class Main {
 		file_storage = new HashMap<Long, HashMap<Long, ArticleFile>>();
 		article_screens = new HashMap<Long, HashMap<Long, JFrame>>();
 		author_storage = new HashMap<Long, Author>();
-		unique_author_storage = new HashMap<String, Author>();
 		section_storage = new HashMap<Long, Section>();
 		author_primary_storage = new HashMap<Long, HashMap<Long, Boolean>>();
 		metadata_storage = new HashMap<Long, Metadata>();
@@ -7438,7 +7423,7 @@ public class Main {
 			try {
 				JSONObject issue_obj = (JSONObject) jsonParser.parse(IOUtils.toString(result));
 				next = (String) issue_obj.get("next");
-				System.out.println(next);
+				
 				JSONArray array = (JSONArray) issue_obj.get("results");
 				author_count = author_count + array.size();
 				for (int i = 0; i < array.size(); i++) {
@@ -7453,9 +7438,9 @@ public class Main {
 					} else {
 						Author new_author = new Author(author_id);
 
-						new_author = JSONToAuthor(author_json, new_author,false);
+						new_author = JSONToAuthor(author_json, new_author);
 
-						System.out.println(response.toString());
+						System.out.println(author_json);
 						HttpGet settingCheck = new HttpGet(String.format(
 								"%s/get/setting/biography/author/%s/?format=json", base_url, new_author.getId()));
 						// settingCheck.setEntity(new
@@ -7482,14 +7467,13 @@ public class Main {
 						JSONObject setting_json = new JSONObject();
 						try {
 							JSONObject setting = (JSONObject) jsonParser.parse(IOUtils.toString(result));
-							System.out.println(setting.get("count"));
-							System.out.println(setting);
+						
 							Long count = (Long) setting.get("count");
 							if (count == 0) {
 								exists = false;
 							} else {
 								JSONArray results = (JSONArray) setting.get("results");
-								System.out.println(results.get(0));
+								
 								setting_json = (JSONObject) results.get(0);
 								new_author.setBio((String) setting_json.get("setting_value"));
 							}
@@ -7522,83 +7506,6 @@ public class Main {
 				// TODO Auto-generated catch block
 				exc.printStackTrace();
 			}
-		}
-
-		System.out.println("Authors: " + author_count);
-	}
-
-	public static void get_unique_authors_remote(String credentials, boolean update_local)
-			throws IllegalStateException, IOException {
-		boolean status = status_online();
-		if (!status) {
-			return;
-		}
-		String next = String.format("%s/get/unique/authors/?format=json", base_url);
-		int author_count = 0;
-		HttpGet httpGet = new HttpGet(next);
-		httpGet.addHeader("Authorization", "Basic " + credentials);
-		httpGet.setHeader("Accept", "application/json");
-		httpGet.addHeader("Content-type", "application/json");
-
-		HttpResponse response = null;
-		try {
-			response = httpClient.execute(httpGet);
-		} catch (ClientProtocolException e2) {
-			// TODO Auto-generated catch block
-			e2.printStackTrace();
-		} catch (IOException e2) {
-			// TODO Auto-generated catch block
-			e2.printStackTrace();
-		}
-		JsonFactory jsonf = new JsonFactory();
-		InputStream result = response.getEntity().getContent();
-		org.json.simple.parser.JSONParser jsonParser = new JSONParser();
-		boolean exists = true;
-		JSONObject author_json = new JSONObject();
-		try {
-
-			JSONArray array = (JSONArray) jsonParser.parse(IOUtils.toString(result));
-			System.out.println(array);
-			author_count = author_count + array.size();
-			for (int i = 0; i < array.size(); i++) {
-				author_json = (JSONObject) array.get(i);
-				String author_email = (String) author_json.get("email");
-				if (unique_author_storage.containsKey(author_email)) {
-					if (update_local) {
-						// update_issue_local(issue_storage.get(issue_id),
-						// credentials);
-					}
-					continue;
-				} else {
-					Author new_author = new Author(author_email);
-
-					new_author = JSONToAuthor(author_json, new_author,true);
-
-					//System.out.println(response.toString());
-					
-					unique_author_storage.put(new_author.getEmail(), new_author);
-					System.out.println(new_author);
-				}
-			}
-			/*
-			 * System.out.println(issue_obj.get("count"));
-			 * System.out.println(issue_obj); String detail = (String)
-			 * issue_obj.get("detail"); if (detail == null) { exists = false; }
-			 * else { JSONArray results = (JSONArray) issue_obj.get("results");
-			 * System.out.println(results.get(0)); issue_json = (JSONObject)
-			 * results.get(0); System.out.println(issue_json.get("id")); issue =
-			 * JSONToIssue(issue_json, issue); }
-			 */
-		} catch (ParseException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		try {
-			InputStream is = response.getEntity().getContent();
-			is.close();
-		} catch (IOException exc) {
-			// TODO Auto-generated catch block
-			exc.printStackTrace();
 		}
 
 		System.out.println("Authors: " + author_count);
@@ -7801,8 +7708,8 @@ public class Main {
 		return new_article;
 	}
 
-	public static Author JSONToAuthor(JSONObject obj, Author author, boolean unique) {
-		if (!unique) {
+	public static Author JSONToAuthor(JSONObject obj, Author author) {
+	
 			long id = (long) obj.get("id");
 			String article_url = (String) obj.get("article");
 
@@ -7813,7 +7720,7 @@ public class Main {
 			long article_id = Long.parseLong(article_url);
 
 			author.setArticle_id(article_id);
-		} else {
+		
 			String first_name = (String) obj.get("first_name");
 
 			String middle_name = (String) obj.get("middle_name");
@@ -7823,9 +7730,9 @@ public class Main {
 			author.setFirst_name(first_name);
 			author.setMiddle_name(middle_name);
 			author.setLast_name(last_name);
-			author.setEmail(email);
-			author.setCountry(country);
-		}
+		author.setEmail(email);
+		author.setCountry(country);
+		
 		return author;
 	}
 
@@ -8058,7 +7965,7 @@ public class Main {
 		System.out.println();
 		// file copy to use for file upload
 		// file_copy(1,"src/lib/db_xxs.png");
-		get_unique_authors_remote(encoding, false);
+		get_authors_remote(encoding, false);
 		new Main();
 	}
 }
