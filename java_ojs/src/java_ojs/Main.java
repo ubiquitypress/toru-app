@@ -1693,6 +1693,7 @@ public class Main {
 							System.out.println(decodeHash(app_settings.get("key")));
 							if (key.hashCode() == decodeHash(app_settings.get("key"))) {
 								api.setVisible(false);
+								api.dispose();
 								dashboard();
 							} else {
 								JOptionPane.showMessageDialog(null, "Wrong access key");
@@ -3217,6 +3218,31 @@ public class Main {
 
 				articles.getContentPane().setLayout(null);
 
+				DefaultTableModel dtm = new DefaultTableModel(rows, columnNames);
+
+				final JXTable article_table = new JXTable(dtm) {
+					// **** Source:
+					// http://stackoverflow.com/questions/9467093/how-to-add-a-tooltip-to-a-cell-in-a-jtable
+					// ****//
+					// Implement table cell tool tips.
+					public String getToolTipText(MouseEvent e) {
+						String tip = null;
+						java.awt.Point p = e.getPoint();
+						int rowIndex = rowAtPoint(p);
+						int colIndex = columnAtPoint(p);
+
+						try {
+							tip = getValueAt(rowIndex, colIndex).toString();
+						} catch (RuntimeException e1) {
+							// catch null pointer exception if mouse is over an
+							// empty line
+						}
+
+						return tip;
+					}
+				};
+				article_table.setAutoResizeMode(article_table.AUTO_RESIZE_SUBSEQUENT_COLUMNS);
+			
 				final JButton btnSync = new JButton("Sync");
 				btnSync.setBounds(width - 155, 21, 70, 24);
 				btnSync.addActionListener(new ActionListener() {
@@ -3321,13 +3347,14 @@ public class Main {
 										date_submit, date_pub, "View", "Edit", "Delete" };
 								rows[i] = row;
 								rowData.add(data);
-
+								article_table.setModel(new DefaultTableModel());
 								((DefaultTableModel) article_table.getModel()).insertRow(0, row);
 								i++;
 
 							}
+							if (num_rows != 0) {
 							((DefaultTableModel) article_table.getModel()).fireTableRowsUpdated(0,
-									all_articles.size() - 1);
+								num_rows-1);}
 							article_table.repaint();
 							articles.getContentPane().repaint();
 							articles.repaint();
@@ -3341,32 +3368,7 @@ public class Main {
 				scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
 				scrollPane.setBounds(15, height / 16 * 7, width - 30, (height - 130) - (height / 16 * 7) - 10);
 				articles.getContentPane().add(scrollPane);
-
-				DefaultTableModel dtm = new DefaultTableModel(rows, columnNames);
-
-				final JXTable article_table = new JXTable(dtm) {
-					// **** Source:
-					// http://stackoverflow.com/questions/9467093/how-to-add-a-tooltip-to-a-cell-in-a-jtable
-					// ****//
-					// Implement table cell tool tips.
-					public String getToolTipText(MouseEvent e) {
-						String tip = null;
-						java.awt.Point p = e.getPoint();
-						int rowIndex = rowAtPoint(p);
-						int colIndex = columnAtPoint(p);
-
-						try {
-							tip = getValueAt(rowIndex, colIndex).toString();
-						} catch (RuntimeException e1) {
-							// catch null pointer exception if mouse is over an
-							// empty line
-						}
-
-						return tip;
-					}
-				};
-				article_table.setAutoResizeMode(article_table.AUTO_RESIZE_SUBSEQUENT_COLUMNS);
-				// reference:
+	// reference:
 				// https://svn.java.net/svn/swinglabs-demos~svn/trunk/src/java/org/jdesktop/demo/sample/
 				final JTextField filter = new JTextField("");
 				filter.setBounds(150, height / 16 * 7 - 27, 117, 25);
@@ -4549,7 +4551,7 @@ public class Main {
 				final JTextArea lblAbstract = new JTextArea(current_article.getAbstract_text());
 				lblAbstract.setEditable(true);
 				String[] lines = current_article.getAbstract_text().split("\r\n");
-				lblAbstract.setBounds(16, 28, 560, 48 * lines.length);
+				lblAbstract.setBounds(16, 28, 560, 480+10 * lines.length);
 				lblAbstract.setOpaque(true);
 				panel3.add(lblAbstract);
 				abstractSection.setHorizontalScrollBarPolicy(abstractSection.HORIZONTAL_SCROLLBAR_ALWAYS);
@@ -7413,7 +7415,7 @@ public class Main {
 		try {
 			JSONObject issue_obj = (JSONObject) jsonParser.parse(IOUtils.toString(result));
 			JSONArray array = (JSONArray) issue_obj.get("results");
-			System.out.println(array);
+			System.out.println("Authors: "+array.size());
 			for (int i = 0; i < array.size(); i++) {
 				author_json = (JSONObject) array.get(i);
 				long author_id = (long) author_json.get("id");
