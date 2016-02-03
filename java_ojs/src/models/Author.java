@@ -118,12 +118,13 @@ public class Author {
 		this.id = id;
 		this.article_id = article_id;
 	}
+	public Author(String email) {
+		super();
+		this.email = email;
+	}
 	@Override
 	public String toString() {
-		return "Author [first_name=" + first_name + ", middle_name=" + middle_name + ", last_name=" + last_name
-				+ ", email=" + email + ", affiliation=" + affiliation + ", bio=" + bio + ", orcid=" + orcid
-				+ ", department=" + department + ", country=" + country + ", id=" + id + ", article_id=" + article_id
-				+ ", primary_contact=" + primary_contact + ", seq=" + seq + "]";
+		return  first_name+" "+ middle_name +" "+  last_name+" ("+email+")";
 	}
 	
 	
