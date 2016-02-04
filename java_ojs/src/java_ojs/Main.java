@@ -618,6 +618,30 @@ public class Main {
 				section_db_id = id;
 			}
 			sect_s.close();
+
+			System.out.println("Loading Author data....");
+			ResultSet authors_s = c.createStatement().executeQuery("SELECT * FROM AUTHOR ORDER BY id ASC;");
+			ResultSetMetaData author_rsmd = authors_s.getMetaData();
+			while (authors_s.next()) {
+				long id = authors_s.getInt("id");
+				String first_name = authors_s.getString("first_name");
+				String middle_name = authors_s.getString("middle_name");
+				String last_name = authors_s.getString("last_name");
+				String email = authors_s.getString("email");
+				String affiliation = authors_s.getString("affiliation");
+				String bio = authors_s.getString("bio");
+				String orcid = authors_s.getString("orcid");
+				String department = authors_s.getString("department");
+				String country = authors_s.getString("country");
+
+				Author author = null;
+				author = new Author(id, first_name, middle_name, last_name, email, affiliation, bio, orcid, department,
+						country);
+				author_id = id;
+				author_storage.put(id, author);
+				System.out.println(author_storage.size());
+			}
+			authors_s.close();
 			System.out.println("Loading Article data....");
 			ResultSet art_s = c.createStatement().executeQuery("SELECT * FROM ARTICLE ORDER BY id ASC;");
 			ResultSetMetaData rsmd = art_s.getMetaData();
@@ -652,35 +676,13 @@ public class Main {
 				HashMap<Long, JFrame> issue_articles = article_screens.get(issue_id);
 
 				issue_articles.put(id, new JFrame());
-
+				ArrayList<Author> new_authors = new ArrayList<Author>();
+				article_author_storage.put(id, new_authors);
 				article_screens.put(issue_id, issue_articles);
+
 				rs_issue.close();
 			}
 			art_s.close();
-
-			System.out.println("Loading Author data....");
-			ResultSet authors_s = c.createStatement().executeQuery("SELECT * FROM AUTHOR ORDER BY id ASC;");
-			ResultSetMetaData author_rsmd = authors_s.getMetaData();
-			while (authors_s.next()) {
-				long id = authors_s.getInt("id");
-				String first_name = authors_s.getString("first_name");
-				String middle_name = authors_s.getString("middle_name");
-				String last_name = authors_s.getString("last_name");
-				String email = authors_s.getString("email");
-				String affiliation = authors_s.getString("affiliation");
-				String bio = authors_s.getString("bio");
-				String orcid = authors_s.getString("orcid");
-				String department = authors_s.getString("department");
-				String country = authors_s.getString("country");
-
-				Author author = null;
-				author = new Author(id, first_name, middle_name, last_name, email, affiliation, bio, orcid, department,
-						country);
-				author_id = id;
-				author_storage.put(id, author);
-				System.out.println(author_storage.size());
-			}
-			authors_s.close();
 
 			System.out.println("Loading File data....");
 			ResultSet rs_files = c.createStatement().executeQuery("SELECT id,article_id,path FROM FILE");
@@ -711,28 +713,43 @@ public class Main {
 				}
 			}
 			rs_metadata.close();
-
+			System.out.println("ARTICLE AUTHORS");
 			Set<Long> author_keys = author_storage.keySet();
 			for (long key_author : author_keys) {
 				Author author = author_storage.get(key_author);
 				try {
 					PreparedStatement prep = c
-							.prepareStatement("SELECT author_id,article_id,primary_author FROM ARTICLE_AUTHOR");
+							.prepareStatement("SELECT author_id,article_id,primary_author FROM ARTICLE_AUTHOR WHERE author_id="+author.getId()+";");
 
 					ResultSet rs_author = prep.executeQuery();
 					while (rs_author.next()) {
-						long author_id = rs_author.getInt(1);
+						long author_id = rs_author.getLong(1);
 
-						long article_id = rs_author.getInt(2);
+						long article_id = rs_author.getLong(2);
 
 						Boolean primary = rs_author.getBoolean(3);
-						System.out.println(author_id + " - " + author.getId());
-						if (author_id == author.getId()) {
-							System.out.println(author.getFull_name() + " " + Long.toString(article_id));
+						System.out.println(author_id + " art:"+ article_id);
+						author.setArticle_id(article_id);
+						author_storage.put(author.getId(),author);
+					//	System.out.println(author_id + " - " + author.getId());
+						
+							//System.out.println(author.getFull_name() + " " + Long.toString(article_id));
 							HashMap<Long, Boolean> primary_authors = author_primary_storage.get(article_id);
 							primary_authors.put(author_id, primary);
-							System.out.println("Author: " + author_id + " Primary: " + primary);
+							//System.out.println("Author: " + author_id + " Primary: " + primary);
 							author_primary_storage.put(article_id, primary_authors);
+							if (!article_author_storage.containsKey(author.getArticle_id())) {
+								ArrayList<Author> new_authors = new ArrayList<Author>();
+								new_authors.add(author);
+								article_author_storage.put(author.getArticle_id(), new_authors);
+								System.out.println("new ADDED - - "+author.getArticle_id());
+								
+							} else {
+								ArrayList<Author> existing_authors = article_author_storage.get(author.getArticle_id());
+								existing_authors.add(author);
+								article_author_storage.put(author.getArticle_id(), existing_authors);
+								System.out.println("ADDED - - "+author.getArticle_id());
+							}
 							ResultSet rs_new_issue = c.createStatement()
 									.executeQuery("SELECT issue_id FROM ISSUE_ARTICLE;");
 							while (rs_new_issue.next()) {
@@ -747,7 +764,7 @@ public class Main {
 
 								rs_new_issue.close();
 							}
-						}
+						
 					}
 				} catch (SQLException e) {
 					e.printStackTrace();
@@ -4592,9 +4609,8 @@ public class Main {
 				btnAddAuthors.setBounds(165, 6, 125, 25);
 				panel6.add(btnAddAuthors);
 				ArrayList<Author> article_authors = new ArrayList<Author>();
-				if (article_author_storage.containsKey(current_article.getId())) {
-					article_authors = article_author_storage.get(current_article.getId());
-				}
+				article_authors = article_author_storage.get(current_article.getId());
+
 				DefaultListModel listModel = new DefaultListModel();
 				ArrayList<Long> author_list = new ArrayList<Long>();
 				String listData[] = new String[article_authors.size()];
@@ -7389,7 +7405,7 @@ public class Main {
 
 	}
 
-	public static void get_authors_remote(long issue_id,String credentials, boolean update_local)
+	public static void get_authors_remote(long issue_id, String credentials, boolean update_local)
 			throws IllegalStateException, IOException {
 		boolean status = status_online();
 		if (!status) {
@@ -7398,46 +7414,82 @@ public class Main {
 
 		int author_count = 0;
 		HttpGet httpGet = new HttpGet(String.format("%s/get/issue/authors/%s/?format=json", base_url, issue_id));
-			httpGet.addHeader("Authorization", "Basic " + credentials);
-			httpGet.setHeader("Accept", "application/json");
-			httpGet.addHeader("Content-type", "application/json");
+		httpGet.addHeader("Authorization", "Basic " + credentials);
+		httpGet.setHeader("Accept", "application/json");
+		httpGet.addHeader("Content-type", "application/json");
 
-			HttpResponse response = null;
+		HttpResponse response = null;
+		try {
+			response = httpClient.execute(httpGet);
+		} catch (ClientProtocolException e2) {
+			// TODO Auto-generated catch block
+			e2.printStackTrace();
+		} catch (IOException e2) {
+			// TODO Auto-generated catch block
+			e2.printStackTrace();
+		}
+		JsonFactory jsonf = new JsonFactory();
+		InputStream result = response.getEntity().getContent();
+		org.json.simple.parser.JSONParser jsonParser = new JSONParser();
+		boolean exists = true;
+		JSONObject author_json = new JSONObject();
+		try {
+			JSONObject issue_obj = (JSONObject) jsonParser.parse(IOUtils.toString(result));
+			JSONArray author_ids = (JSONArray) issue_obj.get("authors");
+			System.out.println(author_ids);
 			try {
-				response = httpClient.execute(httpGet);
-			} catch (ClientProtocolException e2) {
+				InputStream is = response.getEntity().getContent();
+				is.close();
+			} catch (IOException exc) {
 				// TODO Auto-generated catch block
-				e2.printStackTrace();
-			} catch (IOException e2) {
-				// TODO Auto-generated catch block
-				e2.printStackTrace();
+				exc.printStackTrace();
 			}
-			JsonFactory jsonf = new JsonFactory();
-			InputStream result = response.getEntity().getContent();
-			org.json.simple.parser.JSONParser jsonParser = new JSONParser();
-			boolean exists = true;
-			JSONObject author_json = new JSONObject();
-			try {
-				JSONObject issue_obj = (JSONObject) jsonParser.parse(IOUtils.toString(result));
-				JSONArray author_ids = (JSONArray) issue_obj.get("authors");
-				System.out.println(author_ids);
+			for (int i = 0; i < author_ids.size(); i++) {
+				long author_current_id = (long) author_ids.get(i);
+				httpGet = new HttpGet(String.format("%s/authors/%s/?format=json", base_url, author_current_id));
+				httpGet.addHeader("Authorization", "Basic " + credentials);
+				httpGet.setHeader("Accept", "application/json");
+				httpGet.addHeader("Content-type", "application/json");
+
+				response = null;
 				try {
-					InputStream is = response.getEntity().getContent();
-					is.close();
-				} catch (IOException exc) {
+					response = httpClient.execute(httpGet);
+				} catch (ClientProtocolException e2) {
 					// TODO Auto-generated catch block
-					exc.printStackTrace();
+					e2.printStackTrace();
+				} catch (IOException e2) {
+					// TODO Auto-generated catch block
+					e2.printStackTrace();
 				}
-				for (int i = 0; i < author_ids.size(); i++) {
-					long author_current_id = (long) author_ids.get(i);
-					httpGet = new HttpGet( String.format("%s/authors/%s/?format=json", base_url,author_current_id));
-					httpGet.addHeader("Authorization", "Basic " + credentials);
-					httpGet.setHeader("Accept", "application/json");
-					httpGet.addHeader("Content-type", "application/json");
+				result = response.getEntity().getContent();
+				jsonParser = new JSONParser();
+				exists = true;
+				author_json = (JSONObject) jsonParser.parse(IOUtils.toString(result));
+
+				long author_id = (long) author_json.get("id");
+				if (author_storage.containsKey(author_id)) {
+					if (update_local) {
+						// update_issue_local(issue_storage.get(issue_id),
+						// credentials);
+					}
+					continue;
+				} else {
+					Author new_author = new Author(author_id);
+
+					new_author = JSONToAuthor(author_json, new_author);
+
+					System.out.println(author_json);
+					HttpGet settingCheck = new HttpGet(String.format("%s/get/setting/biography/author/%s/?format=json",
+							base_url, new_author.getId()));
+					// settingCheck.setEntity(new
+					// StringEntity(obj.toJSONString()));
+					settingCheck.addHeader("Authorization", "Basic " + credentials);
+					settingCheck.setHeader("Accept", "application/json");
+					settingCheck.addHeader("Content-type", "application/json");
 
 					response = null;
 					try {
-						response = httpClient.execute(httpGet);
+						response = httpClient.execute(settingCheck);
 					} catch (ClientProtocolException e2) {
 						// TODO Auto-generated catch block
 						e2.printStackTrace();
@@ -7445,66 +7497,30 @@ public class Main {
 						// TODO Auto-generated catch block
 						e2.printStackTrace();
 					}
+					jsonf = new JsonFactory();
 					result = response.getEntity().getContent();
+					Long setting_pk = (long) -1;
 					jsonParser = new JSONParser();
 					exists = true;
-					author_json = (JSONObject) jsonParser.parse(IOUtils.toString(result));
-					
-					long author_id = (long) author_json.get("id");
-					if (author_storage.containsKey(author_id)) {
-						if (update_local) {
-							// update_issue_local(issue_storage.get(issue_id),
-							// credentials);
+					JSONObject setting_json = new JSONObject();
+					try {
+						JSONObject setting = (JSONObject) jsonParser.parse(IOUtils.toString(result));
+
+						Long count = (Long) setting.get("count");
+						if (count == 0) {
+							exists = false;
+						} else {
+							JSONArray results = (JSONArray) setting.get("results");
+
+							setting_json = (JSONObject) results.get(0);
+							new_author.setBio((String) setting_json.get("setting_value"));
 						}
-						continue;
-					} else {
-						Author new_author = new Author(author_id);
+					} catch (ParseException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
 
-						new_author = JSONToAuthor(author_json, new_author);
-
-						System.out.println(author_json);
-						HttpGet settingCheck = new HttpGet(String.format(
-								"%s/get/setting/biography/author/%s/?format=json", base_url, new_author.getId()));
-						// settingCheck.setEntity(new
-						// StringEntity(obj.toJSONString()));
-						settingCheck.addHeader("Authorization", "Basic " + credentials);
-						settingCheck.setHeader("Accept", "application/json");
-						settingCheck.addHeader("Content-type", "application/json");
-
-						response = null;
-						try {
-							response = httpClient.execute(settingCheck);
-						} catch (ClientProtocolException e2) {
-							// TODO Auto-generated catch block
-							e2.printStackTrace();
-						} catch (IOException e2) {
-							// TODO Auto-generated catch block
-							e2.printStackTrace();
-						}
-						jsonf = new JsonFactory();
-						result = response.getEntity().getContent();
-						Long setting_pk = (long) -1;
-						jsonParser = new JSONParser();
-						exists = true;
-						JSONObject setting_json = new JSONObject();
-						try {
-							JSONObject setting = (JSONObject) jsonParser.parse(IOUtils.toString(result));
-
-							Long count = (Long) setting.get("count");
-							if (count == 0) {
-								exists = false;
-							} else {
-								JSONArray results = (JSONArray) setting.get("results");
-
-								setting_json = (JSONObject) results.get(0);
-								new_author.setBio((String) setting_json.get("setting_value"));
-							}
-						} catch (ParseException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}
-
-						if (article_storage.containsKey(new_author.getArticle_id())) {
+					if (article_storage.containsKey(new_author.getArticle_id())) {
 						if (!article_author_storage.containsKey(new_author.getArticle_id())) {
 							ArrayList<Author> new_authors = new ArrayList<Author>();
 							new_authors.add(new_author);
@@ -7521,34 +7537,32 @@ public class Main {
 						issue_storage.put(issue_id, this_issue);
 						System.out.println(new_author);
 						author_storage.put(new_author.getId(), new_author);
-						HashMap<Long,Boolean> primary= author_primary_storage.get(this_article.getId());
+						HashMap<Long, Boolean> primary = author_primary_storage.get(this_article.getId());
 						primary.put(new_author.getId(), false);
-						author_primary_storage.put(this_article.getId(),primary);
-						}
+						author_primary_storage.put(this_article.getId(), primary);
 					}
 				}
-				/*
-				 * System.out.println(issue_obj.get("count"));
-				 * System.out.println(issue_obj); String detail = (String)
-				 * issue_obj.get("detail"); if (detail == null) { exists =
-				 * false; } else { JSONArray results = (JSONArray)
-				 * issue_obj.get("results"); System.out.println(results.get(0));
-				 * issue_json = (JSONObject) results.get(0);
-				 * System.out.println(issue_json.get("id")); issue =
-				 * JSONToIssue(issue_json, issue); }
-				 */
-			} catch (ParseException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
 			}
-			try {
-				InputStream is = response.getEntity().getContent();
-				is.close();
-			} catch (IOException exc) {
-				// TODO Auto-generated catch block
-				exc.printStackTrace();
-			}
-		
+			/*
+			 * System.out.println(issue_obj.get("count"));
+			 * System.out.println(issue_obj); String detail = (String)
+			 * issue_obj.get("detail"); if (detail == null) { exists = false; }
+			 * else { JSONArray results = (JSONArray) issue_obj.get("results");
+			 * System.out.println(results.get(0)); issue_json = (JSONObject)
+			 * results.get(0); System.out.println(issue_json.get("id")); issue =
+			 * JSONToIssue(issue_json, issue); }
+			 */
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		try {
+			InputStream is = response.getEntity().getContent();
+			is.close();
+		} catch (IOException exc) {
+			// TODO Auto-generated catch block
+			exc.printStackTrace();
+		}
 
 		System.out.println("Authors: " + author_storage.size());
 		System.out.println("Authors: " + author_count);
@@ -8002,13 +8016,13 @@ public class Main {
 		database_setup();
 		populate_variables();
 
-		 get_issue_from_remote(encoding, (long) 5, false);
+		// get_issue_from_remote(encoding, (long) 5, false);
 
-		 update_articles_local(issue_storage.get((long) 5), encoding);
+		// update_articles_local(issue_storage.get((long) 5), encoding);
 		System.out.println();
 		// file copy to use for file upload
 		// file_copy(1,"src/lib/db_xxs.png");
-		get_authors_remote(5, encoding, false);
+		// get_authors_remote(5, encoding, false);
 		new Main();
 	}
 }
