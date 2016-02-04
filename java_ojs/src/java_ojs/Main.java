@@ -2065,6 +2065,55 @@ public class Main {
 									e1.printStackTrace();
 								}
 							}
+							if (dialogResult == JOptionPane.NO_OPTION) {
+
+								try {
+									update_articles_intersect(current_issue, encoding);
+
+								} catch (IllegalStateException | IOException e1) {
+									// TODO Auto-generated catch block
+									e1.printStackTrace();
+								}
+							} else if (dialogResult == JOptionPane.YES_OPTION) {
+								System.out.println("update local");
+
+								try {
+									update_articles_local(current_issue, encoding);
+								
+								} catch (IllegalStateException | IOException e1) {
+									// TODO Auto-generated catch block
+									e1.printStackTrace();
+								}
+
+							}					
+
+						if (dialogResult == JOptionPane.NO_OPTION) {
+
+							try {
+								try {
+									sync_authors_intersect(issue_id, encoding, false);
+								} catch (IllegalStateException e2) {
+									// TODO Auto-generated catch block
+									e2.printStackTrace();
+								} catch (IOException e2) {
+									// TODO Auto-generated catch block
+									e2.printStackTrace();
+								}
+							} catch (IllegalStateException e1) {
+								// TODO Auto-generated catch block
+								e1.printStackTrace();
+							}
+						} else if (dialogResult == JOptionPane.YES_OPTION) {
+							try {
+								get_authors_remote(issue_id, encoding, false);
+							} catch (IllegalStateException e1) {
+								// TODO Auto-generated catch block
+								e1.printStackTrace();
+							} catch (IOException e1) {
+								// TODO Auto-generated catch block
+								e1.printStackTrace();
+							}
+						}
 							
 
 						}
