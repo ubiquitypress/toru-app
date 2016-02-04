@@ -4630,20 +4630,21 @@ public class Main {
 				}
 				;
 
-				System.out.println("authors: " + selected);
+				System.out.println("authors: " + selected.length);
+				System.out.println("authors: " + listData.length);
 				for (int index : selected) {
 					System.out.println("Selected: " + index);
 				}
 				System.out.println(selected.toString());
-				panel15.setBounds(50, 107, 180 * 2, 45 * article_authors.size());
+				panel15.setBounds(50, 107, 180 * 2, 100+25 * article_authors.size());
 				panel15.setLayout(null);
 				panel15.setAutoscrolls(true);
-				panel15.setPreferredSize(new Dimension(320, 45 * article_authors.size()));
+				panel15.setPreferredSize(new Dimension(320, 100+25 * article_authors.size()));
 				// Create a new listbox control
 				JList listbox = new JList();
 				listbox.setModel(listModel);
 				listbox.setSelectedIndices(selected);
-				listbox.setBounds(15, 40, 320, 25 * author_list.size());
+				listbox.setBounds(10, 10, 300, 50+25 * author_list.size());
 				listbox.setBackground(Color.white);
 				listbox.setVisible(true);
 				panel15.add(listbox);

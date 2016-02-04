@@ -37,7 +37,7 @@ public class Author {
 			full_name=full_name+this.middle_name+" ";
 		}
 		full_name=full_name+this.last_name;
-		return first_name;
+		return full_name;
 	}
 	public String getFirst_name() {
 		return first_name;
