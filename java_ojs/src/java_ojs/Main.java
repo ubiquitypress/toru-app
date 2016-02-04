@@ -777,7 +777,15 @@ public class Main {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-
+		try {
+			latest_ids();
+		} catch (IllegalStateException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		System.out.println("Done.");
 	}
 
@@ -1003,6 +1011,8 @@ public class Main {
 			latest = i_id;
 		} else if (type.compareTo("journal") == 0) {
 			latest = journal_id;
+		}else if (type.compareTo("author") == 0) {
+			latest = author_id;
 		} else {
 			latest = 1;
 		}
@@ -1078,7 +1088,7 @@ public class Main {
 		System.out.println(remote_issue_id);
 		System.out.println(remote_article_id);
 		System.out.println(remote_journal_id);
-		System.out.println(remote_author_id);
+		System.out.println(remote_author_id + "-"+author_id);
 	}
 
 	public static void database_setup() {
@@ -1146,15 +1156,7 @@ public class Main {
 			System.err.println(e.getClass().getName() + ": " + e.getMessage());
 			System.exit(0);
 		}
-		try {
-			latest_ids();
-		} catch (IllegalStateException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+	
 		System.out.println("Opened database successfully");
 	}
 
@@ -4608,6 +4610,7 @@ public class Main {
 				JButton btnAddAuthors = new JButton("Edit Authors");
 				btnAddAuthors.setBounds(165, 6, 125, 25);
 				panel6.add(btnAddAuthors);
+				
 				ArrayList<Author> article_authors = new ArrayList<Author>();
 				article_authors = article_author_storage.get(current_article.getId());
 
@@ -5453,7 +5456,7 @@ public class Main {
 				width_small = (int) (640 + (640 * (37.5 / 100)));
 				height_small = (int) (768 - (768 * (5 / 100)));
 			}
-
+			HashMap<Long,Boolean> author_primary = new HashMap<Long,Boolean>();
 			String setting_meta = list_settings.get("Metadata");
 			long current_id = articles_id + 1;
 			long initial_file_num = file_id;
@@ -5711,18 +5714,23 @@ public class Main {
 			 * 34, 205 * 2, 175); // white box lblAuthorInfo.setOpaque(true);
 			 * panel6.add(lblAuthorInfo)
 			 */
-			Set<Long> author_keys = author_storage.keySet();
+			ArrayList<Author> article_authors = new ArrayList<Author>();
+		
 			DefaultListModel listModel = new DefaultListModel();
 			ArrayList<Long> author_list = new ArrayList<Long>();
-			String listData[] = new String[author_keys.size()];
 			int j = 0;
-			for (long key : author_keys) {
-				listModel.addElement(author_storage.get(key).getFull_name());
-				listData[j] = author_storage.get(key).getFull_name();
-				author_list.add(key);
+			int a = 0;
+			int selections = article_authors.size();
+			int[] selected = new int[selections];
+			for (Author author : article_authors) {
+				listModel.addElement(author.getFull_name());
+				author_list.add((long) author.getId());
+				System.out.println(a + " - " + j);
+				selected[a] = j;
+				a = a + 1;
+
 				j = j + 1;
 			}
-			;
 
 			// Create a new listbox control
 			JButton btnAddAuthor = new JButton("+ Add new Author");
@@ -5730,7 +5738,7 @@ public class Main {
 			panel6.add(btnAddAuthor);
 			JList listbox = new JList();
 			listbox.setModel(listModel);
-			listbox.setBounds(15, 40, 320, 25 * author_list.size());
+			listbox.setBounds(15, 40, 320,300);
 			listbox.setBackground(Color.white);
 			listbox.setVisible(true);
 			panel6.add(listbox);
@@ -5843,8 +5851,12 @@ public class Main {
 								txtLastName.getText(), txtEmail.getText(), txtAffiliation.getText(), txtBio.getText(),
 								txtOrcID.getText(), txtDepartment.getText(), txtCountry.getText());
 						author_storage.put(author_id, new_author);
+						System.out.println("Author id :"+author_id);
+						System.out.println(new_author);
+						author_primary.put((long)author_id, false);
 						author_list.add(author_id);
 						listModel.addElement(new_author.getFull_name());
+						listbox.setSelectedIndex(author_list.size()-1);
 						listbox.repaint();
 					}
 				}
@@ -6091,19 +6103,32 @@ public class Main {
 						}
 						list_issues.replace(issue_id, articles_id);
 						Issue current_issue = issue_storage.get(issue_id);
-
-						current_issue.add_article(articles_id,
-								new Article(articles_id, lblTitleText.getText(), entered_sectionID, entered_pages,
-										lblAbstract.getText(), datePickerAccepted.getDate(), datePicker.getDate(),
-										current_issue, datePickerAccepted.getDate(),
-										new Journal(1, "up", (float) 2.0, "en_US", 0)));
+						Article new_article = new Article(articles_id, lblTitleText.getText(), entered_sectionID, entered_pages,
+								lblAbstract.getText(), datePickerAccepted.getDate(), datePicker.getDate(),
+								current_issue, datePickerAccepted.getDate(),
+								new Journal(1, "up", (float) 2.0, "en_US", 0));
+			
+						author_primary_storage.put(articles_id, author_primary);
+						ArrayList<Author> selected_authors= new ArrayList<Author> ();
 						int[] selections = listbox.getSelectedIndices();
 						HashMap<Long, Boolean> author_primary = new HashMap<Long, Boolean>();
 						author_primary_storage.put(articles_id, author_primary);
+						System.out.println("Selected authors: "+ selections.length);
 						for (int index : selections) {
-							current_issue.add_author(articles_id, author_storage.get(author_list.get(index)));
 							author_primary.put(author_storage.get(author_list.get(index)).getId(), false);
+							selected_authors.add(author_storage.get(author_list.get(index)));
+							new_article.add_author(author_storage.get(author_list.get(index)));
+
+							System.out.println("Added: "+ author_storage.get(author_list.get(index)).getFull_name());
+							System.out.println("selected_authors: "+ selected_authors.size());
+							System.out.println("new_article: "+ new_article.getAuthors().size());
+							
 						}
+						current_issue.add_article(articles_id,new_article);
+						
+						article_storage.put(articles_id, new_article);
+						article_author_storage.put(articles_id, selected_authors);
+						
 						author_primary_storage.put(articles_id, author_primary);
 						article.dispose();
 						issue_storage.put(issue_id, current_issue);
@@ -6112,7 +6137,6 @@ public class Main {
 						HashMap<Long, JFrame> issue_articles = article_screens.get(issue_id);
 						System.out.println(articles_id);
 						issue_articles.put(articles_id, new JFrame());
-
 						article_screens.put(issue_id, issue_articles);
 						System.out.println(article_screens.get(issue_id).containsKey(articles_id));
 
@@ -8029,6 +8053,8 @@ public class Main {
 		// file copy to use for file upload
 		// file_copy(1,"src/lib/db_xxs.png");
 		// get_authors_remote(5, encoding, false);
+		System.out.println("Latest author id: "+author_id);
+		latest_ids();
 		new Main();
 	}
 }
