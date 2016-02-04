@@ -4621,7 +4621,7 @@ public class Main {
 				for (Author author : article_authors) {
 					listModel.addElement(author.getFull_name());
 					listData[j] = author.getFull_name();
-					author_list.add((long) j);
+					author_list.add((long) author.getId());
 					System.out.println(a + " - " + j);
 					selected[a] = j;
 					a = a + 1;
@@ -4667,7 +4667,9 @@ public class Main {
 								if (!new_authors.contains(index)) {
 									removed_authors.add(index);
 								}
+								
 							}
+							
 							HashMap<Long, Boolean> primary_storage = author_primary_storage.get(article_id);
 							for (int i = 0; i < removed_authors.size(); i++) {
 								primary_storage.remove(removed_authors.get(i));
@@ -4679,11 +4681,14 @@ public class Main {
 							}
 							author_primary_storage.put(article_id, primary_storage);
 							current_issue.reset_authors(article_id);
+							ArrayList<Author> new_set_authors = new ArrayList<Author>();
 							for (int index : selections) {
 								Author new_author = author_storage.get(author_list.get(index));
 								current_issue.add_author(article_id, new_author);
-
+								new_set_authors.add(new_author);
+								
 							}
+							article_author_storage.put(article_id, new_set_authors);
 							issue_storage.put(issue_id, current_issue);
 							article.dispose();
 							edit_article(issue_id, article_id);
