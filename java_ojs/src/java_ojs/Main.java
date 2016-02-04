@@ -2032,12 +2032,13 @@ public class Main {
 
 				btnSync.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
+						int dialogResult = -1;
 						Set<Long> issue_keys = issue_storage.keySet();
 						for (long key : issue_keys) {
 							Issue current_issue = issue_storage.get(key);
 
 							long issue_id = current_issue.getId();
-							int dialogResult = JOptionPane.showConfirmDialog(null,
+							dialogResult = JOptionPane.showConfirmDialog(null,
 									String.format(
 											"Issue %s <%s>: Would You Like to replace local data (Yes) or update remote data (No)",
 											current_issue.getTitle(), Long.toString(issue_id)),
@@ -2079,54 +2080,105 @@ public class Main {
 
 								try {
 									update_articles_local(current_issue, encoding);
-								
+
 								} catch (IllegalStateException | IOException e1) {
 									// TODO Auto-generated catch block
 									e1.printStackTrace();
 								}
 
-							}					
+							}
 
-						if (dialogResult == JOptionPane.NO_OPTION) {
+							if (dialogResult == JOptionPane.NO_OPTION) {
 
-							try {
 								try {
-									sync_authors_intersect(issue_id, encoding, false);
-								} catch (IllegalStateException e2) {
+									try {
+										sync_authors_intersect(issue_id, encoding, false);
+									} catch (IllegalStateException e2) {
+										// TODO Auto-generated catch block
+										e2.printStackTrace();
+									} catch (IOException e2) {
+										// TODO Auto-generated catch block
+										e2.printStackTrace();
+									}
+								} catch (IllegalStateException e1) {
 									// TODO Auto-generated catch block
-									e2.printStackTrace();
-								} catch (IOException e2) {
-									// TODO Auto-generated catch block
-									e2.printStackTrace();
+									e1.printStackTrace();
 								}
-							} catch (IllegalStateException e1) {
-								// TODO Auto-generated catch block
-								e1.printStackTrace();
+							} else if (dialogResult == JOptionPane.YES_OPTION) {
+								try {
+									get_authors_remote(issue_id, encoding, false);
+								} catch (IllegalStateException e1) {
+									// TODO Auto-generated catch block
+									e1.printStackTrace();
+								} catch (IOException e1) {
+									// TODO Auto-generated catch block
+									e1.printStackTrace();
+								}
 							}
-						} else if (dialogResult == JOptionPane.YES_OPTION) {
-							try {
-								get_authors_remote(issue_id, encoding, false);
-							} catch (IllegalStateException e1) {
-								// TODO Auto-generated catch block
-								e1.printStackTrace();
-							} catch (IOException e1) {
-								// TODO Auto-generated catch block
-								e1.printStackTrace();
-							}
-						}
-							
 
 						}
 						issues.repaint();
-
+						ArrayList<Issue> new_issues = new ArrayList<Issue>();
 						try {
-							update_get_issues_from_remote(encoding, false);
+							new_issues = update_get_issues_from_remote(encoding, false);
 						} catch (IllegalStateException e1) {
 							// TODO Auto-generated catch block
 							e1.printStackTrace();
 						} catch (IOException e1) {
 							// TODO Auto-generated catch block
 							e1.printStackTrace();
+						}
+						for (Issue current_issue : new_issues) {
+							long issue_id = current_issue.getId();
+							if (dialogResult == JOptionPane.NO_OPTION) {
+
+								try {
+									update_articles_intersect(current_issue, encoding);
+
+								} catch (IllegalStateException | IOException e1) {
+									// TODO Auto-generated catch block
+									e1.printStackTrace();
+								}
+							} else if (dialogResult == JOptionPane.YES_OPTION) {
+								System.out.println("update local");
+
+								try {
+									update_articles_local(current_issue, encoding);
+
+								} catch (IllegalStateException | IOException e1) {
+									// TODO Auto-generated catch block
+									e1.printStackTrace();
+								}
+
+							}
+
+							if (dialogResult == JOptionPane.NO_OPTION) {
+
+								try {
+									try {
+										sync_authors_intersect(issue_id, encoding, false);
+									} catch (IllegalStateException e2) {
+										// TODO Auto-generated catch block
+										e2.printStackTrace();
+									} catch (IOException e2) {
+										// TODO Auto-generated catch block
+										e2.printStackTrace();
+									}
+								} catch (IllegalStateException e1) {
+									// TODO Auto-generated catch block
+									e1.printStackTrace();
+								}
+							} else if (dialogResult == JOptionPane.YES_OPTION) {
+								try {
+									get_authors_remote(issue_id, encoding, false);
+								} catch (IllegalStateException e1) {
+									// TODO Auto-generated catch block
+									e1.printStackTrace();
+								} catch (IOException e1) {
+									// TODO Auto-generated catch block
+									e1.printStackTrace();
+								}
+							}
 						}
 						Set<Long> update_issue_keys = issue_storage.keySet();
 						ArrayList<List<Object>> rowData = new ArrayList<List<Object>>();
@@ -3335,7 +3387,7 @@ public class Main {
 				btnSync.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
 						System.out.println(current_issue.getArticles_list().isEmpty());
-					
+
 						boolean update_table = false;
 						if (!current_issue.getArticles_list().isEmpty()) {
 							int dialogResult = JOptionPane.showConfirmDialog(null,
@@ -7040,56 +7092,24 @@ public class Main {
 				exists = false;
 			} else {
 				String[] article_ids = null;
-				String ids=((String) setting.get("articles"));
-				if (ids.contains(",")){
-				 article_ids = ((String) setting.get("articles")).split(",");
+				String ids = ((String) setting.get("articles"));
+				if (ids.contains(",")) {
+					article_ids = ((String) setting.get("articles")).split(",");
 				}
-				try{
-				for (String id : article_ids) {
-					System.out.println(id);
-					HttpGet single_article = new HttpGet(String.format("%s/articles/%s/?format=json", base_url, id));
-					// settingCheck.setEntity(new
-					// StringEntity(obj.toJSONString()));
-					single_article.addHeader("Authorization", "Basic " + credentials);
-					single_article.setHeader("Accept", "application/json");
-					single_article.addHeader("Content-type", "application/json");
-
-					response = null;
-					try {
-						response = httpClient.execute(single_article);
-					} catch (ClientProtocolException e2) {
-						// TODO Auto-generated catch block
-						e2.printStackTrace();
-					} catch (IOException e2) {
-						// TODO Auto-generated catch block
-						e2.printStackTrace();
-					}
-					result = response.getEntity().getContent();
-					jsonParser = new JSONParser();
-					exists = true;
-					setting_json = new JSONObject();
-					try {
-						setting = (JSONObject) jsonParser.parse(IOUtils.toString(result));
-						Article new_article = JSONToArticle(setting, issue);
-						System.out.println(new_article);
-						try {
-							InputStream is = response.getEntity().getContent();
-							is.close();
-						} catch (IOException exc) {
-							// TODO Auto-generated catch block
-							exc.printStackTrace();
-						}
-						HttpGet article_settings = new HttpGet(String.format(
-								"%s/get/setting/abstract/article/%s/?format=json", base_url, new_article.getId()));
+				try {
+					for (String id : article_ids) {
+						System.out.println(id);
+						HttpGet single_article = new HttpGet(
+								String.format("%s/articles/%s/?format=json", base_url, id));
 						// settingCheck.setEntity(new
 						// StringEntity(obj.toJSONString()));
-						article_settings.addHeader("Authorization", "Basic " + credentials);
-						article_settings.setHeader("Accept", "application/json");
-						article_settings.addHeader("Content-type", "application/json");
+						single_article.addHeader("Authorization", "Basic " + credentials);
+						single_article.setHeader("Accept", "application/json");
+						single_article.addHeader("Content-type", "application/json");
 
 						response = null;
 						try {
-							response = httpClient.execute(article_settings);
+							response = httpClient.execute(single_article);
 						} catch (ClientProtocolException e2) {
 							// TODO Auto-generated catch block
 							e2.printStackTrace();
@@ -7097,136 +7117,172 @@ public class Main {
 							// TODO Auto-generated catch block
 							e2.printStackTrace();
 						}
-						if (response.getStatusLine().getStatusCode() == 200) {
-							result = response.getEntity().getContent();
-							jsonParser = new JSONParser();
-							exists = true;
-							setting_json = new JSONObject();
-
+						result = response.getEntity().getContent();
+						jsonParser = new JSONParser();
+						exists = true;
+						setting_json = new JSONObject();
+						try {
+							setting = (JSONObject) jsonParser.parse(IOUtils.toString(result));
+							Article new_article = JSONToArticle(setting, issue);
+							System.out.println(new_article);
 							try {
-								setting = (JSONObject) jsonParser.parse(IOUtils.toString(result));
-								JSONArray results = (JSONArray) setting.get("results");
-								System.out.println(results.get(0));
-								setting_json = (JSONObject) results.get(0);
-								System.out.println("ABSTRACT");
-								System.out.println(setting_json.get("setting_value"));
-								String abs = Jsoup.parse((String) setting_json.get("setting_value")).text();
-								String[] words = abs.split(" ");
-								String new_abs = "";
-								int j = 0;
-								for (String word : words) {
-									new_abs = new_abs + " " + word;
-									if (j % 8 == 0 && j != 0) {
-										new_abs = new_abs + "\r\n";
+								InputStream is = response.getEntity().getContent();
+								is.close();
+							} catch (IOException exc) {
+								// TODO Auto-generated catch block
+								exc.printStackTrace();
+							}
+							HttpGet article_settings = new HttpGet(String.format(
+									"%s/get/setting/abstract/article/%s/?format=json", base_url, new_article.getId()));
+							// settingCheck.setEntity(new
+							// StringEntity(obj.toJSONString()));
+							article_settings.addHeader("Authorization", "Basic " + credentials);
+							article_settings.setHeader("Accept", "application/json");
+							article_settings.addHeader("Content-type", "application/json");
+
+							response = null;
+							try {
+								response = httpClient.execute(article_settings);
+							} catch (ClientProtocolException e2) {
+								// TODO Auto-generated catch block
+								e2.printStackTrace();
+							} catch (IOException e2) {
+								// TODO Auto-generated catch block
+								e2.printStackTrace();
+							}
+							if (response.getStatusLine().getStatusCode() == 200) {
+								result = response.getEntity().getContent();
+								jsonParser = new JSONParser();
+								exists = true;
+								setting_json = new JSONObject();
+
+								try {
+									setting = (JSONObject) jsonParser.parse(IOUtils.toString(result));
+									JSONArray results = (JSONArray) setting.get("results");
+									System.out.println(results.get(0));
+									setting_json = (JSONObject) results.get(0);
+									System.out.println("ABSTRACT");
+									System.out.println(setting_json.get("setting_value"));
+									String abs = Jsoup.parse((String) setting_json.get("setting_value")).text();
+									String[] words = abs.split(" ");
+									String new_abs = "";
+									int j = 0;
+									for (String word : words) {
+										new_abs = new_abs + " " + word;
+										if (j % 8 == 0 && j != 0) {
+											new_abs = new_abs + "\r\n";
+										}
+										j++;
 									}
-									j++;
+									new_article.setAbstract_text(new_abs);
+									System.out.println(setting_json.get("setting_value"));
+								} catch (Exception e) {
+									e.printStackTrace();
 								}
-								new_article.setAbstract_text(new_abs);
-								System.out.println(setting_json.get("setting_value"));
-							} catch (Exception e) {
-								e.printStackTrace();
+								try {
+									InputStream is = response.getEntity().getContent();
+									is.close();
+								} catch (IOException exc) {
+									// TODO Auto-generated catch block
+									exc.printStackTrace();
+								}
+							} else {
+								new_article.setAbstract_text("None.");
+
 							}
+							article_settings = new HttpGet(String.format("%s/get/setting/title/article/%s/?format=json",
+									base_url, new_article.getId()));
+							// settingCheck.setEntity(new
+							// StringEntity(obj.toJSONString()));
+							article_settings.addHeader("Authorization", "Basic " + credentials);
+							article_settings.setHeader("Accept", "application/json");
+							article_settings.addHeader("Content-type", "application/json");
+
+							response = null;
 							try {
-								InputStream is = response.getEntity().getContent();
-								is.close();
-							} catch (IOException exc) {
+								response = httpClient.execute(article_settings);
+							} catch (ClientProtocolException e2) {
 								// TODO Auto-generated catch block
-								exc.printStackTrace();
-							}
-						} else {
-							new_article.setAbstract_text("None.");
-
-						}
-						article_settings = new HttpGet(String.format("%s/get/setting/title/article/%s/?format=json",
-								base_url, new_article.getId()));
-						// settingCheck.setEntity(new
-						// StringEntity(obj.toJSONString()));
-						article_settings.addHeader("Authorization", "Basic " + credentials);
-						article_settings.setHeader("Accept", "application/json");
-						article_settings.addHeader("Content-type", "application/json");
-
-						response = null;
-						try {
-							response = httpClient.execute(article_settings);
-						} catch (ClientProtocolException e2) {
-							// TODO Auto-generated catch block
-							e2.printStackTrace();
-						} catch (IOException e2) {
-							// TODO Auto-generated catch block
-							e2.printStackTrace();
-						}
-						if (response.getStatusLine().getStatusCode() == 200) {
-							result = response.getEntity().getContent();
-							jsonParser = new JSONParser();
-							exists = true;
-							setting_json = new JSONObject();
-
-							try {
-								setting = (JSONObject) jsonParser.parse(IOUtils.toString(result));
-								JSONArray results = (JSONArray) setting.get("results");
-								System.out.println(results.get(0));
-								setting_json = (JSONObject) results.get(0);
-								new_article.setTitle((String) setting_json.get("setting_value"));
-								System.out.println(setting_json.get("setting_value"));
-							} catch (Exception e) {
-								e.printStackTrace();
-							}
-							try {
-								InputStream is = response.getEntity().getContent();
-								is.close();
-							} catch (IOException exc) {
+								e2.printStackTrace();
+							} catch (IOException e2) {
 								// TODO Auto-generated catch block
-								exc.printStackTrace();
+								e2.printStackTrace();
 							}
-						} else {
-							new_article.setTitle("None.");
-						}
-						HttpGet published_art = new HttpGet(String.format("%s/get/article/published/%s/?format=json",
-								base_url, new_article.getId()));
-						published_art.addHeader("Authorization", "Basic " + credentials);
-						published_art.setHeader("Accept", "application/json");
-						published_art.addHeader("Content-type", "application/json");
+							if (response.getStatusLine().getStatusCode() == 200) {
+								result = response.getEntity().getContent();
+								jsonParser = new JSONParser();
+								exists = true;
+								setting_json = new JSONObject();
 
-						response = null;
-						try {
-							response = httpClient.execute(published_art);
-						} catch (ClientProtocolException e2) {
-							// TODO Auto-generated catch block
-							e2.printStackTrace();
-						} catch (IOException e2) {
-							// TODO Auto-generated catch block
-							e2.printStackTrace();
-						}
-						if (response.getStatusLine().getStatusCode() == 200) {
-							result = response.getEntity().getContent();
-							jsonParser = new JSONParser();
-							exists = true;
-							setting_json = new JSONObject();
-
-							try {
-								setting = (JSONObject) jsonParser.parse(IOUtils.toString(result));
-
-								new_article.setDate_published(
-										sdf.parse(((String) setting.get("date_published")).replace("-", "/")));
-							} catch (Exception e) {
-								e.printStackTrace();
+								try {
+									setting = (JSONObject) jsonParser.parse(IOUtils.toString(result));
+									JSONArray results = (JSONArray) setting.get("results");
+									System.out.println(results.get(0));
+									setting_json = (JSONObject) results.get(0);
+									new_article.setTitle((String) setting_json.get("setting_value"));
+									System.out.println(setting_json.get("setting_value"));
+								} catch (Exception e) {
+									e.printStackTrace();
+								}
+								try {
+									InputStream is = response.getEntity().getContent();
+									is.close();
+								} catch (IOException exc) {
+									// TODO Auto-generated catch block
+									exc.printStackTrace();
+								}
+							} else {
+								new_article.setTitle("None.");
 							}
+							HttpGet published_art = new HttpGet(String
+									.format("%s/get/article/published/%s/?format=json", base_url, new_article.getId()));
+							published_art.addHeader("Authorization", "Basic " + credentials);
+							published_art.setHeader("Accept", "application/json");
+							published_art.addHeader("Content-type", "application/json");
+
+							response = null;
 							try {
-								InputStream is = response.getEntity().getContent();
-								is.close();
-							} catch (IOException exc) {
+								response = httpClient.execute(published_art);
+							} catch (ClientProtocolException e2) {
 								// TODO Auto-generated catch block
-								exc.printStackTrace();
+								e2.printStackTrace();
+							} catch (IOException e2) {
+								// TODO Auto-generated catch block
+								e2.printStackTrace();
 							}
-						}
+							if (response.getStatusLine().getStatusCode() == 200) {
+								result = response.getEntity().getContent();
+								jsonParser = new JSONParser();
+								exists = true;
+								setting_json = new JSONObject();
 
-						article_author_storage.put(new_article.getId(), new ArrayList<Author>());
-						articles_list.add(new_article);
-					} catch (ParseException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
+								try {
+									setting = (JSONObject) jsonParser.parse(IOUtils.toString(result));
+
+									new_article.setDate_published(
+											sdf.parse(((String) setting.get("date_published")).replace("-", "/")));
+								} catch (Exception e) {
+									e.printStackTrace();
+								}
+								try {
+									InputStream is = response.getEntity().getContent();
+									is.close();
+								} catch (IOException exc) {
+									// TODO Auto-generated catch block
+									exc.printStackTrace();
+								}
+							}
+
+							article_author_storage.put(new_article.getId(), new ArrayList<Author>());
+							articles_list.add(new_article);
+						} catch (ParseException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
 					}
-				}}catch(NullPointerException e_n){return;}
+				} catch (NullPointerException e_n) {
+					return;
+				}
 			}
 		} catch (ParseException e) {
 			// TODO Auto-generated catch block
@@ -7296,6 +7352,7 @@ public class Main {
 	public static void get_issue_from_remote(String credentials, long issue_id, boolean update_local)
 			throws IllegalStateException, IOException {
 		boolean status = status_online();
+
 		if (!status) {
 			return;
 		}
@@ -7411,14 +7468,15 @@ public class Main {
 			// TODO Auto-generated catch block
 			exc.printStackTrace();
 		}
-
 	}
 
-	public static void update_get_issues_from_remote(String credentials, boolean update_local)
+	public static ArrayList<Issue> update_get_issues_from_remote(String credentials, boolean update_local)
 			throws IllegalStateException, IOException {
 		boolean status = status_online();
+
+		ArrayList<Issue> new_issues = new ArrayList<Issue>();
 		if (!status) {
-			return;
+			return new_issues;
 		}
 		HttpGet httpGet = new HttpGet(String.format("%s/issues/?format=json", base_url));
 		httpGet.addHeader("Authorization", "Basic " + credentials);
@@ -7510,6 +7568,8 @@ public class Main {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
+
+					new_issues.add(new_issue);
 					issue_storage.put(issue_id, new_issue);
 					issue_screens.put(issue_id, new JFrame());
 					article_screens.put(issue_id, new HashMap<Long, JFrame>());
@@ -7536,7 +7596,7 @@ public class Main {
 			// TODO Auto-generated catch block
 			exc.printStackTrace();
 		}
-
+		return new_issues;
 	}
 
 	public static void get_authors_remote(long issue_id, String credentials, boolean update_local)
@@ -8051,7 +8111,8 @@ public class Main {
 	public static JSONObject ArticleToJSON(Article article) {
 		JSONObject obj = new JSONObject();
 		obj.put("id", article.getId());
-		obj.put("journal", String.format("%s/journals/%s/", base_url, article.getJournal() == null?  1 :article.getJournal().getId()));
+		obj.put("journal", String.format("%s/journals/%s/", base_url,
+				article.getJournal() == null ? 1 : article.getJournal().getId()));
 		obj.put("section_id", article.getSection_id());
 		obj.put("user", String.format("%s/users/%s/", base_url, article.getUser_id()));
 		SimpleDateFormat upload_sdf = new SimpleDateFormat("yyyy-MM-dd");
@@ -8076,7 +8137,7 @@ public class Main {
 		user_id = user_id.substring(0, user_id.lastIndexOf("/"));
 		user_id = user_id.substring(user_id.lastIndexOf("/") + 1);
 		System.out.println(user_id);
-		
+
 		Article new_article = new Article((long) obj.get("id"), (long) obj.get("section_id"), (String) obj.get("pages"),
 				Long.parseLong(user_id), (String) obj.get("locale"), (String) obj.get("language"),
 				(int) (long) obj.get("status"), (int) (long) obj.get("submission_progress"),
@@ -8362,7 +8423,7 @@ public class Main {
 		database_setup();
 		populate_variables();
 
-		// get_issue_from_remote(encoding, (long) 5, false);
+		get_issue_from_remote(encoding, (long) 5, false);
 
 		// update_articles_local(issue_storage.get((long) 5), encoding);
 		System.out.println();
