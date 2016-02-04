@@ -1,8 +1,10 @@
 package models;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Set;
 
 public class Issue {
 	private long id;
@@ -249,6 +251,15 @@ public class Issue {
 	}
 	public void setJournal(Journal journal) {
 		this.journal = journal;
+	}
+	public ArrayList<Author> getAuthors() {
+		ArrayList<Author> all_authors = new ArrayList<Author>();
+		Set<Long> article_keys = articles_list.keySet();
+		for(Long key: article_keys){
+			Article current_article = articles_list.get(key);
+			all_authors.addAll(current_article.getAuthors());
+		}
+		return all_authors;
 	}
 	
 	

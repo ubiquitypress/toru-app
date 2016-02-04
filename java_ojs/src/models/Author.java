@@ -10,6 +10,9 @@ public class Author {
 	private String orcid; 
 	private String department;
 	private String country;
+	private String url="";
+
+	private long user_group=1;
 	private long id;
 	private long article_id;
 	private long primary_contact=0;
@@ -126,7 +129,32 @@ public class Author {
 	public String toString() {
 		return  first_name+" "+ middle_name +" "+  last_name+" ("+email+")";
 	}
+	public long getPrimary_contact() {
+		return primary_contact;
+	}
+	public void setPrimary_contact(long primary_contact) {
+		this.primary_contact = primary_contact;
+	}
+	public long getSeq() {
+		return seq;
+	}
+	public void setSeq(long seq) {
+		this.seq = seq;
+	}
 	
+	
+	public String getUrl() {
+		return url;
+	}
+	public void setUrl(String url) {
+		this.url = url;
+	}
+	public long getUser_group() {
+		return user_group;
+	}
+	public void setUser_group(long user_group) {
+		this.user_group = user_group;
+	}
 	
 
 }

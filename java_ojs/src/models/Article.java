@@ -265,13 +265,7 @@ public class Article {
 	}
 	@Override
 	public String toString() {
-		return "Article [id=" + id + ", title=" + title + ", section_id=" + section_id + ", pages=" + pages
-				+ ", abstract_text=" + abstract_text + ", journal=" + journal + ", user_id=" + user_id + ", locale="
-				+ locale + ", language=" + language + ", status=" + status + ", submission_progress="
-				+ submission_progress + ", current_round=" + current_round + ", fast_tracked=" + fast_tracked
-				+ ", hide_author=" + hide_author + ", comments_status=" + comments_status + ", date_submitted="
-				+ date_submitted + ", date_accepted=" + date_accepted + ", date_published=" + date_published
-				+ ", issue_fk=" + issue_fk + ", authors=" + authors + "]";
+		return title;
 	}
 	
 	

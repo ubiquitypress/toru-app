@@ -718,8 +718,9 @@ public class Main {
 			for (long key_author : author_keys) {
 				Author author = author_storage.get(key_author);
 				try {
-					PreparedStatement prep = c
-							.prepareStatement("SELECT author_id,article_id,primary_author FROM ARTICLE_AUTHOR WHERE author_id="+author.getId()+";");
+					PreparedStatement prep = c.prepareStatement(
+							"SELECT author_id,article_id,primary_author FROM ARTICLE_AUTHOR WHERE author_id="
+									+ author.getId() + ";");
 
 					ResultSet rs_author = prep.executeQuery();
 					while (rs_author.next()) {
@@ -728,43 +729,46 @@ public class Main {
 						long article_id = rs_author.getLong(2);
 
 						Boolean primary = rs_author.getBoolean(3);
-						System.out.println(author_id + " art:"+ article_id);
+						System.out.println(author_id + " art:" + article_id);
 						author.setArticle_id(article_id);
-						author_storage.put(author.getId(),author);
-					//	System.out.println(author_id + " - " + author.getId());
-						
-							//System.out.println(author.getFull_name() + " " + Long.toString(article_id));
-							HashMap<Long, Boolean> primary_authors = author_primary_storage.get(article_id);
-							primary_authors.put(author_id, primary);
-							//System.out.println("Author: " + author_id + " Primary: " + primary);
-							author_primary_storage.put(article_id, primary_authors);
-							if (!article_author_storage.containsKey(author.getArticle_id())) {
-								ArrayList<Author> new_authors = new ArrayList<Author>();
-								new_authors.add(author);
-								article_author_storage.put(author.getArticle_id(), new_authors);
-								System.out.println("new ADDED - - "+author.getArticle_id());
-								
-							} else {
-								ArrayList<Author> existing_authors = article_author_storage.get(author.getArticle_id());
-								existing_authors.add(author);
-								article_author_storage.put(author.getArticle_id(), existing_authors);
-								System.out.println("ADDED - - "+author.getArticle_id());
-							}
-							ResultSet rs_new_issue = c.createStatement()
-									.executeQuery("SELECT issue_id FROM ISSUE_ARTICLE;");
-							while (rs_new_issue.next()) {
-								long issue_id = rs_new_issue.getInt("issue_id");
-								Issue update_issue = issue_storage.get(issue_id);
-								if (update_issue.getArticles_list().containsKey(article_id)) {
-									update_issue.add_author(article_id, author);
-									System.out.println("Author size: "
-											+ update_issue.getArticles_list().get(article_id).getAuthors().size());
-									issue_storage.put(issue_id, update_issue);
-								}
+						author_storage.put(author.getId(), author);
+						// System.out.println(author_id + " - " +
+						// author.getId());
 
-								rs_new_issue.close();
+						// System.out.println(author.getFull_name() + " " +
+						// Long.toString(article_id));
+						HashMap<Long, Boolean> primary_authors = author_primary_storage.get(article_id);
+						primary_authors.put(author_id, primary);
+						// System.out.println("Author: " + author_id + "
+						// Primary: " + primary);
+						author_primary_storage.put(article_id, primary_authors);
+						if (!article_author_storage.containsKey(author.getArticle_id())) {
+							ArrayList<Author> new_authors = new ArrayList<Author>();
+							new_authors.add(author);
+							article_author_storage.put(author.getArticle_id(), new_authors);
+							System.out.println("new ADDED - - " + author.getArticle_id());
+
+						} else {
+							ArrayList<Author> existing_authors = article_author_storage.get(author.getArticle_id());
+							existing_authors.add(author);
+							article_author_storage.put(author.getArticle_id(), existing_authors);
+							System.out.println("ADDED - - " + author.getArticle_id());
+						}
+						ResultSet rs_new_issue = c.createStatement()
+								.executeQuery("SELECT issue_id FROM ISSUE_ARTICLE;");
+						while (rs_new_issue.next()) {
+							long issue_id = rs_new_issue.getInt("issue_id");
+							Issue update_issue = issue_storage.get(issue_id);
+							if (update_issue.getArticles_list().containsKey(article_id)) {
+								update_issue.add_author(article_id, author);
+								System.out.println("Author size: "
+										+ update_issue.getArticles_list().get(article_id).getAuthors().size());
+								issue_storage.put(issue_id, update_issue);
 							}
-						
+
+							rs_new_issue.close();
+						}
+
 					}
 				} catch (SQLException e) {
 					e.printStackTrace();
@@ -1011,7 +1015,7 @@ public class Main {
 			latest = i_id;
 		} else if (type.compareTo("journal") == 0) {
 			latest = journal_id;
-		}else if (type.compareTo("author") == 0) {
+		} else if (type.compareTo("author") == 0) {
 			latest = author_id;
 		} else {
 			latest = 1;
@@ -1088,7 +1092,7 @@ public class Main {
 		System.out.println(remote_issue_id);
 		System.out.println(remote_article_id);
 		System.out.println(remote_journal_id);
-		System.out.println(remote_author_id + "-"+author_id);
+		System.out.println(remote_author_id + "-" + author_id);
 	}
 
 	public static void database_setup() {
@@ -1156,7 +1160,7 @@ public class Main {
 			System.err.println(e.getClass().getName() + ": " + e.getMessage());
 			System.exit(0);
 		}
-	
+
 		System.out.println("Opened database successfully");
 	}
 
@@ -3281,6 +3285,8 @@ public class Main {
 				btnSync.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
 						System.out.println(current_issue.getArticles_list().isEmpty());
+					
+						boolean update_table = false;
 						if (!current_issue.getArticles_list().isEmpty()) {
 							int dialogResult = JOptionPane.showConfirmDialog(null,
 									"Would You Like to replace local data (Yes) or update remote data (No)", "Warning",
@@ -3298,6 +3304,7 @@ public class Main {
 								System.out.println("update local");
 
 								try {
+									update_table = true;
 									update_articles_local(current_issue, encoding);
 									articles.dispose();
 									issue(issue_id);
@@ -3322,68 +3329,110 @@ public class Main {
 								e1.printStackTrace();
 							}
 						}
-						HashMap<Long, Article> all_articles = current_issue.getArticles_list();
-						Set<Long> keys = all_articles.keySet();
-						ArrayList<List<Object>> rowData = new ArrayList<List<Object>>();
-						Object[][] rows = new Object[all_articles.size()][11];
-						boolean empty_table = false;
-						int num_rows = 0;
-						try {
-							num_rows = article_table.getRowCount();
-						} catch (NullPointerException n_e) {
-						}
-						if (num_rows != 0) {
-							for (int i = num_rows - 1; i >= 0; i--) {
-								System.out.println(num_rows);
-								((DefaultTableModel) article_table.getModel()).removeRow(i);
+						int dialogResult = JOptionPane.showConfirmDialog(null,
+								"Would You Like to replace local Author data (Yes) or update remote Author data (No)",
+								"Warning", 1);
 
-								System.out.println("--" + ((DefaultTableModel) article_table.getModel()).getRowCount());
+						if (dialogResult == JOptionPane.NO_OPTION) {
+
+							try {
+								try {
+									sync_authors_intersect(issue_id, encoding, false);
+								} catch (IllegalStateException e2) {
+									// TODO Auto-generated catch block
+									e2.printStackTrace();
+								} catch (IOException e2) {
+									// TODO Auto-generated catch block
+									e2.printStackTrace();
+								}
+							} catch (IllegalStateException e1) {
+								// TODO Auto-generated catch block
+								e1.printStackTrace();
+							}
+						} else if (dialogResult == JOptionPane.YES_OPTION) {
+							try {
+								get_authors_remote(issue_id, encoding, false);
+							} catch (IllegalStateException e1) {
+								// TODO Auto-generated catch block
+								e1.printStackTrace();
+							} catch (IOException e1) {
+								// TODO Auto-generated catch block
+								e1.printStackTrace();
 							}
 						}
-						int i = 0;
-						for (long id : keys) {
-							Article row_article = all_articles.get(id);
-
-							ArrayList<Object> data = new ArrayList<Object>();
-							issue_articles.put(id, new JFrame());
-
-							data.add(Long.toString(all_articles.get(id).getId()));
-							data.add(Long.toString(current_issue.getId()));
-							data.add(Long.toString((all_articles.get(id).getSection_id())));
-							data.add(all_articles.get(id).getTitle());
-							data.add(all_articles.get(id).getPages() == null ? "/" : all_articles.get(id).getPages());
-							data.add(all_articles.get(id).getAbstract_text());
-							data.add(sdf.format(current));
-							data.add("View");
-							data.add("Edit");
-							data.add("Delete");
-							Date date_submitted = all_articles.get(id).getDate_submitted();
-							String date_submit = "";
-							if (date_submitted == null) {
-								date_submit = "/";
-							} else {
-								date_submit = sdf.format(all_articles.get(id).getDate_submitted());
+						if (update_table) {
+							HashMap<Long, Article> all_articles = current_issue.getArticles_list();
+							Set<Long> keys = all_articles.keySet();
+							ArrayList<List<Object>> rowData = new ArrayList<List<Object>>();
+							Object[][] rows = new Object[all_articles.size()][11];
+							boolean empty_table = false;
+							int num_rows = 0;
+							try {
+								num_rows = article_table.getRowCount();
+							} catch (NullPointerException n_e) {
 							}
-							Date date_published = all_articles.get(id).getDate_published();
-							String date_pub = "";
-							if (date_published == null) {
-								date_pub = "/";
-							} else {
-								date_pub = sdf.format(all_articles.get(id).getDate_published());
-							}
-							Object[] row = { all_articles.get(id).getId(), issue_id,
-									all_articles.get(id).getSection_id(), current_articles.get(id).getTitle(),
-									all_articles.get(id).getPages(), all_articles.get(id).getAbstract_text(),
-									date_submit, date_pub, "View", "Edit", "Delete" };
-							rows[i] = row;
-							rowData.add(data);
-							article_table.setModel(new DefaultTableModel());
-							((DefaultTableModel) article_table.getModel()).insertRow(0, row);
-							i++;
+							if (num_rows != 0) {
+								for (int i = num_rows - 1; i >= 0; i--) {
+									System.out.println(num_rows);
+									((DefaultTableModel) article_table.getModel()).removeRow(i);
 
-						}
-						if (num_rows != 0) {
-							((DefaultTableModel) article_table.getModel()).fireTableRowsUpdated(0, num_rows - 1);
+									System.out.println(
+											"--" + ((DefaultTableModel) article_table.getModel()).getRowCount());
+								}
+							}
+							int i = 0;
+							for (long id : keys) {
+								Article row_article = all_articles.get(id);
+
+								ArrayList<Object> data = new ArrayList<Object>();
+								issue_articles.put(id, new JFrame());
+
+								data.add(Long.toString(all_articles.get(id).getId()));
+								data.add(Long.toString(current_issue.getId()));
+								data.add(Long.toString((all_articles.get(id).getSection_id())));
+								data.add(all_articles.get(id).getTitle());
+								data.add(all_articles.get(id).getPages() == null ? "/"
+										: all_articles.get(id).getPages());
+								data.add(all_articles.get(id).getAbstract_text());
+								data.add(sdf.format(current));
+								data.add("View");
+								data.add("Edit");
+								data.add("Delete");
+								Date date_submitted = all_articles.get(id).getDate_submitted();
+								String date_submit = "";
+								if (date_submitted == null) {
+									date_submit = "/";
+								} else {
+									date_submit = sdf.format(all_articles.get(id).getDate_submitted());
+								}
+								Date date_published = all_articles.get(id).getDate_published();
+								String date_pub = "";
+								if (date_published == null) {
+									date_pub = "/";
+								} else {
+									date_pub = sdf.format(all_articles.get(id).getDate_published());
+								}
+								Object[] row = { all_articles.get(id).getId(), issue_id,
+										all_articles.get(id).getSection_id(), current_articles.get(id).getTitle(),
+										all_articles.get(id).getPages(), all_articles.get(id).getAbstract_text(),
+										date_submit, date_pub, "View", "Edit", "Delete" };
+								rows[i] = row;
+								rowData.add(data);
+								((DefaultTableModel) article_table.getModel()).insertRow(0, row);
+								i++;
+								System.out.println("++" + ((DefaultTableModel) article_table.getModel()).getRowCount());
+
+							}
+							System.out.println(num_rows);
+							try {
+								num_rows = ((DefaultTableModel) article_table.getModel()).getRowCount();
+							} catch (NullPointerException n_e) {
+							}
+							System.out.println(":::" + num_rows);
+							if (num_rows != 0) {
+								((DefaultTableModel) article_table.getModel()).fireTableRowsUpdated(0, num_rows - 1);
+							}
+
 						}
 						article_table.repaint();
 						articles.getContentPane().repaint();
@@ -4610,7 +4659,7 @@ public class Main {
 				JButton btnAddAuthors = new JButton("Edit Authors");
 				btnAddAuthors.setBounds(165, 6, 125, 25);
 				panel6.add(btnAddAuthors);
-				
+
 				ArrayList<Author> article_authors = new ArrayList<Author>();
 				article_authors = article_author_storage.get(current_article.getId());
 
@@ -4639,15 +4688,15 @@ public class Main {
 					System.out.println("Selected: " + index);
 				}
 				System.out.println(selected.toString());
-				panel15.setBounds(50, 107, 180 * 2, 100+25 * article_authors.size());
+				panel15.setBounds(50, 107, 180 * 2, 100 + 25 * article_authors.size());
 				panel15.setLayout(null);
 				panel15.setAutoscrolls(true);
-				panel15.setPreferredSize(new Dimension(320, 100+25 * article_authors.size()));
+				panel15.setPreferredSize(new Dimension(320, 100 + 25 * article_authors.size()));
 				// Create a new listbox control
 				JList listbox = new JList();
 				listbox.setModel(listModel);
 				listbox.setSelectedIndices(selected);
-				listbox.setBounds(10, 10, 300, 50+25 * author_list.size());
+				listbox.setBounds(10, 10, 300, 50 + 25 * author_list.size());
 				listbox.setBackground(Color.white);
 				listbox.setVisible(true);
 				panel15.add(listbox);
@@ -4670,9 +4719,9 @@ public class Main {
 								if (!new_authors.contains(index)) {
 									removed_authors.add(index);
 								}
-								
+
 							}
-							
+
 							HashMap<Long, Boolean> primary_storage = author_primary_storage.get(article_id);
 							for (int i = 0; i < removed_authors.size(); i++) {
 								primary_storage.remove(removed_authors.get(i));
@@ -4689,7 +4738,7 @@ public class Main {
 								Author new_author = author_storage.get(author_list.get(index));
 								current_issue.add_author(article_id, new_author);
 								new_set_authors.add(new_author);
-								
+
 							}
 							article_author_storage.put(article_id, new_set_authors);
 							issue_storage.put(issue_id, current_issue);
@@ -4882,6 +4931,7 @@ public class Main {
 					field.setOpaque(true);
 					panel6.add(field);
 					author_components.put((long) 1, field);
+					author_fields.put(author.getId(), author_components);
 					author_y = author_y + separation_vertical;
 
 					field_label = new JLabel("Middle name:");
@@ -4968,7 +5018,7 @@ public class Main {
 																								// box
 					field.setOpaque(true);
 					panel6.add(field);
-					author_components.put((long) 7, field);
+					author_components.put((long) 6, field);
 					author_fields.put(author.getId(), author_components);
 					author_y = author_y + separation_vertical;
 
@@ -4982,7 +5032,7 @@ public class Main {
 																								// box
 					field.setOpaque(true);
 					panel6.add(field);
-					author_components.put((long) 8, field);
+					author_components.put((long) 7, field);
 					author_fields.put(author.getId(), author_components);
 					author_y = author_y + separation_vertical;
 
@@ -4996,22 +5046,24 @@ public class Main {
 																								// box
 					field.setOpaque(true);
 					panel6.add(field);
-					author_components.put((long) 9, field);
+					author_components.put((long) 8, field);
 					author_fields.put(author.getId(), author_components);
 					author_y = author_y + separation_vertical;
-
+					System.out.println("fields : " + author_components.keySet().size());
 					author_y = 60;
 					author_x = 16;
+
+					System.out.println("Components: " + author_components.size());
 
 				}
 				panel6.setPreferredSize(new Dimension(210 * article_authors.size(), 500)); // scrollable
 
-				System.out.println(author_fields.size());
+				System.out.println(author_fields.keySet());
 				/*
 				 * JTextArea lblAuthorInfo = new JTextArea(
 				 * "First Name: Pete\tFirst Name: Bob 2 \nLast Name: User\tLast Name: User 2 \n "
 				 * ); lblAuthorInfo.setEditable(true);
-				 * lblAuthorInfo.setBounds(16, 34, 205 * 2, 175); // white box
+				 * lblAuthorInfo.setBounds(16, 34, 205 * 2, 175)s; // white box
 				 * lblAuthorInfo.setOpaque(true); panel6.add(lblAuthorInfo)
 				 */
 
@@ -5262,21 +5314,22 @@ public class Main {
 									metadata_storage.put(article_id, meta_update);
 								}
 							}
-							Article a = issue_storage.get(issue_id).getArticles_list().get(article_id);
+							Article a = article_storage.get(article_id);
 							a.setTitle(lblTitleText.getText());
 							ArrayList<Author> updated_authors = a.getAuthors();
 							for (int i = 0; i < updated_authors.size(); i++) {
 								Author author = updated_authors.get(i);
 								HashMap<Long, JTextField> a_fields = author_fields.get(updated_authors.get(i).getId());
-								author.setFirst_name(a_fields.get(1).getText());
-								author.setMiddle_name(a_fields.get(2).getText());
-								author.setLast_name(a_fields.get(3).getText());
-								author.setEmail(a_fields.get(4).getText());
-								author.setAffiliation(a_fields.get(5).getText());
+
+								author.setFirst_name(a_fields.get((long) 1).getText());
+								author.setMiddle_name(a_fields.get((long) 2).getText());
+								author.setLast_name(a_fields.get((long) 3).getText());
+								author.setEmail(a_fields.get((long) 4).getText());
+								author.setAffiliation(a_fields.get((long) 5).getText());
 								author.setBio(authors_bio.get(updated_authors.get(i).getId()).getText());
-								author.setOrcid(a_fields.get(7).getText());
-								author.setDepartment(a_fields.get(8).getText());
-								author.setCountry(a_fields.get(9).getText());
+								author.setOrcid(a_fields.get((long) 6).getText());
+								author.setDepartment(a_fields.get((long) 7).getText());
+								author.setCountry(a_fields.get((long) 8).getText());
 								updated_authors.set(i, author);
 								author_storage.put(updated_authors.get(i).getId(), author);
 							}
@@ -5456,7 +5509,7 @@ public class Main {
 				width_small = (int) (640 + (640 * (37.5 / 100)));
 				height_small = (int) (768 - (768 * (5 / 100)));
 			}
-			HashMap<Long,Boolean> author_primary = new HashMap<Long,Boolean>();
+			HashMap<Long, Boolean> author_primary = new HashMap<Long, Boolean>();
 			String setting_meta = list_settings.get("Metadata");
 			long current_id = articles_id + 1;
 			long initial_file_num = file_id;
@@ -5715,7 +5768,7 @@ public class Main {
 			 * panel6.add(lblAuthorInfo)
 			 */
 			ArrayList<Author> article_authors = new ArrayList<Author>();
-		
+
 			DefaultListModel listModel = new DefaultListModel();
 			ArrayList<Long> author_list = new ArrayList<Long>();
 			int j = 0;
@@ -5738,7 +5791,7 @@ public class Main {
 			panel6.add(btnAddAuthor);
 			JList listbox = new JList();
 			listbox.setModel(listModel);
-			listbox.setBounds(15, 40, 320,300);
+			listbox.setBounds(15, 40, 320, 300);
 			listbox.setBackground(Color.white);
 			listbox.setVisible(true);
 			panel6.add(listbox);
@@ -5851,12 +5904,12 @@ public class Main {
 								txtLastName.getText(), txtEmail.getText(), txtAffiliation.getText(), txtBio.getText(),
 								txtOrcID.getText(), txtDepartment.getText(), txtCountry.getText());
 						author_storage.put(author_id, new_author);
-						System.out.println("Author id :"+author_id);
+						System.out.println("Author id :" + author_id);
 						System.out.println(new_author);
-						author_primary.put((long)author_id, false);
+						author_primary.put((long) author_id, false);
 						author_list.add(author_id);
 						listModel.addElement(new_author.getFull_name());
-						listbox.setSelectedIndex(author_list.size()-1);
+						listbox.setSelectedIndex(author_list.size() - 1);
 						listbox.repaint();
 					}
 				}
@@ -6103,32 +6156,32 @@ public class Main {
 						}
 						list_issues.replace(issue_id, articles_id);
 						Issue current_issue = issue_storage.get(issue_id);
-						Article new_article = new Article(articles_id, lblTitleText.getText(), entered_sectionID, entered_pages,
-								lblAbstract.getText(), datePickerAccepted.getDate(), datePicker.getDate(),
-								current_issue, datePickerAccepted.getDate(),
+						Article new_article = new Article(articles_id, lblTitleText.getText(), entered_sectionID,
+								entered_pages, lblAbstract.getText(), datePickerAccepted.getDate(),
+								datePicker.getDate(), current_issue, datePickerAccepted.getDate(),
 								new Journal(1, "up", (float) 2.0, "en_US", 0));
-			
+
 						author_primary_storage.put(articles_id, author_primary);
-						ArrayList<Author> selected_authors= new ArrayList<Author> ();
+						ArrayList<Author> selected_authors = new ArrayList<Author>();
 						int[] selections = listbox.getSelectedIndices();
 						HashMap<Long, Boolean> author_primary = new HashMap<Long, Boolean>();
 						author_primary_storage.put(articles_id, author_primary);
-						System.out.println("Selected authors: "+ selections.length);
+						System.out.println("Selected authors: " + selections.length);
 						for (int index : selections) {
 							author_primary.put(author_storage.get(author_list.get(index)).getId(), false);
 							selected_authors.add(author_storage.get(author_list.get(index)));
 							new_article.add_author(author_storage.get(author_list.get(index)));
 
-							System.out.println("Added: "+ author_storage.get(author_list.get(index)).getFull_name());
-							System.out.println("selected_authors: "+ selected_authors.size());
-							System.out.println("new_article: "+ new_article.getAuthors().size());
-							
+							System.out.println("Added: " + author_storage.get(author_list.get(index)).getFull_name());
+							System.out.println("selected_authors: " + selected_authors.size());
+							System.out.println("new_article: " + new_article.getAuthors().size());
+
 						}
-						current_issue.add_article(articles_id,new_article);
-						
+						current_issue.add_article(articles_id, new_article);
+
 						article_storage.put(articles_id, new_article);
 						article_author_storage.put(articles_id, selected_authors);
-						
+
 						author_primary_storage.put(articles_id, author_primary);
 						article.dispose();
 						issue_storage.put(issue_id, current_issue);
@@ -6488,7 +6541,6 @@ public class Main {
 				e2.printStackTrace();
 			}
 		} else {
-			setting_json.put("setting_value", "updated-title");
 			HttpPut httpPost = new HttpPut(
 					String.format("%s/update/article/setting/%s/", base_url, setting_json.get("pk")));
 			httpPost.setEntity(new StringEntity(setting_json.toJSONString()));
@@ -6587,7 +6639,6 @@ public class Main {
 				e2.printStackTrace();
 			}
 		} else {
-			setting_json.put("setting_value", "updated-title");
 			HttpPut httpPost = new HttpPut(
 					String.format("%s/update/article/setting/%s/", base_url, setting_json.get("pk")));
 			httpPost.setEntity(new StringEntity(setting_json.toJSONString()));
@@ -6778,7 +6829,6 @@ public class Main {
 				e2.printStackTrace();
 			}
 		} else {
-			setting_json.put("setting_value", "updated-title");
 			HttpPut httpPost = new HttpPut(
 					String.format("%s/update/issue/setting/%s/", base_url, setting_json.get("pk")));
 			httpPost.setEntity(new StringEntity(setting_json.toJSONString()));
@@ -7598,6 +7648,201 @@ public class Main {
 		System.out.println("Authors: " + author_count);
 	}
 
+	public static void sync_authors_intersect(long issue_id, String credentials, boolean update_local)
+			throws IllegalStateException, IOException {
+		boolean status = status_online();
+		if (!status) {
+			return;
+		}
+		Issue issue = issue_storage.get(issue_id);
+		ArrayList<Author> issue_authors = issue.getAuthors();
+		int author_count = 0;
+		for (Author author : issue_authors) {
+
+			JSONObject obj = AuthorToJSON(author);
+			HttpGet httpGet = new HttpGet(String.format("%s/authors/%s/?format=json", base_url, author.getId()));
+			httpGet.addHeader("Authorization", "Basic " + credentials);
+			httpGet.setHeader("Accept", "application/json");
+			httpGet.addHeader("Content-type", "application/json");
+
+			HttpResponse response = null;
+			try {
+				response = httpClient.execute(httpGet);
+			} catch (ClientProtocolException e2) {
+				// TODO Auto-generated catch block
+				e2.printStackTrace();
+			} catch (IOException e2) {
+				// TODO Auto-generated catch block
+				e2.printStackTrace();
+			}
+			boolean author_created = false;
+			if (response.getStatusLine().getStatusCode() == 200) {
+				author_created = true;
+			}
+			JsonFactory jsonf = new JsonFactory();
+			InputStream result = response.getEntity().getContent();
+			try {
+				InputStream is = response.getEntity().getContent();
+				is.close();
+			} catch (IOException exc) {
+				// TODO Auto-generated catch block
+				exc.printStackTrace();
+			}
+			org.json.simple.parser.JSONParser jsonParser = new JSONParser();
+			if (author_created) {
+				HttpPut httpPut = new HttpPut(String.format("%s/authors/%s/", base_url, author.getId()));
+				httpPut.setEntity(new StringEntity(obj.toJSONString()));
+				httpPut.addHeader("Authorization", "Basic " + credentials);
+				httpPut.setHeader("Accept", "application/json");
+				httpPut.addHeader("Content-type", "application/json");
+
+				response = null;
+				try {
+					response = httpClient.execute(httpPut);
+				} catch (ClientProtocolException e2) {
+					// TODO Auto-generated catch block
+					e2.printStackTrace();
+				} catch (IOException e2) {
+					// TODO Auto-generated catch block
+					e2.printStackTrace();
+				}
+				try {
+					InputStream is = response.getEntity().getContent();
+					is.close();
+				} catch (IOException exc) {
+					// TODO Auto-generated catch block
+					exc.printStackTrace();
+				}
+			} else {
+				HttpPost createAuthor = new HttpPost(String.format("%s/authors/", base_url));
+				createAuthor.setEntity(new StringEntity(obj.toJSONString()));
+				createAuthor.addHeader("Authorization", "Basic " + credentials);
+				createAuthor.setHeader("Accept", "application/json");
+				createAuthor.addHeader("Content-type", "application/json");
+
+				response = null;
+				try {
+					response = httpClient.execute(createAuthor);
+				} catch (ClientProtocolException e2) {
+					// TODO Auto-generated catch block
+					e2.printStackTrace();
+				} catch (IOException e2) {
+					// TODO Auto-generated catch block
+					e2.printStackTrace();
+				}
+				try {
+					InputStream is = response.getEntity().getContent();
+					is.close();
+				} catch (IOException exc) {
+					// TODO Auto-generated catch block
+					exc.printStackTrace();
+				}
+			}
+			HttpGet settingCheck = new HttpGet(
+					String.format("%s/get/setting/abstract/issue/%s/?format=json", base_url, issue.getId()));
+			// settingCheck.setEntity(new StringEntity(obj.toJSONString()));
+			settingCheck.addHeader("Authorization", "Basic " + credentials);
+			settingCheck.setHeader("Accept", "application/json");
+			settingCheck.addHeader("Content-type", "application/json");
+
+			response = null;
+			try {
+				response = httpClient.execute(settingCheck);
+			} catch (ClientProtocolException e2) {
+				// TODO Auto-generated catch block
+				e2.printStackTrace();
+			} catch (IOException e2) {
+				// TODO Auto-generated catch block
+				e2.printStackTrace();
+			}
+			jsonf = new JsonFactory();
+			result = response.getEntity().getContent();
+			boolean setting_created = false;
+			if (response.getStatusLine().getStatusCode() == 200) {
+				author_created = true;
+			}
+			Long setting_pk = (long) -1;
+			jsonParser = new JSONParser();
+			boolean exists = true;
+			JSONObject setting_json = new JSONObject();
+			try {
+				JSONObject setting = (JSONObject) jsonParser.parse(IOUtils.toString(result));
+				System.out.println(setting.get("count"));
+				System.out.println(setting);
+				Long count = (Long) setting.get("count");
+				if (count == 0) {
+					exists = false;
+				} else {
+					JSONArray results = (JSONArray) setting.get("results");
+					System.out.println(results.get(0));
+					setting_json = (JSONObject) results.get(0);
+					System.out.println(setting_json.get("pk"));
+					System.out.println(setting_json.get("setting_name"));
+					System.out.println(setting_json.get("setting_value"));
+					setting_pk = (long) setting_json.get("pk");
+					setting_json.put("setting_value", author.getBio());
+				}
+			} catch (ParseException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			try {
+				InputStream is = response.getEntity().getContent();
+				is.close();
+			} catch (IOException exc) {
+				// TODO Auto-generated catch block
+				exc.printStackTrace();
+			}
+			System.out.println(setting_json.isEmpty());
+			System.out.println(exists);
+			System.out.println(setting_pk);
+			if (setting_json.isEmpty()) {
+				setting_json = SettingToJSON("authors", author.getId(), "biography", author.getBio(), "string",
+						"en_US");
+			}
+			System.out.println(setting_json);
+			if (!exists) {
+				HttpPost httpPost = new HttpPost(String.format("%s/author-settings/", base_url));
+				httpPost.setEntity(new StringEntity(setting_json.toJSONString()));
+				httpPost.addHeader("Authorization", "Basic " + credentials);
+				httpPost.setHeader("Accept", "application/json");
+				httpPost.addHeader("Content-type", "application/json");
+				try {
+					response = httpClient.execute(httpPost);
+				} catch (ClientProtocolException e2) {
+					// TODO Auto-generated catch block
+					e2.printStackTrace();
+				} catch (IOException e2) {
+					// TODO Auto-generated catch block
+					e2.printStackTrace();
+				}
+			} else {
+				HttpPut httpPost = new HttpPut(
+						String.format("%s/update/issue/setting/%s/", base_url, setting_json.get("pk")));
+				httpPost.setEntity(new StringEntity(setting_json.toJSONString()));
+				httpPost.addHeader("Authorization", "Basic " + credentials);
+				httpPost.setHeader("Accept", "application/json");
+				httpPost.addHeader("Content-type", "application/json");
+				try {
+					response = httpClient.execute(httpPost);
+				} catch (ClientProtocolException e2) {
+					// TODO Auto-generated catch block
+					e2.printStackTrace();
+				} catch (IOException e2) {
+					// TODO Auto-generated catch block
+					e2.printStackTrace();
+				}
+			}
+			try {
+				InputStream is = response.getEntity().getContent();
+				is.close();
+			} catch (IOException exc) {
+				// TODO Auto-generated catch block
+				exc.printStackTrace();
+			}
+		}
+	}
+
 	public static Issue update_issue_local(Issue issue, String credentials) throws IllegalStateException, IOException {
 		boolean status = status_online();
 		if (!status) {
@@ -7752,7 +7997,7 @@ public class Main {
 	public static JSONObject ArticleToJSON(Article article) {
 		JSONObject obj = new JSONObject();
 		obj.put("id", article.getId());
-		obj.put("journal", String.format("%s/journals/%s/", base_url, article.getJournal().getId()));
+		obj.put("journal", String.format("%s/journals/%s/", base_url, article.getJournal() == null?  1 :article.getJournal().getId()));
 		obj.put("section_id", article.getSection_id());
 		obj.put("user", String.format("%s/users/%s/", base_url, article.getUser_id()));
 		SimpleDateFormat upload_sdf = new SimpleDateFormat("yyyy-MM-dd");
@@ -7777,7 +8022,7 @@ public class Main {
 		user_id = user_id.substring(0, user_id.lastIndexOf("/"));
 		user_id = user_id.substring(user_id.lastIndexOf("/") + 1);
 		System.out.println(user_id);
-
+		
 		Article new_article = new Article((long) obj.get("id"), (long) obj.get("section_id"), (String) obj.get("pages"),
 				Long.parseLong(user_id), (String) obj.get("locale"), (String) obj.get("language"),
 				(int) (long) obj.get("status"), (int) (long) obj.get("submission_progress"),
@@ -7821,6 +8066,23 @@ public class Main {
 		author.setCountry(country);
 
 		return author;
+	}
+
+	public static JSONObject AuthorToJSON(Author author) {
+		JSONObject obj = new JSONObject();
+		obj.put("id", author.getId());
+		obj.put("article", String.format("%s/articles/%s/", base_url, author.getArticle_id()));
+		obj.put("first_name", author.getFirst_name());
+		obj.put("middle_name", author.getMiddle_name());
+		obj.put("last_name", author.getLast_name());
+		obj.put("email", author.getEmail());
+		obj.put("country", author.getCountry());
+		obj.put("seq", author.getSeq());
+		obj.put("url", author.getUrl());
+		obj.put("primary_contact", author.getPrimary_contact());
+		obj.put("user_group", String.format("%s/groups/%s/", base_url, author.getUser_group()));
+
+		return obj;
 	}
 
 	/**
@@ -8053,7 +8315,8 @@ public class Main {
 		// file copy to use for file upload
 		// file_copy(1,"src/lib/db_xxs.png");
 		// get_authors_remote(5, encoding, false);
-		System.out.println("Latest author id: "+author_id);
+		// sync_authors_intersect(5, encoding, false);
+		System.out.println("Latest author id: " + author_id);
 		latest_ids();
 		new Main();
 	}
