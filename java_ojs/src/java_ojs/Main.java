@@ -175,6 +175,8 @@ public class Main {
 	private static HashMap<Long, Section> section_storage;
 	private static HashMap<Long, Journal> journal_storage;
 	private static HashMap<Long, Author> author_storage;
+	private static HashMap<Long, Article> article_storage;
+	private static HashMap<Long, ArrayList<Author>> article_author_storage;
 	private static String journal_url = "";
 	private static String user_url = "";
 	private static HashMap<Long, HashMap<Long, Boolean>> author_primary_storage;
@@ -290,18 +292,18 @@ public class Main {
 			Set<Long> author_keys = author_storage.keySet();
 			for (long key : author_keys) {
 				Author save_author = author_storage.get(key);
-				System.out.println("Author: "+ key);
+				System.out.println("Author: " + key);
 				PreparedStatement author_prep = c.prepareStatement(author_insert_or_replace_statement);
 				author_prep.setInt(1, (int) (long) save_author.getId());
 				author_prep.setString(2, save_author.getFirst_name());
 				author_prep.setString(3, save_author.getMiddle_name());
 				author_prep.setString(4, save_author.getLast_name());
 				author_prep.setString(5, save_author.getEmail());
-				author_prep.setString(6, save_author.getAffiliation()==null ? "":save_author.getAffiliation());
-				author_prep.setString(7, save_author.getBio()==null ? "":save_author.getBio());
-				author_prep.setString(8, save_author.getOrcid()==null ? "":save_author.getOrcid());
-				author_prep.setString(9, save_author.getDepartment()==null ? "":save_author.getDepartment());
-				author_prep.setString(10, save_author.getCountry()==null ? "":save_author.getCountry());
+				author_prep.setString(6, save_author.getAffiliation() == null ? "" : save_author.getAffiliation());
+				author_prep.setString(7, save_author.getBio() == null ? "" : save_author.getBio());
+				author_prep.setString(8, save_author.getOrcid() == null ? "" : save_author.getOrcid());
+				author_prep.setString(9, save_author.getDepartment() == null ? "" : save_author.getDepartment());
+				author_prep.setString(10, save_author.getCountry() == null ? "" : save_author.getCountry());
 				author_prep.executeUpdate();
 
 			}
@@ -504,6 +506,8 @@ public class Main {
 		author_primary_storage = new HashMap<Long, HashMap<Long, Boolean>>();
 		metadata_storage = new HashMap<Long, Metadata>();
 		journal_storage = new HashMap<Long, Journal>();
+		article_author_storage = new HashMap<Long, ArrayList<Author>>();
+		article_storage = new HashMap<Long, Article>();
 		// Journal test_journal = new Journal(1, "up", (float) 2.0, "en_US", 0);
 		// journal_storage.put((long)1, test_journal);
 		try {
@@ -640,6 +644,8 @@ public class Main {
 				Issue update_issue = issue_storage.get(issue_id);
 				update_issue.add_article(id, article);
 				issue_storage.put(issue_id, update_issue);
+				article.setIssue_fk(update_issue);
+				article_storage.put(id, article);
 				articles_id = id;
 				// JOptionPane.showMessageDialog(null, "Deleted");
 
@@ -4585,55 +4591,38 @@ public class Main {
 				JButton btnAddAuthors = new JButton("Edit Authors");
 				btnAddAuthors.setBounds(165, 6, 125, 25);
 				panel6.add(btnAddAuthors);
-
-				Set<Long> author_keys = author_storage.keySet();
+				ArrayList<Author> article_authors = new ArrayList<Author>();
+				if (article_author_storage.containsKey(current_article.getId())) {
+					article_authors = article_author_storage.get(current_article.getId());
+				}
 				DefaultListModel listModel = new DefaultListModel();
 				ArrayList<Long> author_list = new ArrayList<Long>();
-				String listData[] = new String[author_keys.size()];
+				String listData[] = new String[article_authors.size()];
 				int j = 0;
 				int a = 0;
-				int selections = 0;
-
-				for (long key : author_keys) {
-					listModel.addElement(author_storage.get(key).getFull_name());
-					listData[j] = author_storage.get(key).getFull_name();
-					author_list.add(key);
-					Article current_art = issue_storage.get(issue_id).getArticles_list().get(article_id);
-					ArrayList<Author> current_athors = current_art.getAuthors();
-					for (int b = 0; b < current_athors.size(); b++) {
-						if (author_storage.get(key).getId() == current_art.getAuthors().get(b).getId()) {
-							selections++;
-						}
-					}
-
-					j = j + 1;
-				}
-				;
-				j = 0;
+				int selections = article_authors.size();
 				int[] selected = new int[selections];
-				for (long key : author_keys) {
-					Article current_art = issue_storage.get(issue_id).getArticles_list().get(article_id);
-					ArrayList<Author> current_athors = current_art.getAuthors();
-					for (int b = 0; b < current_athors.size(); b++) {
-						if (author_storage.get(key).getId() == current_art.getAuthors().get(b).getId()) {
-							System.out.println(a + " - " + j);
-							selected[a] = j;
-							a = a + 1;
-						}
-					}
+				for (Author author : article_authors) {
+					listModel.addElement(author.getFull_name());
+					listData[j] = author.getFull_name();
+					author_list.add((long) j);
+					System.out.println(a + " - " + j);
+					selected[a] = j;
+					a = a + 1;
 
 					j = j + 1;
 				}
 				;
+
 				System.out.println("authors: " + selected);
 				for (int index : selected) {
 					System.out.println("Selected: " + index);
 				}
 				System.out.println(selected.toString());
-				panel15.setBounds(50, 107, 180 * 2, 45 * author_keys.size());
+				panel15.setBounds(50, 107, 180 * 2, 45 * article_authors.size());
 				panel15.setLayout(null);
 				panel15.setAutoscrolls(true);
-				panel15.setPreferredSize(new Dimension(320, 45 * author_keys.size()));
+				panel15.setPreferredSize(new Dimension(320, 45 * article_authors.size()));
 				// Create a new listbox control
 				JList listbox = new JList();
 				listbox.setModel(listModel);
@@ -4742,7 +4731,6 @@ public class Main {
 				final HashMap<Long, HashMap<Long, JTextField>> author_fields = new HashMap<Long, HashMap<Long, JTextField>>();
 				final HashMap<Long, JTextArea> authors_bio = new HashMap<Long, JTextArea>();
 
-				ArrayList<Author> authors = current_article.getAuthors();
 				final HashMap<Long, JButton> primary_buttons = new HashMap<Long, JButton>();
 				final HashMap<Long, JLabel> primary_labels = new HashMap<Long, JLabel>();
 
@@ -4751,11 +4739,12 @@ public class Main {
 				int separation_horizontal = 205;
 				int separation_vertical = 30;
 				int label_field_separation = 4;
-				for (int i = 0; i < authors.size(); i++) {
+				int i = 0;
+				for (Author author : article_authors) {
 
 					separation_horizontal = 205 * i;
 					author_x = author_x + separation_horizontal;
-					Author author = authors.get(i);
+
 					JLabel author_num = new JLabel(Integer.toString(i + 1));
 					author_num.setBounds(20 + author_x, 35, 40, 16);
 
@@ -4852,7 +4841,7 @@ public class Main {
 
 							}
 						});
-
+						i++;
 						primary_buttons.put(a_id, author_primary_btn);
 					}
 					HashMap<Long, JTextField> author_components = new HashMap<Long, JTextField>();
@@ -4990,7 +4979,7 @@ public class Main {
 					author_x = 16;
 
 				}
-				panel6.setPreferredSize(new Dimension(210 * authors.size(), 500)); // scrollable
+				panel6.setPreferredSize(new Dimension(210 * article_authors.size(), 500)); // scrollable
 
 				System.out.println(author_fields.size());
 				/*
@@ -5001,7 +4990,7 @@ public class Main {
 				 * lblAuthorInfo.setOpaque(true); panel6.add(lblAuthorInfo)
 				 */
 
-				authorSection.setPreferredSize(new Dimension(220 * authors.size(), 200));
+				authorSection.setPreferredSize(new Dimension(220 * article_authors.size(), 200));
 				authorSection.setBounds(width_small / 2 - 40, 132 + height_small / 2 - 130, width_small / 2,
 						height_small / 2 - 150);
 				// scrollSettings.setViewportView(scrollFrame);
@@ -5093,7 +5082,7 @@ public class Main {
 				final JComboBox<String> lblSectionId = new JComboBox();
 				Set<Long> section_keys = section_storage.keySet();
 				ArrayList<Section> sections = new ArrayList<Section>();
-				int selected_section = 0;
+				int selected_section = -1;
 				int count = 0;
 				for (long key : section_keys) {
 					lblSectionId.addItem(section_storage.get(key).getTitle());
@@ -5105,7 +5094,9 @@ public class Main {
 					}
 					count++;
 				}
-				lblSectionId.setSelectedIndex(selected_section);
+				if (selected_section != -1) {
+					lblSectionId.setSelectedIndex(selected_section);
+				}
 				// final JTextField lblSectionId = new
 				// JTextField(Integer.toString(current_article.getSection_id()));
 				lblSectionId.setForeground(Color.BLACK);
@@ -7078,6 +7069,8 @@ public class Main {
 								exc.printStackTrace();
 							}
 						}
+
+						article_author_storage.put(new_article.getId(), new ArrayList<Author>());
 						articles_list.add(new_article);
 					} catch (ParseException e) {
 						// TODO Auto-generated catch block
@@ -7090,8 +7083,13 @@ public class Main {
 			e.printStackTrace();
 		}
 		for (Article a : articles_list) {
+			a.setIssue_fk(issue);
+			article_storage.put(a.getId(), a);
+			author_primary_storage.put(a.getId(), new HashMap<Long, Boolean>());
+			System.out.println(a.getIssue_fk().getId());
 			issue.add_article(a.getId(), a);
 		}
+		System.out.println(articles_list.size() + " - " + article_author_storage.size());
 		issue_storage.put(issue.getId(), issue);
 	}
 
@@ -7391,16 +7389,15 @@ public class Main {
 
 	}
 
-	public static void get_authors_remote(String credentials, boolean update_local)
+	public static void get_authors_remote(long issue_id,String credentials, boolean update_local)
 			throws IllegalStateException, IOException {
 		boolean status = status_online();
 		if (!status) {
 			return;
 		}
-		String next = String.format("%s/authors/?format=json", base_url);
+
 		int author_count = 0;
-		while (next != null) {
-			HttpGet httpGet = new HttpGet(next);
+		HttpGet httpGet = new HttpGet(String.format("%s/get/issue/authors/%s/?format=json", base_url, issue_id));
 			httpGet.addHeader("Authorization", "Basic " + credentials);
 			httpGet.setHeader("Accept", "application/json");
 			httpGet.addHeader("Content-type", "application/json");
@@ -7422,12 +7419,37 @@ public class Main {
 			JSONObject author_json = new JSONObject();
 			try {
 				JSONObject issue_obj = (JSONObject) jsonParser.parse(IOUtils.toString(result));
-				next = (String) issue_obj.get("next");
-				
-				JSONArray array = (JSONArray) issue_obj.get("results");
-				author_count = author_count + array.size();
-				for (int i = 0; i < array.size(); i++) {
-					author_json = (JSONObject) array.get(i);
+				JSONArray author_ids = (JSONArray) issue_obj.get("authors");
+				System.out.println(author_ids);
+				try {
+					InputStream is = response.getEntity().getContent();
+					is.close();
+				} catch (IOException exc) {
+					// TODO Auto-generated catch block
+					exc.printStackTrace();
+				}
+				for (int i = 0; i < author_ids.size(); i++) {
+					long author_current_id = (long) author_ids.get(i);
+					httpGet = new HttpGet( String.format("%s/authors/%s/?format=json", base_url,author_current_id));
+					httpGet.addHeader("Authorization", "Basic " + credentials);
+					httpGet.setHeader("Accept", "application/json");
+					httpGet.addHeader("Content-type", "application/json");
+
+					response = null;
+					try {
+						response = httpClient.execute(httpGet);
+					} catch (ClientProtocolException e2) {
+						// TODO Auto-generated catch block
+						e2.printStackTrace();
+					} catch (IOException e2) {
+						// TODO Auto-generated catch block
+						e2.printStackTrace();
+					}
+					result = response.getEntity().getContent();
+					jsonParser = new JSONParser();
+					exists = true;
+					author_json = (JSONObject) jsonParser.parse(IOUtils.toString(result));
+					
 					long author_id = (long) author_json.get("id");
 					if (author_storage.containsKey(author_id)) {
 						if (update_local) {
@@ -7467,13 +7489,13 @@ public class Main {
 						JSONObject setting_json = new JSONObject();
 						try {
 							JSONObject setting = (JSONObject) jsonParser.parse(IOUtils.toString(result));
-						
+
 							Long count = (Long) setting.get("count");
 							if (count == 0) {
 								exists = false;
 							} else {
 								JSONArray results = (JSONArray) setting.get("results");
-								
+
 								setting_json = (JSONObject) results.get(0);
 								new_author.setBio((String) setting_json.get("setting_value"));
 							}
@@ -7481,8 +7503,28 @@ public class Main {
 							// TODO Auto-generated catch block
 							e.printStackTrace();
 						}
-						author_storage.put(new_author.getArticle_id(), new_author);
+
+						if (article_storage.containsKey(new_author.getArticle_id())) {
+						if (!article_author_storage.containsKey(new_author.getArticle_id())) {
+							ArrayList<Author> new_authors = new ArrayList<Author>();
+							new_authors.add(new_author);
+							article_author_storage.put(new_author.getArticle_id(), new_authors);
+						} else {
+							ArrayList<Author> existing_authors = article_author_storage.get(new_author.getArticle_id());
+							existing_authors.add(new_author);
+							article_author_storage.put(new_author.getArticle_id(), existing_authors);
+						}
+						Article this_article = article_storage.get(new_author.getArticle_id());
+						issue_id = this_article.getIssue_fk().getId();
+						Issue this_issue = issue_storage.get(issue_id);
+						this_issue.add_author(this_article.getId(), new_author);
+						issue_storage.put(issue_id, this_issue);
 						System.out.println(new_author);
+						author_storage.put(new_author.getId(), new_author);
+						HashMap<Long,Boolean> primary= author_primary_storage.get(this_article.getId());
+						primary.put(new_author.getId(), false);
+						author_primary_storage.put(this_article.getId(),primary);
+						}
 					}
 				}
 				/*
@@ -7506,8 +7548,9 @@ public class Main {
 				// TODO Auto-generated catch block
 				exc.printStackTrace();
 			}
-		}
+		
 
+		System.out.println("Authors: " + author_storage.size());
 		System.out.println("Authors: " + author_count);
 	}
 
@@ -7709,30 +7752,30 @@ public class Main {
 	}
 
 	public static Author JSONToAuthor(JSONObject obj, Author author) {
-	
-			long id = (long) obj.get("id");
-			String article_url = (String) obj.get("article");
 
-			article_url = article_url.substring(0, article_url.lastIndexOf("/"));
+		long id = (long) obj.get("id");
+		String article_url = (String) obj.get("article");
 
-			article_url = article_url.substring(article_url.lastIndexOf("/") + 1);
+		article_url = article_url.substring(0, article_url.lastIndexOf("/"));
 
-			long article_id = Long.parseLong(article_url);
+		article_url = article_url.substring(article_url.lastIndexOf("/") + 1);
 
-			author.setArticle_id(article_id);
-		
-			String first_name = (String) obj.get("first_name");
+		long article_id = Long.parseLong(article_url);
 
-			String middle_name = (String) obj.get("middle_name");
-			String last_name = (String) obj.get("last_name");
-			String email = (String) obj.get("email");
-			String country = (String) obj.get("country");
-			author.setFirst_name(first_name);
-			author.setMiddle_name(middle_name);
-			author.setLast_name(last_name);
+		author.setArticle_id(article_id);
+
+		String first_name = (String) obj.get("first_name");
+
+		String middle_name = (String) obj.get("middle_name");
+		String last_name = (String) obj.get("last_name");
+		String email = (String) obj.get("email");
+		String country = (String) obj.get("country");
+		author.setFirst_name(first_name);
+		author.setMiddle_name(middle_name);
+		author.setLast_name(last_name);
 		author.setEmail(email);
 		author.setCountry(country);
-		
+
 		return author;
 	}
 
@@ -7959,13 +8002,13 @@ public class Main {
 		database_setup();
 		populate_variables();
 
-		// get_issue_from_remote(encoding, (long) 5, false);
+		 get_issue_from_remote(encoding, (long) 5, false);
 
-		// update_articles_local(issue_storage.get((long) 5), encoding);
+		 update_articles_local(issue_storage.get((long) 5), encoding);
 		System.out.println();
 		// file copy to use for file upload
 		// file_copy(1,"src/lib/db_xxs.png");
-		get_authors_remote(encoding, false);
+		get_authors_remote(5, encoding, false);
 		new Main();
 	}
 }
