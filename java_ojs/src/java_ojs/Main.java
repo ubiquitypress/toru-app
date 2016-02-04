@@ -2065,6 +2065,7 @@ public class Main {
 									e1.printStackTrace();
 								}
 							}
+							
 
 						}
 						issues.repaint();
@@ -6989,7 +6990,12 @@ public class Main {
 			if (setting == null) {
 				exists = false;
 			} else {
-				String[] article_ids = ((String) setting.get("articles")).split(",");
+				String[] article_ids = null;
+				String ids=((String) setting.get("articles"));
+				if (ids.contains(",")){
+				 article_ids = ((String) setting.get("articles")).split(",");
+				}
+				try{
 				for (String id : article_ids) {
 					System.out.println(id);
 					HttpGet single_article = new HttpGet(String.format("%s/articles/%s/?format=json", base_url, id));
@@ -7013,7 +7019,6 @@ public class Main {
 					jsonParser = new JSONParser();
 					exists = true;
 					setting_json = new JSONObject();
-
 					try {
 						setting = (JSONObject) jsonParser.parse(IOUtils.toString(result));
 						Article new_article = JSONToArticle(setting, issue);
@@ -7172,7 +7177,7 @@ public class Main {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
-				}
+				}}catch(NullPointerException e_n){return;}
 			}
 		} catch (ParseException e) {
 			// TODO Auto-generated catch block
