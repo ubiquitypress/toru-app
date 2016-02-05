@@ -4432,8 +4432,6 @@ public class Main {
 				String label_text = "";
 				System.out.println(file_storage.keySet().toString());
 
-				System.out.println(file_storage.get((long)125).get((long)5));
-
 				System.out.println("ID: "+(long)article_id);
 				System.out.println("Files: "+ file_storage.containsKey((long)article_id));
 
@@ -7175,6 +7173,12 @@ public class Main {
 		for (Long key : article_keys) {
 			Article current_article = articles.get(key);
 			update_article_intersect(current_article, credentials);
+			HashMap<Long,ArticleFile> files = file_storage.get((long)current_article.getId());
+			Set<Long> file_keys = files.keySet();
+			for (long f_key:file_keys){
+				ArticleFile current_file = files.get((long)f_key);
+			file_upload_intersect(current_article.getId(),current_file);
+			}
 		}
 	}
 
@@ -8664,6 +8668,48 @@ public class Main {
 			System.out.println(IOUtils.toString(result));
 		}
 	}
+	public static void file_upload_intersect(long article_id, ArticleFile file) throws IllegalStateException, IOException{
+		boolean status = status_online();
+
+		if (!status) {
+			return;
+		}
+		File f = new File(file.getPath());
+		System.out.println("File Length = " + f.length());
+
+		FileInputStream input = new FileInputStream(f);
+		HttpPost fileUpload = new HttpPost(String.format("%s/upload/specific/file/%d/%d/", base_url,article_id,file.getId()));
+
+		fileUpload.addHeader("Authorization", "Basic " + encoding);
+		
+		MultipartEntityBuilder builder = MultipartEntityBuilder.create();      
+		builder.setMode(HttpMultipartMode.BROWSER_COMPATIBLE);
+
+		/* example for adding an image part */
+		FileBody fileBody = new FileBody(f); //image should be a String
+		builder.addPart("file", fileBody); 
+		
+		fileUpload.setEntity(builder.build());
+
+		// : attachment; filename=upload.jpg.
+
+		HttpResponse response = null;
+		try {
+			response = httpClient.execute(fileUpload);
+		} catch (ClientProtocolException e2) {
+			// TODO Auto-generated catch block
+			e2.printStackTrace();
+		} catch (IOException e2) {
+			// TODO Auto-generated catch block
+			e2.printStackTrace();
+		}
+		JsonFactory jsonf = new JsonFactory();
+		System.out.println(response.getStatusLine().getStatusCode());
+		if (response.getStatusLine().getStatusCode() != 204) {
+			InputStream result = response.getEntity().getContent();
+			System.out.println(IOUtils.toString(result));
+		}
+	}
 	public static void delete_file(long file_id) throws IOException{
 		boolean status = status_online();
 
@@ -8766,7 +8812,7 @@ public class Main {
 		file_storage.put((long)article_id, article_files);
 		System.out.println("Downloaded: "+article_files.size());
 
-		System.out.println(file_storage.get((long)125).get((long)5));
+	//	System.out.println(file_storage.get((long)125).get((long)5));
 	}
 	public static void main(String[] args) throws ParseException, java.text.ParseException, IOException {
 		BASE64Encoder encoder = new BASE64Encoder();
