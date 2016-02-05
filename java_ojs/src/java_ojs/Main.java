@@ -8561,39 +8561,25 @@ public class Main {
 		return StringUtils.newStringUtf8(Base64.decodeBase64(value));
 	}
 
-	public static void main(String[] args) throws ParseException, java.text.ParseException, IOException {
-		BASE64Encoder encoder = new BASE64Encoder();
-		encoding = encoder.encode("ioannis:root".getBytes());
-		String encodedpassword = encodeHash("ioannis:root");
-		System.out.println(decodeHash(encodedpassword));
-		System.out.println("ioannis:root".hashCode());
-		// database_setup();
-		// populate_variables();
-
-		// get_issue_from_remote(encoding, (long) 5, false);
-
-		// update_articles_local(issue_storage.get((long) 5), encoding);
-		System.out.println();
-		// file copy to use for file upload
-		// file_copy(1,"src/lib/db_xxs.png");
-		// get_authors_remote(5, encoding, false);
-		// sync_authors_intersect(5, encoding, false);
-		// System.out.println("Latest author id: " + author_id);
-		// ();
-		// new Main();
-		File f = new File("/home/ioannis/code/toru-app/java_ojs/src/save_xs.png");
+	public static void file_upload_intersect(long article_id, String path) throws IllegalStateException, IOException {
+		File f = new File(path);
 		System.out.println("File Length = " + f.length());
 
 		FileInputStream input = new FileInputStream(f);
-		HttpPost fileUpload = new HttpPost(String.format("%s/upload/file/125/", base_url));
-		
+		HttpPost fileUpload = new HttpPost(String.format("%s/upload/file/%s/", base_url, article_id));
+
 		fileUpload.addHeader("Authorization", "Basic " + encoding);
 
-	MultipartEntity entity = new MultipartEntity();
-	entity.addPart("file", new FileBody(f));
-	fileUpload.setEntity(entity);
+		MultipartEntityBuilder builder = MultipartEntityBuilder.create();
+		builder.setMode(HttpMultipartMode.BROWSER_COMPATIBLE);
 
-//		: attachment; filename=upload.jpg.
+		/* example for adding an image part */
+		FileBody fileBody = new FileBody(f); // image should be a String
+		builder.addPart("file", fileBody);
+
+		fileUpload.setEntity(builder.build());
+
+		// : attachment; filename=upload.jpg.
 
 		HttpResponse response = null;
 		try {
@@ -8607,8 +8593,33 @@ public class Main {
 		}
 		JsonFactory jsonf = new JsonFactory();
 		System.out.println(response.getStatusLine().getStatusCode());
-		InputStream result = response.getEntity().getContent();
-		
-		System.out.println(IOUtils.toString(result));
+		if (response.getStatusLine().getStatusCode() != 204) {
+			InputStream result = response.getEntity().getContent();
+			System.out.println(IOUtils.toString(result));
+		}
+	}
+
+	public static void main(String[] args) throws ParseException, java.text.ParseException, IOException {
+		BASE64Encoder encoder = new BASE64Encoder();
+		encoding = encoder.encode("ioannis:root".getBytes());
+		String encodedpassword = encodeHash("ioannis:root");
+		System.out.println(decodeHash(encodedpassword));
+		System.out.println("ioannis:root".hashCode());
+		database_setup();
+		populate_variables();
+
+		// get_issue_from_remote(encoding, (long) 5, false);
+
+		// update_articles_local(issue_storage.get((long) 5), encoding);
+		System.out.println();
+		// file copy to use for file upload
+		// file_copy(1,"src/lib/db_xxs.png");
+		// get_authors_remote(5, encoding, false);
+		// sync_authors_intersect(5, encoding, false);
+		// System.out.println("Latest author id: " + author_id);
+		// ();
+		new Main();
+		// file_upload_intersect((long)125,"/home/ioannis/code/toru-app/java_ojs/src/save_xs.png");
+
 	}
 }
