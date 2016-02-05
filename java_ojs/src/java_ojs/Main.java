@@ -7175,10 +7175,14 @@ public class Main {
 			update_article_intersect(current_article, credentials);
 			HashMap<Long,ArticleFile> files = file_storage.get((long)current_article.getId());
 			Set<Long> file_keys = files.keySet();
+				System.out.println("FILES TO UPLOAD: "+file_keys.size());
+			if (file_keys.size()>0){
 			for (long f_key:file_keys){
+
+				System.out.println("FILE TO UPLOAD: "+f_key);
 				ArticleFile current_file = files.get((long)f_key);
-			file_upload_intersect(current_article.getId(),current_file);
-			}
+				file_upload_intersect(current_article.getId(),current_file);
+			}}
 		}
 	}
 
