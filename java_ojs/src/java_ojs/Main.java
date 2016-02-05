@@ -4758,9 +4758,111 @@ public class Main {
 				JLabel lblNewLabel_3 = new JLabel("Author Information");
 				lblNewLabel_3.setBounds(15, 6, 156, 16);
 				panel6.add(lblNewLabel_3);
-				JButton btnAddAuthors = new JButton("Edit Authors");
-				btnAddAuthors.setBounds(165, 6, 125, 25);
-				panel6.add(btnAddAuthors);
+
+				JButton btnAddAuthor = new JButton("+ Add Author");
+				btnAddAuthor.setBounds(280, 6, 125, 25);
+				panel6.add(btnAddAuthor);
+				JPanel panelAuthor = new JPanel();
+				panelAuthor.setBounds(0, 0, 480, 800);
+				panelAuthor.setLayout(null);
+
+				JTextField txtFirstName = new JTextField();
+				txtFirstName.setBounds(90, 65, 300, 30);
+				panelAuthor.add(txtFirstName);
+				txtFirstName.setColumns(4);
+
+				JLabel lblFirstName = new JLabel("First name");
+				lblFirstName.setHorizontalAlignment(SwingConstants.CENTER);
+				lblFirstName.setBounds(190, 40, 100, 20);
+				panelAuthor.add(lblFirstName);
+
+				JLabel lblMiddleName = new JLabel("Middle name");
+				lblMiddleName.setHorizontalAlignment(SwingConstants.CENTER);
+				lblMiddleName.setBounds(190, 96, 100, 20);
+				panelAuthor.add(lblMiddleName);
+
+				JTextField txtMiddleName = new JTextField();
+				txtMiddleName.setColumns(4);
+				txtMiddleName.setBounds(90, 117, 300, 30);
+				panelAuthor.add(txtMiddleName);
+
+				JLabel lblLastName = new JLabel("Last name");
+				lblLastName.setHorizontalAlignment(SwingConstants.CENTER);
+				lblLastName.setBounds(190, 148, 100, 20);
+				panelAuthor.add(lblLastName);
+
+				JTextField txtLastName = new JTextField();
+				txtLastName.setColumns(4);
+				txtLastName.setBounds(90, 169, 300, 30);
+				panelAuthor.add(txtLastName);
+
+				JLabel lblEmail = new JLabel("Email");
+				lblEmail.setHorizontalAlignment(SwingConstants.CENTER);
+				lblEmail.setBounds(190, 200, 100, 20);
+				panelAuthor.add(lblEmail);
+
+				JTextField txtEmail = new JTextField();
+				txtEmail.setColumns(4);
+				txtEmail.setBounds(90, 221, 300, 30);
+				panelAuthor.add(txtEmail);
+
+				JLabel lblAffiliation = new JLabel("Affiliation");
+				lblAffiliation.setHorizontalAlignment(SwingConstants.CENTER);
+				lblAffiliation.setBounds(190, 252, 100, 20);
+				panelAuthor.add(lblAffiliation);
+
+				JTextField txtAffiliation = new JTextField();
+				txtAffiliation.setColumns(4);
+				txtAffiliation.setBounds(90, 273, 300, 30);
+				panelAuthor.add(txtAffiliation);
+
+				JLabel lblBio = new JLabel("Bio");
+				lblBio.setHorizontalAlignment(SwingConstants.CENTER);
+				lblBio.setBounds(190, 304, 100, 20);
+				panelAuthor.add(lblBio);
+
+				JTextArea txtBio = new JTextArea();
+				txtBio.setColumns(4);
+				txtBio.setBounds(90, 325, 300, 60);
+				panelAuthor.add(txtBio);
+
+				JLabel lblOrcID = new JLabel("OrcID");
+				lblOrcID.setHorizontalAlignment(SwingConstants.CENTER);
+				lblOrcID.setBounds(190, 386, 100, 20);
+				panelAuthor.add(lblOrcID);
+
+				JTextField txtOrcID = new JTextField();
+				txtOrcID.setColumns(4);
+				txtOrcID.setBounds(90, 407, 300, 30);
+				panelAuthor.add(txtOrcID);
+
+				JLabel lblDepartment = new JLabel("Department");
+				lblDepartment.setHorizontalAlignment(SwingConstants.CENTER);
+				lblDepartment.setBounds(190, 438, 100, 20);
+				panelAuthor.add(lblDepartment);
+
+				JTextField txtDepartment = new JTextField();
+				txtDepartment.setColumns(4);
+				txtDepartment.setBounds(90, 459, 300, 30);
+				panelAuthor.add(txtDepartment);
+
+				JLabel lblCountry = new JLabel("Country");
+				lblCountry.setHorizontalAlignment(SwingConstants.CENTER);
+				lblCountry.setBounds(190, 490, 100, 20);
+				panelAuthor.add(lblCountry);
+
+				JTextField txtCountry = new JTextField();
+				txtCountry.setColumns(4);
+				txtCountry.setBounds(90, 511, 300, 30);
+				panelAuthor.add(txtCountry);
+				panelAuthor.setVisible(true);
+				panelAuthor.setSize(new Dimension(480, 800));
+				panelAuthor.setPreferredSize(new Dimension(480, 600));
+				panelAuthor.setVisible(true);
+			
+				JButton btnEditAuthors = new JButton("Edit Authors");
+				btnEditAuthors.setBounds(165, 6, 125, 25);
+				panel6.add(btnEditAuthors);
 
 				ArrayList<Author> article_authors = new ArrayList<Author>();
 				article_authors = article_author_storage.get(current_article.getId());
@@ -4802,8 +4904,31 @@ public class Main {
 				listbox.setBackground(Color.white);
 				listbox.setVisible(true);
 				panel15.add(listbox);
-
-				btnAddAuthors.addActionListener(new ActionListener() {
+				btnAddAuthor.addActionListener(new ActionListener() {
+					public void actionPerformed(ActionEvent e) {
+						panelAuthor.setVisible(true);
+						panelAuthor.setEnabled(true);
+						int result = JOptionPane.showConfirmDialog(null, panelAuthor, "Add Author",
+								JOptionPane.OK_CANCEL_OPTION);
+						if (result == JOptionPane.OK_OPTION) {
+							author_id++;
+							Author new_author = new Author(author_id, txtFirstName.getText(), txtMiddleName.getText(),
+									txtLastName.getText(), txtEmail.getText(), txtAffiliation.getText(), txtBio.getText(),
+									txtOrcID.getText(), txtDepartment.getText(), txtCountry.getText());
+							author_storage.put(author_id, new_author);
+							System.out.println("Author id :" + author_id);
+							System.out.println(new_author);
+							HashMap<Long,Boolean> current_authors=author_primary_storage.get((long) article_id);
+							current_authors.put((long)author_id, false);
+							author_primary_storage.put((long) article_id, current_authors);
+							author_list.add(author_id);
+							listModel.addElement(new_author.getFull_name());
+							listbox.setSelectedIndex(author_list.size() - 1);
+							listbox.repaint();
+						}
+					}
+				});
+				btnEditAuthors.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
 						int result = JOptionPane.showConfirmDialog(null, panel15, "Edit Authors",
 								JOptionPane.OK_CANCEL_OPTION);
@@ -5377,11 +5502,11 @@ public class Main {
 							lblSectionId.setForeground(new Color(0, 0, 0));
 							lblPageNum.setBackground(new Color(255, 255, 255));
 							lblPageNum.setForeground(new Color(0, 0, 0));
-						} catch (NumberFormatException e) {
+						} catch (NumberFormatException | ArrayIndexOutOfBoundsException e) {
 							validation = false;
-
-							lblPageNum.setBackground(new Color(255, 0, 0));
-							lblPageNum.setForeground(new Color(255, 255, 255));
+							lblSectionId.setBackground(new Color(255, 0, 0));
+							lblSectionId.setForeground(new Color(255, 0, 0));
+							
 							JOptionPane.showMessageDialog(null, "Select a valid section item from the dropdown list. ");
 						}
 
@@ -8423,7 +8548,7 @@ public class Main {
 		database_setup();
 		populate_variables();
 
-		get_issue_from_remote(encoding, (long) 5, false);
+	//	get_issue_from_remote(encoding, (long) 5, false);
 
 		// update_articles_local(issue_storage.get((long) 5), encoding);
 		System.out.println();
@@ -8431,8 +8556,8 @@ public class Main {
 		// file_copy(1,"src/lib/db_xxs.png");
 		// get_authors_remote(5, encoding, false);
 		// sync_authors_intersect(5, encoding, false);
-		System.out.println("Latest author id: " + author_id);
-		latest_ids();
+		//System.out.println("Latest author id: " + author_id);
+		//();
 		new Main();
 	}
 }
