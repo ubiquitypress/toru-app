@@ -35,6 +35,11 @@ import org.apache.http.conn.scheme.Scheme;
 import org.apache.http.conn.scheme.SchemeRegistry;
 import org.apache.http.conn.ssl.SSLSocketFactory;
 import org.apache.http.entity.StringEntity;
+import org.apache.http.entity.mime.HttpMultipartMode;
+import org.apache.http.entity.mime.MultipartEntity;
+import org.apache.http.entity.mime.MultipartEntityBuilder;
+import org.apache.http.entity.mime.content.FileBody;
+import org.apache.http.entity.mime.content.InputStreamBody;
 import org.apache.http.impl.auth.DigestScheme;
 import org.apache.http.impl.client.BasicAuthCache;
 import org.apache.http.impl.client.BasicCookieStore;
@@ -64,7 +69,9 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
+import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
@@ -4859,7 +4866,7 @@ public class Main {
 				panelAuthor.setSize(new Dimension(480, 800));
 				panelAuthor.setPreferredSize(new Dimension(480, 600));
 				panelAuthor.setVisible(true);
-			
+
 				JButton btnEditAuthors = new JButton("Edit Authors");
 				btnEditAuthors.setBounds(165, 6, 125, 25);
 				panel6.add(btnEditAuthors);
@@ -4913,30 +4920,31 @@ public class Main {
 						if (result == JOptionPane.OK_OPTION) {
 							author_id++;
 							Author new_author = new Author(author_id, txtFirstName.getText(), txtMiddleName.getText(),
-									txtLastName.getText(), txtEmail.getText(), txtAffiliation.getText(), txtBio.getText(),
-									txtOrcID.getText(), txtDepartment.getText(), txtCountry.getText());
+									txtLastName.getText(), txtEmail.getText(), txtAffiliation.getText(),
+									txtBio.getText(), txtOrcID.getText(), txtDepartment.getText(),
+									txtCountry.getText());
 							author_storage.put(author_id, new_author);
 							System.out.println("Author id :" + author_id);
 							System.out.println(new_author);
-							HashMap<Long,Boolean> current_authors=author_primary_storage.get((long) article_id);
-							current_authors.put((long)author_id, false);
+							HashMap<Long, Boolean> current_authors = author_primary_storage.get((long) article_id);
+							current_authors.put((long) author_id, false);
 							author_primary_storage.put((long) article_id, current_authors);
-							
+
 							author_list.add(author_id);
 							listModel.addElement(new_author.getFull_name());
 							listbox.setSelectedIndex(author_list.size() - 1);
 							listbox.repaint();
 
-							Article c_art = article_storage.get((long)article_id);
-							
+							Article c_art = article_storage.get((long) article_id);
+
 							ArrayList<Author> author_array = c_art.getAuthors();
-							article_storage.put((long)article_id,c_art);
-							if(!author_array.contains(new_author)){
-							author_array.add(new_author);
-							c_art.add_author(new_author);
+							article_storage.put((long) article_id, c_art);
+							if (!author_array.contains(new_author)) {
+								author_array.add(new_author);
+								c_art.add_author(new_author);
 							}
-							article_author_storage.put((long)article_id,author_array);
-							
+							article_author_storage.put((long) article_id, author_array);
+
 							article.dispose();
 							edit_article(issue_id, article_id);
 						}
@@ -5520,7 +5528,7 @@ public class Main {
 							validation = false;
 							lblSectionId.setBackground(new Color(255, 0, 0));
 							lblSectionId.setForeground(new Color(255, 0, 0));
-							
+
 							JOptionPane.showMessageDialog(null, "Select a valid section item from the dropdown list. ");
 						}
 
@@ -8559,10 +8567,10 @@ public class Main {
 		String encodedpassword = encodeHash("ioannis:root");
 		System.out.println(decodeHash(encodedpassword));
 		System.out.println("ioannis:root".hashCode());
-		database_setup();
-		populate_variables();
+		// database_setup();
+		// populate_variables();
 
-	//	get_issue_from_remote(encoding, (long) 5, false);
+		// get_issue_from_remote(encoding, (long) 5, false);
 
 		// update_articles_local(issue_storage.get((long) 5), encoding);
 		System.out.println();
@@ -8570,8 +8578,37 @@ public class Main {
 		// file_copy(1,"src/lib/db_xxs.png");
 		// get_authors_remote(5, encoding, false);
 		// sync_authors_intersect(5, encoding, false);
-		//System.out.println("Latest author id: " + author_id);
-		//();
-		new Main();
+		// System.out.println("Latest author id: " + author_id);
+		// ();
+		// new Main();
+		File f = new File("/home/ioannis/code/toru-app/java_ojs/src/save_xs.png");
+		System.out.println("File Length = " + f.length());
+
+		FileInputStream input = new FileInputStream(f);
+		HttpPost fileUpload = new HttpPost(String.format("%s/upload/file/125/", base_url));
+		
+		fileUpload.addHeader("Authorization", "Basic " + encoding);
+
+	MultipartEntity entity = new MultipartEntity();
+	entity.addPart("file", new FileBody(f));
+	fileUpload.setEntity(entity);
+
+//		: attachment; filename=upload.jpg.
+
+		HttpResponse response = null;
+		try {
+			response = httpClient.execute(fileUpload);
+		} catch (ClientProtocolException e2) {
+			// TODO Auto-generated catch block
+			e2.printStackTrace();
+		} catch (IOException e2) {
+			// TODO Auto-generated catch block
+			e2.printStackTrace();
+		}
+		JsonFactory jsonf = new JsonFactory();
+		System.out.println(response.getStatusLine().getStatusCode());
+		InputStream result = response.getEntity().getContent();
+		
+		System.out.println(IOUtils.toString(result));
 	}
 }
