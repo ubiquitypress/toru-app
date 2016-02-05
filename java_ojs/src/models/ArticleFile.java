@@ -25,6 +25,10 @@ public class ArticleFile {
 	public void setPath(String path) {
 		this.path = path;
 	}
+	@Override
+	public String toString() {
+		return "ArticleFile [id=" + id + ", article_id=" + article_id + "]";
+	}
 
 	
 	
