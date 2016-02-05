@@ -4760,7 +4760,7 @@ public class Main {
 				panel6.add(lblNewLabel_3);
 
 				JButton btnAddAuthor = new JButton("+ Add Author");
-				btnAddAuthor.setBounds(280, 6, 125, 25);
+				btnAddAuthor.setBounds(290, 6, 125, 25);
 				panel6.add(btnAddAuthor);
 				JPanel panelAuthor = new JPanel();
 				panelAuthor.setBounds(0, 0, 480, 800);
@@ -4921,10 +4921,24 @@ public class Main {
 							HashMap<Long,Boolean> current_authors=author_primary_storage.get((long) article_id);
 							current_authors.put((long)author_id, false);
 							author_primary_storage.put((long) article_id, current_authors);
+							
 							author_list.add(author_id);
 							listModel.addElement(new_author.getFull_name());
 							listbox.setSelectedIndex(author_list.size() - 1);
 							listbox.repaint();
+
+							Article c_art = article_storage.get((long)article_id);
+							
+							ArrayList<Author> author_array = c_art.getAuthors();
+							article_storage.put((long)article_id,c_art);
+							if(!author_array.contains(new_author)){
+							author_array.add(new_author);
+							c_art.add_author(new_author);
+							}
+							article_author_storage.put((long)article_id,author_array);
+							
+							article.dispose();
+							edit_article(issue_id, article_id);
 						}
 					}
 				});
