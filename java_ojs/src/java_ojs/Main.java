@@ -1087,10 +1087,12 @@ public class Main {
 		long remote_article_id = 0;
 		long remote_journal_id = 0;
 		long remote_author_id = 0;
+		long remote_file_id = 0;
 		remote_issue_id = get_remote_id("issue");
 		remote_article_id = get_remote_id("article");
 		remote_journal_id = get_remote_id("journal");
 		remote_author_id = get_remote_id("author");
+		remote_file_id = get_remote_id("file");
 		if (remote_issue_id > i_id) {
 			i_id = remote_issue_id;
 		}
@@ -1103,9 +1105,13 @@ public class Main {
 		if (remote_author_id > author_id) {
 			author_id = remote_author_id;
 		}
+		if (remote_file_id > file_id) {
+			file_id = remote_file_id;
+		}
 		System.out.println(remote_issue_id);
 		System.out.println(remote_article_id);
 		System.out.println(remote_journal_id);
+		System.out.println(remote_file_id);
 		System.out.println(remote_author_id + "-" + author_id);
 	}
 
@@ -8740,8 +8746,8 @@ public class Main {
 		// System.out.println("Latest author id: " + author_id);
 		// ();
 		new Main();
-		//file_upload_intersect((long)178,"/home/ioannis/code/toru-app/java_ojs/miglayout-src.zip");
-		//file_download(125,5);
+		//file_upload_intersect((long)125,"/home/ioannis/code/toru-app/java_ojs/miglayout-src.zip");
+		//file_download(125,16);
 		//System.out.println(file_storage.get((long)125).get((long)5));
 	}
 }
