@@ -8622,6 +8622,48 @@ public class Main {
 			System.out.println(IOUtils.toString(result));
 		}
 	}
+	public static void file_upload_intersect(long article_id, String path, long specific_id) throws IllegalStateException, IOException{
+		boolean status = status_online();
+
+		if (!status) {
+			return;
+		}
+		File f = new File(path);
+		System.out.println("File Length = " + f.length());
+
+		FileInputStream input = new FileInputStream(f);
+		HttpPost fileUpload = new HttpPost(String.format("%s/upload/specific/file/%d/%d/", base_url,article_id,specific_id));
+
+		fileUpload.addHeader("Authorization", "Basic " + encoding);
+		
+		MultipartEntityBuilder builder = MultipartEntityBuilder.create();      
+		builder.setMode(HttpMultipartMode.BROWSER_COMPATIBLE);
+
+		/* example for adding an image part */
+		FileBody fileBody = new FileBody(f); //image should be a String
+		builder.addPart("file", fileBody); 
+		
+		fileUpload.setEntity(builder.build());
+
+		// : attachment; filename=upload.jpg.
+
+		HttpResponse response = null;
+		try {
+			response = httpClient.execute(fileUpload);
+		} catch (ClientProtocolException e2) {
+			// TODO Auto-generated catch block
+			e2.printStackTrace();
+		} catch (IOException e2) {
+			// TODO Auto-generated catch block
+			e2.printStackTrace();
+		}
+		JsonFactory jsonf = new JsonFactory();
+		System.out.println(response.getStatusLine().getStatusCode());
+		if (response.getStatusLine().getStatusCode() != 204) {
+			InputStream result = response.getEntity().getContent();
+			System.out.println(IOUtils.toString(result));
+		}
+	}
 	public static void delete_file(long file_id) throws IOException{
 		boolean status = status_online();
 
@@ -8746,7 +8788,7 @@ public class Main {
 		// System.out.println("Latest author id: " + author_id);
 		// ();
 		new Main();
-		//file_upload_intersect((long)125,"/home/ioannis/code/toru-app/java_ojs/miglayout-src.zip");
+		//file_upload_intersect((long)125,"/home/ioannis/code/toru-app/java_ojs/miglayout-src.zip",25);
 		//file_download(125,16);
 		//System.out.println(file_storage.get((long)125).get((long)5));
 	}
