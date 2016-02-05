@@ -8575,6 +8575,11 @@ public class Main {
 		return StringUtils.newStringUtf8(Base64.decodeBase64(value));
 	}
 	public static void file_upload_intersect(long article_id, String path) throws IllegalStateException, IOException{
+		boolean status = status_online();
+
+		if (!status) {
+			return;
+		}
 		File f = new File(path);
 		System.out.println("File Length = " + f.length());
 
@@ -8612,7 +8617,11 @@ public class Main {
 		}
 	}
 	public static void delete_file(long file_id) throws IOException{
+		boolean status = status_online();
 
+		if (!status) {
+			return;
+		}
 		HttpDelete fileUpload = new HttpDelete(String.format("%s/delete/file/%s/", base_url,file_id));
 
 		fileUpload.addHeader("Authorization", "Basic " + encoding);
@@ -8637,7 +8646,11 @@ public class Main {
 		}
 	}
 	public static void file_download(long article_id, long file_id) throws IllegalStateException, IOException{
-		
+		boolean status = status_online();
+
+		if (!status) {
+			return;
+		}
 		String filename="";
 		HttpGet fileDetails = new HttpGet(String.format("%s/files/%s/", base_url,file_id));
 		File dir = new File(String.format("src/files/%d/", article_id));
@@ -8726,9 +8739,9 @@ public class Main {
 		// sync_authors_intersect(5, encoding, false);
 		// System.out.println("Latest author id: " + author_id);
 		// ();
-		 new Main();
-		//file_upload_intersect((long)125,"/home/ioannis/code/toru-app/java_ojs/miglayout-src.zip");
-		file_download(125,5);
-		System.out.println(file_storage.get((long)125).get((long)5));
+		new Main();
+		//file_upload_intersect((long)178,"/home/ioannis/code/toru-app/java_ojs/miglayout-src.zip");
+		//file_download(125,5);
+		//System.out.println(file_storage.get((long)125).get((long)5));
 	}
 }
