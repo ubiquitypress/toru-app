@@ -6793,8 +6793,17 @@ public class Main {
 		}
 		System.out.println(setting_json);
 		if (!exists) {
+			String value = setting_json.toJSONString();
+			byte[] b = value.getBytes("windows-1252");
+			for(byte bi:b){
+				System.out.print(bi+" ");
+			}
+			System.out.println();
+			String setting_value = new String(b, "UTF-8");
+
+			System.out.println(setting_value.getBytes());
 			HttpPost httpPost = new HttpPost(String.format("%s/article-settings/", base_url));
-			httpPost.setEntity(new StringEntity(setting_json.toJSONString()));
+			httpPost.setEntity(new StringEntity(setting_value));
 			httpPost.addHeader("Authorization", "Basic " + credentials);
 			httpPost.setHeader("Accept", "application/json");
 			httpPost.addHeader("Content-type", "application/json");
@@ -6808,9 +6817,18 @@ public class Main {
 				e2.printStackTrace();
 			}
 		} else {
+			String value = setting_json.toJSONString();
+			byte[] b = value.getBytes("windows-1252");
+			for(byte bi:b){
+				System.out.print(bi+" ");
+			}
+			System.out.println();
+			String setting_value = new String(b, "UTF-8");
+
+			System.out.println(setting_value.getBytes());
 			HttpPut httpPost = new HttpPut(
 					String.format("%s/article-settings/%s/", base_url, setting_json.get("pk")));
-			httpPost.setEntity(new StringEntity(setting_json.toJSONString()));
+			httpPost.setEntity(new StringEntity(setting_value));
 			httpPost.addHeader("Authorization", "Basic " + credentials);
 			httpPost.setHeader("Accept", "application/json");
 			httpPost.addHeader("Content-type", "application/json");
@@ -6891,8 +6909,17 @@ public class Main {
 		}
 		System.out.println(setting_json);
 		if (!exists) {
+			String value = setting_json.toJSONString();
+			byte[] b = value.getBytes("windows-1252");
+			for(byte bi:b){
+				System.out.print(bi+" ");
+			}
+			System.out.println();
+			String setting_value = new String(b, "UTF-8");
+
+			System.out.println(setting_value.getBytes());
 			HttpPost httpPost = new HttpPost(String.format("%s/article-settings/", base_url));
-			httpPost.setEntity(new StringEntity(setting_json.toJSONString()));
+			httpPost.setEntity(new StringEntity(setting_value));
 			httpPost.addHeader("Authorization", "Basic " + credentials);
 			httpPost.setHeader("Accept", "application/json");
 			httpPost.addHeader("Content-type", "application/json");
@@ -6906,9 +6933,18 @@ public class Main {
 				e2.printStackTrace();
 			}
 		} else {
+			String value = setting_json.toJSONString();
+			byte[] b = value.getBytes("windows-1252");
+			for(byte bi:b){
+				System.out.print(bi+" ");
+			}
+			System.out.println();
+			String setting_value = new String(b, "UTF-8");
+
+			System.out.println(setting_value.getBytes());
 			HttpPut httpPost = new HttpPut(
 					String.format("%s/article-settings/%s/", base_url, setting_json.get("pk")));
-			httpPost.setEntity(new StringEntity(setting_json.toJSONString()));
+			httpPost.setEntity(new StringEntity(setting_value));
 			httpPost.addHeader("Authorization", "Basic " + credentials);
 			httpPost.setHeader("Accept", "application/json");
 			httpPost.addHeader("Content-type", "application/json");
@@ -7081,8 +7117,17 @@ public class Main {
 		}
 		System.out.println(setting_json);
 		if (!exists) {
+			String value = setting_json.toJSONString();
+			byte[] b = value.getBytes("windows-1252");
+			for(byte bi:b){
+				System.out.print(bi+" ");
+			}
+			System.out.println();
+			String setting_value = new String(b, "UTF-8");
+
+			System.out.println(setting_value.getBytes());
 			HttpPost httpPost = new HttpPost(String.format("%s/issue-settings/", base_url));
-			httpPost.setEntity(new StringEntity(setting_json.toJSONString()));
+			httpPost.setEntity(new StringEntity(setting_value));
 			httpPost.addHeader("Authorization", "Basic " + credentials);
 			httpPost.setHeader("Accept", "application/json");
 			httpPost.addHeader("Content-type", "application/json");
@@ -8108,9 +8153,19 @@ public class Main {
 					e2.printStackTrace();
 				}
 			} else {
+
+				String value = setting_json.toJSONString();
+				byte[] b = value.getBytes("windows-1252");
+				for(byte bi:b){
+					System.out.print(bi+" ");
+				}
+				System.out.println();
+				String setting_value = new String(b, "UTF-8");
+
+				System.out.println(setting_value.getBytes());
 				HttpPut httpPost = new HttpPut(
 						String.format("%s/author-settings/%s/", base_url, setting_pk));
-				httpPost.setEntity(new StringEntity(setting_json.toJSONString()));
+				httpPost.setEntity(new StringEntity(setting_value));
 				httpPost.addHeader("Authorization", "Basic " + credentials);
 				httpPost.setHeader("Accept", "application/json");
 				httpPost.addHeader("Content-type", "application/json");
@@ -8123,6 +8178,13 @@ public class Main {
 					// TODO Auto-generated catch block
 					e2.printStackTrace();
 				}
+			}
+			if (response.getStatusLine().getStatusCode() == 400){
+				System.out.println("ERROR!! "+setting_json.toJSONString());
+
+				System.out.println("ERROR!! Author "+author.getId());
+
+				System.out.println("ERROR!!" + IOUtils.toString(response.getEntity().getContent()));
 			}
 			try {
 				InputStream is = response.getEntity().getContent();
@@ -8230,14 +8292,12 @@ public class Main {
 	}
 
 	public static JSONObject SettingToJSON(String model, long id, String name, String value, String type,
-			String locale) {
+			String locale) throws UnsupportedEncodingException {
 		JSONObject obj = new JSONObject();
 		obj.put(model, String.format("%s/%s/%s/", base_url, model+"s", id));
-		System.out.println(obj.get("issue"));
-	
 		obj.put("locale", locale);
 		obj.put("setting_name", name);
-		obj.put("setting_value", value);
+		obj.put("setting_value",value );
 		obj.put("setting_type", type);
 		return obj;
 	}
@@ -8837,7 +8897,7 @@ public class Main {
 		// file copy to use for file upload
 		// file_copy(1,"src/lib/db_xxs.png");
 		// get_authors_remote(5, encoding, false);
-		// sync_authors_intersect(5, encoding, false);
+		 //sync_authors_intersect(5, encoding, false);
 		// System.out.println("Latest author id: " + author_id);
 		// ();
 		new Main();
