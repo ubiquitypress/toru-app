@@ -6789,7 +6789,7 @@ public class Main {
 		System.out.println(exists);
 		System.out.println(setting_pk);
 		if (setting_json.isEmpty()) {
-			setting_json = SettingToJSON("articles", article.getId(), "title", article.getTitle(), "string", "en_US");
+			setting_json = SettingToJSON("article", article.getId(), "title", article.getTitle(), "string", "en_US");
 		}
 		System.out.println(setting_json);
 		if (!exists) {
@@ -6809,7 +6809,7 @@ public class Main {
 			}
 		} else {
 			HttpPut httpPost = new HttpPut(
-					String.format("%s/update/article/setting/%s/", base_url, setting_json.get("pk")));
+					String.format("%s/article-settings/%s/", base_url, setting_json.get("pk")));
 			httpPost.setEntity(new StringEntity(setting_json.toJSONString()));
 			httpPost.addHeader("Authorization", "Basic " + credentials);
 			httpPost.setHeader("Accept", "application/json");
@@ -6886,7 +6886,7 @@ public class Main {
 		System.out.println(exists);
 		System.out.println(setting_pk);
 		if (setting_json.isEmpty()) {
-			setting_json = SettingToJSON("articles", article.getId(), "abstract",
+			setting_json = SettingToJSON("article", article.getId(), "abstract",
 					"<p class=\"p1\">" + article.getAbstract_text().replace("\r\n", "") + "</p>", "string", "en_US");
 		}
 		System.out.println(setting_json);
@@ -6907,7 +6907,7 @@ public class Main {
 			}
 		} else {
 			HttpPut httpPost = new HttpPut(
-					String.format("%s/update/article/setting/%s/", base_url, setting_json.get("pk")));
+					String.format("%s/article-settings/%s/", base_url, setting_json.get("pk")));
 			httpPost.setEntity(new StringEntity(setting_json.toJSONString()));
 			httpPost.addHeader("Authorization", "Basic " + credentials);
 			httpPost.setHeader("Accept", "application/json");
@@ -7077,7 +7077,7 @@ public class Main {
 		System.out.println(exists);
 		System.out.println(setting_pk);
 		if (setting_json.isEmpty()) {
-			setting_json = SettingToJSON("issues", issue.getId(), "title", issue.getTitle(), "string", "en_US");
+			setting_json = SettingToJSON("issue", issue.getId(), "title", issue.getTitle(), "string", "en_US");
 		}
 		System.out.println(setting_json);
 		if (!exists) {
@@ -8003,6 +8003,7 @@ public class Main {
 					exc.printStackTrace();
 				}
 			} else {
+				System.out.println(obj.toJSONString());
 				HttpPost createAuthor = new HttpPost(String.format("%s/authors/", base_url));
 				createAuthor.setEntity(new StringEntity(obj.toJSONString()));
 				createAuthor.addHeader("Authorization", "Basic " + credentials);
@@ -8028,7 +8029,7 @@ public class Main {
 				}
 			}
 			HttpGet settingCheck = new HttpGet(
-					String.format("%s/get/setting/abstract/issue/%s/?format=json", base_url, issue.getId()));
+					String.format("%s/get/setting/biography/author/%s/?format=json", base_url, author.getId()));
 			// settingCheck.setEntity(new StringEntity(obj.toJSONString()));
 			settingCheck.addHeader("Authorization", "Basic " + credentials);
 			settingCheck.setHeader("Accept", "application/json");
@@ -8086,9 +8087,10 @@ public class Main {
 			System.out.println(exists);
 			System.out.println(setting_pk);
 			if (setting_json.isEmpty()) {
-				setting_json = SettingToJSON("authors", author.getId(), "biography", author.getBio(), "string",
+				setting_json = SettingToJSON("author", author.getId(), "biography", author.getBio(), "string",
 						"en_US");
 			}
+			
 			System.out.println(setting_json);
 			if (!exists) {
 				HttpPost httpPost = new HttpPost(String.format("%s/author-settings/", base_url));
@@ -8107,7 +8109,7 @@ public class Main {
 				}
 			} else {
 				HttpPut httpPost = new HttpPut(
-						String.format("%s/update/issue/setting/%s/", base_url, setting_json.get("pk")));
+						String.format("%s/author-settings/%s/", base_url, setting_pk));
 				httpPost.setEntity(new StringEntity(setting_json.toJSONString()));
 				httpPost.addHeader("Authorization", "Basic " + credentials);
 				httpPost.setHeader("Accept", "application/json");
@@ -8230,8 +8232,9 @@ public class Main {
 	public static JSONObject SettingToJSON(String model, long id, String name, String value, String type,
 			String locale) {
 		JSONObject obj = new JSONObject();
-		obj.put("issue", String.format("%s/%s/%s/", base_url, model, id));
+		obj.put(model, String.format("%s/%s/%s/", base_url, model+"s", id));
 		System.out.println(obj.get("issue"));
+	
 		obj.put("locale", locale);
 		obj.put("setting_name", name);
 		obj.put("setting_value", value);
