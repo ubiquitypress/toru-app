@@ -2574,7 +2574,7 @@ public class Main {
 				width_small = (int) (960 - (960 * (37.5 / 100)));
 			}
 			final long current_id = i_id + 1;
-			height_small = (int) (600 - (600 * (5 / 100)));
+			height_small = (int) (680 - (680 * (5 / 100)));
 			final JFrame edit_issue = new JFrame();
 			issue_screens.put(i_id, edit_issue);
 			edit_issue.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -2686,7 +2686,36 @@ public class Main {
 			lblShowDisplay.setHorizontalAlignment(SwingConstants.CENTER);
 			lblShowDisplay.setBounds(340, 170, 250, 16);
 			edit_issue.getContentPane().add(lblShowDisplay);
-
+			
+			final JCheckBox published_check = new JCheckBox("", true);
+			
+			published_check.setBounds(425, height_small-165, 100, 26);
+			edit_issue.getContentPane().add(published_check);
+			JLabel lblPublished = new JLabel("Published");
+			lblPublished.setForeground(new Color(245, 255, 250));
+			lblPublished.setHorizontalAlignment(SwingConstants.CENTER);
+			lblPublished.setBounds(340, height_small-161, 100, 16);
+			edit_issue.getContentPane().add(lblPublished);
+			
+			final JCheckBox current_check = new JCheckBox();
+			current_check.setBounds(425, height_small-145, 100, 26);
+			edit_issue.getContentPane().add(current_check);
+			JLabel lblCurrent = new JLabel("Current");
+			lblCurrent.setForeground(new Color(245, 255, 250));
+			lblCurrent.setHorizontalAlignment(SwingConstants.CENTER);
+			lblCurrent.setBounds(340, height_small-141, 100, 16);
+			edit_issue.getContentPane().add(lblCurrent);
+			
+			final JCheckBox access_status_check = new JCheckBox();
+			access_status_check.setBounds(425, height_small-125, 100, 26);
+			edit_issue.getContentPane().add(access_status_check);
+			JLabel lblStatus = new JLabel("Access Status");
+			lblStatus.setForeground(new Color(245, 255, 250));
+			lblStatus.setHorizontalAlignment(SwingConstants.CENTER);
+			lblStatus.setBounds(305, height_small-121, 150, 16);
+			edit_issue.getContentPane().add(lblStatus);
+			
+			
 			final JTextField show_title = new JTextField();
 			show_title.setBounds(340, 218, 250, 26);
 			edit_issue.getContentPane().add(show_title);
@@ -2873,6 +2902,10 @@ public class Main {
 						issue.setShow_volume(entered_show_volume);
 						issue.setShow_year(entered_show_year);
 						issue.setShow_number(entered_show_number);
+					
+						issue.setPublished(	published_check.isSelected() == true? 1:0);
+						issue.setCurrent(current_check.isSelected() == true? 1:0);
+						issue.setAccess_status(access_status_check.isSelected() == true? 1:0);
 						issue.setJournal(new Journal(1, "up", (float) 2.0, "en_US", 0));
 						// JOptionPane.showMessageDialog(null, "Deleted");
 
@@ -2895,9 +2928,9 @@ public class Main {
 				}
 			});
 			if (height_small - 150 > 300) {
-				btnSubmit.setBounds(((width_small / 3) * 2) / 2, height_small - 70, width_small / 3, 29);
+				btnSubmit.setBounds(((width_small / 3) * 2) / 2, height_small - 55, width_small / 3, 29);
 			} else {
-				btnSubmit.setBounds(((width_small / 3) * 2) / 2, 380, width_small / 3, 29);
+				btnSubmit.setBounds(((width_small / 3) * 2) / 2, 365, width_small / 3, 29);
 			}
 
 			edit_issue.getContentPane().add(btnSubmit);
@@ -2943,7 +2976,7 @@ public class Main {
 				} else {
 					width_small = (int) (960 - (960 * (37.5 / 100)));
 				}
-				height_small = (int) (600 - (600 * (5 / 100)));
+				height_small = (int) (680 - (680 * (5 / 100)));
 				final JFrame edit_issue = new JFrame();
 				issue_screens.put(issue_id, edit_issue);
 				edit_issue.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -3063,7 +3096,34 @@ public class Main {
 				lblShowDisplay.setHorizontalAlignment(SwingConstants.CENTER);
 				lblShowDisplay.setBounds(340, 170, 250, 16);
 				edit_issue.getContentPane().add(lblShowDisplay);
-
+				
+				final JCheckBox published_check = new JCheckBox("", current_issue.getPublished()==1?true:false);
+				
+				published_check.setBounds(425, height_small-165, 100, 26);
+				edit_issue.getContentPane().add(published_check);
+				JLabel lblPublished = new JLabel("Published");
+				lblPublished.setForeground(new Color(245, 255, 250));
+				lblPublished.setHorizontalAlignment(SwingConstants.CENTER);
+				lblPublished.setBounds(340, height_small-161, 100, 16);
+				edit_issue.getContentPane().add(lblPublished);
+				
+				final JCheckBox current_check = new JCheckBox("", current_issue.getCurrent()==1?true:false);
+				current_check.setBounds(425, height_small-145, 100, 26);
+				edit_issue.getContentPane().add(current_check);
+				JLabel lblCurrent = new JLabel("Current");
+				lblCurrent.setForeground(new Color(245, 255, 250));
+				lblCurrent.setHorizontalAlignment(SwingConstants.CENTER);
+				lblCurrent.setBounds(340, height_small-141, 100, 16);
+				edit_issue.getContentPane().add(lblCurrent);
+				
+				final JCheckBox access_status_check = new JCheckBox("", current_issue.getAccess_status()==1?true:false);
+				access_status_check.setBounds(425, height_small-125, 100, 26);
+				edit_issue.getContentPane().add(access_status_check);
+				JLabel lblStatus = new JLabel("Access Status");
+				lblStatus.setForeground(new Color(245, 255, 250));
+				lblStatus.setHorizontalAlignment(SwingConstants.CENTER);
+				lblStatus.setBounds(305, height_small-121, 150, 16);
+				edit_issue.getContentPane().add(lblStatus);
 				final JTextField show_title = new JTextField(current_issue.getShow_title());
 				show_title.setBounds(340, 218, 250, 26);
 				edit_issue.getContentPane().add(show_title);
@@ -3284,10 +3344,11 @@ public class Main {
 					}
 				});
 				if (height_small - 150 > 300) {
-					btnSubmit.setBounds(((width_small / 3) * 2) / 2, height_small - 70, width_small / 3, 29);
+					btnSubmit.setBounds(((width_small / 3) * 2) / 2, height_small - 55, width_small / 3, 29);
 				} else {
-					btnSubmit.setBounds(((width_small / 3) * 2) / 2, 380, width_small / 3, 29);
+					btnSubmit.setBounds(((width_small / 3) * 2) / 2, 365, width_small / 3, 29);
 				}
+
 
 				edit_issue.getContentPane().add(btnSubmit);
 
