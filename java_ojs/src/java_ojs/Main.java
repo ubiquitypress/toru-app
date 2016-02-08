@@ -2064,6 +2064,7 @@ public class Main {
 							Issue current_issue = issue_storage.get(key);
 
 							long issue_id = current_issue.getId();
+
 							dialogResult = JOptionPane.showConfirmDialog(null,
 									String.format(
 											"Issue %s <%s>: Would You Like to replace local data (Yes) or update remote data (No)",
@@ -2167,7 +2168,7 @@ public class Main {
 									// TODO Auto-generated catch block
 									e1.printStackTrace();
 								}
-								
+
 							} else {
 								if (dialogResult == JOptionPane.NO_OPTION) {
 
@@ -2361,6 +2362,7 @@ public class Main {
 				issues_table.setBorder(new BevelBorder(BevelBorder.RAISED, null, null, null, null));
 				issues_table.setCellSelectionEnabled(true);
 				issues_table.setRowHeight(23);
+
 				issues_table.setAutoCreateRowSorter(true);
 
 				final Label internetCheck = new Label("ONLINE");
@@ -4515,7 +4517,27 @@ public class Main {
 												StandardCopyOption.REPLACE_EXISTING);
 									} catch (IOException e1) {
 										// TODO Auto-generated catch block
-										e1.printStackTrace();
+										JOptionPane.showMessageDialog(null,
+												String.format("File %s does not exist locally.",
+														files.get((long) key).getPath().substring(
+																files.get((long) key).getPath().lastIndexOf("/") + 1)));
+										boolean is_online = status_online();
+										if (is_online) {
+											int dialogResult = JOptionPane.showConfirmDialog(null,"Would you like to download it ?",
+															
+													"Warning", 1);
+											if (dialogResult == JOptionPane.YES_OPTION) {
+												try {
+													file_download(article_id,key);
+												} catch (IllegalStateException e2) {
+													// TODO Auto-generated catch block
+													e2.printStackTrace();
+												} catch (IOException e2) {
+													// TODO Auto-generated catch block
+													e2.printStackTrace();
+												}
+											}else{}
+										}
 									}
 
 									// System.out.println("Save as file: " +
