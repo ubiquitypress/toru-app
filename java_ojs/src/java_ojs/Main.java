@@ -2055,7 +2055,11 @@ public class Main {
 				btnSync.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
 						int dialogResult = -1;
+						boolean skipped_dialog = false;
 						Set<Long> issue_keys = issue_storage.keySet();
+						if (issue_keys.isEmpty()) {
+							skipped_dialog = true;
+						}
 						for (long key : issue_keys) {
 							Issue current_issue = issue_storage.get(key);
 
@@ -2152,46 +2156,9 @@ public class Main {
 						}
 						for (Issue current_issue : new_issues) {
 							long issue_id = current_issue.getId();
-							if (dialogResult == JOptionPane.NO_OPTION) {
-
-								try {
-									update_articles_intersect(current_issue, encoding);
-
-								} catch (IllegalStateException | IOException e1) {
-									// TODO Auto-generated catch block
-									e1.printStackTrace();
-								}
-							} else if (dialogResult == JOptionPane.YES_OPTION) {
-								System.out.println("update local");
-
+							if (skipped_dialog) {
 								try {
 									update_articles_local(current_issue, encoding);
-
-								} catch (IllegalStateException | IOException e1) {
-									// TODO Auto-generated catch block
-									e1.printStackTrace();
-								}
-
-							}
-
-							if (dialogResult == JOptionPane.NO_OPTION) {
-
-								try {
-									try {
-										sync_authors_intersect(issue_id, encoding, false);
-									} catch (IllegalStateException e2) {
-										// TODO Auto-generated catch block
-										e2.printStackTrace();
-									} catch (IOException e2) {
-										// TODO Auto-generated catch block
-										e2.printStackTrace();
-									}
-								} catch (IllegalStateException e1) {
-									// TODO Auto-generated catch block
-									e1.printStackTrace();
-								}
-							} else if (dialogResult == JOptionPane.YES_OPTION) {
-								try {
 									get_authors_remote(issue_id, encoding, false);
 								} catch (IllegalStateException e1) {
 									// TODO Auto-generated catch block
@@ -2199,6 +2166,57 @@ public class Main {
 								} catch (IOException e1) {
 									// TODO Auto-generated catch block
 									e1.printStackTrace();
+								}
+								
+							} else {
+								if (dialogResult == JOptionPane.NO_OPTION) {
+
+									try {
+										update_articles_intersect(current_issue, encoding);
+
+									} catch (IllegalStateException | IOException e1) {
+										// TODO Auto-generated catch block
+										e1.printStackTrace();
+									}
+								} else if (dialogResult == JOptionPane.YES_OPTION) {
+									System.out.println("update local");
+
+									try {
+										update_articles_local(current_issue, encoding);
+
+									} catch (IllegalStateException | IOException e1) {
+										// TODO Auto-generated catch block
+										e1.printStackTrace();
+									}
+
+								}
+
+								if (dialogResult == JOptionPane.NO_OPTION) {
+
+									try {
+										try {
+											sync_authors_intersect(issue_id, encoding, false);
+										} catch (IllegalStateException e2) {
+											// TODO Auto-generated catch block
+											e2.printStackTrace();
+										} catch (IOException e2) {
+											// TODO Auto-generated catch block
+											e2.printStackTrace();
+										}
+									} catch (IllegalStateException e1) {
+										// TODO Auto-generated catch block
+										e1.printStackTrace();
+									}
+								} else if (dialogResult == JOptionPane.YES_OPTION) {
+									try {
+										get_authors_remote(issue_id, encoding, false);
+									} catch (IllegalStateException e1) {
+										// TODO Auto-generated catch block
+										e1.printStackTrace();
+									} catch (IOException e1) {
+										// TODO Auto-generated catch block
+										e1.printStackTrace();
+									}
 								}
 							}
 						}
@@ -7320,7 +7338,7 @@ public class Main {
 				}
 				try {
 					for (String id : article_ids) {
-						
+
 						System.out.println(id);
 						HttpGet single_article = new HttpGet(
 								String.format("%s/articles/%s/?format=json", base_url, id));
@@ -7499,8 +7517,6 @@ public class Main {
 							article_author_storage.put(new_article.getId(), new ArrayList<Author>());
 							articles_list.add(new_article);
 
-							
-
 						} catch (ParseException e) {
 							// TODO Auto-generated catch block
 							e.printStackTrace();
@@ -7516,8 +7532,7 @@ public class Main {
 		}
 		for (Article a : articles_list) {
 
-			HttpGet article_files = new HttpGet(
-					String.format("%s/get/files/%s/?format=json", base_url, a.getId()));
+			HttpGet article_files = new HttpGet(String.format("%s/get/files/%s/?format=json", base_url, a.getId()));
 			// settingCheck.setEntity(new
 			// StringEntity(obj.toJSONString()));
 			article_files.addHeader("Authorization", "Basic " + credentials);
@@ -7537,7 +7552,7 @@ public class Main {
 			jsonf = new JsonFactory();
 			result = response.getEntity().getContent();
 			jsonParser = new JSONParser();
-		
+
 			setting_pk = (long) -1;
 			exists = true;
 			setting_json = new JSONObject();
@@ -7545,32 +7560,33 @@ public class Main {
 			JSONObject setting;
 			try {
 				setting = (JSONObject) jsonParser.parse(IOUtils.toString(result));
-		
-			try {
-				InputStream is = response.getEntity().getContent();
-				is.close();
-			} catch (IOException exc) {
-				// TODO Auto-generated catch block
-				exc.printStackTrace();
-			}
-			System.out.println(setting);
-			if (setting == null) {
-				exists = false;
-			} else {
-				String[] file_ids = null;
-				String ids = ((String) setting.get("files"));
-				if (ids.contains(",")) {
-					file_ids = ((String) setting.get("files")).split(",");
-				}
-				if (file_ids !=null){
-				for (String file_id : file_ids) {
-					file_download(a.getId(), Long.parseLong(file_id));
-				}}
-				}	
-			} catch (ParseException e) {
+
+				try {
+					InputStream is = response.getEntity().getContent();
+					is.close();
+				} catch (IOException exc) {
 					// TODO Auto-generated catch block
-					e.printStackTrace();
+					exc.printStackTrace();
 				}
+				System.out.println(setting);
+				if (setting == null) {
+					exists = false;
+				} else {
+					String[] file_ids = null;
+					String ids = ((String) setting.get("files"));
+					if (ids.contains(",")) {
+						file_ids = ((String) setting.get("files")).split(",");
+					}
+					if (file_ids != null) {
+						for (String file_id : file_ids) {
+							file_download(a.getId(), Long.parseLong(file_id));
+						}
+					}
+				}
+			} catch (ParseException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 			a.setIssue_fk(issue);
 			article_storage.put(a.getId(), a);
 			author_primary_storage.put(a.getId(), new HashMap<Long, Boolean>());
@@ -8960,7 +8976,7 @@ public class Main {
 		database_setup();
 		populate_variables();
 
-		 //get_issue_from_remote(encoding, (long) 5, false);
+		// get_issue_from_remote(encoding, (long) 5, false);
 
 		// update_articles_local(issue_storage.get((long) 5), encoding);
 		System.out.println();
