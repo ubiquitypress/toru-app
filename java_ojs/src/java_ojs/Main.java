@@ -4523,20 +4523,24 @@ public class Main {
 																files.get((long) key).getPath().lastIndexOf("/") + 1)));
 										boolean is_online = status_online();
 										if (is_online) {
-											int dialogResult = JOptionPane.showConfirmDialog(null,"Would you like to download it ?",
-															
+											int dialogResult = JOptionPane.showConfirmDialog(null,
+													"Would you like to download it ?",
+
 													"Warning", 1);
 											if (dialogResult == JOptionPane.YES_OPTION) {
 												try {
-													file_download(article_id,key);
+													file_download(article_id, key);
 												} catch (IllegalStateException e2) {
-													// TODO Auto-generated catch block
+													// TODO Auto-generated catch
+													// block
 													e2.printStackTrace();
 												} catch (IOException e2) {
-													// TODO Auto-generated catch block
+													// TODO Auto-generated catch
+													// block
 													e2.printStackTrace();
 												}
-											}else{}
+											} else {
+											}
 										}
 									}
 
@@ -7261,6 +7265,65 @@ public class Main {
 			update_article_intersect(current_article, credentials);
 			HashMap<Long, ArticleFile> files = file_storage.get((long) current_article.getId());
 			Set<Long> file_keys = files.keySet();
+			HttpGet article_files = new HttpGet(
+					String.format("%s/get/files/%s/?format=json", base_url, current_article.getId()));
+			// settingCheck.setEntity(new
+			// StringEntity(obj.toJSONString()));
+			article_files.addHeader("Authorization", "Basic " + credentials);
+			article_files.setHeader("Accept", "application/json");
+			article_files.addHeader("Content-type", "application/json");
+
+			response = null;
+			try {
+				response = httpClient.execute(article_files);
+			} catch (ClientProtocolException e2) {
+				// TODO Auto-generated catch block
+				e2.printStackTrace();
+			} catch (IOException e2) {
+				// TODO Auto-generated catch block
+				e2.printStackTrace();
+			}
+			JsonFactory jsonf = new JsonFactory();
+			InputStream result = response.getEntity().getContent();
+			org.json.simple.parser.JSONParser jsonParser = new JSONParser();
+
+			long setting_pk = (long) -1;
+			boolean exists = true;
+			JSONObject setting_json = new JSONObject();
+
+			JSONObject setting;
+			try {
+				setting = (JSONObject) jsonParser.parse(IOUtils.toString(result));
+
+				try {
+					InputStream is = response.getEntity().getContent();
+					is.close();
+				} catch (IOException exc) {
+					// TODO Auto-generated catch block
+					exc.printStackTrace();
+				}
+				System.out.println(setting);
+				if (setting == null) {
+					exists = false;
+				} else {
+					String[] file_ids = null;
+					String ids = ((String) setting.get("files"));
+					if (ids.contains(",")) {
+						file_ids = ((String) setting.get("files")).split(",");
+					}
+					if (file_ids != null) {
+						for (String file_id : file_ids) {
+							if (!files.containsKey((long)Long.parseLong(file_id))){
+							delete_file((long)Long.parseLong(file_id));
+							}
+						}
+					}
+				}
+			} catch (ParseException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
 			System.out.println("FILES TO UPLOAD: " + file_keys.size());
 			if (file_keys.size() > 0) {
 				for (long f_key : file_keys) {
