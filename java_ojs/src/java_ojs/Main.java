@@ -321,7 +321,7 @@ public class Main {
 				HashMap<Long, ArticleFile> files = file_storage.get(key);
 				Set<Long> file_keys = files.keySet();
 				for (long f_key : file_keys) {
-					ArticleFile current_file = files.get((long)f_key);
+					ArticleFile current_file = files.get((long) f_key);
 					PreparedStatement file_prep = c.prepareStatement(file_insert_or_replace_statement);
 					file_prep.setInt(1, (int) (long) current_file.getId());
 					file_prep.setInt(2, (int) (long) current_file.getArticle_id());
@@ -661,7 +661,7 @@ public class Main {
 				author_primary_storage.put(id, new HashMap<Long, Boolean>());
 
 				HashMap<Long, ArticleFile> files = new HashMap<Long, ArticleFile>();
-				file_storage.put((long)id, files);
+				file_storage.put((long) id, files);
 				String pages = art_s.getString(rsmd.getColumnName(4));
 				String abstract_text = art_s.getString(rsmd.getColumnName(5));
 
@@ -699,18 +699,18 @@ public class Main {
 				long id = rs_files.getInt(1);
 				long article_id = rs_files.getInt(2);
 				String path = rs_files.getString(3);
-				System.out.println("ARTICLE FILES: "+id);
-				HashMap<Long, ArticleFile> files = file_storage.get((long)article_id);
-				if ((long)file_id < id) {
+				System.out.println("ARTICLE FILES: " + id);
+				HashMap<Long, ArticleFile> files = file_storage.get((long) article_id);
+				if ((long) file_id < id) {
 					file_id = id;
 				}
-				if(files == null){
+				if (files == null) {
 					files = new HashMap<Long, ArticleFile>();
 				}
-				files.put((long)id, new ArticleFile(id, article_id, path));
-				file_storage.put((long)article_id, files);
-				System.out.println("FILES LOADED: "+article_id);
-				
+				files.put((long) id, new ArticleFile(id, article_id, path));
+				file_storage.put((long) article_id, files);
+				System.out.println("FILES LOADED: " + article_id);
+
 			}
 			rs_files.close();
 			System.out.println("Loading File data....");
@@ -760,13 +760,15 @@ public class Main {
 							ArrayList<Author> new_authors = new ArrayList<Author>();
 							new_authors.add(author);
 							article_author_storage.put(author.getArticle_id(), new_authors);
-						//	System.out.println("new ADDED - - " + author.getArticle_id());
+							// System.out.println("new ADDED - - " +
+							// author.getArticle_id());
 
 						} else {
 							ArrayList<Author> existing_authors = article_author_storage.get(author.getArticle_id());
 							existing_authors.add(author);
 							article_author_storage.put(author.getArticle_id(), existing_authors);
-						//	System.out.println("ADDED - - " + author.getArticle_id());
+							// System.out.println("ADDED - - " +
+							// author.getArticle_id());
 						}
 						ResultSet rs_new_issue = c.createStatement()
 								.executeQuery("SELECT issue_id FROM ISSUE_ARTICLE;");
@@ -3335,7 +3337,7 @@ public class Main {
 				for (long id : art_keys) {
 					ArrayList<Object> data = new ArrayList<Object>();
 					issue_articles.put(id, new JFrame());
-					System.out.println("Article: "+ current_articles.get(id).getId());
+					System.out.println("Article: " + current_articles.get(id).getId());
 					data.add(Long.toString(current_articles.get(id).getId()));
 					data.add(Long.toString(issue_id));
 					data.add(Long.toString((current_articles.get(id).getSection_id())));
@@ -4432,13 +4434,13 @@ public class Main {
 				String label_text = "";
 				System.out.println(file_storage.keySet().toString());
 
-				System.out.println("ID: "+(long)article_id);
-				System.out.println("Files: "+ file_storage.containsKey((long)article_id));
+				System.out.println("ID: " + (long) article_id);
+				System.out.println("Files: " + file_storage.containsKey((long) article_id));
 
-				if (file_storage.containsKey((long)article_id)) {
-					HashMap<Long, ArticleFile> files = file_storage.get((long)article_id);
+				if (file_storage.containsKey((long) article_id)) {
+					HashMap<Long, ArticleFile> files = file_storage.get((long) article_id);
 					Set<Long> keys = files.keySet();
-					System.out.println("Files: "+ keys.size());
+					System.out.println("Files: " + keys.size());
 					int y_f = 23;
 					for (long key : keys) {
 						ImageIcon deleteicon = new ImageIcon("src/lib/remove_xs.png");
@@ -4458,8 +4460,8 @@ public class Main {
 
 						btnSaveFile.setBounds(150, y_f, 40, 24);
 						article.getContentPane().add(btnSaveFile);
-						JLabel file_l = new JLabel(
-								files.get((long)key).getPath().substring(files.get((long)key).getPath().lastIndexOf("/") + 1));
+						JLabel file_l = new JLabel(files.get((long) key).getPath()
+								.substring(files.get((long) key).getPath().lastIndexOf("/") + 1));
 						file_l.setBounds(10, y_f, 120, 24);
 						panel11.add(file_l);
 						y_f = y_f + 20;
@@ -4471,8 +4473,8 @@ public class Main {
 								FileNameExtensionFilter file = new FileNameExtensionFilter(
 										"Galleys (pdf,xml,html) or Images(jpg,png)", "pdf", "xml", "html", "jpg",
 										"png");
-								fileChooser.setSelectedFile(new File(files.get((long)key).getPath()
-										.substring(files.get((long)key).getPath().lastIndexOf("/") + 1)));
+								fileChooser.setSelectedFile(new File(files.get((long) key).getPath()
+										.substring(files.get((long) key).getPath().lastIndexOf("/") + 1)));
 								fileChooser.setFileFilter(file);
 								// File new_f=new
 								// File(files.get((long)key).getPath());
@@ -4482,8 +4484,8 @@ public class Main {
 								// File(files.get((long)key).getPath()));
 								if (userSelection == JFileChooser.APPROVE_OPTION) {
 									System.out.println("Save as file: " + fileChooser.getCurrentDirectory().getPath()
-											+ files.get((long)key).getPath()
-													.substring(files.get((long)key).getPath().lastIndexOf("/")));
+											+ files.get((long) key).getPath()
+													.substring(files.get((long) key).getPath().lastIndexOf("/")));
 									String output_path = fileChooser.getCurrentDirectory().getPath() + "/"
 											+ fileChooser.getSelectedFile().getName();
 									System.out.println(output_path);
@@ -4491,7 +4493,7 @@ public class Main {
 									// files.get((long)key).getPath().substring(files.get((long)key).getPath().lastIndexOf("/"));
 
 									try {
-										Files.copy(Paths.get(files.get((long)key).getPath()), Paths.get(output_path),
+										Files.copy(Paths.get(files.get((long) key).getPath()), Paths.get(output_path),
 												StandardCopyOption.REPLACE_EXISTING);
 									} catch (IOException e1) {
 										// TODO Auto-generated catch block
@@ -4506,11 +4508,11 @@ public class Main {
 						btnDeleteFile.setAction(new AbstractAction() {
 							public void actionPerformed(ActionEvent e) {
 
-								File f = new File(files.get((long)key).getPath());
+								File f = new File(files.get((long) key).getPath());
 								f.delete();
-								HashMap<Long, ArticleFile> deleted = file_storage.get((long)article_id);
+								HashMap<Long, ArticleFile> deleted = file_storage.get((long) article_id);
 								deleted.remove(key);
-								file_storage.put((long)article_id, deleted);
+								file_storage.put((long) article_id, deleted);
 								article.dispose();
 								article(issue_id, article_id);
 
@@ -4520,7 +4522,7 @@ public class Main {
 						btnSaveFile.setIcon(saveicon);
 						panel11.add(btnSaveFile);
 						panel11.add(btnDeleteFile);
-						String path = files.get((long)key).getPath();
+						String path = files.get((long) key).getPath();
 						label_text = label_text + path.substring(path.lastIndexOf("/") + 1) + "\n";
 					}
 				}
@@ -5617,11 +5619,11 @@ public class Main {
 				Panel panel10 = new Panel();
 				panel10.setBackground(new Color(153, 102, 51));
 				panel10.setBounds(115, 310, 225, 160);
-				if (file_storage.containsKey((long)article_id)) {
-					HashMap<Long, ArticleFile> files = file_storage.get((long)article_id);
+				if (file_storage.containsKey((long) article_id)) {
+					HashMap<Long, ArticleFile> files = file_storage.get((long) article_id);
 					Set<Long> keys = files.keySet();
 					for (long key : keys) {
-						String path = files.get((long)key).getPath();
+						String path = files.get((long) key).getPath();
 						label_text = label_text + path.substring(path.lastIndexOf("/") + 1) + "\n";
 					}
 				}
@@ -5685,8 +5687,8 @@ public class Main {
 						btnClear.setEnabled(false);
 						upload.setEnabled(false);
 						HashMap<Long, ArticleFile> files = null;
-						if (file_storage.containsKey((long)article_id)) {
-							files = file_storage.get((long)article_id);
+						if (file_storage.containsKey((long) article_id)) {
+							files = file_storage.get((long) article_id);
 						} else {
 
 							files = new HashMap<Long, ArticleFile>();
@@ -5699,9 +5701,9 @@ public class Main {
 						if (!uploaded_files.isEmpty()) {
 							select.setEnabled(false);
 						}
-						if (file_storage.containsKey((long)article_id)) {
+						if (file_storage.containsKey((long) article_id)) {
 							String label_text = "";
-							HashMap<Long, ArticleFile> files_existing = file_storage.get((long)article_id);
+							HashMap<Long, ArticleFile> files_existing = file_storage.get((long) article_id);
 							Set<Long> keys = files_existing.keySet();
 							for (long k : keys) {
 								ArticleFile a_file = files_existing.get(k);
@@ -5718,9 +5720,9 @@ public class Main {
 				btnClear.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent arg0) {
 						uploaded_files.clear();
-						if (file_storage.containsKey((long)article_id)) {
+						if (file_storage.containsKey((long) article_id)) {
 							String label_text = "";
-							HashMap<Long, ArticleFile> files_existing = file_storage.get((long)article_id);
+							HashMap<Long, ArticleFile> files_existing = file_storage.get((long) article_id);
 							Set<Long> keys = files_existing.keySet();
 							for (long k : keys) {
 								ArticleFile a_file = files_existing.get(k);
@@ -5731,10 +5733,11 @@ public class Main {
 							/*
 							 * if (file_storage.containsKey((long)article_id)) {
 							 * HashMap<Integer, ArticleFile> up_files =
-							 * file_storage.get((long)article_id); Set<Integer> keys =
-							 * up_files.keySet(); file_id = initial_file_num;
-							 * for (int key : keys) { File f = new
-							 * File(up_files.get((long)key).getPath()); f.delete(); }
+							 * file_storage.get((long)article_id); Set<Integer>
+							 * keys = up_files.keySet(); file_id =
+							 * initial_file_num; for (int key : keys) { File f =
+							 * new File(up_files.get((long)key).getPath());
+							 * f.delete(); }
 							 * 
 							 * 
 							 * 
@@ -5843,12 +5846,12 @@ public class Main {
 			JButton btnGoBack = new JButton("Close");
 			btnGoBack.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent arg0) {
-					if (file_storage.containsKey((long)current_id)) {
-						HashMap<Long, ArticleFile> up_files = file_storage.get((long)current_id);
+					if (file_storage.containsKey((long) current_id)) {
+						HashMap<Long, ArticleFile> up_files = file_storage.get((long) current_id);
 						Set<Long> keys = up_files.keySet();
 						file_id = initial_file_num;
 						for (long key : keys) {
-							File f = new File(up_files.get((long)key).getPath());
+							File f = new File(up_files.get((long) key).getPath());
 							f.delete();
 						}
 						File folder = new File(String.format("src/files/%d/", current_id));
@@ -6548,9 +6551,9 @@ public class Main {
 					if (!uploaded_files.isEmpty()) {
 						select.setEnabled(false);
 					}
-					if (file_storage.containsKey((long)current_id)) {
+					if (file_storage.containsKey((long) current_id)) {
 						String label_text = "";
-						HashMap<Long, ArticleFile> files_existing = file_storage.get((long)current_id);
+						HashMap<Long, ArticleFile> files_existing = file_storage.get((long) current_id);
 						Set<Long> keys = files_existing.keySet();
 						for (long k : keys) {
 							ArticleFile a_file = files_existing.get(k);
@@ -6567,12 +6570,12 @@ public class Main {
 			upload.setBounds(156, 276, 90, 30);
 			btnClear.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent arg0) {
-					if (file_storage.containsKey((long)current_id)) {
-						HashMap<Long, ArticleFile> up_files = file_storage.get((long)current_id);
+					if (file_storage.containsKey((long) current_id)) {
+						HashMap<Long, ArticleFile> up_files = file_storage.get((long) current_id);
 						Set<Long> keys = up_files.keySet();
 						file_id = initial_file_num;
 						for (long key : keys) {
-							File f = new File(up_files.get((long)key).getPath());
+							File f = new File(up_files.get((long) key).getPath());
 							f.delete();
 						}
 						File folder = new File(String.format("src/files/%d/", current_id));
@@ -6596,13 +6599,13 @@ public class Main {
 			article.addWindowListener(new WindowAdapter() {
 				@Override
 				public void windowClosing(WindowEvent e) {
-					if (file_storage.containsKey((long)current_id) && current_id != articles_id) {
-						HashMap<Long, ArticleFile> up_files = file_storage.get((long)current_id);
+					if (file_storage.containsKey((long) current_id) && current_id != articles_id) {
+						HashMap<Long, ArticleFile> up_files = file_storage.get((long) current_id);
 						Set<Long> keys = up_files.keySet();
 						file_id = initial_file_num;
 
 						for (long key : keys) {
-							File f = new File(up_files.get((long)key).getPath());
+							File f = new File(up_files.get((long) key).getPath());
 							f.delete();
 						}
 						File folder = new File(String.format("src/files/%d/", current_id));
@@ -6617,12 +6620,12 @@ public class Main {
 			article.addWindowListener(new WindowAdapter() {
 				@Override
 				public void windowClosed(WindowEvent e) {
-					if (file_storage.containsKey((long)current_id) && current_id != articles_id) {
-						HashMap<Long, ArticleFile> up_files = file_storage.get((long)current_id);
+					if (file_storage.containsKey((long) current_id) && current_id != articles_id) {
+						HashMap<Long, ArticleFile> up_files = file_storage.get((long) current_id);
 						Set<Long> keys = up_files.keySet();
 						file_id = initial_file_num;
 						for (Long key : keys) {
-							File f = new File(up_files.get((long)key).getPath());
+							File f = new File(up_files.get((long) key).getPath());
 							f.delete();
 						}
 						metadata_storage.remove(current_id);
@@ -6795,8 +6798,8 @@ public class Main {
 		if (!exists) {
 			String value = setting_json.toJSONString();
 			byte[] b = value.getBytes("windows-1252");
-			for(byte bi:b){
-				System.out.print(bi+" ");
+			for (byte bi : b) {
+				System.out.print(bi + " ");
 			}
 			System.out.println();
 			String setting_value = new String(b, "UTF-8");
@@ -6819,15 +6822,14 @@ public class Main {
 		} else {
 			String value = setting_json.toJSONString();
 			byte[] b = value.getBytes("windows-1252");
-			for(byte bi:b){
-				System.out.print(bi+" ");
+			for (byte bi : b) {
+				System.out.print(bi + " ");
 			}
 			System.out.println();
 			String setting_value = new String(b, "UTF-8");
 
 			System.out.println(setting_value.getBytes());
-			HttpPut httpPost = new HttpPut(
-					String.format("%s/article-settings/%s/", base_url, setting_json.get("pk")));
+			HttpPut httpPost = new HttpPut(String.format("%s/article-settings/%s/", base_url, setting_json.get("pk")));
 			httpPost.setEntity(new StringEntity(setting_value));
 			httpPost.addHeader("Authorization", "Basic " + credentials);
 			httpPost.setHeader("Accept", "application/json");
@@ -6911,8 +6913,8 @@ public class Main {
 		if (!exists) {
 			String value = setting_json.toJSONString();
 			byte[] b = value.getBytes("windows-1252");
-			for(byte bi:b){
-				System.out.print(bi+" ");
+			for (byte bi : b) {
+				System.out.print(bi + " ");
 			}
 			System.out.println();
 			String setting_value = new String(b, "UTF-8");
@@ -6935,15 +6937,14 @@ public class Main {
 		} else {
 			String value = setting_json.toJSONString();
 			byte[] b = value.getBytes("windows-1252");
-			for(byte bi:b){
-				System.out.print(bi+" ");
+			for (byte bi : b) {
+				System.out.print(bi + " ");
 			}
 			System.out.println();
 			String setting_value = new String(b, "UTF-8");
 
 			System.out.println(setting_value.getBytes());
-			HttpPut httpPost = new HttpPut(
-					String.format("%s/article-settings/%s/", base_url, setting_json.get("pk")));
+			HttpPut httpPost = new HttpPut(String.format("%s/article-settings/%s/", base_url, setting_json.get("pk")));
 			httpPost.setEntity(new StringEntity(setting_value));
 			httpPost.addHeader("Authorization", "Basic " + credentials);
 			httpPost.setHeader("Accept", "application/json");
@@ -7119,8 +7120,8 @@ public class Main {
 		if (!exists) {
 			String value = setting_json.toJSONString();
 			byte[] b = value.getBytes("windows-1252");
-			for(byte bi:b){
-				System.out.print(bi+" ");
+			for (byte bi : b) {
+				System.out.print(bi + " ");
 			}
 			System.out.println();
 			String setting_value = new String(b, "UTF-8");
@@ -7218,16 +7219,17 @@ public class Main {
 		for (Long key : article_keys) {
 			Article current_article = articles.get(key);
 			update_article_intersect(current_article, credentials);
-			HashMap<Long,ArticleFile> files = file_storage.get((long)current_article.getId());
+			HashMap<Long, ArticleFile> files = file_storage.get((long) current_article.getId());
 			Set<Long> file_keys = files.keySet();
-				System.out.println("FILES TO UPLOAD: "+file_keys.size());
-			if (file_keys.size()>0){
-			for (long f_key:file_keys){
+			System.out.println("FILES TO UPLOAD: " + file_keys.size());
+			if (file_keys.size() > 0) {
+				for (long f_key : file_keys) {
 
-				System.out.println("FILE TO UPLOAD: "+f_key);
-				ArticleFile current_file = files.get((long)f_key);
-				file_upload_intersect(current_article.getId(),current_file);
-			}}
+					System.out.println("FILE TO UPLOAD: " + f_key);
+					ArticleFile current_file = files.get((long) f_key);
+					file_upload_intersect(current_article.getId(), current_file);
+				}
+			}
 		}
 	}
 
@@ -7318,6 +7320,7 @@ public class Main {
 				}
 				try {
 					for (String id : article_ids) {
+						
 						System.out.println(id);
 						HttpGet single_article = new HttpGet(
 								String.format("%s/articles/%s/?format=json", base_url, id));
@@ -7495,6 +7498,9 @@ public class Main {
 
 							article_author_storage.put(new_article.getId(), new ArrayList<Author>());
 							articles_list.add(new_article);
+
+							
+
 						} catch (ParseException e) {
 							// TODO Auto-generated catch block
 							e.printStackTrace();
@@ -7509,6 +7515,62 @@ public class Main {
 			e.printStackTrace();
 		}
 		for (Article a : articles_list) {
+
+			HttpGet article_files = new HttpGet(
+					String.format("%s/get/files/%s/?format=json", base_url, a.getId()));
+			// settingCheck.setEntity(new
+			// StringEntity(obj.toJSONString()));
+			article_files.addHeader("Authorization", "Basic " + credentials);
+			article_files.setHeader("Accept", "application/json");
+			article_files.addHeader("Content-type", "application/json");
+
+			response = null;
+			try {
+				response = httpClient.execute(article_files);
+			} catch (ClientProtocolException e2) {
+				// TODO Auto-generated catch block
+				e2.printStackTrace();
+			} catch (IOException e2) {
+				// TODO Auto-generated catch block
+				e2.printStackTrace();
+			}
+			jsonf = new JsonFactory();
+			result = response.getEntity().getContent();
+			jsonParser = new JSONParser();
+		
+			setting_pk = (long) -1;
+			exists = true;
+			setting_json = new JSONObject();
+
+			JSONObject setting;
+			try {
+				setting = (JSONObject) jsonParser.parse(IOUtils.toString(result));
+		
+			try {
+				InputStream is = response.getEntity().getContent();
+				is.close();
+			} catch (IOException exc) {
+				// TODO Auto-generated catch block
+				exc.printStackTrace();
+			}
+			System.out.println(setting);
+			if (setting == null) {
+				exists = false;
+			} else {
+				String[] file_ids = null;
+				String ids = ((String) setting.get("files"));
+				if (ids.contains(",")) {
+					file_ids = ((String) setting.get("files")).split(",");
+				}
+				if (file_ids !=null){
+				for (String file_id : file_ids) {
+					file_download(a.getId(), Long.parseLong(file_id));
+				}}
+				}	
+			} catch (ParseException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			a.setIssue_fk(issue);
 			article_storage.put(a.getId(), a);
 			author_primary_storage.put(a.getId(), new HashMap<Long, Boolean>());
@@ -8132,10 +8194,9 @@ public class Main {
 			System.out.println(exists);
 			System.out.println(setting_pk);
 			if (setting_json.isEmpty()) {
-				setting_json = SettingToJSON("author", author.getId(), "biography", author.getBio(), "string",
-						"en_US");
+				setting_json = SettingToJSON("author", author.getId(), "biography", author.getBio(), "string", "en_US");
 			}
-			
+
 			System.out.println(setting_json);
 			if (!exists) {
 				HttpPost httpPost = new HttpPost(String.format("%s/author-settings/", base_url));
@@ -8156,15 +8217,14 @@ public class Main {
 
 				String value = setting_json.toJSONString();
 				byte[] b = value.getBytes("windows-1252");
-				for(byte bi:b){
-					System.out.print(bi+" ");
+				for (byte bi : b) {
+					System.out.print(bi + " ");
 				}
 				System.out.println();
 				String setting_value = new String(b, "UTF-8");
 
 				System.out.println(setting_value.getBytes());
-				HttpPut httpPost = new HttpPut(
-						String.format("%s/author-settings/%s/", base_url, setting_pk));
+				HttpPut httpPost = new HttpPut(String.format("%s/author-settings/%s/", base_url, setting_pk));
 				httpPost.setEntity(new StringEntity(setting_value));
 				httpPost.addHeader("Authorization", "Basic " + credentials);
 				httpPost.setHeader("Accept", "application/json");
@@ -8179,10 +8239,10 @@ public class Main {
 					e2.printStackTrace();
 				}
 			}
-			if (response.getStatusLine().getStatusCode() == 400){
-				System.out.println("ERROR!! "+setting_json.toJSONString());
+			if (response.getStatusLine().getStatusCode() == 400) {
+				System.out.println("ERROR!! " + setting_json.toJSONString());
 
-				System.out.println("ERROR!! Author "+author.getId());
+				System.out.println("ERROR!! Author " + author.getId());
 
 				System.out.println("ERROR!!" + IOUtils.toString(response.getEntity().getContent()));
 			}
@@ -8291,13 +8351,13 @@ public class Main {
 		return issue;
 	}
 
-	public static JSONObject SettingToJSON(String model, long id, String name, String value, String type,
-			String locale) throws UnsupportedEncodingException {
+	public static JSONObject SettingToJSON(String model, long id, String name, String value, String type, String locale)
+			throws UnsupportedEncodingException {
 		JSONObject obj = new JSONObject();
-		obj.put(model, String.format("%s/%s/%s/", base_url, model+"s", id));
+		obj.put(model, String.format("%s/%s/%s/", base_url, model + "s", id));
 		obj.put("locale", locale);
 		obj.put("setting_name", name);
-		obj.put("setting_value",value );
+		obj.put("setting_value", value);
 		obj.put("setting_type", type);
 		return obj;
 	}
@@ -8620,15 +8680,15 @@ public class Main {
 			dir.mkdirs();
 			file_id++;
 			HashMap<Long, ArticleFile> article_files = null;
-			if (!file_storage.containsKey((long)art_id)) {
+			if (!file_storage.containsKey((long) art_id)) {
 				article_files = new HashMap<Long, ArticleFile>();
 			} else {
-				article_files = file_storage.get((long)art_id);
+				article_files = file_storage.get((long) art_id);
 			}
 			article_files.put(file_id,
 					new ArticleFile(file_id, art_id, String.format("src/files/%d/%s", art_id, filename)));
 
-			file_storage.put((long)art_id, article_files);
+			file_storage.put((long) art_id, article_files);
 			Files.copy(Paths.get(source), Paths.get(String.format("src/files/%d/%s", art_id, filename)),
 					StandardCopyOption.REPLACE_EXISTING);
 		} catch (IOException e) {
@@ -8651,7 +8711,8 @@ public class Main {
 	public String decodeSetting(String value) {
 		return StringUtils.newStringUtf8(Base64.decodeBase64(value));
 	}
-	public static void file_upload_intersect(long article_id, String path) throws IllegalStateException, IOException{
+
+	public static void file_upload_intersect(long article_id, String path) throws IllegalStateException, IOException {
 		boolean status = status_online();
 
 		if (!status) {
@@ -8661,17 +8722,17 @@ public class Main {
 		System.out.println("File Length = " + f.length());
 
 		FileInputStream input = new FileInputStream(f);
-		HttpPost fileUpload = new HttpPost(String.format("%s/upload/file/%s/", base_url,article_id));
+		HttpPost fileUpload = new HttpPost(String.format("%s/upload/file/%s/", base_url, article_id));
 
 		fileUpload.addHeader("Authorization", "Basic " + encoding);
-		
-		MultipartEntityBuilder builder = MultipartEntityBuilder.create();      
+
+		MultipartEntityBuilder builder = MultipartEntityBuilder.create();
 		builder.setMode(HttpMultipartMode.BROWSER_COMPATIBLE);
 
 		/* example for adding an image part */
-		FileBody fileBody = new FileBody(f); //image should be a String
-		builder.addPart("file", fileBody); 
-		
+		FileBody fileBody = new FileBody(f); // image should be a String
+		builder.addPart("file", fileBody);
+
 		fileUpload.setEntity(builder.build());
 
 		// : attachment; filename=upload.jpg.
@@ -8693,7 +8754,9 @@ public class Main {
 			System.out.println(IOUtils.toString(result));
 		}
 	}
-	public static void file_upload_intersect(long article_id, String path, long specific_id) throws IllegalStateException, IOException{
+
+	public static void file_upload_intersect(long article_id, String path, long specific_id)
+			throws IllegalStateException, IOException {
 		boolean status = status_online();
 
 		if (!status) {
@@ -8703,17 +8766,18 @@ public class Main {
 		System.out.println("File Length = " + f.length());
 
 		FileInputStream input = new FileInputStream(f);
-		HttpPost fileUpload = new HttpPost(String.format("%s/upload/specific/file/%d/%d/", base_url,article_id,specific_id));
+		HttpPost fileUpload = new HttpPost(
+				String.format("%s/upload/specific/file/%d/%d/", base_url, article_id, specific_id));
 
 		fileUpload.addHeader("Authorization", "Basic " + encoding);
-		
-		MultipartEntityBuilder builder = MultipartEntityBuilder.create();      
+
+		MultipartEntityBuilder builder = MultipartEntityBuilder.create();
 		builder.setMode(HttpMultipartMode.BROWSER_COMPATIBLE);
 
 		/* example for adding an image part */
-		FileBody fileBody = new FileBody(f); //image should be a String
-		builder.addPart("file", fileBody); 
-		
+		FileBody fileBody = new FileBody(f); // image should be a String
+		builder.addPart("file", fileBody);
+
 		fileUpload.setEntity(builder.build());
 
 		// : attachment; filename=upload.jpg.
@@ -8735,7 +8799,9 @@ public class Main {
 			System.out.println(IOUtils.toString(result));
 		}
 	}
-	public static void file_upload_intersect(long article_id, ArticleFile file) throws IllegalStateException, IOException{
+
+	public static void file_upload_intersect(long article_id, ArticleFile file)
+			throws IllegalStateException, IOException {
 		boolean status = status_online();
 
 		if (!status) {
@@ -8745,17 +8811,18 @@ public class Main {
 		System.out.println("File Length = " + f.length());
 
 		FileInputStream input = new FileInputStream(f);
-		HttpPost fileUpload = new HttpPost(String.format("%s/upload/specific/file/%d/%d/", base_url,article_id,file.getId()));
+		HttpPost fileUpload = new HttpPost(
+				String.format("%s/upload/specific/file/%d/%d/", base_url, article_id, file.getId()));
 
 		fileUpload.addHeader("Authorization", "Basic " + encoding);
-		
-		MultipartEntityBuilder builder = MultipartEntityBuilder.create();      
+
+		MultipartEntityBuilder builder = MultipartEntityBuilder.create();
 		builder.setMode(HttpMultipartMode.BROWSER_COMPATIBLE);
 
 		/* example for adding an image part */
-		FileBody fileBody = new FileBody(f); //image should be a String
-		builder.addPart("file", fileBody); 
-		
+		FileBody fileBody = new FileBody(f); // image should be a String
+		builder.addPart("file", fileBody);
+
 		fileUpload.setEntity(builder.build());
 
 		// : attachment; filename=upload.jpg.
@@ -8777,13 +8844,14 @@ public class Main {
 			System.out.println(IOUtils.toString(result));
 		}
 	}
-	public static void delete_file(long file_id) throws IOException{
+
+	public static void delete_file(long file_id) throws IOException {
 		boolean status = status_online();
 
 		if (!status) {
 			return;
 		}
-		HttpDelete fileUpload = new HttpDelete(String.format("%s/delete/file/%s/", base_url,file_id));
+		HttpDelete fileUpload = new HttpDelete(String.format("%s/delete/file/%s/", base_url, file_id));
 
 		fileUpload.addHeader("Authorization", "Basic " + encoding);
 
@@ -8806,14 +8874,15 @@ public class Main {
 			System.out.println(IOUtils.toString(result));
 		}
 	}
-	public static void file_download(long article_id, long file_id) throws IllegalStateException, IOException{
+
+	public static void file_download(long article_id, long file_id) throws IllegalStateException, IOException {
 		boolean status = status_online();
 
 		if (!status) {
 			return;
 		}
-		String filename="";
-		HttpGet fileDetails = new HttpGet(String.format("%s/files/%s/", base_url,file_id));
+		String filename = "";
+		HttpGet fileDetails = new HttpGet(String.format("%s/files/%s/", base_url, file_id));
 		File dir = new File(String.format("src/files/%d/", article_id));
 		dir.mkdirs();
 		fileDetails.addHeader("Authorization", "Basic " + encoding);
@@ -8832,19 +8901,19 @@ public class Main {
 		org.json.simple.parser.JSONParser jsonParser = new JSONParser();
 		boolean exists = true;
 		JSONObject author_json = new JSONObject();
-			JSONObject issue_obj;
-			try {
-				issue_obj = (JSONObject) jsonParser.parse(IOUtils.toString(result));
+		JSONObject issue_obj;
+		try {
+			issue_obj = (JSONObject) jsonParser.parse(IOUtils.toString(result));
 
-				filename = (String) issue_obj.get("original_filename");
-				System.out.println(filename);
-			} catch (ParseException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			
-		HttpGet fileDownload = new HttpGet(String.format("%s/download/file/%s/%s/", base_url,article_id,file_id));
-	
+			filename = (String) issue_obj.get("original_filename");
+			System.out.println(filename);
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		HttpGet fileDownload = new HttpGet(String.format("%s/download/file/%s/%s/", base_url, article_id, file_id));
+
 		fileDownload.addHeader("Authorization", "Basic " + encoding);
 		response = null;
 		try {
@@ -8857,30 +8926,31 @@ public class Main {
 			e2.printStackTrace();
 		}
 		InputStream is = response.getEntity().getContent();
-		String filePath = String.format("src/files/%s/%s/",article_id,filename);
+		String filePath = String.format("src/files/%s/%s/", article_id, filename);
 		FileOutputStream fos = new FileOutputStream(new File(filePath));
 		int inByte;
-		while((inByte = is.read()) != -1)
-		     fos.write(inByte);
+		while ((inByte = is.read()) != -1)
+			fos.write(inByte);
 		is.close();
 		fos.close();
 		HashMap<Long, ArticleFile> article_files = null;
-		if (!file_storage.containsKey((long)article_id)) {
+		if (!file_storage.containsKey((long) article_id)) {
 			article_files = new HashMap<Long, ArticleFile>();
 		} else {
-			article_files = file_storage.get((long)article_id);
-			if (article_files ==null){
+			article_files = file_storage.get((long) article_id);
+			if (article_files == null) {
 				article_files = new HashMap<Long, ArticleFile>();
 			}
 		}
 		article_files.put(file_id,
 				new ArticleFile(file_id, article_id, String.format("src/files/%d/%s", article_id, filename)));
 
-		file_storage.put((long)article_id, article_files);
-		System.out.println("Downloaded: "+article_files.size());
+		file_storage.put((long) article_id, article_files);
+		System.out.println("Downloaded: " + article_files.size());
 
-	//	System.out.println(file_storage.get((long)125).get((long)5));
+		// System.out.println(file_storage.get((long)125).get((long)5));
 	}
+
 	public static void main(String[] args) throws ParseException, java.text.ParseException, IOException {
 		BASE64Encoder encoder = new BASE64Encoder();
 		encoding = encoder.encode("ioannis:root".getBytes());
@@ -8890,19 +8960,19 @@ public class Main {
 		database_setup();
 		populate_variables();
 
-		// get_issue_from_remote(encoding, (long) 5, false);
+		 //get_issue_from_remote(encoding, (long) 5, false);
 
 		// update_articles_local(issue_storage.get((long) 5), encoding);
 		System.out.println();
 		// file copy to use for file upload
 		// file_copy(1,"src/lib/db_xxs.png");
 		// get_authors_remote(5, encoding, false);
-		 //sync_authors_intersect(5, encoding, false);
+		// sync_authors_intersect(5, encoding, false);
 		// System.out.println("Latest author id: " + author_id);
 		// ();
 		new Main();
-		//file_upload_intersect((long)125,"/home/ioannis/code/toru-app/java_ojs/miglayout-src.zip",25);
-		//file_download(125,16);
-		//System.out.println(file_storage.get((long)125).get((long)5));
+		// file_upload_intersect((long)125,"/home/ioannis/code/toru-app/java_ojs/miglayout-src.zip",25);
+		// file_download(125,16);
+		// System.out.println(file_storage.get((long)125).get((long)5));
 	}
 }
