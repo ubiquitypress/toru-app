@@ -6,6 +6,7 @@ import java.util.Date;
 public class Article {
 	private long id;
 	private String title;
+	private String doi;
 	private long section_id;
 	private String pages;
 	private String abstract_text;
@@ -266,6 +267,39 @@ public class Article {
 	@Override
 	public String toString() {
 		return title;
+	}
+	public String getDoi() {
+		return doi;
+	}
+	public void setDoi(String doi) {
+		this.doi = doi;
+	}
+	public Article(long id, String title, String doi, long section_id, String pages, String abstract_text,
+			Journal journal, long user_id, String locale, String language, int status, int submission_progress,
+			int current_round, int fast_tracked, int hide_author, int comments_status, Date date_submitted,
+			Date date_accepted, Date date_published, Issue issue_fk, ArrayList<Author> authors) {
+		super();
+		this.id = id;
+		this.title = title;
+		this.doi = doi;
+		this.section_id = section_id;
+		this.pages = pages;
+		this.abstract_text = abstract_text;
+		this.journal = journal;
+		this.user_id = user_id;
+		this.locale = locale;
+		this.language = language;
+		this.status = status;
+		this.submission_progress = submission_progress;
+		this.current_round = current_round;
+		this.fast_tracked = fast_tracked;
+		this.hide_author = hide_author;
+		this.comments_status = comments_status;
+		this.date_submitted = date_submitted;
+		this.date_accepted = date_accepted;
+		this.date_published = date_published;
+		this.issue_fk = issue_fk;
+		this.authors = authors;
 	}
 	
 	

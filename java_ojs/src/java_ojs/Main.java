@@ -200,7 +200,7 @@ public class Main {
 	private String section_insert_or_replace_statement = "INSERT OR REPLACE INTO SECTION(id,title) VALUES (?,?)";
 	private String author_insert_or_replace_statement = "INSERT OR REPLACE INTO AUTHOR(id,first_name,middle_name,last_name,email,affiliation,bio,orcid,department,country) VALUES (?,?,?,?,?,?,?,?,?,?)";
 	private String unique_authors_insert_or_replace_statement = "INSERT OR REPLACE INTO UNIQUE_AUTHORS(first_name,middle_name,last_name,email,affiliation,bio,orcid,department,country) VALUES (?,?,?,?,?,?,?,?,?)";
-	private String article_insert_or_replace_statement = "INSERT OR REPLACE INTO ARTICLE(id,title,section_id,pages,abstract,date_published,date_accepted,date_submitted,locale,language,status,submission_progress,current_round,fast_tracked,hide_author,comments_status,user_id) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+	private String article_insert_or_replace_statement = "INSERT OR REPLACE INTO ARTICLE(id,title,section_id,pages,abstract,date_published,date_accepted,date_submitted,locale,language,status,submission_progress,current_round,fast_tracked,hide_author,comments_status,user_id,doi) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
 	private String article_author_insert_or_replace_statement = "INSERT OR REPLACE INTO ARTICLE_AUTHOR(id,article_id,author_id,primary_author) VALUES (?,?,?,?)";
 	private String issue_journal_insert_or_replace_statement = "INSERT OR REPLACE INTO ISSUE_JOURNAL(id,journal_id,issue_id) VALUES (?,?,?)";
 	private String issue_article_insert_or_replace_statement = "INSERT OR REPLACE INTO ISSUE_ARTICLE(id,article_id,issue_id) VALUES (?,?,?)";
@@ -400,6 +400,7 @@ public class Main {
 					article_prep.setInt(15, save_article.getHide_author());
 					article_prep.setInt(16, save_article.getComments_status());
 					article_prep.setInt(17, (int) (long) save_article.getUser_id());
+					article_prep.setString(18, save_article.getDoi());
 					article_prep.executeUpdate();
 					PreparedStatement issue_article_prep = c
 							.prepareStatement(issue_article_insert_or_replace_statement);
@@ -669,9 +670,11 @@ public class Main {
 				String date = art_s.getString(rsmd.getColumnName(6));
 				String date_accepted = art_s.getString("date_accepted");
 				String date_submitted = art_s.getString("date_submitted");
+				String doi = art_s.getString("doi");
 				Article article = null;
 				article = new Article(id, title, section_id, pages, abstract_text, sdf.parse(date_accepted),
 						sdf.parse(date), sdf.parse(date_submitted), new Journal(1, "up", (float) 2.0, "en_US", 0));
+				article.setDoi(doi);
 				rs_issue = c.createStatement()
 						.executeQuery("SELECT issue_id FROM ISSUE_ARTICLE WHERE article_id=" + Long.toString(id) + ";");
 				long issue_id = rs_issue.getInt("issue_id");
@@ -1161,7 +1164,7 @@ public class Main {
 					+ "date_accepted CHAR(50)," + "date_submitted CHAR(50)," + "status INTEGER,"
 					+ "submission_progress INTEGER," + "current_round INTEGER," + "fast_tracked INTEGER,"
 					+ "hide_author INTEGER," + "comments_status INTEGER," + " language CHAR(50) NOT NULL,"
-					+ " locale CHAR(50) NOT NULL," + "user_id REAL NOT NULL, "
+					+ " locale CHAR(50) NOT NULL," + "user_id REAL NOT NULL, "+ " doi CHAR(1000),"
 					+ "FOREIGN KEY (section_id) REFERENCES SECTION(id)" + ")";
 			stmt.executeUpdate(sql);
 			sql = "CREATE TABLE IF NOT EXISTS FILE" + "(id INTEGER PRIMARY KEY," + " article_id INTEGER,"
@@ -4000,7 +4003,7 @@ public class Main {
 				JScrollPane articleSection = new JScrollPane(panel);
 				panel.setAutoscrolls(true);
 				articleSection.setPreferredSize(new Dimension(320, 200));
-				articleSection.setBounds(40, 132, width_small / 2 - 100, height_small - 280);
+				articleSection.setBounds(40, 132, width_small / 2 - 100, height_small - 246);
 				// scrollSettings.setViewportView(scrollFrame);
 				article.getContentPane().add(articleSection);
 
@@ -4332,7 +4335,17 @@ public class Main {
 				lblPageNum.setFont(new Font("Dialog", Font.BOLD, 14));
 				lblPageNum.setBounds(160, 171, 125, 30);
 				panel.add(lblPageNum);
+				JLabel lblDoi = new JLabel("DOI:");
+				lblDoi.setForeground(Color.BLACK);
+				lblDoi.setFont(new Font("Dialog", Font.BOLD, 14));
+				lblDoi.setBounds(24, 268, 94, 30);
+				panel.add(lblDoi);
 
+				final JLabel doi = new JLabel(current_article.getDoi());
+				doi.setForeground(Color.BLACK);
+				doi.setFont(new Font("Dialog", Font.BOLD, 14));
+				doi.setBounds(85, 269, 180, 30);
+				panel.add(doi);
 				JLabel lblTitle = new JLabel("Title:");
 				lblTitle.setForeground(Color.BLACK);
 				lblTitle.setFont(new Font("Dialog", Font.BOLD, 14));
@@ -4500,12 +4513,12 @@ public class Main {
 				JTextArea lblFile = new JTextArea(label_text);
 				lblFile.setForeground(Color.WHITE);
 				lblFile.setEnabled(false);
-				lblFile.setBounds(115, 312, 225, 160);
+				lblFile.setBounds(115, 346, 225, 160);
 				lblFile.setToolTipText("");
 				JScrollPane fileSection = new JScrollPane(panel11);
 
 				fileSection.setPreferredSize(new Dimension(300 * 2, 100 * file_storage.size()));
-				fileSection.setBounds(20, 312, 265, 160);
+				fileSection.setBounds(20, 346, 265, 160);
 				fileSection.add(panel10);
 				fileSection.createHorizontalScrollBar();
 				panel.add(fileSection);
@@ -4537,7 +4550,7 @@ public class Main {
 						}
 					}
 				});
-				select.setBounds(20, 276, 90, 30);
+				select.setBounds(20, 310, 90, 30);
 				panel.add(select);
 				JButton upload = new JButton("Upload");
 				upload.setEnabled(false);
@@ -4552,7 +4565,7 @@ public class Main {
 						}
 					}
 				});
-				upload.setBounds(150, 276, 90, 30);
+				upload.setBounds(150, 310, 90, 30);
 
 				panel.add(upload);
 
@@ -4707,7 +4720,7 @@ public class Main {
 				JScrollPane articleSection = new JScrollPane(panel);
 				panel.setAutoscrolls(true);
 				articleSection.setPreferredSize(new Dimension(320, 200));
-				articleSection.setBounds(40, 132, width_small / 2 - 100, height_small - 280);
+				articleSection.setBounds(40, 132, width_small / 2 - 100, height_small - 246);
 				// scrollSettings.setViewportView(scrollFrame);
 				article.getContentPane().add(articleSection);
 
@@ -5490,7 +5503,17 @@ public class Main {
 				datePicker.setBounds(156, 234, 160, 30);
 				// panel.add(label);
 				panel.add(datePicker);
+				JLabel lblDoi = new JLabel("DOI:");
+				lblDoi.setForeground(Color.BLACK);
+				lblDoi.setFont(new Font("Dialog", Font.BOLD, 14));
+				lblDoi.setBounds(24, 268, 94, 30);
+				panel.add(lblDoi);
 
+				final JTextField doi = new JTextField(current_article.getDoi());
+				doi.setForeground(Color.BLACK);
+				doi.setFont(new Font("Dialog", Font.BOLD, 14));
+				doi.setBounds(85, 269, 180, 30);
+				panel.add(doi);
 				JLabel lblSection = new JLabel("Section:");
 				lblSection.setForeground(Color.BLACK);
 				lblSection.setFont(new Font("Dialog", Font.BOLD, 14));
@@ -5579,6 +5602,7 @@ public class Main {
 							a.setPages(lblPageNum.getText());
 							a.setDate_published(datePicker.getDate());
 							a.setDate_accepted(datePickerAccepted.getDate());
+							a.setDoi(doi.getText());
 							Issue current_issue = issue_storage.get(issue_id);
 							issue_storage.get(issue_id).update_article(article_id, a);
 							issue_storage.put(issue_id, current_issue);
@@ -5601,11 +5625,11 @@ public class Main {
 				lblFile.setText(label_text);
 				lblFile.setForeground(Color.WHITE);
 				lblFile.setEnabled(false);
-				lblFile.setBounds(115, 310, 225, 160);
+				lblFile.setBounds(115, 344, 225, 160);
 				lblFile.setToolTipText("");
 				JScrollPane fileSection = new JScrollPane(lblFile);
 				fileSection.setPreferredSize(new Dimension(300 * 2, 200));
-				fileSection.setBounds(20, 310, 225, 160);
+				fileSection.setBounds(20, 344, 225, 160);
 				fileSection.add(panel10);
 				fileSection.createHorizontalScrollBar();
 				panel.add(fileSection);
@@ -5613,11 +5637,11 @@ public class Main {
 				JFileChooser chooser = new JFileChooser();
 				JButton btnClear = new JButton("Clear");
 				btnClear.setEnabled(false);
-				btnClear.setBounds(252, 315, 65, 30);
+				btnClear.setBounds(252, 349, 65, 30);
 				panel.add(btnClear);
 				JButton select = new JButton("Browse");
 
-				select.setBounds(20, 276, 90, 30);
+				select.setBounds(20, 310, 90, 30);
 				panel.add(select);
 				JButton upload = new JButton("Upload & Save");
 				upload.setEnabled(false);
@@ -5722,7 +5746,7 @@ public class Main {
 						}
 					}
 				});
-				upload.setBounds(150, 276, 140, 30);
+				upload.setBounds(150, 310, 140, 30);
 
 				panel.add(upload);
 				article.getContentPane().add(btnSave);
@@ -5917,7 +5941,7 @@ public class Main {
 			JScrollPane articleSection = new JScrollPane(panel);
 			panel.setAutoscrolls(true);
 			articleSection.setPreferredSize(new Dimension(320, 200));
-			articleSection.setBounds(40, 132, width_small / 2 - 100, height_small - 280);
+			articleSection.setBounds(40, 132, width_small / 2 - 100, height_small - 246);
 			// scrollSettings.setViewportView(scrollFrame);
 			article.getContentPane().add(articleSection);
 
@@ -6329,7 +6353,17 @@ public class Main {
 			datePicker.setBounds(156, 234, 160, 30);
 			// panel.add(label);
 			panel.add(datePicker);
+			JLabel lblDoi = new JLabel("DOI:");
+			lblDoi.setForeground(Color.BLACK);
+			lblDoi.setFont(new Font("Dialog", Font.BOLD, 14));
+			lblDoi.setBounds(24, 268, 94, 30);
+			panel.add(lblDoi);
 
+			final JTextField doi = new JTextField();
+			doi.setForeground(Color.BLACK);
+			doi.setFont(new Font("Dialog", Font.BOLD, 14));
+			doi.setBounds(85, 269, 180, 30);
+			panel.add(doi);
 			JLabel lblSection = new JLabel("Section:");
 			lblSection.setForeground(Color.BLACK);
 			lblSection.setFont(new Font("Dialog", Font.BOLD, 14));
@@ -6401,7 +6435,7 @@ public class Main {
 								entered_pages, lblAbstract.getText(), datePickerAccepted.getDate(),
 								datePicker.getDate(), current_issue, datePickerAccepted.getDate(),
 								new Journal(1, "up", (float) 2.0, "en_US", 0));
-
+						new_article.setDoi(doi.getText());
 						author_primary_storage.put(articles_id, author_primary);
 						ArrayList<Author> selected_authors = new ArrayList<Author>();
 						int[] selections = listbox.getSelectedIndices();
@@ -6468,11 +6502,11 @@ public class Main {
 
 			lblFile.setForeground(Color.WHITE);
 			lblFile.setEnabled(false);
-			lblFile.setBounds(115, 310, 225, 160);
+			lblFile.setBounds(115, 344, 225, 160);
 			lblFile.setToolTipText("");
 			JScrollPane fileSection = new JScrollPane(lblFile);
 			fileSection.setPreferredSize(new Dimension(300 * 2, 200));
-			fileSection.setBounds(20, 310, 225, 160);
+			fileSection.setBounds(20, 344, 225, 160);
 			fileSection.add(panel10);
 			fileSection.createHorizontalScrollBar();
 			panel.add(fileSection);
@@ -6480,7 +6514,7 @@ public class Main {
 			JFileChooser chooser = new JFileChooser();
 			JButton select = new JButton("Browse");
 
-			select.setBounds(20, 276, 90, 30);
+			select.setBounds(20, 310, 90, 30);
 			panel.add(select);
 			JButton upload = new JButton("Upload");
 			upload.setEnabled(false);
@@ -6538,7 +6572,7 @@ public class Main {
 			});
 
 			btnClear.setEnabled(false);
-			upload.setBounds(156, 276, 90, 30);
+			upload.setBounds(156, 310, 90, 30);
 			btnClear.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent arg0) {
 					if (file_storage.containsKey((long) current_id)) {
@@ -6563,7 +6597,7 @@ public class Main {
 				}
 			});
 
-			btnClear.setBounds(252, 315, 65, 30);
+			btnClear.setBounds(252, 349, 65, 30);
 			panel.add(btnClear);
 			panel.add(upload);
 
@@ -6860,7 +6894,7 @@ public class Main {
 				System.out.println(setting_json.get("setting_name"));
 				System.out.println(setting_json.get("setting_value"));
 				setting_pk = (long) setting_json.get("pk");
-				setting_json.put("setting_value", article.getTitle());
+				setting_json.put("setting_value", article.getAbstract_text());
 			}
 		} catch (ParseException e) {
 			// TODO Auto-generated catch block
@@ -6879,6 +6913,121 @@ public class Main {
 		if (setting_json.isEmpty()) {
 			setting_json = SettingToJSON("article", article.getId(), "abstract",
 					"<p class=\"p1\">" + article.getAbstract_text().replace("\r\n", "") + "</p>", "string", "en_US");
+		}
+		System.out.println(setting_json);
+		if (!exists) {
+			String value = setting_json.toJSONString();
+			byte[] b = value.getBytes("windows-1252");
+			for (byte bi : b) {
+				System.out.print(bi + " ");
+			}
+			System.out.println();
+			String setting_value = new String(b, "UTF-8");
+
+			System.out.println(setting_value.getBytes());
+			HttpPost httpPost = new HttpPost(String.format("%s/article-settings/", base_url));
+			httpPost.setEntity(new StringEntity(setting_value));
+			httpPost.addHeader("Authorization", "Basic " + credentials);
+			httpPost.setHeader("Accept", "application/json");
+			httpPost.addHeader("Content-type", "application/json");
+			try {
+				response = httpClient.execute(httpPost);
+			} catch (ClientProtocolException e2) {
+				// TODO Auto-generated catch block
+				e2.printStackTrace();
+			} catch (IOException e2) {
+				// TODO Auto-generated catch block
+				e2.printStackTrace();
+			}
+		} else {
+			String value = setting_json.toJSONString();
+			byte[] b = value.getBytes("windows-1252");
+			for (byte bi : b) {
+				System.out.print(bi + " ");
+			}
+			System.out.println();
+			String setting_value = new String(b, "UTF-8");
+
+			System.out.println(setting_value.getBytes());
+			HttpPut httpPost = new HttpPut(String.format("%s/article-settings/%s/", base_url, setting_json.get("pk")));
+			httpPost.setEntity(new StringEntity(setting_value));
+			httpPost.addHeader("Authorization", "Basic " + credentials);
+			httpPost.setHeader("Accept", "application/json");
+			httpPost.addHeader("Content-type", "application/json");
+			try {
+				response = httpClient.execute(httpPost);
+			} catch (ClientProtocolException e2) {
+				// TODO Auto-generated catch block
+				e2.printStackTrace();
+			} catch (IOException e2) {
+				// TODO Auto-generated catch block
+				e2.printStackTrace();
+			}
+		}
+		try {
+			InputStream is = response.getEntity().getContent();
+			is.close();
+		} catch (IOException exc) {
+			// TODO Auto-generated catch block
+			exc.printStackTrace();
+		}
+		settingCheck = new HttpGet(
+				String.format("%s/get/setting/pub-id::doi/article/%s/?format=json", base_url, article.getId()));
+		// settingCheck.setEntity(new StringEntity(obj.toJSONString()));
+		settingCheck.addHeader("Authorization", "Basic " + credentials);
+		settingCheck.setHeader("Accept", "application/json");
+		settingCheck.addHeader("Content-type", "application/json");
+
+		response = null;
+		try {
+			response = httpClient.execute(settingCheck);
+		} catch (ClientProtocolException e2) {
+			// TODO Auto-generated catch block
+			e2.printStackTrace();
+		} catch (IOException e2) {
+			// TODO Auto-generated catch block
+			e2.printStackTrace();
+		}
+		jsonf = new JsonFactory();
+		result = response.getEntity().getContent();
+		setting_pk = (long) -1;
+		jsonParser = new JSONParser();
+		exists = true;
+		setting_json = new JSONObject();
+		try {
+			JSONObject setting = (JSONObject) jsonParser.parse(IOUtils.toString(result));
+			System.out.println(setting.get("count"));
+			System.out.println(setting);
+			Long count = (Long) setting.get("count");
+			if (count == 0) {
+				exists = false;
+			} else {
+				JSONArray results = (JSONArray) setting.get("results");
+				System.out.println(results.get(0));
+				setting_json = (JSONObject) results.get(0);
+				System.out.println(setting_json.get("pk"));
+				System.out.println(setting_json.get("setting_name"));
+				System.out.println(setting_json.get("setting_value"));
+				setting_pk = (long) setting_json.get("pk");
+				setting_json.put("setting_value", article.getDoi());
+			}
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		try {
+			InputStream is = response.getEntity().getContent();
+			is.close();
+		} catch (IOException exc) {
+			// TODO Auto-generated catch block
+			exc.printStackTrace();
+		}
+		System.out.println(setting_json.isEmpty());
+		System.out.println(exists);
+		System.out.println(setting_pk);
+		if (setting_json.isEmpty()) {
+			setting_json = SettingToJSON("article", article.getId(), "pub-id::doi",
+					article.getDoi(), "string", "en_US");
 		}
 		System.out.println(setting_json);
 		if (!exists) {
@@ -7473,6 +7622,50 @@ public class Main {
 									System.out.println(results.get(0));
 									setting_json = (JSONObject) results.get(0);
 									new_article.setTitle((String) setting_json.get("setting_value"));
+									System.out.println(setting_json.get("setting_value"));
+								} catch (Exception e) {
+									e.printStackTrace();
+								}
+								try {
+									InputStream is = response.getEntity().getContent();
+									is.close();
+								} catch (IOException exc) {
+									// TODO Auto-generated catch block
+									exc.printStackTrace();
+								}
+							} else {
+								new_article.setTitle("None.");
+							}
+							article_settings = new HttpGet(String.format("%s/get/setting/pub-id::doi/article/%s/?format=json",
+									base_url, new_article.getId()));
+							// settingCheck.setEntity(new
+							// StringEntity(obj.toJSONString()));
+							article_settings.addHeader("Authorization", "Basic " + credentials);
+							article_settings.setHeader("Accept", "application/json");
+							article_settings.addHeader("Content-type", "application/json");
+
+							response = null;
+							try {
+								response = httpClient.execute(article_settings);
+							} catch (ClientProtocolException e2) {
+								// TODO Auto-generated catch block
+								e2.printStackTrace();
+							} catch (IOException e2) {
+								// TODO Auto-generated catch block
+								e2.printStackTrace();
+							}
+							if (response.getStatusLine().getStatusCode() == 200) {
+								result = response.getEntity().getContent();
+								jsonParser = new JSONParser();
+								exists = true;
+								setting_json = new JSONObject();
+
+								try {
+									setting = (JSONObject) jsonParser.parse(IOUtils.toString(result));
+									JSONArray results = (JSONArray) setting.get("results");
+									System.out.println(results.get(0));
+									setting_json = (JSONObject) results.get(0);
+									new_article.setDoi((String) setting_json.get("setting_value"));
 									System.out.println(setting_json.get("setting_value"));
 								} catch (Exception e) {
 									e.printStackTrace();
