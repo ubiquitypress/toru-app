@@ -3443,9 +3443,18 @@ public class Main {
 								}
 							}
 							int i = 0;
+							try {
+								get_authors_remote(issue_id, encoding, false);
+							} catch (IllegalStateException e1) {
+								// TODO Auto-generated catch block
+								e1.printStackTrace();
+							} catch (IOException e1) {
+								// TODO Auto-generated catch block
+								e1.printStackTrace();
+							}
 							for (long id : keys) {
 								Article row_article = all_articles.get(id);
-
+								
 								ArrayList<Object> data = new ArrayList<Object>();
 								issue_articles.put(id, new JFrame());
 
@@ -8028,7 +8037,11 @@ public class Main {
 						Article this_article = article_storage.get(new_author.getArticle_id());
 						issue_id = this_article.getIssue_fk().getId();
 						Issue this_issue = issue_storage.get(issue_id);
+						
 						this_issue.add_author(this_article.getId(), new_author);
+						this_article.add_author(new_author);
+						article_storage.put(this_article.getId(), this_article);
+						this_issue.add_article(this_article.getId(), this_article);
 						issue_storage.put(issue_id, this_issue);
 						System.out.println(new_author);
 						author_storage.put(new_author.getId(), new_author);
