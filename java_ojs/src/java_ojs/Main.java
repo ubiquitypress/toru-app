@@ -7712,7 +7712,7 @@ public class Main {
 										exc.printStackTrace();
 									}
 								} else {
-									new_article.setTitle("None.");
+									new_article.setDoi("None.");
 								}
 								HttpGet published_art = new HttpGet(String.format(
 										"%s/get/article/published/%s/?format=json", base_url, new_article.getId()));
