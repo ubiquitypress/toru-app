@@ -8,6 +8,7 @@ public class Author {
 	private String affiliation; 
 	private String bio; 
 	private String orcid; 
+	private String twitter; 
 	private String department;
 	private String country;
 	private String url="";
@@ -154,6 +155,33 @@ public class Author {
 	}
 	public void setUser_group(long user_group) {
 		this.user_group = user_group;
+	}
+	public String getTwitter() {
+		return twitter;
+	}
+	public void setTwitter(String twitter) {
+		this.twitter = twitter;
+	}
+	public Author(String first_name, String middle_name, String last_name, String email, String affiliation, String bio,
+			String orcid, String twitter, String department, String country, String url, long user_group, long id,
+			long article_id, long primary_contact, long seq) {
+		super();
+		this.first_name = first_name;
+		this.middle_name = middle_name;
+		this.last_name = last_name;
+		this.email = email;
+		this.affiliation = affiliation;
+		this.bio = bio;
+		this.orcid = orcid;
+		this.twitter = twitter;
+		this.department = department;
+		this.country = country;
+		this.url = url;
+		this.user_group = user_group;
+		this.id = id;
+		this.article_id = article_id;
+		this.primary_contact = primary_contact;
+		this.seq = seq;
 	}
 	
 
