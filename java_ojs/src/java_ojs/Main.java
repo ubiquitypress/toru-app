@@ -352,7 +352,7 @@ public class Main {
 				issue_prep.setInt(3, save_issue.getVolume());
 				issue_prep.setInt(4, save_issue.getNumber());
 				issue_prep.setInt(5, save_issue.getYear());
-				issue_prep.setString(6, save_issue.getShow_title());
+				issue_prep.setInt(6, save_issue.getShow_title());
 				issue_prep.setInt(7, save_issue.getShow_volume());
 				issue_prep.setInt(8, save_issue.getShow_number());
 				issue_prep.setInt(9, save_issue.getShow_year());
@@ -592,10 +592,10 @@ public class Main {
 				int volume = rs.getInt("volume");
 				int number = rs.getInt("number");
 				int year = rs.getInt("year");
-				String show_title = rs.getString("title");
-				int show_volume = rs.getInt("volume");
-				int show_number = rs.getInt("number");
-				int show_year = rs.getInt("year");
+				int show_title = rs.getInt("show_title");
+				int show_volume = rs.getInt("show_volume");
+				int show_number = rs.getInt("show_number");
+				int show_year = rs.getInt("show_year");
 				int published = rs.getInt("published");
 				int current = rs.getInt("current");
 				int access_status = rs.getInt("access_status");
@@ -654,6 +654,7 @@ public class Main {
 			ResultSet art_s = c.createStatement().executeQuery("SELECT * FROM ARTICLE ORDER BY id ASC;");
 			ResultSetMetaData rsmd = art_s.getMetaData();
 			System.out.println(rsmd.getColumnName(2));
+			ResultSet rs_issue=null;
 			while (art_s.next()) {
 				long id = art_s.getInt("id");
 				String title = art_s.getString("title");
@@ -671,9 +672,10 @@ public class Main {
 				Article article = null;
 				article = new Article(id, title, section_id, pages, abstract_text, sdf.parse(date_accepted),
 						sdf.parse(date), sdf.parse(date_submitted), new Journal(1, "up", (float) 2.0, "en_US", 0));
-				ResultSet rs_issue = c.createStatement()
+				rs_issue = c.createStatement()
 						.executeQuery("SELECT issue_id FROM ISSUE_ARTICLE WHERE article_id=" + Long.toString(id) + ";");
 				long issue_id = rs_issue.getInt("issue_id");
+				
 				Issue update_issue = issue_storage.get(issue_id);
 				update_issue.add_article(id, article);
 				issue_storage.put(issue_id, update_issue);
@@ -691,6 +693,7 @@ public class Main {
 
 				rs_issue.close();
 			}
+
 			art_s.close();
 
 			System.out.println("Loading File data....");
@@ -1133,7 +1136,7 @@ public class Main {
 			stmt.executeUpdate(sql);
 			sql = "CREATE TABLE IF NOT EXISTS ISSUE" + "(id INTEGER PRIMARY KEY," + " title CHAR(500) NOT NULL,"
 					+ "volume INTEGER," + "number INTEGER," + "year INTEGER," + "published INTEGER,"
-					+ " show_title CHAR(500) NOT NULL," + "show_volume INTEGER," + "show_number INTEGER,"
+					+ " show_title INTEGER," + "show_volume INTEGER," + "show_number INTEGER,"
 					+ "show_year INTEGER," + "access_status INTEGER," + "current INTEGER," + "date_published CHAR(50),"
 					+ "date_accepted CHAR(50)" + ")";
 			stmt.executeUpdate(sql);
@@ -2027,16 +2030,16 @@ public class Main {
 					article_screens.put(id, new HashMap<Long, JFrame>());
 
 					data.add(Long.toString(row_issue.getId()));
-					data.add(row_issue.getShow_title());
-					data.add(Integer.toString(row_issue.getShow_volume()));
-					data.add(Integer.toString(row_issue.getShow_number()));
-					data.add(Integer.toString(row_issue.getShow_year()));
+					data.add(row_issue.getShow_title()==1?row_issue.getTitle():"Hidden");
+					data.add(row_issue.getShow_volume()==1?Integer.toString(row_issue.getVolume()):"Hidden");
+					data.add(row_issue.getShow_number()==1?Integer.toString(row_issue.getNumber()):"Hidden");
+					data.add(row_issue.getShow_year()==1?Integer.toString(row_issue.getYear()):"Hidden");
 					data.add(row_issue.getDate_published() == null ? "/" : sdf.format(row_issue.getDate_published()));
 					data.add("View");
 					data.add("Edit");
 					data.add("Delete");
-					Object[] row = { row_issue.getId(), row_issue.getShow_title(), row_issue.getShow_volume(),
-							row_issue.getShow_number(), row_issue.getShow_year(),
+					Object[] row = { row_issue.getId(), row_issue.getShow_title()==1?row_issue.getTitle():"Hidden", row_issue.getShow_volume()==1?Integer.toString(row_issue.getVolume()):"Hidden",
+							row_issue.getShow_number()==1?Integer.toString(row_issue.getNumber()):"Hidden", row_issue.getShow_year()==1?Integer.toString(row_issue.getYear()):"Hidden",
 							row_issue.getDate_accepted() == null ? "/" : sdf.format(row_issue.getDate_accepted()),
 							row_issue.getDate_published() == null ? "/" : sdf.format(row_issue.getDate_published()),
 							"View", "Edit", "Delete" };
@@ -2237,8 +2240,8 @@ public class Main {
 							issue_screens.put(id, new JFrame());
 							article_screens.put(id, new HashMap<Long, JFrame>());
 
-							Object[] row = { row_issue.getId(), row_issue.getShow_title(), row_issue.getShow_volume(),
-									row_issue.getShow_number(), row_issue.getShow_year(),
+							Object[] row = { row_issue.getId(), row_issue.getShow_title()==1?row_issue.getTitle():"Hidden", row_issue.getShow_volume()==1?row_issue.getVolume():"Hidden",
+									row_issue.getShow_number()==1?row_issue.getNumber():"Hidden", row_issue.getShow_year()==1?row_issue.getYear():"Hidden",
 									row_issue.getDate_accepted() == null ? "/"
 											: sdf.format(row_issue.getDate_accepted()),
 									row_issue.getDate_published() == null ? "/"
@@ -2601,14 +2604,14 @@ public class Main {
 			lblNewLabel.setBounds((width_small / 2) - 34, 15, 95, 25);
 			edit_issue.getContentPane().add(lblNewLabel);
 			final JTextField title = new JTextField();
-			title.setBounds(50, 218, 250, 26);
+			title.setBounds(100, 218, 250, 26);
 			edit_issue.getContentPane().add(title);
 			title.setColumns(4);
 
 			JLabel lblTitleText = new JLabel("Title");
 			lblTitleText.setForeground(new Color(245, 255, 250));
 			lblTitleText.setHorizontalAlignment(SwingConstants.CENTER);
-			lblTitleText.setBounds(50, 200, 250, 16);
+			lblTitleText.setBounds(100, 200, 250, 16);
 			edit_issue.getContentPane().add(lblTitleText);
 			JPanel title_background = new JPanel();
 			title_background.setBackground(new Color(0, 0, 0));
@@ -2617,32 +2620,32 @@ public class Main {
 
 			final JTextField volume = new JTextField();
 			volume.setColumns(4);
-			volume.setBounds(50, 270, 250, 26);
+			volume.setBounds(100, 270, 250, 26);
 			edit_issue.getContentPane().add(volume);
 			JLabel lblvolume = new JLabel("Volume");
 			lblvolume.setHorizontalAlignment(SwingConstants.CENTER);
 			lblvolume.setForeground(new Color(245, 255, 250));
-			lblvolume.setBounds(50, 250, 250, 16);
+			lblvolume.setBounds(100, 250, 250, 16);
 			edit_issue.getContentPane().add(lblvolume);
 
 			final JTextField number = new JTextField();
 			number.setColumns(4);
-			number.setBounds(50, 317, 250, 26);
+			number.setBounds(100, 317, 250, 26);
 			edit_issue.getContentPane().add(number);
 			JLabel lblnumber = new JLabel("Number");
 			lblnumber.setHorizontalAlignment(SwingConstants.CENTER);
 			lblnumber.setForeground(new Color(245, 255, 250));
-			lblnumber.setBounds(50, 300, 250, 16);
+			lblnumber.setBounds(100, 300, 250, 16);
 			edit_issue.getContentPane().add(lblnumber);
 
 			final JTextField year = new JTextField();
 			year.setColumns(4);
-			year.setBounds(50, 364, 250, 26);
+			year.setBounds(100, 364, 250, 26);
 			edit_issue.getContentPane().add(year);
 			JLabel lblyear = new JLabel("Year");
 			lblyear.setHorizontalAlignment(SwingConstants.CENTER);
 			lblyear.setForeground(new Color(245, 255, 250));
-			lblyear.setBounds(50, 347, 250, 16);
+			lblyear.setBounds(100, 347, 250, 16);
 			edit_issue.getContentPane().add(lblyear);
 
 			JLabel lblDateAccepted = new JLabel("Date Submitted");
@@ -2716,10 +2719,9 @@ public class Main {
 			edit_issue.getContentPane().add(lblStatus);
 			
 			
-			final JTextField show_title = new JTextField();
-			show_title.setBounds(340, 218, 250, 26);
+			final JCheckBox show_title = new JCheckBox("",true);
+			show_title.setBounds(459, 218, 250, 26);
 			edit_issue.getContentPane().add(show_title);
-			show_title.setColumns(4);
 
 			JLabel lblShowTitleText = new JLabel("Show Title");
 			lblShowTitleText.setForeground(new Color(245, 255, 250));
@@ -2727,10 +2729,9 @@ public class Main {
 			lblShowTitleText.setBounds(340, 200, 250, 16);
 			edit_issue.getContentPane().add(lblShowTitleText);
 
-			final JTextField show_volume = new JTextField();
-			show_volume.setBounds(340, 270, 250, 26);
+			final JCheckBox show_volume = new JCheckBox("",true);
+			show_volume.setBounds(459, 270, 250, 26);
 			edit_issue.getContentPane().add(show_volume);
-			show_volume.setColumns(4);
 
 			JLabel lblShowVolume = new JLabel("Show Volume");
 			lblShowVolume.setForeground(new Color(245, 255, 250));
@@ -2738,10 +2739,9 @@ public class Main {
 			lblShowVolume.setBounds(340, 250, 250, 16);
 			edit_issue.getContentPane().add(lblShowVolume);
 
-			final JTextField show_number = new JTextField();
-			show_number.setBounds(340, 317, 250, 26);
+			final JCheckBox show_number = new JCheckBox("",true);
+			show_number.setBounds(459, 317, 250, 26);
 			edit_issue.getContentPane().add(show_number);
-			show_number.setColumns(4);
 
 			JLabel lblShowNumber = new JLabel("Show Number");
 			lblShowNumber.setForeground(new Color(245, 255, 250));
@@ -2749,85 +2749,16 @@ public class Main {
 			lblShowNumber.setBounds(340, 300, 250, 16);
 			edit_issue.getContentPane().add(lblShowNumber);
 
-			final JTextField show_year = new JTextField();
-			show_year.setBounds(340, 364, 250, 26);
+			final JCheckBox show_year = new JCheckBox("",true);
+			show_year.setBounds(459, 364, 250, 26);
 			edit_issue.getContentPane().add(show_year);
-			show_year.setColumns(4);
 
 			JLabel lblShowYear = new JLabel("Show Year");
 			lblShowYear.setForeground(new Color(245, 255, 250));
 			lblShowYear.setHorizontalAlignment(SwingConstants.CENTER);
 			lblShowYear.setBounds(340, 347, 250, 16);
 			edit_issue.getContentPane().add(lblShowYear);
-
-			title.getDocument().addDocumentListener(new DocumentListener() {
-
-				@Override
-				public void insertUpdate(DocumentEvent de) {
-					show_title.setText(title.getText());
-				}
-
-				@Override
-				public void removeUpdate(DocumentEvent de) {
-					show_title.setText(title.getText());
-				}
-
-				@Override
-				public void changedUpdate(DocumentEvent de) {
-					show_title.setText(title.getText());
-				}
-			});
-			year.getDocument().addDocumentListener(new DocumentListener() {
-
-				@Override
-				public void insertUpdate(DocumentEvent de) {
-					show_year.setText(year.getText());
-				}
-
-				@Override
-				public void removeUpdate(DocumentEvent de) {
-					show_year.setText(year.getText());
-				}
-
-				@Override
-				public void changedUpdate(DocumentEvent de) {
-					show_year.setText(year.getText());
-				}
-			});
-			volume.getDocument().addDocumentListener(new DocumentListener() {
-
-				@Override
-				public void insertUpdate(DocumentEvent de) {
-					show_volume.setText(volume.getText());
-				}
-
-				@Override
-				public void removeUpdate(DocumentEvent de) {
-					show_volume.setText(volume.getText());
-				}
-
-				@Override
-				public void changedUpdate(DocumentEvent de) {
-					show_volume.setText(volume.getText());
-				}
-			});
-			number.getDocument().addDocumentListener(new DocumentListener() {
-
-				@Override
-				public void insertUpdate(DocumentEvent de) {
-					show_number.setText(number.getText());
-				}
-
-				@Override
-				public void removeUpdate(DocumentEvent de) {
-					show_number.setText(number.getText());
-				}
-
-				@Override
-				public void changedUpdate(DocumentEvent de) {
-					show_number.setText(number.getText());
-				}
-			});
+			
 			JButton btnSubmit = new JButton("Create");
 
 			btnSubmit.addActionListener(new ActionListener() {
@@ -2836,9 +2767,6 @@ public class Main {
 					int entered_volume = 0;
 					int entered_number = 0;
 					int entered_year = 0;
-					int entered_show_volume = 0;
-					int entered_show_number = 0;
-					int entered_show_year = 0;
 					try {
 
 						entered_volume = Integer.parseInt(volume.getText());
@@ -2861,27 +2789,6 @@ public class Main {
 						year.setForeground(new Color(255, 255, 255));
 						JOptionPane.showMessageDialog(null, "Use only numbers in fields: Volume, Number, Year ");
 					}
-					try {
-						entered_show_volume = Integer.parseInt(show_volume.getText());
-						entered_show_number = Integer.parseInt(show_number.getText());
-						entered_show_year = Integer.parseInt(show_year.getText());
-						show_number.setBackground(new Color(255, 255, 255));
-						show_number.setForeground(new Color(0, 0, 0));
-						show_volume.setBackground(new Color(255, 255, 255));
-						show_volume.setForeground(new Color(0, 0, 0));
-						show_year.setBackground(new Color(255, 255, 255));
-						show_year.setForeground(new Color(0, 0, 0));
-					} catch (Exception ex) {
-						validation = false;
-						show_number.setBackground(new Color(255, 0, 0));
-						show_number.setForeground(new Color(255, 255, 255));
-						show_volume.setBackground(new Color(255, 0, 0));
-						show_volume.setForeground(new Color(255, 255, 255));
-						show_year.setBackground(new Color(255, 0, 0));
-						show_year.setForeground(new Color(255, 255, 255));
-						JOptionPane.showMessageDialog(null,
-								"Use only numbers in fields: Show_Volume, Show_Number, Show_Year ");
-					}
 
 					try {
 
@@ -2898,10 +2805,10 @@ public class Main {
 						i_id++;
 						Issue issue = new Issue(i_id, title.getText(), entered_volume, entered_number, entered_year,
 								datePicker.getDate(), datePickerPublished.getDate());
-						issue.setShow_title(show_title.getText());
-						issue.setShow_volume(entered_show_volume);
-						issue.setShow_year(entered_show_year);
-						issue.setShow_number(entered_show_number);
+						issue.setShow_title(show_title.isSelected()==true? 1:0);
+						issue.setShow_volume(show_volume.isSelected()==true? 1:0);
+						issue.setShow_year(show_year.isSelected()==true? 1:0);
+						issue.setShow_number(show_number.isSelected()==true? 1:0);
 					
 						issue.setPublished(	published_check.isSelected() == true? 1:0);
 						issue.setCurrent(current_check.isSelected() == true? 1:0);
@@ -2913,9 +2820,9 @@ public class Main {
 						issue_screens.put(i_id, new JFrame());
 						article_screens.put(i_id, new HashMap<Long, JFrame>());
 						issue_storage.put(i_id, issue);
-						Object[] new_row = { i_id, title.getText(), Integer.parseInt(volume.getText()),
-								Integer.parseInt(number.getText()),
-								datePicker.getDate() == null ? "/" : sdf.format(datePicker.getDate()), "View", "Edit",
+						Object[] new_row = { i_id, show_title.isSelected()==true?title.getText():"Hidden", show_volume.isSelected()==true?Integer.parseInt(volume.getText()):"Hidden",
+								show_number.isSelected()==true?Integer.parseInt(number.getText()):"Hidden",show_year.isSelected()==true?Integer.parseInt(year.getText()):"Hidden",
+								datePicker.getDate() == null ? "/" : sdf.format(datePicker.getDate()),datePickerPublished.getDate() == null ? "/" : sdf.format(datePickerPublished.getDate()), "View", "Edit",
 								"Delete" };
 
 						((DefaultTableModel) issues_table.getModel()).addRow(new_row);
@@ -2928,9 +2835,9 @@ public class Main {
 				}
 			});
 			if (height_small - 150 > 300) {
-				btnSubmit.setBounds(((width_small / 3) * 2) / 2, height_small - 55, width_small / 3, 29);
+				btnSubmit.setBounds(((width_small / 3) * 2) / 2, height_small - 69, width_small / 3, 29);
 			} else {
-				btnSubmit.setBounds(((width_small / 3) * 2) / 2, 365, width_small / 3, 29);
+				btnSubmit.setBounds(((width_small / 3) * 2) / 2, 339, width_small / 3, 29);
 			}
 
 			edit_issue.getContentPane().add(btnSubmit);
@@ -3003,7 +2910,7 @@ public class Main {
 				lblNewLabel.setBounds((width_small / 2) - 34, 15, 95, 25);
 				edit_issue.getContentPane().add(lblNewLabel);
 				final JTextField title = new JTextField();
-				title.setBounds(50, 218, 250, 26);
+				title.setBounds(100, 218, 250, 26);
 				title.setText(current_issue.getTitle());
 				edit_issue.getContentPane().add(title);
 				title.setColumns(4);
@@ -3011,7 +2918,7 @@ public class Main {
 				JLabel lblTitleText = new JLabel("Title");
 				lblTitleText.setForeground(new Color(245, 255, 250));
 				lblTitleText.setHorizontalAlignment(SwingConstants.CENTER);
-				lblTitleText.setBounds(50, 200, 250, 16);
+				lblTitleText.setBounds(100, 200, 250, 16);
 				edit_issue.getContentPane().add(lblTitleText);
 				JPanel title_background = new JPanel();
 				title_background.setBackground(new Color(0, 0, 0));
@@ -3021,34 +2928,34 @@ public class Main {
 				final JTextField volume = new JTextField();
 				volume.setColumns(4);
 				volume.setText(Integer.toString(current_issue.getVolume()));
-				volume.setBounds(50, 270, 250, 26);
+				volume.setBounds(100, 270, 250, 26);
 				edit_issue.getContentPane().add(volume);
 				JLabel lblvolume = new JLabel("Volume");
 				lblvolume.setHorizontalAlignment(SwingConstants.CENTER);
 				lblvolume.setForeground(new Color(245, 255, 250));
-				lblvolume.setBounds(50, 250, 250, 16);
+				lblvolume.setBounds(100, 250, 250, 16);
 				edit_issue.getContentPane().add(lblvolume);
 
 				final JTextField number = new JTextField();
 				number.setColumns(4);
 				number.setText(Integer.toString(current_issue.getNumber()));
-				number.setBounds(50, 317, 250, 26);
+				number.setBounds(100, 317, 250, 26);
 				edit_issue.getContentPane().add(number);
 				JLabel lblnumber = new JLabel("Number");
 				lblnumber.setHorizontalAlignment(SwingConstants.CENTER);
 				lblnumber.setForeground(new Color(245, 255, 250));
-				lblnumber.setBounds(50, 300, 250, 16);
+				lblnumber.setBounds(100, 300, 250, 16);
 				edit_issue.getContentPane().add(lblnumber);
 
 				final JTextField year = new JTextField();
 				year.setColumns(4);
 				year.setText(Integer.toString(current_issue.getYear()));
-				year.setBounds(50, 364, 250, 26);
+				year.setBounds(100, 364, 250, 26);
 				edit_issue.getContentPane().add(year);
 				JLabel lblyear = new JLabel("Year");
 				lblyear.setHorizontalAlignment(SwingConstants.CENTER);
 				lblyear.setForeground(new Color(245, 255, 250));
-				lblyear.setBounds(50, 347, 250, 16);
+				lblyear.setBounds(100, 347, 250, 16);
 				edit_issue.getContentPane().add(lblyear);
 
 				JLabel lblDateAccepted = new JLabel("Date Submitted");
@@ -3124,21 +3031,19 @@ public class Main {
 				lblStatus.setHorizontalAlignment(SwingConstants.CENTER);
 				lblStatus.setBounds(305, height_small-121, 150, 16);
 				edit_issue.getContentPane().add(lblStatus);
-				final JTextField show_title = new JTextField(current_issue.getShow_title());
-				show_title.setBounds(340, 218, 250, 26);
+				final JCheckBox show_title = new JCheckBox("",current_issue.getShow_title()>=1?true:false);
+				show_title.setBounds(459, 218, 250, 26);
 				edit_issue.getContentPane().add(show_title);
-				show_title.setColumns(4);
-
+				
 				JLabel lblShowTitleText = new JLabel("Show Title");
 				lblShowTitleText.setForeground(new Color(245, 255, 250));
 				lblShowTitleText.setHorizontalAlignment(SwingConstants.CENTER);
 				lblShowTitleText.setBounds(340, 200, 250, 16);
 				edit_issue.getContentPane().add(lblShowTitleText);
 
-				final JTextField show_volume = new JTextField(Integer.toString(current_issue.getShow_volume()));
-				show_volume.setBounds(340, 270, 250, 26);
+				final JCheckBox show_volume = new JCheckBox("",current_issue.getShow_volume()>=1?true:false);
+				show_volume.setBounds(459, 270, 250, 26);
 				edit_issue.getContentPane().add(show_volume);
-				show_volume.setColumns(4);
 
 				JLabel lblShowVolume = new JLabel("Show Volume");
 				lblShowVolume.setForeground(new Color(245, 255, 250));
@@ -3146,10 +3051,9 @@ public class Main {
 				lblShowVolume.setBounds(340, 250, 250, 16);
 				edit_issue.getContentPane().add(lblShowVolume);
 
-				final JTextField show_number = new JTextField(Integer.toString(current_issue.getShow_number()));
-				show_number.setBounds(340, 317, 250, 26);
+				final JCheckBox show_number = new JCheckBox("",current_issue.getShow_number()>=1?true:false);
+				show_number.setBounds(459, 317, 250, 26);
 				edit_issue.getContentPane().add(show_number);
-				show_number.setColumns(4);
 
 				JLabel lblShowNumber = new JLabel("Show Number");
 				lblShowNumber.setForeground(new Color(245, 255, 250));
@@ -3157,10 +3061,9 @@ public class Main {
 				lblShowNumber.setBounds(340, 300, 250, 16);
 				edit_issue.getContentPane().add(lblShowNumber);
 
-				final JTextField show_year = new JTextField(Integer.toString(current_issue.getShow_year()));
-				show_year.setBounds(340, 364, 250, 26);
+				final JCheckBox show_year = new JCheckBox("",current_issue.getShow_year()>=1?true:false);
+				show_year.setBounds(459, 364, 250, 26);
 				edit_issue.getContentPane().add(show_year);
-				show_year.setColumns(4);
 
 				JLabel lblShowYear = new JLabel("Show Year");
 				lblShowYear.setForeground(new Color(245, 255, 250));
@@ -3176,9 +3079,6 @@ public class Main {
 						int entered_volume = 0;
 						int entered_number = 0;
 						int entered_year = 0;
-						int entered_show_volume = 0;
-						int entered_show_number = 0;
-						int entered_show_year = 0;
 						try {
 
 							entered_volume = Integer.parseInt(volume.getText());
@@ -3201,28 +3101,7 @@ public class Main {
 							year.setForeground(new Color(255, 255, 255));
 							JOptionPane.showMessageDialog(null, "Use only numbers in fields: Volume, Number, Year ");
 						}
-						try {
-							entered_show_volume = Integer.parseInt(show_volume.getText());
-							entered_show_number = Integer.parseInt(show_number.getText());
-							entered_show_year = Integer.parseInt(show_year.getText());
-							show_number.setBackground(new Color(255, 255, 255));
-							show_number.setForeground(new Color(0, 0, 0));
-							show_volume.setBackground(new Color(255, 255, 255));
-							show_volume.setForeground(new Color(0, 0, 0));
-							show_year.setBackground(new Color(255, 255, 255));
-							show_year.setForeground(new Color(0, 0, 0));
-						} catch (Exception ex) {
-							validation = false;
-							show_number.setBackground(new Color(255, 0, 0));
-							show_number.setForeground(new Color(255, 255, 255));
-							show_volume.setBackground(new Color(255, 0, 0));
-							show_volume.setForeground(new Color(255, 255, 255));
-							show_year.setBackground(new Color(255, 0, 0));
-							show_year.setForeground(new Color(255, 255, 255));
-							JOptionPane.showMessageDialog(null,
-									"Use only numbers in fields: Show_Volume, Show_Number, Show_Year ");
-						}
-
+						
 						try {
 
 							String test_accepted = sdf.format(datePicker.getDate());
@@ -3242,10 +3121,10 @@ public class Main {
 							current_issue.setYear(entered_year);
 							current_issue.setDate_published(datePickerPublished.getDate());
 							current_issue.setDate_accepted(datePicker.getDate());
-							current_issue.setShow_title(show_title.getText());
-							current_issue.setShow_volume(entered_show_volume);
-							current_issue.setShow_year(entered_show_year);
-							current_issue.setShow_number(entered_show_number);
+							current_issue.setShow_title(show_title.isSelected()==true? 1:0);
+							current_issue.setShow_volume(show_volume.isSelected()==true? 1:0);
+							current_issue.setShow_year(show_year.isSelected()==true? 1:0);
+							current_issue.setShow_number(show_number.isSelected()==true? 1:0);
 							edit_issue.dispose();
 							issue_storage.put(issue_id, current_issue);
 							issues.dispose();
@@ -3265,9 +3144,6 @@ public class Main {
 						int entered_volume = 0;
 						int entered_number = 0;
 						int entered_year = 0;
-						int entered_show_volume = 0;
-						int entered_show_number = 0;
-						int entered_show_year = 0;
 						try {
 
 							entered_volume = Integer.parseInt(volume.getText());
@@ -3290,27 +3166,7 @@ public class Main {
 							year.setForeground(new Color(255, 255, 255));
 							JOptionPane.showMessageDialog(null, "Use only numbers in fields: Volume, Number, Year ");
 						}
-						try {
-							entered_show_volume = Integer.parseInt(show_volume.getText());
-							entered_show_number = Integer.parseInt(show_number.getText());
-							entered_show_year = Integer.parseInt(show_year.getText());
-							show_number.setBackground(new Color(255, 255, 255));
-							show_number.setForeground(new Color(0, 0, 0));
-							show_volume.setBackground(new Color(255, 255, 255));
-							show_volume.setForeground(new Color(0, 0, 0));
-							show_year.setBackground(new Color(255, 255, 255));
-							show_year.setForeground(new Color(0, 0, 0));
-						} catch (Exception ex) {
-							validation = false;
-							show_number.setBackground(new Color(255, 0, 0));
-							show_number.setForeground(new Color(255, 255, 255));
-							show_volume.setBackground(new Color(255, 0, 0));
-							show_volume.setForeground(new Color(255, 255, 255));
-							show_year.setBackground(new Color(255, 0, 0));
-							show_year.setForeground(new Color(255, 255, 255));
-							JOptionPane.showMessageDialog(null,
-									"Use only numbers in fields: Show_Volume, Show_Number, Show_Year ");
-						}
+						
 
 						try {
 
@@ -3331,10 +3187,10 @@ public class Main {
 							current_issue.setYear(entered_year);
 							current_issue.setDate_published(datePickerPublished.getDate());
 							current_issue.setDate_accepted(datePicker.getDate());
-							current_issue.setShow_title(show_title.getText());
-							current_issue.setShow_volume(entered_show_volume);
-							current_issue.setShow_year(entered_show_year);
-							current_issue.setShow_number(entered_show_number);
+							current_issue.setShow_title(show_title.isSelected()==true?1:0);
+							current_issue.setShow_volume(show_volume.isSelected()==true?1:0);
+							current_issue.setShow_year(show_year.isSelected()==true?1:0);
+							current_issue.setShow_number(show_number.isSelected()==true?1:0);
 							edit_issue.dispose();
 							issue_storage.put(issue_id, current_issue);
 							issues.dispose();
@@ -3344,10 +3200,11 @@ public class Main {
 					}
 				});
 				if (height_small - 150 > 300) {
-					btnSubmit.setBounds(((width_small / 3) * 2) / 2, height_small - 55, width_small / 3, 29);
+					btnSubmit.setBounds(((width_small / 3) * 2) / 2, height_small - 69, width_small / 3, 29);
 				} else {
-					btnSubmit.setBounds(((width_small / 3) * 2) / 2, 365, width_small / 3, 29);
+					btnSubmit.setBounds(((width_small / 3) * 2) / 2, 339, width_small / 3, 29);
 				}
+
 
 
 				edit_issue.getContentPane().add(btnSubmit);
@@ -7881,7 +7738,7 @@ public class Main {
 						System.out.println(results.get(0));
 						setting_json = (JSONObject) results.get(0);
 						new_issue.setTitle((String) setting_json.get("setting_value"));
-						new_issue.setShow_title((String) setting_json.get("setting_value"));
+					//	new_issue.setShow_title((String) setting_json.get("setting_value"));
 					}
 				} catch (ParseException e) {
 					// TODO Auto-generated catch block
@@ -8006,7 +7863,7 @@ public class Main {
 							System.out.println(results.get(0));
 							setting_json = (JSONObject) results.get(0);
 							new_issue.setTitle((String) setting_json.get("setting_value"));
-							new_issue.setShow_title((String) setting_json.get("setting_value"));
+						//	new_issue.setShow_title((String) setting_json.get("setting_value"));
 						}
 					} catch (ParseException e) {
 						// TODO Auto-generated catch block
@@ -8504,7 +8361,7 @@ public class Main {
 				System.out.println(results.get(0));
 				setting_json = (JSONObject) results.get(0);
 				issue.setTitle((String) setting_json.get("setting_value"));
-				issue.setShow_title((String) setting_json.get("setting_value"));
+			//	issue.setShow_title((String) setting_json.get("setting_value"));
 			}
 		} catch (ParseException e) {
 			// TODO Auto-generated catch block
@@ -8532,7 +8389,7 @@ public class Main {
 		issue.setShow_volume((int) (long) obj.get("show_volume"));
 		issue.setShow_number((int) (long) obj.get("show_number"));
 		issue.setShow_year((int) (long) obj.get("show_year"));
-		issue.setShow_title(Integer.toString((int) (long) obj.get("show_title")));
+		issue.setShow_title((int) (long) obj.get("show_title"));
 		issue.setCurrent((int) (long) obj.get("current"));
 		issue.setPublished((int) (long) obj.get("published"));
 		issue.setAccess_status((int) (long) obj.get("access_status"));
@@ -8561,7 +8418,7 @@ public class Main {
 		obj.put("show_volume", issue.getShow_volume());
 		obj.put("show_number", issue.getShow_number());
 		obj.put("show_year", issue.getShow_year());
-		obj.put("show_title", 0);
+		obj.put("show_title",  issue.getShow_title());
 		obj.put("current", issue.getCurrent());
 		obj.put("published", issue.getPublished());
 		obj.put("access_status", issue.getAccess_status());

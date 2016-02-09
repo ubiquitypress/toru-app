@@ -13,7 +13,7 @@ public class Issue {
 	private int volume;  
 	private int number;
 	private int year;
-	private String show_title;
+	private int show_title;
 	private int show_volume;
 	private int show_number;
 	private int show_year;
@@ -25,7 +25,7 @@ public class Issue {
 	private int access_status;
 	private int current;
 	
-	public Issue(long id, String title, int volume, int number, int year, String show_title, int show_volume, int show_number,
+	public Issue(long id, String title, int volume, int number, int year, int show_title, int show_volume, int show_number,
 			int show_year, Date date_accepted, Date date_published) {
 		this.title = title;
 		this.id = id;
@@ -53,10 +53,10 @@ public class Issue {
 		this.volume = 0;
 		this.number = 0;
 		this.year = 0;
-		this.show_title = "";
-		this.show_volume = 0;
-		this.show_number = 0;
-		this.show_year = 0;
+		this.show_title = 1;
+		this.show_volume = 1;
+		this.show_number = 1;
+		this.show_year = 1;
 		this.date_accepted=today;
 		this.date_published = today;
 		this.articles_list = new  HashMap<Long, Article>();
@@ -64,7 +64,7 @@ public class Issue {
 		this.access_status = 0;
 		this.current = 0;
 	}
-	public Issue(long id, String title, int volume, int number, int year, String show_title, int show_volume, int show_number,
+	public Issue(long id, String title, int volume, int number, int year, int show_title, int show_volume, int show_number,
 			int show_year, Date date_accepted, Date date_published, int published, int access_status, int current, Journal journal) {
 		this.title = title;
 		this.id = id;
@@ -89,15 +89,15 @@ public class Issue {
 		this.volume = volume;
 		this.number = number;
 		this.year = year;
-		this.show_title = title;
-		this.show_volume = volume;
-		this.show_number = number;
-		this.show_year = year;
+		this.show_title = 1;
+		this.show_volume = 1;
+		this.show_number = 1;
+		this.show_year = 1;
 		this.date_accepted=date_accepted;
 		this.date_published = date_published;
 		this.articles_list = new  HashMap<Long, Article>();
 	}
-	public Issue(long id, String title, int volume, int number, int year, String show_title, int show_volume, int show_number,
+	public Issue(long id, String title, int volume, int number, int year, int show_title, int show_volume, int show_number,
 			int show_year, Date date_accepted, Date date_published, int current_article_id) {
 		this.title = title;
 		this.id = id;
@@ -149,11 +149,11 @@ public class Issue {
 		this.year = year;
 	}
 
-	public String getShow_title() {
+	public int getShow_title() {
 		return show_title;
 	}
 
-	public void setShow_title(String show_title) {
+	public void setShow_title(int show_title) {
 		this.show_title = show_title;
 	}
 
