@@ -2145,30 +2145,35 @@ public class Main {
 												current_issue.getTitle(), Long.toString(issue_id)),
 										"Warning", 1);
 
-								progress_executor.execute(new Runnable() {
-									public void run() {
-										for (int i = 0; i < 220; i++) {
-											final int percent = i;
-											SwingUtilities.invokeLater(new Runnable() {
-												public void run() {
-													progressBar.setValue(percent == 0 ? 0
-															: (int) Double
-																	.parseDouble(String.format("%s", percent / 2.2)));
-													progressBar.repaint();
-												}
-											});
+								
+								if (dialogResult == JOptionPane.NO_OPTION) {
+									progress_executor.execute(new Runnable() {
+										public void run() {
+											int countdown = current_issue.getArticles_list().size()*7+120+current_issue.getAuthors().size()*5;
+											System.out.println("countdown "+countdown);
+											double decimal = (current_issue.getArticles_list().size()*7+120+current_issue.getAuthors().size()*5)/100;
+											System.out.println(decimal);
+											for (int i = 0; i < countdown; i++) {
+												final int percent = i;
+												SwingUtilities.invokeLater(new Runnable() {
+													public void run() {
+														progressBar.setValue(percent == 0 ? 0
+																: (int) Double
+																		.parseDouble(String.format("%s", percent / decimal)));
+														progressBar.repaint();
+													}
+												});
 
-											try {
-												Thread.sleep(100);
-											} catch (InterruptedException e) {
+												try {
+													Thread.sleep(100);
+												} catch (InterruptedException e) {
+												}
 											}
 										}
-									}
-								});
-								issues.add(progress_msg);
-								issues.add(progressBar);
-								issues.repaint();
-								if (dialogResult == JOptionPane.NO_OPTION) {
+									});
+									issues.add(progress_msg);
+									issues.add(progressBar);
+									issues.repaint();
 									Future<?> f = exec.submit(new Runnable() {
 										public void run() {
 											try {
@@ -2184,6 +2189,33 @@ public class Main {
 									futures.add(f);
 
 								} else if (dialogResult == JOptionPane.YES_OPTION) {
+									progress_executor.execute(new Runnable() {
+										public void run() {
+											int countdown = current_issue.getArticles_list().size()*7+120+current_issue.getAuthors().size()*5;
+											System.out.println("countdown "+countdown);
+											double decimal = (current_issue.getArticles_list().size()*7+120+current_issue.getAuthors().size()*5)/100;
+											System.out.println(decimal);
+											for (int i = 0; i < countdown; i++) {
+												final int percent = i;
+												SwingUtilities.invokeLater(new Runnable() {
+													public void run() {
+														progressBar.setValue(percent == 0 ? 0
+																: (int) Double
+																		.parseDouble(String.format("%s", percent / decimal)));
+														progressBar.repaint();
+													}
+												});
+
+												try {
+													Thread.sleep(100);
+												} catch (InterruptedException e) {
+												}
+											}
+										}
+									});
+									issues.add(progress_msg);
+									issues.add(progressBar);
+									issues.repaint();
 									System.out.println("update local");
 									Future<?> f = exec.submit(new Runnable() {
 
