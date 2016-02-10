@@ -11,7 +11,7 @@ import sun.misc.BASE64Decoder;
 import sun.misc.BASE64Encoder;
 
 import org.apache.commons.io.IOUtils;
-
+import java.util.concurrent.ConcurrentHashMap;
 import javax.ws.rs.ext.MessageBodyWorkers;
 import org.apache.http.HttpVersion;
 import org.apache.http.auth.AuthSchemeRegistry;
@@ -56,6 +56,7 @@ import org.apache.http.util.EntityUtils;
 import org.codehaus.jackson.JsonFactory;
 
 import java.awt.Color;
+import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Insets;
@@ -105,10 +106,11 @@ import java.sql.Statement;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
@@ -124,13 +126,14 @@ import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
-
+import javax.swing.JProgressBar;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
 import javax.swing.Timer;
 import javax.swing.UIManager;
 import javax.swing.UIManager.LookAndFeelInfo;
@@ -173,23 +176,30 @@ public class Main {
 	private JTextField access_key, username;
 	private JXTable issues_table, article_table;
 	private static int delay = 1000; // milliseconds
+	private Executor progress_executor = Executors.newSingleThreadExecutor();
+	private Executor connection_executor = Executors.newSingleThreadExecutor();
+	private Executor article_executor = Executors.newSingleThreadExecutor();
+	
+	private Executor author_executor = Executors.newSingleThreadExecutor();
+	private Executor issue_executor = Executors.newSingleThreadExecutor();
+	
 	private JPasswordField passwordField;
-	private static HashMap<String, String> list_settings;
-	private static HashMap<Long, Long> list_issues;
-	private static HashMap<Long, JFrame> issue_screens;
-	private static HashMap<Long, Issue> issue_storage;
-	private static HashMap<String, String> app_settings;
-	private static HashMap<Long, Metadata> metadata_storage;
-	private static HashMap<Long, Section> section_storage;
-	private static HashMap<Long, Journal> journal_storage;
-	private static HashMap<Long, Author> author_storage;
-	private static HashMap<Long, Article> article_storage;
-	private static HashMap<Long, ArrayList<Author>> article_author_storage;
+	private static ConcurrentHashMap<String, String> list_settings;
+	private static ConcurrentHashMap<Long, Long> list_issues;
+	private static ConcurrentHashMap<Long, JFrame> issue_screens;
+	private static ConcurrentHashMap<Long, Issue> issue_storage;
+	private static ConcurrentHashMap<String, String> app_settings;
+	private static ConcurrentHashMap<Long, Metadata> metadata_storage;
+	private static ConcurrentHashMap<Long, Section> section_storage;
+	private static ConcurrentHashMap<Long, Journal> journal_storage;
+	private static ConcurrentHashMap<Long, Author> author_storage;
+	private static ConcurrentHashMap<Long, Article> article_storage;
+	private static ConcurrentHashMap<Long, ArrayList<Author>> article_author_storage;
 	private static String journal_url = "";
 	private static String user_url = "";
-	private static HashMap<Long, HashMap<Long, Boolean>> author_primary_storage;
-	private static HashMap<Long, HashMap<Long, ArticleFile>> file_storage;
-	private static HashMap<Long, HashMap<Long, JFrame>> article_screens;
+	private static ConcurrentHashMap<Long, ConcurrentHashMap<Long, Boolean>> author_primary_storage;
+	private static ConcurrentHashMap<Long, ConcurrentHashMap<Long, ArticleFile>> file_storage;
+	private static ConcurrentHashMap<Long, ConcurrentHashMap<Long, JFrame>> article_screens;
 	private static ArrayList<String> setting_keys = new ArrayList<String>();
 	private static Connection c = null;
 	private static Statement stmt = null;
@@ -217,6 +227,8 @@ public class Main {
 	private static long journal_id = 0;
 	private static long articles_id = 0;
 	private static long file_id = 0;
+
+	private int dialogResult = -1;
 	private static long author_id = 0;
 	private static long section_db_id = 0;
 	private static long metadata_id = 0;
@@ -320,7 +332,7 @@ public class Main {
 			Set<Long> file_art_keys = file_storage.keySet();
 
 			for (long key : file_art_keys) {
-				HashMap<Long, ArticleFile> files = file_storage.get(key);
+				ConcurrentHashMap<Long, ArticleFile> files = file_storage.get(key);
 				Set<Long> file_keys = files.keySet();
 				for (long f_key : file_keys) {
 					ArticleFile current_file = files.get((long) f_key);
@@ -346,7 +358,7 @@ public class Main {
 			Set<Long> issue_keys = issue_storage.keySet();
 			for (long key : issue_keys) {
 				Issue save_issue = issue_storage.get(key);
-				HashMap<Long, Article> articles = save_issue.getArticles_list();
+				ConcurrentHashMap<Long, Article> articles = save_issue.getArticles_list();
 				Set<Long> article_keys = articles.keySet();
 				PreparedStatement issue_prep = c.prepareStatement(issue_insert_or_replace_statement);
 				issue_prep.setInt(1, (int) (long) save_issue.getId());
@@ -468,7 +480,7 @@ public class Main {
 		}
 		c = DriverManager.getConnection("jdbc:sqlite:local_datatabse.db");
 		stmt = c.createStatement();
-		app_settings = new HashMap<String, String>();
+		app_settings = new ConcurrentHashMap<String, String>();
 		ResultSet rs = c.createStatement().executeQuery("SELECT * FROM API ;");
 		boolean has = false;
 		while (rs.next()) {
@@ -511,19 +523,19 @@ public class Main {
 
 	public static void populate_variables() throws ParseException, java.text.ParseException {
 		System.out.println("Retrieving data from local database");
-		list_settings = new HashMap<String, String>();
-		list_issues = new HashMap<Long, Long>();
-		issue_storage = new HashMap<Long, Issue>();
-		issue_screens = new HashMap<Long, JFrame>();
-		file_storage = new HashMap<Long, HashMap<Long, ArticleFile>>();
-		article_screens = new HashMap<Long, HashMap<Long, JFrame>>();
-		author_storage = new HashMap<Long, Author>();
-		section_storage = new HashMap<Long, Section>();
-		author_primary_storage = new HashMap<Long, HashMap<Long, Boolean>>();
-		metadata_storage = new HashMap<Long, Metadata>();
-		journal_storage = new HashMap<Long, Journal>();
-		article_author_storage = new HashMap<Long, ArrayList<Author>>();
-		article_storage = new HashMap<Long, Article>();
+		list_settings = new ConcurrentHashMap<String, String>();
+		list_issues = new ConcurrentHashMap<Long, Long>();
+		issue_storage = new ConcurrentHashMap<Long, Issue>();
+		issue_screens = new ConcurrentHashMap<Long, JFrame>();
+		file_storage = new ConcurrentHashMap<Long, ConcurrentHashMap<Long, ArticleFile>>();
+		article_screens = new ConcurrentHashMap<Long, ConcurrentHashMap<Long, JFrame>>();
+		author_storage = new ConcurrentHashMap<Long, Author>();
+		section_storage = new ConcurrentHashMap<Long, Section>();
+		author_primary_storage = new ConcurrentHashMap<Long, ConcurrentHashMap<Long, Boolean>>();
+		metadata_storage = new ConcurrentHashMap<Long, Metadata>();
+		journal_storage = new ConcurrentHashMap<Long, Journal>();
+		article_author_storage = new ConcurrentHashMap<Long, ArrayList<Author>>();
+		article_storage = new ConcurrentHashMap<Long, Article>();
 		// Journal test_journal = new Journal(1, "up", (float) 2.0, "en_US", 0);
 		// journal_storage.put((long)1, test_journal);
 		try {
@@ -619,7 +631,7 @@ public class Main {
 
 				list_issues.put(id, (long) 1);
 				issue_screens.put(id, new JFrame());
-				article_screens.put(id, new HashMap<Long, JFrame>());
+				article_screens.put(id, new ConcurrentHashMap<Long, JFrame>());
 				issue_storage.put(id, issue);
 				i_id = id;
 			}
@@ -667,9 +679,9 @@ public class Main {
 				long id = art_s.getInt("id");
 				String title = art_s.getString("title");
 				int section_id = art_s.getInt("section_id");
-				author_primary_storage.put(id, new HashMap<Long, Boolean>());
+				author_primary_storage.put(id, new ConcurrentHashMap<Long, Boolean>());
 
-				HashMap<Long, ArticleFile> files = new HashMap<Long, ArticleFile>();
+				ConcurrentHashMap<Long, ArticleFile> files = new ConcurrentHashMap<Long, ArticleFile>();
 				file_storage.put((long) id, files);
 				String pages = art_s.getString(rsmd.getColumnName(4));
 				String abstract_text = art_s.getString(rsmd.getColumnName(5));
@@ -701,12 +713,12 @@ public class Main {
 				long article_id = rs_files.getInt(2);
 				String path = rs_files.getString(3);
 				System.out.println("ARTICLE FILES: " + id);
-				HashMap<Long, ArticleFile> files = file_storage.get((long) article_id);
+				ConcurrentHashMap<Long, ArticleFile> files = file_storage.get((long) article_id);
 				if ((long) file_id < id) {
 					file_id = id;
 				}
 				if (files == null) {
-					files = new HashMap<Long, ArticleFile>();
+					files = new ConcurrentHashMap<Long, ArticleFile>();
 				}
 				files.put((long) id, new ArticleFile(id, article_id, path));
 				file_storage.put((long) article_id, files);
@@ -747,7 +759,7 @@ public class Main {
 					update_issue.add_article(current_article_id, current_article);
 					issue_storage.put(issue_id, update_issue);
 					article_storage.put(current_article_id, current_article);
-					HashMap<Long, JFrame> issue_articles = article_screens.get(issue_id);
+					ConcurrentHashMap<Long, JFrame> issue_articles = article_screens.get(issue_id);
 
 					issue_articles.put(current_article_id, new JFrame());
 					article_screens.put(issue_id, issue_articles);
@@ -779,7 +791,7 @@ public class Main {
 
 						// System.out.println(author.getFull_name() + " " +
 						// Long.toString(article_id));
-						HashMap<Long, Boolean> primary_authors = author_primary_storage.get(article_id);
+						ConcurrentHashMap<Long, Boolean> primary_authors = author_primary_storage.get(article_id);
 						primary_authors.put(author_id, primary);
 						// System.out.println("Author: " + author_id + "
 						// Primary: " + primary);
@@ -2069,7 +2081,7 @@ public class Main {
 					Issue row_issue = issue_storage.get(id);
 					ArrayList<Object> data = new ArrayList<Object>();
 					issue_screens.put(id, new JFrame());
-					article_screens.put(id, new HashMap<Long, JFrame>());
+					article_screens.put(id, new ConcurrentHashMap<Long, JFrame>());
 
 					data.add(Long.toString(row_issue.getId()));
 					data.add(row_issue.getShow_title() == 1 ? row_issue.getTitle() : "Hidden");
@@ -2104,164 +2116,185 @@ public class Main {
 					public void actionPerformed(ActionEvent e) {
 
 						if (status_online()) {
-							int dialogResult = -1;
 							boolean skipped_dialog = false;
 							Set<Long> issue_keys = issue_storage.keySet();
 							if (issue_keys.isEmpty()) {
 								skipped_dialog = true;
 							}
+							int progress_increment = 100 / issue_keys.size();
+							final JProgressBar progressBar = new JProgressBar();
+							progressBar.setValue(0);
+							progressBar.setStringPainted(true);
+							progressBar.setBounds(width / 2 - 50, height - 117, 150, 40);
+							JLabel progress_msg = new JLabel("Estimated progress per Issue:");
+
+							progress_msg.setBounds(width / 2 - 75, height - 150, 200, 40);
+							
 							for (long key : issue_keys) {
+
+								// progress_increment
 								Issue current_issue = issue_storage.get(key);
 
 								long issue_id = current_issue.getId();
 
+								
 								dialogResult = JOptionPane.showConfirmDialog(null,
 										String.format(
 												"Issue %s <%s>: Would You Like to replace local data (Yes) or update remote data (No)",
 												current_issue.getTitle(), Long.toString(issue_id)),
 										"Warning", 1);
-								if (dialogResult == JOptionPane.NO_OPTION) {
+								progress_executor.execute(new Runnable() {
+									public void run() {
+										for (int i = 0; i < 300; i++) {
+											final int percent = i;
+											SwingUtilities.invokeLater(new Runnable() {
+												public void run() {
+													progressBar.setValue(percent==0?0:percent/3);
+													progressBar.repaint();
+												}
+											});
 
-									try {
-										update_issue_intersect(current_issue, encoding);
-
-									} catch (IllegalStateException | IOException e1) {
-										// TODO Auto-generated catch block
-										e1.printStackTrace();
-									}
-								} else if (dialogResult == JOptionPane.YES_OPTION) {
-									System.out.println("update local");
-
-									try {
-										Issue updated_issue = update_issue_local(current_issue, encoding);
-
-										issue_storage.put(issue_id, updated_issue);
-										System.out.println(updated_issue);
-
-									} catch (IllegalStateException | IOException e1) {
-										// TODO Auto-generated catch block
-										e1.printStackTrace();
-									}
-								}
-								if (dialogResult == JOptionPane.NO_OPTION) {
-
-									try {
-										update_articles_intersect(current_issue, encoding);
-
-									} catch (IllegalStateException | IOException e1) {
-										// TODO Auto-generated catch block
-										e1.printStackTrace();
-									}
-								} else if (dialogResult == JOptionPane.YES_OPTION) {
-									System.out.println("update local");
-
-									try {
-										update_articles_local(current_issue, encoding);
-
-									} catch (IllegalStateException | IOException e1) {
-										// TODO Auto-generated catch block
-										e1.printStackTrace();
-									}
-
-								}
-
-								if (dialogResult == JOptionPane.NO_OPTION) {
-
-									try {
-										try {
-											sync_authors_intersect(issue_id, encoding, false);
-										} catch (IllegalStateException e2) {
-											// TODO Auto-generated catch block
-											e2.printStackTrace();
-										} catch (IOException e2) {
-											// TODO Auto-generated catch block
-											e2.printStackTrace();
+											try {
+												Thread.sleep(100);
+											} catch (InterruptedException e) {
+											}
 										}
-									} catch (IllegalStateException e1) {
-										// TODO Auto-generated catch block
-										e1.printStackTrace();
 									}
+								});
+								issues.add(progress_msg);
+								issues.add(progressBar);
+								issues.repaint();
+								if (dialogResult == JOptionPane.NO_OPTION) {
+
+									connection_executor.execute(new Runnable() {
+										public void run() {
+											try {
+												update_issue_intersect(current_issue, encoding);
+
+											} catch (IllegalStateException | IOException e1) {
+												// TODO Auto-generated catch
+												// block
+												e1.printStackTrace();
+											}
+										}
+									});
+
 								} else if (dialogResult == JOptionPane.YES_OPTION) {
-									try {
-										get_authors_remote(issue_id, encoding, false);
-									} catch (IllegalStateException e1) {
-										// TODO Auto-generated catch block
-										e1.printStackTrace();
-									} catch (IOException e1) {
-										// TODO Auto-generated catch block
-										e1.printStackTrace();
-									}
+									System.out.println("update local");
+
+									connection_executor.execute(new Runnable() {
+
+										public void run() {
+											try {
+												Issue updated_issue = update_issue_local(current_issue, encoding);
+
+												issue_storage.put(issue_id, updated_issue);
+												System.out.println(updated_issue);
+											} catch (IllegalStateException | IOException e1) {
+												// TODO Auto-generated catch
+												// block
+												e1.printStackTrace();
+
+											}
+										}
+									});
+
+								}
+								if (dialogResult == JOptionPane.NO_OPTION) {
+
+									article_executor.execute(new Runnable() {
+
+										public void run() {
+											try {
+												update_articles_intersect(current_issue, encoding);
+
+											} catch (IllegalStateException | IOException e1) {
+												// TODO Auto-generated catch
+												// block
+												e1.printStackTrace();
+											}
+										}
+									});
+								} else if (dialogResult == JOptionPane.YES_OPTION) {
+									System.out.println("update local");
+									article_executor.execute(new Runnable() {
+
+										public void run() {
+											try {
+												update_articles_local(current_issue, encoding);
+
+											} catch (IllegalStateException | IOException e1) {
+												// TODO Auto-generated catch
+												// block
+												e1.printStackTrace();
+											}
+										}
+									});
 								}
 
+								if (dialogResult == JOptionPane.NO_OPTION) {
+									author_executor.execute(new Runnable() {
+
+										public void run() {
+											try {
+												try {
+													sync_authors_intersect(issue_id, encoding, false);
+												} catch (IllegalStateException e2) {
+													// TODO Auto-generated catch
+													// block
+													e2.printStackTrace();
+												} catch (IOException e2) {
+													// TODO Auto-generated catch
+													// block
+													e2.printStackTrace();
+												}
+											} catch (IllegalStateException e1) {
+												// TODO Auto-generated catch
+												// block
+												e1.printStackTrace();
+											}
+										}
+									});
+
+								} else if (dialogResult == JOptionPane.YES_OPTION) {
+									author_executor.execute(new Runnable() {
+
+										public void run() {
+
+											try {
+												get_authors_remote(issue_id, encoding, false);
+											} catch (IllegalStateException e1) {
+												// TODO Auto-generated catch
+												// block
+												e1.printStackTrace();
+											} catch (IOException e1) {
+												// TODO Auto-generated catch
+												// block
+												e1.printStackTrace();
+											}
+										}
+
+									});
+
+								}
 							}
 							issues.repaint();
-							ArrayList<Issue> new_issues = new ArrayList<Issue>();
+							
+							connection_executor.execute(new Runnable() {
+								
+								public void run() {
 							try {
+								
+								Set<Long> issue_keys = issue_storage.keySet();
+								
+								ArrayList<Issue> new_issues = new ArrayList<Issue>();
+								
 								new_issues = update_get_issues_from_remote(encoding, false);
-							} catch (IllegalStateException e1) {
-								// TODO Auto-generated catch block
-								e1.printStackTrace();
-							} catch (IOException e1) {
-								// TODO Auto-generated catch block
-								e1.printStackTrace();
-							}
-							for (Issue current_issue : new_issues) {
-								long issue_id = current_issue.getId();
-								if (skipped_dialog) {
-									try {
-										update_articles_local(current_issue, encoding);
-										get_authors_remote(issue_id, encoding, false);
-									} catch (IllegalStateException e1) {
-										// TODO Auto-generated catch block
-										e1.printStackTrace();
-									} catch (IOException e1) {
-										// TODO Auto-generated catch block
-										e1.printStackTrace();
-									}
-
-								} else {
-									if (dialogResult == JOptionPane.NO_OPTION) {
-
-										try {
-											update_articles_intersect(current_issue, encoding);
-
-										} catch (IllegalStateException | IOException e1) {
-											// TODO Auto-generated catch block
-											e1.printStackTrace();
-										}
-									} else if (dialogResult == JOptionPane.YES_OPTION) {
-										System.out.println("update local");
-
+								for (Issue current_issue : new_issues) {
+									long issue_id = current_issue.getId();
+									if (issue_keys.isEmpty()) {
 										try {
 											update_articles_local(current_issue, encoding);
-
-										} catch (IllegalStateException | IOException e1) {
-											// TODO Auto-generated catch block
-											e1.printStackTrace();
-										}
-
-									}
-
-									if (dialogResult == JOptionPane.NO_OPTION) {
-
-										try {
-											try {
-												sync_authors_intersect(issue_id, encoding, false);
-											} catch (IllegalStateException e2) {
-												// TODO Auto-generated catch
-												// block
-												e2.printStackTrace();
-											} catch (IOException e2) {
-												// TODO Auto-generated catch
-												// block
-												e2.printStackTrace();
-											}
-										} catch (IllegalStateException e1) {
-											// TODO Auto-generated catch block
-											e1.printStackTrace();
-										}
-									} else if (dialogResult == JOptionPane.YES_OPTION) {
-										try {
 											get_authors_remote(issue_id, encoding, false);
 										} catch (IllegalStateException e1) {
 											// TODO Auto-generated catch block
@@ -2270,9 +2303,70 @@ public class Main {
 											// TODO Auto-generated catch block
 											e1.printStackTrace();
 										}
+
+									} else {
+										if (dialogResult == JOptionPane.NO_OPTION) {
+
+											try {
+												update_articles_intersect(current_issue, encoding);
+
+											} catch (IllegalStateException | IOException e1) {
+												// TODO Auto-generated catch block
+												e1.printStackTrace();
+											}
+										} else if (dialogResult == JOptionPane.YES_OPTION) {
+											System.out.println("update local");
+
+											try {
+												update_articles_local(current_issue, encoding);
+
+											} catch (IllegalStateException | IOException e1) {
+												// TODO Auto-generated catch block
+												e1.printStackTrace();
+											}
+
+										}
+
+										if (dialogResult == JOptionPane.NO_OPTION) {
+
+											try {
+												try {
+													sync_authors_intersect(issue_id, encoding, false);
+												} catch (IllegalStateException e2) {
+													// TODO Auto-generated catch
+													// block
+													e2.printStackTrace();
+												} catch (IOException e2) {
+													// TODO Auto-generated catch
+													// block
+													e2.printStackTrace();
+												}
+											} catch (IllegalStateException e1) {
+												// TODO Auto-generated catch block
+												e1.printStackTrace();
+											}
+										} else if (dialogResult == JOptionPane.YES_OPTION) {
+											try {
+												get_authors_remote(issue_id, encoding, false);
+											} catch (IllegalStateException e1) {
+												// TODO Auto-generated catch block
+												e1.printStackTrace();
+											} catch (IOException e1) {
+												// TODO Auto-generated catch block
+												e1.printStackTrace();
+											}
+										}
 									}
 								}
+							} catch (IllegalStateException e1) {
+								// TODO Auto-generated catch block
+								e1.printStackTrace();
+							} catch (IOException e1) {
+								// TODO Auto-generated catch block
+								e1.printStackTrace();
 							}
+								}});
+							
 							Set<Long> update_issue_keys = issue_storage.keySet();
 							ArrayList<List<Object>> rowData = new ArrayList<List<Object>>();
 							Object[][] rows = new Object[update_issue_keys.size()][6];
@@ -2287,7 +2381,7 @@ public class Main {
 							for (long id : update_issue_keys) {
 								Issue row_issue = issue_storage.get(id);
 								issue_screens.put(id, new JFrame());
-								article_screens.put(id, new HashMap<Long, JFrame>());
+								article_screens.put(id, new ConcurrentHashMap<Long, JFrame>());
 
 								Object[] row = { row_issue.getId(),
 										row_issue.getShow_title() == 1 ? row_issue.getTitle() : "Hidden",
@@ -2465,7 +2559,7 @@ public class Main {
 							long selected_issue = (long) selectedObject;
 							if (issue_screens.get(selected_issue).isVisible()
 									|| !(issue_screens.get(selected_issue) == null)) {
-								HashMap<Long, JFrame> opened = article_screens.get(selected_issue);
+								ConcurrentHashMap<Long, JFrame> opened = article_screens.get(selected_issue);
 								Set<Long> ids = opened.keySet();
 								System.out.println("Issue: " + Long.toString(selected_issue));
 								for (long id : ids) {
@@ -2599,7 +2693,7 @@ public class Main {
 						 * 
 						 * list_issues.put(i_id, 1); issue_screens.put(i_id, new
 						 * JFrame()); article_screens.put(i_id, new
-						 * HashMap<Integer, JFrame>()); issue_storage.put(i_id,
+						 * ConcurrentHashMap<Integer, JFrame>()); issue_storage.put(i_id,
 						 * issue); Object[] new_row = { i_id, "title", 1, 1,
 						 * 2015, sdf.format(date), "View", "Edit", "Delete" };
 						 * 
@@ -2874,7 +2968,7 @@ public class Main {
 
 						list_issues.put(i_id, (long) 1);
 						issue_screens.put(i_id, new JFrame());
-						article_screens.put(i_id, new HashMap<Long, JFrame>());
+						article_screens.put(i_id, new ConcurrentHashMap<Long, JFrame>());
 						issue_storage.put(i_id, issue);
 						Object[] new_row = { i_id, show_title.isSelected() == true ? title.getText() : "Hidden",
 								show_volume.isSelected() == true ? Integer.parseInt(volume.getText()) : "Hidden",
@@ -3310,7 +3404,7 @@ public class Main {
 					height = 640;
 					articles.setSize(960, 640);
 				}
-				HashMap<Long, JFrame> issue_articles = new HashMap<Long, JFrame>();
+				ConcurrentHashMap<Long, JFrame> issue_articles = new ConcurrentHashMap<Long, JFrame>();
 				articles.getContentPane().setBackground(new Color(128, 128, 128));
 
 				articles.setLocationRelativeTo(null);
@@ -3324,7 +3418,7 @@ public class Main {
 				Date current = new Date();
 
 				Issue current_issue = issue_storage.get(issue_id);
-				HashMap<Long, Article> current_articles = current_issue.getArticles_list();
+				ConcurrentHashMap<Long, Article> current_articles = current_issue.getArticles_list();
 				Set<Long> art_keys = current_articles.keySet();
 				ArrayList<List<Object>> rowData = new ArrayList<List<Object>>();
 				Object[][] rows = new Object[art_keys.size()][11];
@@ -3482,7 +3576,7 @@ public class Main {
 							}
 						}
 						if (update_table) {
-							HashMap<Long, Article> all_articles = current_issue.getArticles_list();
+							ConcurrentHashMap<Long, Article> all_articles = current_issue.getArticles_list();
 							Set<Long> keys = all_articles.keySet();
 							ArrayList<List<Object>> rowData = new ArrayList<List<Object>>();
 							Object[][] rows = new Object[all_articles.size()][11];
@@ -4455,7 +4549,7 @@ public class Main {
 				System.out.println("Files: " + file_storage.containsKey((long) article_id));
 
 				if (file_storage.containsKey((long) article_id)) {
-					HashMap<Long, ArticleFile> files = file_storage.get((long) article_id);
+					ConcurrentHashMap<Long, ArticleFile> files = file_storage.get((long) article_id);
 					Set<Long> keys = files.keySet();
 					System.out.println("Files: " + keys.size());
 					int y_f = 23;
@@ -4551,7 +4645,7 @@ public class Main {
 
 								File f = new File(files.get((long) key).getPath());
 								f.delete();
-								HashMap<Long, ArticleFile> deleted = file_storage.get((long) article_id);
+								ConcurrentHashMap<Long, ArticleFile> deleted = file_storage.get((long) article_id);
 								deleted.remove(key);
 								file_storage.put((long) article_id, deleted);
 								article.dispose();
@@ -4628,7 +4722,7 @@ public class Main {
 
 				article.setVisible(true);
 				if (article_screens.containsKey(issue_id)) {
-					HashMap<Long, JFrame> issue_articles = article_screens.get(issue_id);
+					ConcurrentHashMap<Long, JFrame> issue_articles = article_screens.get(issue_id);
 					issue_articles.put(article_id, article);
 					article_screens.put(issue_id, issue_articles);
 				}
@@ -4987,7 +5081,7 @@ public class Main {
 							author_storage.put(author_id, new_author);
 							System.out.println("Author id :" + author_id);
 							System.out.println(new_author);
-							HashMap<Long, Boolean> current_authors = author_primary_storage.get((long) article_id);
+							ConcurrentHashMap<Long, Boolean> current_authors = author_primary_storage.get((long) article_id);
 							current_authors.put((long) author_id, false);
 							author_primary_storage.put((long) article_id, current_authors);
 
@@ -5032,7 +5126,7 @@ public class Main {
 
 							}
 
-							HashMap<Long, Boolean> primary_storage = author_primary_storage.get(article_id);
+							ConcurrentHashMap<Long, Boolean> primary_storage = author_primary_storage.get(article_id);
 							for (int i = 0; i < removed_authors.size(); i++) {
 								primary_storage.remove(removed_authors.get(i));
 							}
@@ -5112,11 +5206,11 @@ public class Main {
 					panel.add(btnAddMetadata);
 					article.getContentPane().add(btnAddMetadata);
 				}
-				final HashMap<Long, HashMap<Long, JTextField>> author_fields = new HashMap<Long, HashMap<Long, JTextField>>();
-				final HashMap<Long, JTextArea> authors_bio = new HashMap<Long, JTextArea>();
+				final ConcurrentHashMap<Long, ConcurrentHashMap<Long, JTextField>> author_fields = new ConcurrentHashMap<Long, ConcurrentHashMap<Long, JTextField>>();
+				final ConcurrentHashMap<Long, JTextArea> authors_bio = new ConcurrentHashMap<Long, JTextArea>();
 
-				final HashMap<Long, JButton> primary_buttons = new HashMap<Long, JButton>();
-				final HashMap<Long, JLabel> primary_labels = new HashMap<Long, JLabel>();
+				final ConcurrentHashMap<Long, JButton> primary_buttons = new ConcurrentHashMap<Long, JButton>();
+				final ConcurrentHashMap<Long, JLabel> primary_labels = new ConcurrentHashMap<Long, JLabel>();
 
 				int author_x = 16;
 				int author_y = 60;
@@ -5147,7 +5241,7 @@ public class Main {
 						author_primary_btn.addActionListener(new ActionListener() {
 							public void actionPerformed(ActionEvent arg0) {
 
-								HashMap<Long, Boolean> update_primary = author_primary_storage.get(article_id);
+								ConcurrentHashMap<Long, Boolean> update_primary = author_primary_storage.get(article_id);
 
 								Set<Long> primary_keys = update_primary.keySet();
 								for (long pkey : primary_keys) {
@@ -5193,7 +5287,7 @@ public class Main {
 						author_primary_btn.addActionListener(new ActionListener() {
 							public void actionPerformed(ActionEvent arg0) {
 
-								HashMap<Long, Boolean> update_primary = author_primary_storage.get(article_id);
+								ConcurrentHashMap<Long, Boolean> update_primary = author_primary_storage.get(article_id);
 
 								Set<Long> primary_keys = update_primary.keySet();
 								for (long pkey : primary_keys) {
@@ -5228,7 +5322,7 @@ public class Main {
 						i++;
 						primary_buttons.put(a_id, author_primary_btn);
 					}
-					HashMap<Long, JTextField> author_components = new HashMap<Long, JTextField>();
+					ConcurrentHashMap<Long, JTextField> author_components = new ConcurrentHashMap<Long, JTextField>();
 
 					JLabel field_label = new JLabel("First name:");
 					field_label.setBounds(author_x, author_y, 75, 30); // white
@@ -5639,7 +5733,7 @@ public class Main {
 							ArrayList<Author> updated_authors = a.getAuthors();
 							for (int i = 0; i < updated_authors.size(); i++) {
 								Author author = updated_authors.get(i);
-								HashMap<Long, JTextField> a_fields = author_fields.get(updated_authors.get(i).getId());
+								ConcurrentHashMap<Long, JTextField> a_fields = author_fields.get(updated_authors.get(i).getId());
 
 								author.setFirst_name(a_fields.get((long) 1).getText());
 								author.setMiddle_name(a_fields.get((long) 2).getText());
@@ -5672,7 +5766,7 @@ public class Main {
 				panel10.setBackground(new Color(153, 102, 51));
 				panel10.setBounds(115, 310, 225, 160);
 				if (file_storage.containsKey((long) article_id)) {
-					HashMap<Long, ArticleFile> files = file_storage.get((long) article_id);
+					ConcurrentHashMap<Long, ArticleFile> files = file_storage.get((long) article_id);
 					Set<Long> keys = files.keySet();
 					for (long key : keys) {
 						String path = files.get((long) key).getPath();
@@ -5738,12 +5832,12 @@ public class Main {
 						select.setEnabled(false);
 						btnClear.setEnabled(false);
 						upload.setEnabled(false);
-						HashMap<Long, ArticleFile> files = null;
+						ConcurrentHashMap<Long, ArticleFile> files = null;
 						if (file_storage.containsKey((long) article_id)) {
 							files = file_storage.get((long) article_id);
 						} else {
 
-							files = new HashMap<Long, ArticleFile>();
+							files = new ConcurrentHashMap<Long, ArticleFile>();
 						}
 						for (File f : uploaded_files) {
 							file_copy(article_id, f.getPath().toString());
@@ -5755,7 +5849,7 @@ public class Main {
 						}
 						if (file_storage.containsKey((long) article_id)) {
 							String label_text = "";
-							HashMap<Long, ArticleFile> files_existing = file_storage.get((long) article_id);
+							ConcurrentHashMap<Long, ArticleFile> files_existing = file_storage.get((long) article_id);
 							Set<Long> keys = files_existing.keySet();
 							for (long k : keys) {
 								ArticleFile a_file = files_existing.get(k);
@@ -5774,7 +5868,7 @@ public class Main {
 						uploaded_files.clear();
 						if (file_storage.containsKey((long) article_id)) {
 							String label_text = "";
-							HashMap<Long, ArticleFile> files_existing = file_storage.get((long) article_id);
+							ConcurrentHashMap<Long, ArticleFile> files_existing = file_storage.get((long) article_id);
 							Set<Long> keys = files_existing.keySet();
 							for (long k : keys) {
 								ArticleFile a_file = files_existing.get(k);
@@ -5784,7 +5878,7 @@ public class Main {
 							lblFile.setText(label_text);
 							/*
 							 * if (file_storage.containsKey((long)article_id)) {
-							 * HashMap<Integer, ArticleFile> up_files =
+							 * ConcurrentHashMap<Integer, ArticleFile> up_files =
 							 * file_storage.get((long)article_id); Set<Integer>
 							 * keys = up_files.keySet(); file_id =
 							 * initial_file_num; for (int key : keys) { File f =
@@ -5808,7 +5902,7 @@ public class Main {
 				panel.add(upload);
 				article.getContentPane().add(btnSave);
 				if (article_screens.containsKey(issue_id)) {
-					HashMap<Long, JFrame> issue_articles = article_screens.get(issue_id);
+					ConcurrentHashMap<Long, JFrame> issue_articles = article_screens.get(issue_id);
 					issue_articles.put(article_id, article);
 					article_screens.put(issue_id, issue_articles);
 				}
@@ -5831,7 +5925,7 @@ public class Main {
 				width_small = (int) (640 + (640 * (37.5 / 100)));
 				height_small = (int) (768 - (768 * (5 / 100)));
 			}
-			HashMap<Long, Boolean> author_primary = new HashMap<Long, Boolean>();
+			ConcurrentHashMap<Long, Boolean> author_primary = new ConcurrentHashMap<Long, Boolean>();
 			String setting_meta = list_settings.get("Metadata");
 			long current_id = articles_id + 1;
 			long initial_file_num = file_id;
@@ -5899,7 +5993,7 @@ public class Main {
 			btnGoBack.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent arg0) {
 					if (file_storage.containsKey((long) current_id)) {
-						HashMap<Long, ArticleFile> up_files = file_storage.get((long) current_id);
+						ConcurrentHashMap<Long, ArticleFile> up_files = file_storage.get((long) current_id);
 						Set<Long> keys = up_files.keySet();
 						file_id = initial_file_num;
 						for (long key : keys) {
@@ -6043,7 +6137,7 @@ public class Main {
 			JLabel lblNewLabel_3 = new JLabel("Authors");
 			lblNewLabel_3.setBounds(15, 10, 280, 16);
 			panel6.add(lblNewLabel_3);
-			final HashMap<Integer, HashMap<Integer, JTextField>> author_fields = new HashMap<Integer, HashMap<Integer, JTextField>>();
+			final ConcurrentHashMap<Integer, ConcurrentHashMap<Integer, JTextField>> author_fields = new ConcurrentHashMap<Integer, ConcurrentHashMap<Integer, JTextField>>();
 			/*
 			 * ArrayList<Author> authors = current_article.getAuthors();
 			 * 
@@ -6058,8 +6152,8 @@ public class Main {
 			 * author_num.setBounds(87+author_x, 35, 156, 16);
 			 * panel6.add(author_num);
 			 * 
-			 * HashMap<Integer, JTextField> author_components = new
-			 * HashMap<Integer, JTextField>(); Author author = authors.get(i);
+			 * ConcurrentHashMap<Integer, JTextField> author_components = new
+			 * ConcurrentHashMap<Integer, JTextField>(); Author author = authors.get(i);
 			 * JLabel field_label = new JLabel("First name:");
 			 * field_label.setBounds(author_x, author_y, 75, 30); // white //
 			 * box field_label.setOpaque(true); panel6.add(field_label);
@@ -6496,7 +6590,7 @@ public class Main {
 						author_primary_storage.put(articles_id, author_primary);
 						ArrayList<Author> selected_authors = new ArrayList<Author>();
 						int[] selections = listbox.getSelectedIndices();
-						HashMap<Long, Boolean> author_primary = new HashMap<Long, Boolean>();
+						ConcurrentHashMap<Long, Boolean> author_primary = new ConcurrentHashMap<Long, Boolean>();
 						author_primary_storage.put(articles_id, author_primary);
 						System.out.println("Selected authors: " + selections.length);
 						for (int index : selections) {
@@ -6519,7 +6613,7 @@ public class Main {
 						issue_storage.put(issue_id, current_issue);
 						Object[] new_row = { articles_id, issue_id, 1, "title", 1, "abstract", sdf.format(current),
 								"View", "Edit", "Delete" };
-						HashMap<Long, JFrame> issue_articles = article_screens.get(issue_id);
+						ConcurrentHashMap<Long, JFrame> issue_articles = article_screens.get(issue_id);
 						System.out.println(articles_id);
 						issue_articles.put(articles_id, new JFrame());
 						article_screens.put(issue_id, issue_articles);
@@ -6533,7 +6627,7 @@ public class Main {
 					 * article_id); a.setTitle(lblTitleText.getText());
 					 * ArrayList<Author> updated_authors = a.getAuthors(); for
 					 * (int i = 0; i < updated_authors.size(); i++) { Author
-					 * author = updated_authors.get(i); HashMap<Integer,
+					 * author = updated_authors.get(i); ConcurrentHashMap<Integer,
 					 * JTextField> a_fields =
 					 * author_fields.get(updated_authors.get(i).getId());
 					 * author.setFirst_name(a_fields.get(1).getText());
@@ -6615,7 +6709,7 @@ public class Main {
 					}
 					if (file_storage.containsKey((long) current_id)) {
 						String label_text = "";
-						HashMap<Long, ArticleFile> files_existing = file_storage.get((long) current_id);
+						ConcurrentHashMap<Long, ArticleFile> files_existing = file_storage.get((long) current_id);
 						Set<Long> keys = files_existing.keySet();
 						for (long k : keys) {
 							ArticleFile a_file = files_existing.get(k);
@@ -6633,7 +6727,7 @@ public class Main {
 			btnClear.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent arg0) {
 					if (file_storage.containsKey((long) current_id)) {
-						HashMap<Long, ArticleFile> up_files = file_storage.get((long) current_id);
+						ConcurrentHashMap<Long, ArticleFile> up_files = file_storage.get((long) current_id);
 						Set<Long> keys = up_files.keySet();
 						file_id = initial_file_num;
 						for (long key : keys) {
@@ -6662,7 +6756,7 @@ public class Main {
 				@Override
 				public void windowClosing(WindowEvent e) {
 					if (file_storage.containsKey((long) current_id) && current_id != articles_id) {
-						HashMap<Long, ArticleFile> up_files = file_storage.get((long) current_id);
+						ConcurrentHashMap<Long, ArticleFile> up_files = file_storage.get((long) current_id);
 						Set<Long> keys = up_files.keySet();
 						file_id = initial_file_num;
 
@@ -6683,7 +6777,7 @@ public class Main {
 				@Override
 				public void windowClosed(WindowEvent e) {
 					if (file_storage.containsKey((long) current_id) && current_id != articles_id) {
-						HashMap<Long, ArticleFile> up_files = file_storage.get((long) current_id);
+						ConcurrentHashMap<Long, ArticleFile> up_files = file_storage.get((long) current_id);
 						Set<Long> keys = up_files.keySet();
 						file_id = initial_file_num;
 						for (Long key : keys) {
@@ -6704,7 +6798,7 @@ public class Main {
 			article.repaint();
 			panel6.repaint();
 			if (article_screens.containsKey(issue_id)) {
-				HashMap<Long, JFrame> issue_articles = article_screens.get(issue_id);
+				ConcurrentHashMap<Long, JFrame> issue_articles = article_screens.get(issue_id);
 				issue_articles.put(current_id, article);
 				article_screens.put(issue_id, issue_articles);
 			}
@@ -7391,12 +7485,12 @@ public class Main {
 		if (!issue_created) {
 			update_issue_intersect(issue, credentials);
 		}
-		HashMap<Long, Article> articles = issue.getArticles_list();
+		ConcurrentHashMap<Long, Article> articles = issue.getArticles_list();
 		Set<Long> article_keys = articles.keySet();
 		for (Long key : article_keys) {
 			Article current_article = articles.get(key);
 			update_article_intersect(current_article, credentials);
-			HashMap<Long, ArticleFile> files = file_storage.get((long) current_article.getId());
+			ConcurrentHashMap<Long, ArticleFile> files = file_storage.get((long) current_article.getId());
 			Set<Long> file_keys = files.keySet();
 			HttpGet article_files = new HttpGet(
 					String.format("%s/get/files/%s/?format=json", base_url, current_article.getId()));
@@ -7824,7 +7918,7 @@ public class Main {
 				}
 				a.setIssue_fk(issue);
 				article_storage.put(a.getId(), a);
-				author_primary_storage.put(a.getId(), new HashMap<Long, Boolean>());
+				author_primary_storage.put(a.getId(), new ConcurrentHashMap<Long, Boolean>());
 				System.out.println(a.getIssue_fk().getId());
 				issue.add_article(a.getId(), a);
 
@@ -7988,7 +8082,7 @@ public class Main {
 				}
 				issue_storage.put(issue_id, new_issue);
 				issue_screens.put(issue_id, new JFrame());
-				article_screens.put(issue_id, new HashMap<Long, JFrame>());
+				article_screens.put(issue_id, new ConcurrentHashMap<Long, JFrame>());
 
 			}
 			/*
@@ -8116,7 +8210,7 @@ public class Main {
 					new_issues.add(new_issue);
 					issue_storage.put(issue_id, new_issue);
 					issue_screens.put(issue_id, new JFrame());
-					article_screens.put(issue_id, new HashMap<Long, JFrame>());
+					article_screens.put(issue_id, new ConcurrentHashMap<Long, JFrame>());
 
 				}
 			}
@@ -8498,7 +8592,7 @@ public class Main {
 					issue_storage.put(issue_id, this_issue);
 					System.out.println(new_author);
 					author_storage.put(new_author.getId(), new_author);
-					HashMap<Long, Boolean> primary = author_primary_storage.get(this_article.getId());
+					ConcurrentHashMap<Long, Boolean> primary = author_primary_storage.get(this_article.getId());
 					primary.put(new_author.getId(), false);
 					author_primary_storage.put(this_article.getId(), primary);
 					System.out.println("Authors: " + article_author_storage.get(new_author.getArticle_id()).size());
@@ -9475,13 +9569,23 @@ public class Main {
 		SchemeRegistry schReg = new SchemeRegistry();
 		schReg.register(new Scheme("http", PlainSocketFactory.getSocketFactory(), 80));
 		schReg.register(new Scheme("https", SSLSocketFactory.getSocketFactory(), 443));
-		ClientConnectionManager conMgr = new ThreadSafeClientConnManager(params, schReg);
 
-		DefaultHttpClient httpClient = new DefaultHttpClient(conMgr, params);
-		ClientConnectionManager mgr = httpClient.getConnectionManager();
+		
+		  ThreadSafeClientConnManager cm = new ThreadSafeClientConnManager(schReg);
+		    cm.setMaxTotal(50);
+		    cm.setDefaultMaxPerRoute(50);
+		    
+		httpClient = new DefaultHttpClient(cm, params);
 
 		httpClient.getCredentialsProvider().setCredentials(new AuthScope(AuthScope.ANY_HOST, AuthScope.ANY_PORT),
 				new UsernamePasswordCredentials("ioannis", "root"));
+		
+
+		  
+		//  HttpHost targetHost = new HttpHost("webserviceIP", webservicePort, "https");
+		 //   cm.setMaxForRoute(new HttpRoute(targetHost, null, true), maxConnections);
+
+		
 		System.out.println("Loading dashboard");
 		dashboard();
 	}
@@ -9619,9 +9723,9 @@ public class Main {
 			File dir = new File(String.format("src/files/%d/", art_id));
 			dir.mkdirs();
 			file_id++;
-			HashMap<Long, ArticleFile> article_files = null;
+			ConcurrentHashMap<Long, ArticleFile> article_files = null;
 			if (!file_storage.containsKey((long) art_id)) {
-				article_files = new HashMap<Long, ArticleFile>();
+				article_files = new ConcurrentHashMap<Long, ArticleFile>();
 			} else {
 				article_files = file_storage.get((long) art_id);
 			}
@@ -9873,13 +9977,13 @@ public class Main {
 			fos.write(inByte);
 		is.close();
 		fos.close();
-		HashMap<Long, ArticleFile> article_files = null;
+		ConcurrentHashMap<Long, ArticleFile> article_files = null;
 		if (!file_storage.containsKey((long) article_id)) {
-			article_files = new HashMap<Long, ArticleFile>();
+			article_files = new ConcurrentHashMap<Long, ArticleFile>();
 		} else {
 			article_files = file_storage.get((long) article_id);
 			if (article_files == null) {
-				article_files = new HashMap<Long, ArticleFile>();
+				article_files = new ConcurrentHashMap<Long, ArticleFile>();
 			}
 		}
 		article_files.put(file_id,
@@ -9902,14 +10006,14 @@ public class Main {
 
 		// get_issue_from_remote(encoding, (long) 5, false);
 
-		// update_articles_local(issue_storage.get((long) 5), encoding);
-		System.out.println();
+	
 		// file copy to use for file upload
 		// file_copy(1,"src/lib/db_xxs.png");
 		// get_authors_remote(5, encoding, false);
 		// sync_authors_intersect(5, encoding, false);
 		// System.out.println("Latest author id: " + author_id);
 		// ();
+		
 		new Main();
 		// file_upload_intersect((long)125,"/home/ioannis/code/toru-app/java_ojs/miglayout-src.zip",25);
 		// file_download(125,16);

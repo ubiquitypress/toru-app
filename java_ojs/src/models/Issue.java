@@ -3,7 +3,7 @@ package models;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.Set;
 
 public class Issue {
@@ -17,7 +17,7 @@ public class Issue {
 	private int show_volume;
 	private int show_number;
 	private int show_year;
-	private HashMap<Long, Article> articles_list;
+	private ConcurrentHashMap<Long, Article> articles_list;
 	private Date date_accepted;
 	private Date date_published;
 
@@ -38,7 +38,7 @@ public class Issue {
 		this.show_year = show_year;
 		this.date_accepted=date_accepted;
 		this.date_published = date_published;
-		this.articles_list = new  HashMap<Long, Article>();
+		this.articles_list = new  ConcurrentHashMap<Long, Article>();
 		this.published = 0;
 		this.access_status = 0;
 		this.current = 0;
@@ -59,7 +59,7 @@ public class Issue {
 		this.show_year = 1;
 		this.date_accepted=today;
 		this.date_published = today;
-		this.articles_list = new  HashMap<Long, Article>();
+		this.articles_list = new  ConcurrentHashMap<Long, Article>();
 		this.published = 0;
 		this.access_status = 0;
 		this.current = 0;
@@ -77,7 +77,7 @@ public class Issue {
 		this.show_year = show_year;
 		this.date_accepted=date_accepted;
 		this.date_published = date_published;
-		this.articles_list = new  HashMap<Long, Article>();
+		this.articles_list = new  ConcurrentHashMap<Long, Article>();
 		this.published = published;
 		this.access_status = access_status;
 		this.current = current;
@@ -95,7 +95,7 @@ public class Issue {
 		this.show_year = 1;
 		this.date_accepted=date_accepted;
 		this.date_published = date_published;
-		this.articles_list = new  HashMap<Long, Article>();
+		this.articles_list = new  ConcurrentHashMap<Long, Article>();
 	}
 	public Issue(long id, String title, int volume, int number, int year, int show_title, int show_volume, int show_number,
 			int show_year, Date date_accepted, Date date_published, int current_article_id) {
@@ -110,7 +110,7 @@ public class Issue {
 		this.show_year = show_year;
 		this.date_accepted=date_accepted;
 		this.date_published = date_published;
-		this.articles_list = new  HashMap<Long, Article>();
+		this.articles_list = new  ConcurrentHashMap<Long, Article>();
 	}
 
 	public long getId() {
@@ -189,10 +189,10 @@ public class Issue {
 	public void setDate_published(Date date_published) {
 		this.date_published = date_published;
 	}
-	public HashMap<Long, Article> getArticles_list() {
+	public ConcurrentHashMap<Long, Article> getArticles_list() {
 		return articles_list;
 	}
-	public void setArticles_list(HashMap<Long, Article> articles_list) {
+	public void setArticles_list(ConcurrentHashMap<Long, Article> articles_list) {
 		this.articles_list = articles_list;
 	}
 	@Override
