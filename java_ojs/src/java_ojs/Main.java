@@ -12,6 +12,8 @@ import sun.misc.BASE64Encoder;
 
 import org.apache.commons.io.IOUtils;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutionException;
+
 import javax.ws.rs.ext.MessageBodyWorkers;
 import org.apache.http.HttpVersion;
 import org.apache.http.auth.AuthSchemeRegistry;
@@ -110,7 +112,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
@@ -177,12 +181,8 @@ public class Main {
 	private JXTable issues_table, article_table;
 	private static int delay = 1000; // milliseconds
 	private Executor progress_executor = Executors.newSingleThreadExecutor();
-	private Executor connection_executor = Executors.newSingleThreadExecutor();
-	private Executor article_executor = Executors.newSingleThreadExecutor();
-	
-	private Executor author_executor = Executors.newSingleThreadExecutor();
-	private Executor issue_executor = Executors.newSingleThreadExecutor();
-	
+	// private Executor progress_executord = Executors.newFixedThreadPool(5);
+	private Executor connection_executor = Executors.newFixedThreadPool(5);
 	private JPasswordField passwordField;
 	private static ConcurrentHashMap<String, String> list_settings;
 	private static ConcurrentHashMap<Long, Long> list_issues;
@@ -2121,6 +2121,8 @@ public class Main {
 							if (issue_keys.isEmpty()) {
 								skipped_dialog = true;
 							}
+							List<Future<?>> futures = new ArrayList<Future<?>>();
+							ExecutorService exec = Executors.newFixedThreadPool(3);
 							int progress_increment = 100 / issue_keys.size();
 							final JProgressBar progressBar = new JProgressBar();
 							progressBar.setValue(0);
@@ -2129,7 +2131,7 @@ public class Main {
 							JLabel progress_msg = new JLabel("Estimated progress per Issue:");
 
 							progress_msg.setBounds(width / 2 - 75, height - 150, 200, 40);
-							
+
 							for (long key : issue_keys) {
 
 								// progress_increment
@@ -2137,19 +2139,21 @@ public class Main {
 
 								long issue_id = current_issue.getId();
 
-								
 								dialogResult = JOptionPane.showConfirmDialog(null,
 										String.format(
 												"Issue %s <%s>: Would You Like to replace local data (Yes) or update remote data (No)",
 												current_issue.getTitle(), Long.toString(issue_id)),
 										"Warning", 1);
+
 								progress_executor.execute(new Runnable() {
 									public void run() {
-										for (int i = 0; i < 300; i++) {
+										for (int i = 0; i < 220; i++) {
 											final int percent = i;
 											SwingUtilities.invokeLater(new Runnable() {
 												public void run() {
-													progressBar.setValue(percent==0?0:percent/3);
+													progressBar.setValue(percent == 0 ? 0
+															: (int) Double
+																	.parseDouble(String.format("%s", percent / 2.2)));
 													progressBar.repaint();
 												}
 											});
@@ -2165,8 +2169,7 @@ public class Main {
 								issues.add(progressBar);
 								issues.repaint();
 								if (dialogResult == JOptionPane.NO_OPTION) {
-
-									connection_executor.execute(new Runnable() {
+									Future<?> f = exec.submit(new Runnable() {
 										public void run() {
 											try {
 												update_issue_intersect(current_issue, encoding);
@@ -2178,11 +2181,11 @@ public class Main {
 											}
 										}
 									});
+									futures.add(f);
 
 								} else if (dialogResult == JOptionPane.YES_OPTION) {
 									System.out.println("update local");
-
-									connection_executor.execute(new Runnable() {
+									Future<?> f = exec.submit(new Runnable() {
 
 										public void run() {
 											try {
@@ -2199,10 +2202,12 @@ public class Main {
 										}
 									});
 
+									futures.add(f);
+
 								}
 								if (dialogResult == JOptionPane.NO_OPTION) {
 
-									article_executor.execute(new Runnable() {
+									Future<?> f = exec.submit(new Runnable() {
 
 										public void run() {
 											try {
@@ -2215,9 +2220,11 @@ public class Main {
 											}
 										}
 									});
+
+									futures.add(f);
 								} else if (dialogResult == JOptionPane.YES_OPTION) {
 									System.out.println("update local");
-									article_executor.execute(new Runnable() {
+									Future<?> f = exec.submit(new Runnable() {
 
 										public void run() {
 											try {
@@ -2230,10 +2237,11 @@ public class Main {
 											}
 										}
 									});
+									futures.add(f);
 								}
 
 								if (dialogResult == JOptionPane.NO_OPTION) {
-									author_executor.execute(new Runnable() {
+									Future<?> f = exec.submit(new Runnable() {
 
 										public void run() {
 											try {
@@ -2255,9 +2263,10 @@ public class Main {
 											}
 										}
 									});
+									futures.add(f);
 
 								} else if (dialogResult == JOptionPane.YES_OPTION) {
-									author_executor.execute(new Runnable() {
+									Future<?> f = exec.submit(new Runnable() {
 
 										public void run() {
 
@@ -2275,98 +2284,151 @@ public class Main {
 										}
 
 									});
+									futures.add(f);
 
 								}
 							}
 							issues.repaint();
-							
-							connection_executor.execute(new Runnable() {
-								
+
+							Future<?> f = exec.submit(new Runnable() {
+
 								public void run() {
-							try {
-								
-								Set<Long> issue_keys = issue_storage.keySet();
-								
-								ArrayList<Issue> new_issues = new ArrayList<Issue>();
-								
-								new_issues = update_get_issues_from_remote(encoding, false);
-								for (Issue current_issue : new_issues) {
-									long issue_id = current_issue.getId();
-									if (issue_keys.isEmpty()) {
-										try {
-											update_articles_local(current_issue, encoding);
-											get_authors_remote(issue_id, encoding, false);
-										} catch (IllegalStateException e1) {
-											// TODO Auto-generated catch block
-											e1.printStackTrace();
-										} catch (IOException e1) {
-											// TODO Auto-generated catch block
-											e1.printStackTrace();
-										}
+									try {
 
-									} else {
-										if (dialogResult == JOptionPane.NO_OPTION) {
+										Set<Long> issue_keys = issue_storage.keySet();
 
-											try {
-												update_articles_intersect(current_issue, encoding);
+										ArrayList<Issue> new_issues = new ArrayList<Issue>();
 
-											} catch (IllegalStateException | IOException e1) {
-												// TODO Auto-generated catch block
-												e1.printStackTrace();
-											}
-										} else if (dialogResult == JOptionPane.YES_OPTION) {
-											System.out.println("update local");
+										new_issues = update_get_issues_from_remote(encoding, false);
+										for (Issue current_issue : new_issues) {
+											long issue_id = current_issue.getId();
+											progress_executor.execute(new Runnable() {
+												public void run() {
+													for (int i = 0; i < 180; i++) {
+														final int percent = i;
+														SwingUtilities.invokeLater(new Runnable() {
+															public void run() {
+																progressBar.setValue(percent == 0 ? 0
+																		: (int) Double.parseDouble(
+																				String.format("%s", percent / 1.8)));
+																progressBar.repaint();
+															}
+														});
 
-											try {
-												update_articles_local(current_issue, encoding);
-
-											} catch (IllegalStateException | IOException e1) {
-												// TODO Auto-generated catch block
-												e1.printStackTrace();
-											}
-
-										}
-
-										if (dialogResult == JOptionPane.NO_OPTION) {
-
-											try {
-												try {
-													sync_authors_intersect(issue_id, encoding, false);
-												} catch (IllegalStateException e2) {
-													// TODO Auto-generated catch
-													// block
-													e2.printStackTrace();
-												} catch (IOException e2) {
-													// TODO Auto-generated catch
-													// block
-													e2.printStackTrace();
+														try {
+															Thread.sleep(100);
+														} catch (InterruptedException e) {
+														}
+													}
 												}
-											} catch (IllegalStateException e1) {
-												// TODO Auto-generated catch block
-												e1.printStackTrace();
-											}
-										} else if (dialogResult == JOptionPane.YES_OPTION) {
-											try {
-												get_authors_remote(issue_id, encoding, false);
-											} catch (IllegalStateException e1) {
-												// TODO Auto-generated catch block
-												e1.printStackTrace();
-											} catch (IOException e1) {
-												// TODO Auto-generated catch block
-												e1.printStackTrace();
+											});
+											if (issue_keys.isEmpty()) {
+												try {
+													update_articles_local(current_issue, encoding);
+													get_authors_remote(issue_id, encoding, false);
+												} catch (IllegalStateException e1) {
+													// TODO Auto-generated catch
+													// block
+													e1.printStackTrace();
+												} catch (IOException e1) {
+													// TODO Auto-generated catch
+													// block
+													e1.printStackTrace();
+												}
+
+											} else {
+												if (dialogResult == JOptionPane.NO_OPTION) {
+
+													try {
+														update_articles_intersect(current_issue, encoding);
+
+													} catch (IllegalStateException | IOException e1) {
+														// TODO Auto-generated
+														// catch block
+														e1.printStackTrace();
+													}
+												} else if (dialogResult == JOptionPane.YES_OPTION) {
+													System.out.println("update local");
+
+													try {
+														update_articles_local(current_issue, encoding);
+
+													} catch (IllegalStateException | IOException e1) {
+														// TODO Auto-generated
+														// catch block
+														e1.printStackTrace();
+													}
+
+												}
+
+												if (dialogResult == JOptionPane.NO_OPTION) {
+
+													try {
+														try {
+															sync_authors_intersect(issue_id, encoding, false);
+														} catch (IllegalStateException e2) {
+															// TODO
+															// Auto-generated
+															// catch
+															// block
+															e2.printStackTrace();
+														} catch (IOException e2) {
+															// TODO
+															// Auto-generated
+															// catch
+															// block
+															e2.printStackTrace();
+														}
+													} catch (IllegalStateException e1) {
+														// TODO Auto-generated
+														// catch block
+														e1.printStackTrace();
+													}
+												} else if (dialogResult == JOptionPane.YES_OPTION) {
+													try {
+														get_authors_remote(issue_id, encoding, false);
+													} catch (IllegalStateException e1) {
+														// TODO Auto-generated
+														// catch block
+														e1.printStackTrace();
+													} catch (IOException e1) {
+														// TODO Auto-generated
+														// catch block
+														e1.printStackTrace();
+													}
+												}
 											}
 										}
+									} catch (IllegalStateException e1) {
+										// TODO Auto-generated catch block
+										e1.printStackTrace();
+									} catch (IOException e1) {
+										// TODO Auto-generated catch block
+										e1.printStackTrace();
 									}
 								}
-							} catch (IllegalStateException e1) {
-								// TODO Auto-generated catch block
-								e1.printStackTrace();
-							} catch (IOException e1) {
-								// TODO Auto-generated catch block
-								e1.printStackTrace();
-							}
+							});
+							futures.add(f);
+						
+							progress_executor.execute(new Runnable() {
+								public void run() {
+									for (Future<?> future : futures) {
+										try {
+											future.get();
+										} catch (InterruptedException e1) {
+											// TODO Auto-generated catch block
+											e1.printStackTrace();
+										} catch (ExecutionException e1) {
+											// TODO Auto-generated catch block
+											e1.printStackTrace();
+										}
+									}
+							issues.remove(progressBar);
+
+							issues.remove(progress_msg);
+							issues.repaint();
+							JOptionPane.showMessageDialog(null, "Sync completed.");
 								}});
-							
 							Set<Long> update_issue_keys = issue_storage.keySet();
 							ArrayList<List<Object>> rowData = new ArrayList<List<Object>>();
 							Object[][] rows = new Object[update_issue_keys.size()][6];
@@ -2693,9 +2755,10 @@ public class Main {
 						 * 
 						 * list_issues.put(i_id, 1); issue_screens.put(i_id, new
 						 * JFrame()); article_screens.put(i_id, new
-						 * ConcurrentHashMap<Integer, JFrame>()); issue_storage.put(i_id,
-						 * issue); Object[] new_row = { i_id, "title", 1, 1,
-						 * 2015, sdf.format(date), "View", "Edit", "Delete" };
+						 * ConcurrentHashMap<Integer, JFrame>());
+						 * issue_storage.put(i_id, issue); Object[] new_row = {
+						 * i_id, "title", 1, 1, 2015, sdf.format(date), "View",
+						 * "Edit", "Delete" };
 						 * 
 						 * ((DefaultTableModel)
 						 * issues_table.getModel()).addRow(new_row);
@@ -5081,7 +5144,8 @@ public class Main {
 							author_storage.put(author_id, new_author);
 							System.out.println("Author id :" + author_id);
 							System.out.println(new_author);
-							ConcurrentHashMap<Long, Boolean> current_authors = author_primary_storage.get((long) article_id);
+							ConcurrentHashMap<Long, Boolean> current_authors = author_primary_storage
+									.get((long) article_id);
 							current_authors.put((long) author_id, false);
 							author_primary_storage.put((long) article_id, current_authors);
 
@@ -5241,7 +5305,8 @@ public class Main {
 						author_primary_btn.addActionListener(new ActionListener() {
 							public void actionPerformed(ActionEvent arg0) {
 
-								ConcurrentHashMap<Long, Boolean> update_primary = author_primary_storage.get(article_id);
+								ConcurrentHashMap<Long, Boolean> update_primary = author_primary_storage
+										.get(article_id);
 
 								Set<Long> primary_keys = update_primary.keySet();
 								for (long pkey : primary_keys) {
@@ -5287,7 +5352,8 @@ public class Main {
 						author_primary_btn.addActionListener(new ActionListener() {
 							public void actionPerformed(ActionEvent arg0) {
 
-								ConcurrentHashMap<Long, Boolean> update_primary = author_primary_storage.get(article_id);
+								ConcurrentHashMap<Long, Boolean> update_primary = author_primary_storage
+										.get(article_id);
 
 								Set<Long> primary_keys = update_primary.keySet();
 								for (long pkey : primary_keys) {
@@ -5733,7 +5799,8 @@ public class Main {
 							ArrayList<Author> updated_authors = a.getAuthors();
 							for (int i = 0; i < updated_authors.size(); i++) {
 								Author author = updated_authors.get(i);
-								ConcurrentHashMap<Long, JTextField> a_fields = author_fields.get(updated_authors.get(i).getId());
+								ConcurrentHashMap<Long, JTextField> a_fields = author_fields
+										.get(updated_authors.get(i).getId());
 
 								author.setFirst_name(a_fields.get((long) 1).getText());
 								author.setMiddle_name(a_fields.get((long) 2).getText());
@@ -5878,9 +5945,9 @@ public class Main {
 							lblFile.setText(label_text);
 							/*
 							 * if (file_storage.containsKey((long)article_id)) {
-							 * ConcurrentHashMap<Integer, ArticleFile> up_files =
-							 * file_storage.get((long)article_id); Set<Integer>
-							 * keys = up_files.keySet(); file_id =
+							 * ConcurrentHashMap<Integer, ArticleFile> up_files
+							 * = file_storage.get((long)article_id);
+							 * Set<Integer> keys = up_files.keySet(); file_id =
 							 * initial_file_num; for (int key : keys) { File f =
 							 * new File(up_files.get((long)key).getPath());
 							 * f.delete(); }
@@ -6153,8 +6220,8 @@ public class Main {
 			 * panel6.add(author_num);
 			 * 
 			 * ConcurrentHashMap<Integer, JTextField> author_components = new
-			 * ConcurrentHashMap<Integer, JTextField>(); Author author = authors.get(i);
-			 * JLabel field_label = new JLabel("First name:");
+			 * ConcurrentHashMap<Integer, JTextField>(); Author author =
+			 * authors.get(i); JLabel field_label = new JLabel("First name:");
 			 * field_label.setBounds(author_x, author_y, 75, 30); // white //
 			 * box field_label.setOpaque(true); panel6.add(field_label);
 			 * JTextField field = new JTextField(author.getFirst_name());
@@ -6627,8 +6694,8 @@ public class Main {
 					 * article_id); a.setTitle(lblTitleText.getText());
 					 * ArrayList<Author> updated_authors = a.getAuthors(); for
 					 * (int i = 0; i < updated_authors.size(); i++) { Author
-					 * author = updated_authors.get(i); ConcurrentHashMap<Integer,
-					 * JTextField> a_fields =
+					 * author = updated_authors.get(i);
+					 * ConcurrentHashMap<Integer, JTextField> a_fields =
 					 * author_fields.get(updated_authors.get(i).getId());
 					 * author.setFirst_name(a_fields.get(1).getText());
 					 * author.setLast_name(a_fields.get(2).getText());
@@ -9570,22 +9637,20 @@ public class Main {
 		schReg.register(new Scheme("http", PlainSocketFactory.getSocketFactory(), 80));
 		schReg.register(new Scheme("https", SSLSocketFactory.getSocketFactory(), 443));
 
-		
-		  ThreadSafeClientConnManager cm = new ThreadSafeClientConnManager(schReg);
-		    cm.setMaxTotal(50);
-		    cm.setDefaultMaxPerRoute(50);
-		    
+		ThreadSafeClientConnManager cm = new ThreadSafeClientConnManager(schReg);
+		cm.setMaxTotal(50);
+		cm.setDefaultMaxPerRoute(50);
+
 		httpClient = new DefaultHttpClient(cm, params);
 
 		httpClient.getCredentialsProvider().setCredentials(new AuthScope(AuthScope.ANY_HOST, AuthScope.ANY_PORT),
 				new UsernamePasswordCredentials("ioannis", "root"));
-		
 
-		  
-		//  HttpHost targetHost = new HttpHost("webserviceIP", webservicePort, "https");
-		 //   cm.setMaxForRoute(new HttpRoute(targetHost, null, true), maxConnections);
+		// HttpHost targetHost = new HttpHost("webserviceIP", webservicePort,
+		// "https");
+		// cm.setMaxForRoute(new HttpRoute(targetHost, null, true),
+		// maxConnections);
 
-		
 		System.out.println("Loading dashboard");
 		dashboard();
 	}
@@ -10006,14 +10071,13 @@ public class Main {
 
 		// get_issue_from_remote(encoding, (long) 5, false);
 
-	
 		// file copy to use for file upload
 		// file_copy(1,"src/lib/db_xxs.png");
 		// get_authors_remote(5, encoding, false);
 		// sync_authors_intersect(5, encoding, false);
 		// System.out.println("Latest author id: " + author_id);
 		// ();
-		
+
 		new Main();
 		// file_upload_intersect((long)125,"/home/ioannis/code/toru-app/java_ojs/miglayout-src.zip",25);
 		// file_download(125,16);
