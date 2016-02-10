@@ -182,7 +182,7 @@ public class Main {
 	private static int delay = 1000; // milliseconds
 	private Executor progress_executor = Executors.newSingleThreadExecutor();
 	// private Executor progress_executord = Executors.newFixedThreadPool(5);
-	private Executor connection_executor = Executors.newFixedThreadPool(5);
+	private Executor connection_executor = Executors.newSingleThreadExecutor();
 	private JPasswordField passwordField;
 	private static ConcurrentHashMap<String, String> list_settings;
 	private static ConcurrentHashMap<Long, Long> list_issues;
@@ -2145,21 +2145,22 @@ public class Main {
 												current_issue.getTitle(), Long.toString(issue_id)),
 										"Warning", 1);
 
-								
 								if (dialogResult == JOptionPane.NO_OPTION) {
 									progress_executor.execute(new Runnable() {
 										public void run() {
-											int countdown = current_issue.getArticles_list().size()*7+120+current_issue.getAuthors().size()*5;
-											System.out.println("countdown "+countdown);
-											double decimal = (current_issue.getArticles_list().size()*7+120+current_issue.getAuthors().size()*5)/100;
+											int countdown = current_issue.getArticles_list().size() * 7 + 120
+													+ current_issue.getAuthors().size() * 5;
+											System.out.println("countdown " + countdown);
+											double decimal = (current_issue.getArticles_list().size() * 7 + 120
+													+ current_issue.getAuthors().size() * 5) / 100;
 											System.out.println(decimal);
 											for (int i = 0; i < countdown; i++) {
 												final int percent = i;
 												SwingUtilities.invokeLater(new Runnable() {
 													public void run() {
 														progressBar.setValue(percent == 0 ? 0
-																: (int) Double
-																		.parseDouble(String.format("%s", percent / decimal)));
+																: (int) Double.parseDouble(
+																		String.format("%s", percent / decimal)));
 														progressBar.repaint();
 													}
 												});
@@ -2191,17 +2192,19 @@ public class Main {
 								} else if (dialogResult == JOptionPane.YES_OPTION) {
 									progress_executor.execute(new Runnable() {
 										public void run() {
-											int countdown = current_issue.getArticles_list().size()*7+120+current_issue.getAuthors().size()*5;
-											System.out.println("countdown "+countdown);
-											double decimal = (current_issue.getArticles_list().size()*7+120+current_issue.getAuthors().size()*5)/100;
+											int countdown = current_issue.getArticles_list().size() * 7 + 120
+													+ current_issue.getAuthors().size() * 5;
+											System.out.println("countdown " + countdown);
+											double decimal = (current_issue.getArticles_list().size() * 7 + 120
+													+ current_issue.getAuthors().size() * 5) / 100;
 											System.out.println(decimal);
 											for (int i = 0; i < countdown; i++) {
 												final int percent = i;
 												SwingUtilities.invokeLater(new Runnable() {
 													public void run() {
 														progressBar.setValue(percent == 0 ? 0
-																: (int) Double
-																		.parseDouble(String.format("%s", percent / decimal)));
+																: (int) Double.parseDouble(
+																		String.format("%s", percent / decimal)));
 														progressBar.repaint();
 													}
 												});
@@ -2441,7 +2444,7 @@ public class Main {
 								}
 							});
 							futures.add(f);
-						
+
 							progress_executor.execute(new Runnable() {
 								public void run() {
 									for (Future<?> future : futures) {
@@ -2455,12 +2458,13 @@ public class Main {
 											e1.printStackTrace();
 										}
 									}
-							issues.remove(progressBar);
+									issues.remove(progressBar);
 
-							issues.remove(progress_msg);
-							issues.repaint();
-							JOptionPane.showMessageDialog(null, "Sync completed.");
-								}});
+									issues.remove(progress_msg);
+									issues.repaint();
+									JOptionPane.showMessageDialog(null, "Sync completed.");
+								}
+							});
 							Set<Long> update_issue_keys = issue_storage.keySet();
 							ArrayList<List<Object>> rowData = new ArrayList<List<Object>>();
 							Object[][] rows = new Object[update_issue_keys.size()][6];
@@ -3593,169 +3597,319 @@ public class Main {
 				btnSync.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
 						System.out.println(current_issue.getArticles_list().isEmpty());
+						JProgressBar progressBar = new JProgressBar();
+						Executor article_progress_executor = Executors.newSingleThreadExecutor();
+						ExecutorService exec = Executors.newFixedThreadPool(3);
+
+						progressBar.setValue(0);
+						progressBar.setStringPainted(true);
+
+						progressBar.setIndeterminate(true);
+						progressBar.setBounds(width / 2 - 50, height - 117, 150, 40);
+						JLabel progress_msg = new JLabel("Estimated progress per Issue:");
+
+						progress_msg.setBounds(width / 2 - 75, height - 150, 200, 40);
+
+						articles.add(progress_msg);
+						articles.add(progressBar);
+						articles.repaint();
+						List<Future<?>> futures = new ArrayList<Future<?>>();
 
 						boolean update_table = false;
 						if (!current_issue.getArticles_list().isEmpty()) {
 							int dialogResult = JOptionPane.showConfirmDialog(null,
 									"Would You Like to replace local data (Yes) or update remote data (No)", "Warning",
 									1);
+
 							if (dialogResult == JOptionPane.NO_OPTION) {
+								progress_executor.execute(new Runnable() {
+									public void run() {
+										int countdown = current_issue.getArticles_list().size() * 7 + 80
+												+ current_issue.getAuthors().size() * 5;
+										System.out.println("countdown " + countdown);
+										double decimal = (current_issue.getArticles_list().size() * 7 + 80
+												+ current_issue.getAuthors().size() * 5) / 100;
+										System.out.println(decimal);
+										for (int i = 0; i < countdown; i++) {
+											final int percent = i;
+											SwingUtilities.invokeLater(new Runnable() {
+												public void run() {
+													progressBar.setValue(percent == 0 ? 0
+															: (int) Double.parseDouble(
+																	String.format("%s", percent / decimal)));
+													progressBar.repaint();
+												}
+											});
 
-								try {
-									update_articles_intersect(current_issue, encoding);
+											try {
+												Thread.sleep(100);
+											} catch (InterruptedException e) {
+											}
+										}
+									}
+								});
+								articles.add(progress_msg);
+								articles.add(progressBar);
+								articles.repaint();
 
-								} catch (IllegalStateException | IOException e1) {
-									// TODO Auto-generated catch block
-									e1.printStackTrace();
-								}
+								Future<?> f = exec.submit(new Runnable() {
+
+									public void run() {
+										try {
+											update_articles_intersect(current_issue, encoding);
+
+										} catch (IllegalStateException | IOException e1) {
+											// TODO Auto-generated catch block
+											e1.printStackTrace();
+										}
+									}
+								});
+
+								futures.add(f);
 							} else if (dialogResult == JOptionPane.YES_OPTION) {
 								System.out.println("update local");
+								article_progress_executor.execute(new Runnable() {
+									public void run() {
+										int countdown = current_issue.getArticles_list().size() * 7 + 80
+												+ current_issue.getAuthors().size() * 5;
+										System.out.println("countdown " + countdown);
+										double decimal = (current_issue.getArticles_list().size() * 7 + 80
+												+ current_issue.getAuthors().size() * 5) / 100;
+										System.out.println(decimal);
+										for (int i = 0; i < countdown; i++) {
+											final int percent = i;
+											SwingUtilities.invokeLater(new Runnable() {
+												public void run() {
+													progressBar.setValue(percent == 0 ? 0
+															: (int) Double.parseDouble(
+																	String.format("%s", percent / decimal)));
+													progressBar.repaint();
+												}
+											});
 
-								try {
-									update_table = true;
-									update_articles_local(current_issue, encoding);
-									articles.dispose();
-									issue(issue_id);
-								} catch (IllegalStateException | IOException e1) {
-									// TODO Auto-generated catch block
-									e1.printStackTrace();
-								}
+											try {
+												Thread.sleep(100);
+											} catch (InterruptedException e) {
+											}
+										}
+									}
+								});
+								update_table = true;
+								Future f = exec.submit(new Runnable() {
+
+									public void run() {
+
+										try {
+											update_articles_local(current_issue, encoding);
+										} catch (IllegalStateException | IOException e1) {
+											// TODO Auto-generated catch block
+											e1.printStackTrace();
+										}
+									}
+								});
+								futures.add(f);
 								articles.repaint();
 
 							}
 						} else {
+
+							Future<?> f = null;
 							System.out.println("Local");
-							try {
-								update_articles_local(current_issue, encoding);
-								articles.dispose();
-								issue(issue_id);
-							} catch (IllegalStateException e1) {
-								// TODO Auto-generated catch block
-								e1.printStackTrace();
-							} catch (IOException e1) {
-								// TODO Auto-generated catch block
-								e1.printStackTrace();
-							}
-						}
-						if (status_online()) {
-							int dialogResult = JOptionPane.showConfirmDialog(null,
-									"Would You Like to replace local Author data (Yes) or update remote Author data (No)",
-									"Warning", 1);
 
-							if (dialogResult == JOptionPane.NO_OPTION) {
+							article_progress_executor.execute(new Runnable() {
+								public void run() {
+									int countdown = current_issue.getArticles_list().size() * 7 + 80
+											+ current_issue.getAuthors().size() * 5;
+									System.out.println("countdown " + countdown);
+									double decimal = (current_issue.getArticles_list().size() * 7 + 80
+											+ current_issue.getAuthors().size() * 5) / 100;
+									System.out.println(decimal);
+									for (int i = 0; i < countdown; i++) {
+										final int percent = i;
+										SwingUtilities.invokeLater(new Runnable() {
+											public void run() {
+												progressBar.setValue(percent == 0 ? 0
+														: (int) Double
+																.parseDouble(String.format("%s", percent / decimal)));
+												progressBar.repaint();
+											}
+										});
 
-								try {
-									try {
-										sync_authors_intersect(issue_id, encoding, false);
-									} catch (IllegalStateException e2) {
-										// TODO Auto-generated catch block
-										e2.printStackTrace();
-									} catch (IOException e2) {
-										// TODO Auto-generated catch block
-										e2.printStackTrace();
+										try {
+											Thread.sleep(100);
+										} catch (InterruptedException e) {
+										}
 									}
-								} catch (IllegalStateException e1) {
-									// TODO Auto-generated catch block
-									e1.printStackTrace();
 								}
-							} else if (dialogResult == JOptionPane.YES_OPTION) {
+							});
+							articles.add(progress_msg);
+							articles.add(progressBar);
+							articles.repaint();
+
+							f = exec.submit(new Runnable() {
+
+								public void run() {
+									try {
+										update_articles_local(current_issue, encoding);
+										articles.dispose();
+										issue(issue_id);
+									} catch (IllegalStateException e1) {
+										// TODO Auto-generated catch block
+										e1.printStackTrace();
+									} catch (IOException e1) {
+										// TODO Auto-generated catch block
+										e1.printStackTrace();
+									}
+								}
+							});
+						}
+						;
+						article_progress_executor.execute(new Runnable() {
+							public void run() {
 								try {
-									get_authors_remote(issue_id, encoding, false);
-								} catch (IllegalStateException e1) {
+									for (Future<?> f : futures) {
+										f.get();
+
+									}
+									if (status_online()) {
+										int dialogResult = JOptionPane.showConfirmDialog(null,
+												"Would You Like to replace local Author data (Yes) or update remote Author data (No)",
+												"Warning", 1);
+
+										if (dialogResult == JOptionPane.NO_OPTION) {
+											Future<?> f = exec.submit(new Runnable() {
+
+												public void run() {
+
+													try {
+														sync_authors_intersect(issue_id, encoding, false);
+													} catch (IllegalStateException e2) {
+														// TODO Auto-generated catch block
+														e2.printStackTrace();
+													} catch (IOException e2) {
+														// TODO Auto-generated catch block
+														e2.printStackTrace();
+													}
+												}
+											});
+
+										} else if (dialogResult == JOptionPane.YES_OPTION) {
+											Future<?> f = exec.submit(new Runnable() {
+
+												public void run() {
+
+													try {
+														get_authors_remote(issue_id, encoding, false);
+													} catch (IllegalStateException e1) {
+														// TODO Auto-generated catch block
+														e1.printStackTrace();
+													} catch (IOException e1) {
+														// TODO Auto-generated catch block
+														e1.printStackTrace();
+													}
+												}
+											});
+										}
+									}
+									//change
+									if (true) {
+										ConcurrentHashMap<Long, Article> all_articles = current_issue.getArticles_list();
+										Set<Long> keys = all_articles.keySet();
+										ArrayList<List<Object>> rowData = new ArrayList<List<Object>>();
+										Object[][] rows = new Object[all_articles.size()][11];
+										boolean empty_table = false;
+										int num_rows = 0;
+										try {
+											num_rows = article_table.getRowCount();
+										} catch (NullPointerException n_e) {
+										}
+										if (num_rows != 0) {
+											for (int i = num_rows - 1; i >= 0; i--) {
+												System.out.println(num_rows);
+												((DefaultTableModel) article_table.getModel()).removeRow(i);
+
+												System.out.println(
+														"--" + ((DefaultTableModel) article_table.getModel()).getRowCount());
+											}
+										}
+										int i = 0;
+										try {
+											get_authors_remote(issue_id, encoding, false);
+										} catch (IllegalStateException e1) {
+											// TODO Auto-generated catch block
+											e1.printStackTrace();
+										} catch (IOException e1) {
+											// TODO Auto-generated catch block
+											e1.printStackTrace();
+										}
+										for (long id : keys) {
+											Article row_article = all_articles.get(id);
+
+											ArrayList<Object> data = new ArrayList<Object>();
+											issue_articles.put(id, new JFrame());
+
+											data.add(Long.toString(all_articles.get(id).getId()));
+											data.add(Long.toString(current_issue.getId()));
+											data.add(Long.toString((all_articles.get(id).getSection_id())));
+											data.add(all_articles.get(id).getTitle());
+											data.add(all_articles.get(id).getPages() == null ? "/"
+													: all_articles.get(id).getPages());
+											data.add(all_articles.get(id).getAbstract_text());
+											data.add(sdf.format(current));
+											data.add("View");
+											data.add("Edit");
+											data.add("Delete");
+											Date date_submitted = all_articles.get(id).getDate_submitted();
+											String date_submit = "";
+											if (date_submitted == null) {
+												date_submit = "/";
+											} else {
+												date_submit = sdf.format(all_articles.get(id).getDate_submitted());
+											}
+											Date date_published = all_articles.get(id).getDate_published();
+											String date_pub = "";
+											if (date_published == null) {
+												date_pub = "/";
+											} else {
+												date_pub = sdf.format(all_articles.get(id).getDate_published());
+											}
+											Object[] row = { all_articles.get(id).getId(), issue_id,
+													all_articles.get(id).getSection_id(), current_articles.get(id).getTitle(),
+													all_articles.get(id).getPages(), all_articles.get(id).getAbstract_text(),
+													date_submit, date_pub, "View", "Edit", "Delete" };
+											rows[i] = row;
+											rowData.add(data);
+											((DefaultTableModel) article_table.getModel()).insertRow(0, row);
+											i++;
+											System.out.println("++" + ((DefaultTableModel) article_table.getModel()).getRowCount());
+
+										}
+										System.out.println(num_rows);
+										try {
+											num_rows = ((DefaultTableModel) article_table.getModel()).getRowCount();
+										} catch (NullPointerException n_e) {
+										}
+										System.out.println(":::" + num_rows);
+										if (num_rows != 0) {
+											((DefaultTableModel) article_table.getModel()).fireTableRowsUpdated(0, num_rows - 1);
+										}
+
+									}
+									article_table.repaint();
+									articles.getContentPane().repaint();
+									articles.remove(progress_msg);
+									articles.remove(progressBar);
+									articles.repaint();
+								} catch (InterruptedException e3) {
 									// TODO Auto-generated catch block
-									e1.printStackTrace();
-								} catch (IOException e1) {
+									e3.printStackTrace();
+								} catch (ExecutionException e3) {
 									// TODO Auto-generated catch block
-									e1.printStackTrace();
+									e3.printStackTrace();
 								}
 							}
-						}
-						if (update_table) {
-							ConcurrentHashMap<Long, Article> all_articles = current_issue.getArticles_list();
-							Set<Long> keys = all_articles.keySet();
-							ArrayList<List<Object>> rowData = new ArrayList<List<Object>>();
-							Object[][] rows = new Object[all_articles.size()][11];
-							boolean empty_table = false;
-							int num_rows = 0;
-							try {
-								num_rows = article_table.getRowCount();
-							} catch (NullPointerException n_e) {
-							}
-							if (num_rows != 0) {
-								for (int i = num_rows - 1; i >= 0; i--) {
-									System.out.println(num_rows);
-									((DefaultTableModel) article_table.getModel()).removeRow(i);
-
-									System.out.println(
-											"--" + ((DefaultTableModel) article_table.getModel()).getRowCount());
-								}
-							}
-							int i = 0;
-							try {
-								get_authors_remote(issue_id, encoding, false);
-							} catch (IllegalStateException e1) {
-								// TODO Auto-generated catch block
-								e1.printStackTrace();
-							} catch (IOException e1) {
-								// TODO Auto-generated catch block
-								e1.printStackTrace();
-							}
-							for (long id : keys) {
-								Article row_article = all_articles.get(id);
-
-								ArrayList<Object> data = new ArrayList<Object>();
-								issue_articles.put(id, new JFrame());
-
-								data.add(Long.toString(all_articles.get(id).getId()));
-								data.add(Long.toString(current_issue.getId()));
-								data.add(Long.toString((all_articles.get(id).getSection_id())));
-								data.add(all_articles.get(id).getTitle());
-								data.add(all_articles.get(id).getPages() == null ? "/"
-										: all_articles.get(id).getPages());
-								data.add(all_articles.get(id).getAbstract_text());
-								data.add(sdf.format(current));
-								data.add("View");
-								data.add("Edit");
-								data.add("Delete");
-								Date date_submitted = all_articles.get(id).getDate_submitted();
-								String date_submit = "";
-								if (date_submitted == null) {
-									date_submit = "/";
-								} else {
-									date_submit = sdf.format(all_articles.get(id).getDate_submitted());
-								}
-								Date date_published = all_articles.get(id).getDate_published();
-								String date_pub = "";
-								if (date_published == null) {
-									date_pub = "/";
-								} else {
-									date_pub = sdf.format(all_articles.get(id).getDate_published());
-								}
-								Object[] row = { all_articles.get(id).getId(), issue_id,
-										all_articles.get(id).getSection_id(), current_articles.get(id).getTitle(),
-										all_articles.get(id).getPages(), all_articles.get(id).getAbstract_text(),
-										date_submit, date_pub, "View", "Edit", "Delete" };
-								rows[i] = row;
-								rowData.add(data);
-								((DefaultTableModel) article_table.getModel()).insertRow(0, row);
-								i++;
-								System.out.println("++" + ((DefaultTableModel) article_table.getModel()).getRowCount());
-
-							}
-							System.out.println(num_rows);
-							try {
-								num_rows = ((DefaultTableModel) article_table.getModel()).getRowCount();
-							} catch (NullPointerException n_e) {
-							}
-							System.out.println(":::" + num_rows);
-							if (num_rows != 0) {
-								((DefaultTableModel) article_table.getModel()).fireTableRowsUpdated(0, num_rows - 1);
-							}
-
-						}
-						article_table.repaint();
-						articles.getContentPane().repaint();
-						articles.repaint();
+						});
+					
 					}
 
 				});
