@@ -2600,7 +2600,13 @@ public class Main {
 										issues.remove(progress_msg);
 										issues.repaint();
 										JOptionPane.showMessageDialog(null, "Sync completed.");
+										int dialogResult = JOptionPane.showConfirmDialog(null,
+												"Save changes to local database?",
+												"Warning", 1);
 
+										if (dialogResult == JOptionPane.YES_OPTION) {
+											database_save();
+										}
 										if (num_rows == 0) {
 											issues.dispose();
 											dashboard();
@@ -3992,6 +3998,13 @@ public class Main {
 									for (Future<?> f : futures) {
 										f.get();
 
+									}
+									int dialogResult = JOptionPane.showConfirmDialog(null,
+											"Save changes to local database?",
+											"Warning", 1);
+
+									if (dialogResult == JOptionPane.YES_OPTION) {
+										database_save();
 									}
 									articles.dispose();
 									issue(issue_id);
