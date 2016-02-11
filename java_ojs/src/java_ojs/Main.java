@@ -4644,10 +4644,10 @@ public class Main {
 
 				panelMetadata.setSize(new Dimension(240, 380));
 				JButton btnAddMetadata = new JButton("View Metadata");
-				btnAddMetadata.setBounds(40, height_small - 150, 160, 50);
+				btnAddMetadata.setBounds(40, height_small - 115, 160, 50);
 				btnAddMetadata.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
-						int result = JOptionPane.showConfirmDialog(null, panelMetadata, "Edit Authors",
+						int result = JOptionPane.showConfirmDialog(null, panelMetadata, "Edit Metadata",
 								JOptionPane.OK_CANCEL_OPTION);
 						if (result == JOptionPane.OK_OPTION) {
 						}
@@ -5615,15 +5615,13 @@ public class Main {
 				JLabel lblCompetingInterests = new JLabel("Competing Interests");
 				lblCompetingInterests.setBounds(35, 40, 145, 15);
 				panelMetadata.add(lblCompetingInterests);
-				JTextArea txtCompetingInterests = new JTextArea();
-				if (meta != null) {
-					txtCompetingInterests.setText(meta.getCompeting_interests());
-				}
+				JTextArea txtCompetingInterests = new JTextArea(metadata_storage.get((long)article_id) == null?"":metadata_storage.get((long)article_id).getCompeting_interests());
+			
 				txtCompetingInterests.setColumns(4);
-				txtCompetingInterests.setBounds(35, 70, 145, 100);
+				txtCompetingInterests.setBounds(35, 70, 240, 100);
 
 				JScrollPane cmptinterests = new JScrollPane(txtCompetingInterests);
-				cmptinterests.setBounds(35, 70, 145, 100);
+				cmptinterests.setBounds(35, 70, 240, 100);
 				panelMetadata.add(cmptinterests);
 				// scrollSettings.setViewportView(scrollFrame);
 
@@ -5631,26 +5629,35 @@ public class Main {
 				lblFunding.setBounds(35, 175, 145, 15);
 				panelMetadata.add(lblFunding);
 
-				JTextArea txtFunding = new JTextArea();
+				JTextArea txtFunding = new JTextArea(metadata_storage.get((long)article_id) == null?"":metadata_storage.get((long)article_id).getFunding());
 				if (meta != null) {
 					txtFunding.setText(meta.getFunding());
 				}
 				txtFunding.setColumns(4);
-				txtFunding.setBounds(35, 195, 145, 100);
+				txtFunding.setBounds(35, 195, 240, 100);
 
 				JScrollPane funding = new JScrollPane(txtFunding);
-				funding.setBounds(35, 195, 145, 100);
+				funding.setBounds(35, 195, 240, 100);
 				panelMetadata.add(funding);
-				panelMetadata.setPreferredSize(new Dimension(240, 380));
+				panelMetadata.setPreferredSize(new Dimension(360, 380));
 
-				panelMetadata.setSize(new Dimension(240, 380));
+				panelMetadata.setSize(new Dimension(460, 380));
 				JButton btnAddMetadata = new JButton("Edit Metadata");
-				btnAddMetadata.setBounds(40, height_small - 150, 160, 50);
+
+				btnAddMetadata.setBounds(40, height_small - 115, 160, 45);
 				btnAddMetadata.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
-						int result = JOptionPane.showConfirmDialog(null, panelMetadata, "Edit Authors",
+						int result = JOptionPane.showConfirmDialog(null, panelMetadata, "Edit Metadata",
 								JOptionPane.OK_CANCEL_OPTION);
 						if (result == JOptionPane.OK_OPTION) {
+							Metadata meta = metadata_storage.get((long)article_id);
+							if (meta == null) {
+								metadata_id++;
+								meta = new Metadata(metadata_id,article_id);
+							}
+							meta.setCompeting_interests(txtCompetingInterests.getText());
+							meta.setFunding(txtFunding.getText());
+							metadata_storage.put((long)article_id, meta);
 						}
 					}
 				});
@@ -6536,7 +6543,7 @@ public class Main {
 
 			panelMetadata.setSize(new Dimension(240, 380));
 			JButton btnAddMetadata = new JButton("Add Metadata");
-			btnAddMetadata.setBounds(40, height_small - 150, 160, 50);
+			btnAddMetadata.setBounds(40, height_small - 115, 160, 45);
 			btnAddMetadata.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
 					int result = JOptionPane.showConfirmDialog(null, panelMetadata, "Edit Authors",
@@ -7034,31 +7041,33 @@ public class Main {
 									txtFunding.getText());
 						}
 						issue_screens.get(issue_id).dispose();
+						long id_create= articles_id+1;
 						articles_id++;
-						published_articles_id++;
 						if (setting_meta.compareToIgnoreCase("true") == 0) {
-							metadata_storage.put(articles_id, meta_update);
+							metadata_storage.put(id_create, meta_update);
 							System.out.println("Metadata added");
 
-							System.out.println(metadata_storage.get(articles_id).getCompeting_interests());
+							System.out.println(metadata_storage.get(id_create).getCompeting_interests());
 						}
-						list_issues.replace(issue_id, articles_id);
+						list_issues.replace(issue_id, id_create);
 						Issue current_issue = issue_storage.get(issue_id);
-						Article new_article = new Article(articles_id, lblTitleText.getText(), entered_sectionID,
+						Article new_article = new Article(id_create, lblTitleText.getText(), entered_sectionID,
 								entered_pages, lblAbstract.getText(), datePickerAccepted.getDate(), current_issue,
 								datePickerAccepted.getDate(), journal_storage.get(Long.parseLong(app_settings.get("journal_id"))));
 						new_article.setDoi(doi.getText());
 						try {
 							String test_published = sdf.format(datePicker.getDate());
 							new_article.setDate_published(datePicker.getDate());
+							long id_publish_create= published_articles_id+1;
+							published_articles_id++;
+							new_article.setPublished_pk(id_publish_create);
 						} catch (Exception ex) {
 						}
-						new_article.setPublished_pk(published_articles_id);
-						author_primary_storage.put(articles_id, author_primary);
+						author_primary_storage.put(new_article.getId(), author_primary);
 						ArrayList<Author> selected_authors = new ArrayList<Author>();
 						int[] selections = listbox.getSelectedIndices();
 						ConcurrentHashMap<Long, Boolean> author_primary = new ConcurrentHashMap<Long, Boolean>();
-						author_primary_storage.put(articles_id, author_primary);
+						author_primary_storage.put(new_article.getId(), author_primary);
 						System.out.println("Selected authors: " + selections.length);
 						for (int index : selections) {
 							author_primary.put(author_storage.get(author_list.get(index)).getId(), false);
@@ -7070,22 +7079,29 @@ public class Main {
 							System.out.println("new_article: " + new_article.getAuthors().size());
 
 						}
-						current_issue.add_article(articles_id, new_article);
+						current_issue.add_article(new_article.getId(), new_article);
 
-						article_storage.put(articles_id, new_article);
-						article_author_storage.put(articles_id, selected_authors);
+						article_storage.put(new_article.getId(), new_article);
+						article_author_storage.put(new_article.getId(), selected_authors);
 
-						author_primary_storage.put(articles_id, author_primary);
+						author_primary_storage.put(new_article.getId(), author_primary);
 						article.dispose();
 						issue_storage.put(issue_id, current_issue);
-						Object[] new_row = { articles_id, issue_id, 1, "title", 1, "abstract", sdf.format(current),
+						Object[] new_row = { new_article.getId(), issue_id, 1, "title", 1, "abstract", sdf.format(current),
 								"View", "Edit", "Delete" };
 						ConcurrentHashMap<Long, JFrame> issue_articles = article_screens.get(issue_id);
-						System.out.println(articles_id);
-						issue_articles.put(articles_id, new JFrame());
+						System.out.println(new_article.getId());
+						issue_articles.put(new_article.getId(), new JFrame());
 						article_screens.put(issue_id, issue_articles);
-						System.out.println(article_screens.get(issue_id).containsKey(articles_id));
-
+						System.out.println(article_screens.get(issue_id).containsKey(new_article.getId()));
+						Metadata meta = metadata_storage.get((long)new_article.getId());
+						if (meta == null) {
+							metadata_id++;
+							meta = new Metadata(metadata_id,new_article.getId());
+						}
+						meta.setCompeting_interests(txtCompetingInterests.getText());
+						meta.setFunding(txtFunding.getText());
+						metadata_storage.put((long)new_article.getId(), meta);
 						issue(issue_id);
 					}
 					/*

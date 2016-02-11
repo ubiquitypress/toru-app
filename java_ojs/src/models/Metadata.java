@@ -13,7 +13,14 @@ public class Metadata {
 		this.competing_interests = competing_interests;
 		this.funding = funding;
 	}
-
+	
+	public Metadata(long id, long article_id) {
+		super();
+		this.id = id;
+		this.article_id = article_id;
+		this.competing_interests = "";
+		this.funding = "";
+	}
 	public long getId() {
 		return id;
 	}
