@@ -160,9 +160,6 @@ import org.jsoup.Jsoup;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonParser;
-import com.sun.jersey.api.client.Client;
-import com.sun.jersey.api.client.ClientResponse;
-import com.sun.jersey.api.client.WebResource;
 import com.sun.net.httpserver.Headers;
 import com.sun.org.apache.xerces.internal.util.URI;
 import com.sun.org.apache.xerces.internal.util.URI.MalformedURIException;
@@ -197,6 +194,7 @@ public class Main {
 	private static ConcurrentHashMap<Long, ArrayList<Author>> article_author_storage;
 	private static String journal_url = "";
 	private static String user_url = "";
+	private static ArrayList<Issue> new_issues = new ArrayList<Issue>();
 	private static ConcurrentHashMap<Long, ConcurrentHashMap<Long, Boolean>> author_primary_storage;
 	private static ConcurrentHashMap<Long, ConcurrentHashMap<Long, ArticleFile>> file_storage;
 	private static ConcurrentHashMap<Long, ConcurrentHashMap<Long, JFrame>> article_screens;
@@ -2115,6 +2113,8 @@ public class Main {
 				btnSync.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
 
+						int num_rows = ((DefaultTableModel) issues_table.getModel()).getRowCount();
+
 						if (status_online()) {
 							boolean skipped_dialog = false;
 							Set<Long> issue_keys = issue_storage.keySet();
@@ -2123,7 +2123,6 @@ public class Main {
 							}
 							List<Future<?>> futures = new ArrayList<Future<?>>();
 							ExecutorService exec = Executors.newFixedThreadPool(3);
-							int progress_increment = 100 / issue_keys.size();
 							final JProgressBar progressBar = new JProgressBar();
 							progressBar.setValue(0);
 							progressBar.setStringPainted(true);
@@ -2332,20 +2331,38 @@ public class Main {
 
 										Set<Long> issue_keys = issue_storage.keySet();
 
-										ArrayList<Issue> new_issues = new ArrayList<Issue>();
+										new_issues = new ArrayList<Issue>();
+										Future<?> f = exec.submit(new Runnable() {
 
-										new_issues = update_get_issues_from_remote(encoding, false);
+											public void run() {
+										try {
+											new_issues = update_get_issues_from_remote(encoding, false);
+										} catch (IllegalStateException e) {
+											// TODO Auto-generated catch block
+											e.printStackTrace();
+										} catch (IOException e) {
+											// TODO Auto-generated catch block
+											e.printStackTrace();
+										}
+											}});
+										futures.add(f);
 										for (Issue current_issue : new_issues) {
 											long issue_id = current_issue.getId();
 											progress_executor.execute(new Runnable() {
 												public void run() {
-													for (int i = 0; i < 180; i++) {
+													int countdown = current_issue.getArticles_list().size() * 7 + 120
+															+ current_issue.getAuthors().size() * 5;
+													System.out.println("countdown " + countdown);
+													double decimal = (current_issue.getArticles_list().size() * 7 + 120
+															+ current_issue.getAuthors().size() * 5) / 100;
+													System.out.println(decimal);
+													for (int i = 0; i < countdown; i++) {
 														final int percent = i;
 														SwingUtilities.invokeLater(new Runnable() {
 															public void run() {
 																progressBar.setValue(percent == 0 ? 0
 																		: (int) Double.parseDouble(
-																				String.format("%s", percent / 1.8)));
+																				String.format("%s", percent / decimal)));
 																progressBar.repaint();
 															}
 														});
@@ -2357,8 +2374,16 @@ public class Main {
 													}
 												}
 											});
+
+											issues.add(progress_msg);
+											issues.add(progressBar);
+											issues.repaint();
 											if (issue_keys.isEmpty()) {
+												f = exec.submit(new Runnable() {
+
+													public void run() {
 												try {
+											
 													update_articles_local(current_issue, encoding);
 													get_authors_remote(issue_id, encoding, false);
 												} catch (IllegalStateException e1) {
@@ -2370,10 +2395,13 @@ public class Main {
 													// block
 													e1.printStackTrace();
 												}
-
+													}});
+												futures.add(f);
 											} else {
 												if (dialogResult == JOptionPane.NO_OPTION) {
+													f = exec.submit(new Runnable() {
 
+														public void run() {
 													try {
 														update_articles_intersect(current_issue, encoding);
 
@@ -2382,9 +2410,13 @@ public class Main {
 														// catch block
 														e1.printStackTrace();
 													}
+														}});
+													futures.add(f);
 												} else if (dialogResult == JOptionPane.YES_OPTION) {
 													System.out.println("update local");
+													f = exec.submit(new Runnable() {
 
+														public void run() {
 													try {
 														update_articles_local(current_issue, encoding);
 
@@ -2393,12 +2425,15 @@ public class Main {
 														// catch block
 														e1.printStackTrace();
 													}
-
+														}});
+													futures.add(f);
 												}
 
 												if (dialogResult == JOptionPane.NO_OPTION) {
 
-													try {
+													f = exec.submit(new Runnable() {
+
+														public void run() {
 														try {
 															sync_authors_intersect(issue_id, encoding, false);
 														} catch (IllegalStateException e2) {
@@ -2414,12 +2449,12 @@ public class Main {
 															// block
 															e2.printStackTrace();
 														}
-													} catch (IllegalStateException e1) {
-														// TODO Auto-generated
-														// catch block
-														e1.printStackTrace();
-													}
+												}});
+							futures.add(f);
 												} else if (dialogResult == JOptionPane.YES_OPTION) {
+													f = exec.submit(new Runnable() {
+
+														public void run() {
 													try {
 														get_authors_remote(issue_id, encoding, false);
 													} catch (IllegalStateException e1) {
@@ -2431,13 +2466,12 @@ public class Main {
 														// catch block
 														e1.printStackTrace();
 													}
+														}});
+													futures.add(f);
 												}
 											}
 										}
 									} catch (IllegalStateException e1) {
-										// TODO Auto-generated catch block
-										e1.printStackTrace();
-									} catch (IOException e1) {
 										// TODO Auto-generated catch block
 										e1.printStackTrace();
 									}
@@ -2463,49 +2497,60 @@ public class Main {
 									issues.remove(progress_msg);
 									issues.repaint();
 									JOptionPane.showMessageDialog(null, "Sync completed.");
+									
+									if(num_rows==0){
+									issues.dispose();
+									dashboard();
+									}else{
+									Set<Long> update_issue_keys = issue_storage.keySet();
+									ArrayList<List<Object>> rowData = new ArrayList<List<Object>>();
+									Object[][] rows = new Object[update_issue_keys.size()][6];
+									boolean empty_table = false;
+									if (num_rows != 0) {
+										for (int i = num_rows - 1; i >= 0; i--) {
+											((DefaultTableModel) issues_table.getModel()).removeRow(i);
+										}
+									}
+									int i = 0;
+									for (long id : update_issue_keys) {
+										Issue row_issue = issue_storage.get(id);
+										issue_screens.put(id, new JFrame());
+										article_screens.put(id, new ConcurrentHashMap<Long, JFrame>());
+
+										Object[] row = { row_issue.getId(),
+												row_issue.getShow_title() == 1 ? row_issue.getTitle() : "Hidden",
+												row_issue.getShow_volume() == 1 ? row_issue.getVolume() : "Hidden",
+												row_issue.getShow_number() == 1 ? row_issue.getNumber() : "Hidden",
+												row_issue.getShow_year() == 1 ? row_issue.getYear() : "Hidden",
+												row_issue.getDate_accepted() == null ? "/"
+														: sdf.format(row_issue.getDate_accepted()),
+												row_issue.getDate_published() == null ? "/"
+														: sdf.format(row_issue.getDate_published()),
+												"View", "Edit", "Delete" };
+										rows[i] = row;
+										((DefaultTableModel) issues_table.getModel()).insertRow(0, row);
+										i++;
+
+									}
+									if(num_rows!=0){
+									((DefaultTableModel) issues_table.getModel()).fireTableRowsUpdated(0,
+											update_issue_keys.size() - 1);}
+									issues_table.repaint();
+									issues.getContentPane().repaint();
+									issues.repaint();
+
+									issues.repaint();
+
+								}
 								}
 							});
-							Set<Long> update_issue_keys = issue_storage.keySet();
-							ArrayList<List<Object>> rowData = new ArrayList<List<Object>>();
-							Object[][] rows = new Object[update_issue_keys.size()][6];
-							boolean empty_table = false;
-							int num_rows = ((DefaultTableModel) issues_table.getModel()).getRowCount();
-							if (num_rows != 0) {
-								for (int i = num_rows - 1; i >= 0; i--) {
-									((DefaultTableModel) issues_table.getModel()).removeRow(i);
-								}
-							}
-							int i = 0;
-							for (long id : update_issue_keys) {
-								Issue row_issue = issue_storage.get(id);
-								issue_screens.put(id, new JFrame());
-								article_screens.put(id, new ConcurrentHashMap<Long, JFrame>());
-
-								Object[] row = { row_issue.getId(),
-										row_issue.getShow_title() == 1 ? row_issue.getTitle() : "Hidden",
-										row_issue.getShow_volume() == 1 ? row_issue.getVolume() : "Hidden",
-										row_issue.getShow_number() == 1 ? row_issue.getNumber() : "Hidden",
-										row_issue.getShow_year() == 1 ? row_issue.getYear() : "Hidden",
-										row_issue.getDate_accepted() == null ? "/"
-												: sdf.format(row_issue.getDate_accepted()),
-										row_issue.getDate_published() == null ? "/"
-												: sdf.format(row_issue.getDate_published()),
-										"View", "Edit", "Delete" };
-								rows[i] = row;
-								((DefaultTableModel) issues_table.getModel()).insertRow(0, row);
-								i++;
-
-							}
-							((DefaultTableModel) issues_table.getModel()).fireTableRowsUpdated(0,
-									update_issue_keys.size() - 1);
-							issues_table.repaint();
-							issues.getContentPane().repaint();
-							issues.repaint();
-
+						
 						} else {
 							JOptionPane.showMessageDialog(null, "Unable to connect to server.");
 
 						}
+
+						issues.repaint();
 					}
 				});
 
