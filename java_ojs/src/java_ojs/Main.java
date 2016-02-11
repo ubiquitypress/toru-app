@@ -2785,11 +2785,12 @@ public class Main {
 								"Delete ?", JOptionPane.YES_NO_OPTION);
 						if (reply == JOptionPane.YES_OPTION) {
 
-							int issue_row = table.getSelectedRow();
+							int issue_row = table.convertRowIndexToView(table.getSelectedRow());
 							int selectedColumnIndex = 0;
 							Object selectedObject = (Object) table.getModel().getValueAt(issue_row,
 									selectedColumnIndex);
 							long selected_issue = (long) selectedObject;
+							System.out.println("SELECTED ISSUE: "+ selected_issue);
 							if (issue_screens.get(selected_issue).isVisible()
 									|| !(issue_screens.get(selected_issue) == null)) {
 								ConcurrentHashMap<Long, JFrame> opened = article_screens.get(selected_issue);
@@ -2810,6 +2811,13 @@ public class Main {
 								((DefaultTableModel) table.getModel()).removeRow(modelRow);
 								table.repaint();
 							}
+						}else{
+							int issue_row =table.convertRowIndexToView(table.getSelectedRow());
+							int selectedColumnIndex = 0;
+							Object selectedObject = (Object) table.getModel().getValueAt(issue_row,
+									selectedColumnIndex);
+							long selected_issue = (long) selectedObject;
+							System.out.println("SELECTED ISSUE: "+ selected_issue);
 						}
 
 						// /
@@ -2820,7 +2828,7 @@ public class Main {
 					public void actionPerformed(ActionEvent e) {
 						JTable table = (JTable) e.getSource();
 						int modelRow = Integer.valueOf(e.getActionCommand());
-						int issue_row = table.getSelectedRow();
+						int issue_row = table.convertRowIndexToView(table.getSelectedRow());
 						int selectedColumnIndex = 0;
 						Object selectedObject = (Object) table.getModel().getValueAt(issue_row, selectedColumnIndex);
 						long selected_issue = (long) selectedObject;
@@ -2835,7 +2843,7 @@ public class Main {
 					public void actionPerformed(ActionEvent e) {
 						JTable table = (JTable) e.getSource();
 						int modelRow = Integer.valueOf(e.getActionCommand());
-						int issue_row = table.getSelectedRow();
+						int issue_row = table.convertRowIndexToView(table.getSelectedRow());
 						int selectedColumnIndex = 0;
 						Object selectedObject = (Object) table.getModel().getValueAt(issue_row, selectedColumnIndex);
 						long selected_issue = (long) selectedObject;
@@ -4221,7 +4229,7 @@ public class Main {
 						JTable table = (JTable) e.getSource();
 						articles.dispose();
 						int modelRow = Integer.valueOf(e.getActionCommand());
-						int article_row = table.getSelectedRow();
+						int article_row =table.getSelectedRow();
 						int selectedColumnIndex = 0;
 						Object selectedObject = (Object) table.getModel().getValueAt(article_row, selectedColumnIndex);
 						long selected_article = (long) selectedObject;
