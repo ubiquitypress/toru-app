@@ -3720,8 +3720,21 @@ public class Main {
 								articles.add(progress_msg);
 								articles.add(progressBar);
 								articles.repaint();
-
 								Future<?> f = exec.submit(new Runnable() {
+									public void run() {
+										try {
+											update_issue_intersect(current_issue, encoding);
+
+										} catch (IllegalStateException | IOException e1) {
+											// TODO Auto-generated catch
+											// block
+											e1.printStackTrace();
+										}
+									}
+								});
+								futures.add(f);
+
+								 f = exec.submit(new Runnable() {
 
 									public void run() {
 										try {
@@ -3764,7 +3777,20 @@ public class Main {
 									}
 								});
 								update_table = true;
-								Future f = exec.submit(new Runnable() {
+								Future<?> f = exec.submit(new Runnable() {
+									public void run() {
+										try {
+											update_issue_local(current_issue, encoding);
+
+										} catch (IllegalStateException | IOException e1) {
+											// TODO Auto-generated catch
+											// block
+											e1.printStackTrace();
+										}
+									}
+								});
+								futures.add(f);
+								f = exec.submit(new Runnable() {
 
 									public void run() {
 
@@ -9921,6 +9947,11 @@ public class Main {
 		obj.put("volume", issue.getVolume());
 		obj.put("number", issue.getNumber());
 		obj.put("year", issue.getYear());
+
+		SimpleDateFormat upload_sdf = new SimpleDateFormat("yyyy-MM-dd");
+		String formated_date_published = issue.getDate_published() == null ? null : upload_sdf
+				.format(issue.getDate_published());
+		obj.put("date_published", formated_date_published + "T00:00:00Z");
 		obj.put("published", issue.getPublished());
 		obj.put("show_volume", issue.getShow_volume());
 		obj.put("show_number", issue.getShow_number());
