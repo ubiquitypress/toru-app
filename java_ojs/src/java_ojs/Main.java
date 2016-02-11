@@ -1391,7 +1391,7 @@ public class Main {
 
 									e1.printStackTrace();
 								}
-							
+
 								if (user_id != -1) {
 									try {
 										populate_api(Long.toString(user_id));
@@ -1434,7 +1434,8 @@ public class Main {
 						if (status_online()) {
 							String user = username.getText();
 							String pass = String.valueOf(passwordField.getPassword());
-							if (user.isEmpty() || pass.isEmpty() || pass == null || user == null || user == "" || pass == "") {
+							if (user.isEmpty() || pass.isEmpty() || pass == null || user == null || user == ""
+									|| pass == "") {
 								JOptionPane.showMessageDialog(null, "Wrong username or password");
 							} else {
 								BASE64Encoder encoder = new BASE64Encoder();
@@ -1450,7 +1451,6 @@ public class Main {
 
 									e1.printStackTrace();
 								}
-								
 
 								if (user_id != -1) {
 									try {
@@ -1905,7 +1905,7 @@ public class Main {
 							logged_in = false;
 							login("dashboard");
 							api.dispose();
-							app_settings = new ConcurrentHashMap<String,String>();
+							app_settings = new ConcurrentHashMap<String, String>();
 
 						}
 					});
@@ -1926,10 +1926,12 @@ public class Main {
 					});
 					if (height_small - 150 > 300) {
 						btnSubmit.setBounds(((width_small / 3) * 2) / 2, height_small - 165, width_small / 3, 29);
-						btnReset.setBounds(((width_small / 3) * 2) / 2+(width_small / 3-width_small / 5)/2, height_small - 121, width_small / 5, 29);
+						btnReset.setBounds(((width_small / 3) * 2) / 2 + (width_small / 3 - width_small / 5) / 2,
+								height_small - 121, width_small / 5, 29);
 					} else {
 						btnSubmit.setBounds(((width_small / 3) * 2) / 2, 280, width_small / 3, 29);
-						btnReset.setBounds(((width_small / 3) * 2) / 2+(width_small / 3-width_small / 5)/2, 340, width_small / 5, 29);
+						btnReset.setBounds(((width_small / 3) * 2) / 2 + (width_small / 3 - width_small / 5) / 2, 340,
+								width_small / 5, 29);
 					}
 
 					api.getContentPane().add(btnSubmit);
@@ -2361,6 +2363,7 @@ public class Main {
 									issues.add(progressBar);
 									issues.repaint();
 									System.out.println("update local");
+									
 									Future<?> f = exec.submit(new Runnable() {
 
 										public void run() {
@@ -2439,144 +2442,27 @@ public class Main {
 							Future<?> f = exec.submit(new Runnable() {
 
 								public void run() {
-									try {
 
-										Set<Long> issue_keys = issue_storage.keySet();
+									Set<Long> issue_keys = issue_storage.keySet();
 
-										new_issues = new ArrayList<Issue>();
-										Future<?> f = exec.submit(new Runnable() {
+									new_issues = new ArrayList<Issue>();
+									
+									Future<?> f = exec.submit(new Runnable() {
 
-											public void run() {
-												try {
-													new_issues = update_get_issues_from_remote(encoding, false);
-												} catch (IllegalStateException e) {
+										public void run() {
+											try {
+												new_issues = update_get_issues_from_remote(encoding, false);
+											} catch (IllegalStateException e) {
 
-													e.printStackTrace();
-												} catch (IOException e) {
+												e.printStackTrace();
+											} catch (IOException e) {
 
-													e.printStackTrace();
-												}
-											}
-										});
-										futures.add(f);
-										for (Issue current_issue : new_issues) {
-											long issue_id = current_issue.getId();
-											progress_executor.execute(new Runnable() {
-												public void run() {
-													int countdown = current_issue.getArticles_list().size() * 7 + 120
-															+ current_issue.getAuthors().size() * 5;
-													if (current_issue.getArticles_list().size() == 0) {
-														countdown = 100;
-														for (int i = 0; i < countdown; i++) {
-															final int percent = i;
-															SwingUtilities.invokeLater(new Runnable() {
-																public void run() {
-																	progressBar.setValue(percent);
-																	progressBar.repaint();
-																}
-															});
-
-															try {
-																Thread.sleep(100);
-															} catch (InterruptedException e) {
-															}
-														}
-													} else {
-														System.out.println("countdown " + countdown);
-														double decimal = (current_issue.getArticles_list().size() * 7
-																+ 120 + current_issue.getAuthors().size() * 5) / 100;
-														System.out.println(decimal);
-														for (int i = 0; i < countdown; i++) {
-															final int percent = i;
-															SwingUtilities.invokeLater(new Runnable() {
-																public void run() {
-																	progressBar.setValue(percent == 0 ? 0
-																			: (int) Double.parseDouble(String
-																					.format("%s", percent / decimal)));
-																	progressBar.repaint();
-																}
-															});
-
-															try {
-																Thread.sleep(100);
-															} catch (InterruptedException e) {
-															}
-														}
-													}
-												}
-											});
-
-											issues.add(progress_msg);
-											issues.add(progressBar);
-											issues.repaint();
-											if (issue_keys.isEmpty()) {
-												f = exec.submit(new Runnable() {
-
-													public void run() {
-														try {
-
-															update_articles_local(current_issue, encoding);
-															get_authors_remote(issue_id, encoding, false);
-														} catch (IllegalStateException e1) {
-															// TODO
-															// Auto-generated
-															// catch
-															// block
-															e1.printStackTrace();
-														} catch (IOException e1) {
-															// TODO
-															// Auto-generated
-															// catch
-															// block
-															e1.printStackTrace();
-														}
-													}
-												});
-												futures.add(f);
-											} else {
-												if (dialogResult == JOptionPane.NO_OPTION) {
-													f = exec.submit(new Runnable() {
-
-														public void run() {
-															try {
-																update_articles_intersect(current_issue, encoding);
-
-																sync_authors_intersect(issue_id, encoding, false);
-															} catch (IllegalStateException | IOException e1) {
-																// TODO
-																// Auto-generated
-																// catch block
-																e1.printStackTrace();
-															}
-														}
-													});
-													futures.add(f);
-												} else if (dialogResult == JOptionPane.YES_OPTION) {
-													System.out.println("update local");
-													f = exec.submit(new Runnable() {
-
-														public void run() {
-															try {
-																update_articles_local(current_issue, encoding);
-
-																get_authors_remote(issue_id, encoding, false);
-															} catch (IllegalStateException | IOException e1) {
-																// TODO
-																// Auto-generated
-																// catch block
-																e1.printStackTrace();
-															}
-														}
-													});
-													futures.add(f);
-												}
-
+												e.printStackTrace();
 											}
 										}
-									} catch (IllegalStateException e1) {
+									});
+									futures.add(f);
 
-										e1.printStackTrace();
-									}
 								}
 							});
 							futures.add(f);
@@ -2601,8 +2487,7 @@ public class Main {
 										issues.repaint();
 										JOptionPane.showMessageDialog(null, "Sync completed.");
 										int dialogResult = JOptionPane.showConfirmDialog(null,
-												"Save changes to local database?",
-												"Warning", 1);
+												"Save changes to local database?", "Warning", 1);
 
 										if (dialogResult == JOptionPane.YES_OPTION) {
 											database_save();
@@ -2810,8 +2695,8 @@ public class Main {
 						if (reply == JOptionPane.YES_OPTION) {
 
 							int issue_row = table.getSelectedRow();
-							long selected_issue = (long) table.getModel().getValueAt(table.
-			                          convertRowIndexToModel(issue_row), 0);
+							long selected_issue = (long) table.getModel()
+									.getValueAt(table.convertRowIndexToModel(issue_row), 0);
 							if (issue_screens.get(selected_issue).isVisible()
 									|| !(issue_screens.get(selected_issue) == null)) {
 								ConcurrentHashMap<Long, JFrame> opened = article_screens.get(selected_issue);
@@ -2843,8 +2728,8 @@ public class Main {
 						JTable table = (JTable) e.getSource();
 						int modelRow = Integer.valueOf(e.getActionCommand());
 						int issue_row = table.getSelectedRow();
-						long selected_issue = (long) table.getModel().getValueAt(table.
-		                          convertRowIndexToModel(issue_row), 0);
+						long selected_issue = (long) table.getModel()
+								.getValueAt(table.convertRowIndexToModel(issue_row), 0);
 						if (!issue_screens.get(selected_issue).isVisible()) {
 							issue(selected_issue);
 						}
@@ -2857,8 +2742,8 @@ public class Main {
 						JTable table = (JTable) e.getSource();
 						int modelRow = Integer.valueOf(e.getActionCommand());
 						int issue_row = table.getSelectedRow();
-						long selected_issue = (long) table.getModel().getValueAt(table.
-		                          convertRowIndexToModel(issue_row), 0);
+						long selected_issue = (long) table.getModel()
+								.getValueAt(table.convertRowIndexToModel(issue_row), 0);
 
 						edit_issue(selected_issue);
 
@@ -3217,7 +3102,7 @@ public class Main {
 						issue.setPublished(published_check.isSelected() == true ? 1 : 0);
 						issue.setCurrent(current_check.isSelected() == true ? 1 : 0);
 						issue.setAccess_status(access_status_check.isSelected() == true ? 1 : 0);
-						
+
 						issue.setJournal(journal_storage.get(Long.parseLong(app_settings.get("journal_id"))));
 						// JOptionPane.showMessageDialog(null, "Deleted");
 
@@ -4000,8 +3885,7 @@ public class Main {
 
 									}
 									int dialogResult = JOptionPane.showConfirmDialog(null,
-											"Save changes to local database?",
-											"Warning", 1);
+											"Save changes to local database?", "Warning", 1);
 
 									if (dialogResult == JOptionPane.YES_OPTION) {
 										database_save();
@@ -4203,8 +4087,8 @@ public class Main {
 								"Delete ?", JOptionPane.YES_NO_OPTION);
 						if (reply == JOptionPane.YES_OPTION) {
 							int article_row = table.getSelectedRow();
-							long selected_article = (long) table.getModel().getValueAt(table.
-			                          convertRowIndexToModel(article_row), 0);
+							long selected_article = (long) table.getModel()
+									.getValueAt(table.convertRowIndexToModel(article_row), 0);
 							Issue current_issue = issue_storage.get(issue_id);
 							current_issue.remove_article(selected_article);
 							issue_storage.put(issue_id, current_issue);
@@ -4230,8 +4114,8 @@ public class Main {
 						articles.dispose();
 						int modelRow = Integer.valueOf(e.getActionCommand());
 						int article_row = table.getSelectedRow();
-						long selected_article = (long) table.getModel().getValueAt(table.
-		                 convertRowIndexToModel(article_row), 0);
+						long selected_article = (long) table.getModel()
+								.getValueAt(table.convertRowIndexToModel(article_row), 0);
 						if (article_screens.get(issue_id).get(selected_article).isVisible()) {
 							article_screens.get(issue_id).get(selected_article).dispose();
 						}
@@ -4246,8 +4130,8 @@ public class Main {
 						articles.dispose();
 						int modelRow = Integer.valueOf(e.getActionCommand());
 						int article_row = table.getSelectedRow();
-						long selected_article = (long) table.getModel().getValueAt(table.
-		                          convertRowIndexToModel(article_row), 0);
+						long selected_article = (long) table.getModel()
+								.getValueAt(table.convertRowIndexToModel(article_row), 0);
 						if (article_screens.get(issue_id).get(selected_article).isVisible()) {
 							article_screens.get(issue_id).get(selected_article).dispose();
 						}
@@ -5615,8 +5499,9 @@ public class Main {
 				JLabel lblCompetingInterests = new JLabel("Competing Interests");
 				lblCompetingInterests.setBounds(35, 40, 145, 15);
 				panelMetadata.add(lblCompetingInterests);
-				JTextArea txtCompetingInterests = new JTextArea(metadata_storage.get((long)article_id) == null?"":metadata_storage.get((long)article_id).getCompeting_interests());
-			
+				JTextArea txtCompetingInterests = new JTextArea(metadata_storage.get((long) article_id) == null ? ""
+						: metadata_storage.get((long) article_id).getCompeting_interests());
+
 				txtCompetingInterests.setColumns(4);
 				txtCompetingInterests.setBounds(35, 70, 240, 100);
 
@@ -5629,7 +5514,8 @@ public class Main {
 				lblFunding.setBounds(35, 175, 145, 15);
 				panelMetadata.add(lblFunding);
 
-				JTextArea txtFunding = new JTextArea(metadata_storage.get((long)article_id) == null?"":metadata_storage.get((long)article_id).getFunding());
+				JTextArea txtFunding = new JTextArea(metadata_storage.get((long) article_id) == null ? ""
+						: metadata_storage.get((long) article_id).getFunding());
 				if (meta != null) {
 					txtFunding.setText(meta.getFunding());
 				}
@@ -5650,14 +5536,14 @@ public class Main {
 						int result = JOptionPane.showConfirmDialog(null, panelMetadata, "Edit Metadata",
 								JOptionPane.OK_CANCEL_OPTION);
 						if (result == JOptionPane.OK_OPTION) {
-							Metadata meta = metadata_storage.get((long)article_id);
+							Metadata meta = metadata_storage.get((long) article_id);
 							if (meta == null) {
 								metadata_id++;
-								meta = new Metadata(metadata_id,article_id);
+								meta = new Metadata(metadata_id, article_id);
 							}
 							meta.setCompeting_interests(txtCompetingInterests.getText());
 							meta.setFunding(txtFunding.getText());
-							metadata_storage.put((long)article_id, meta);
+							metadata_storage.put((long) article_id, meta);
 						}
 					}
 				});
@@ -7041,7 +6927,7 @@ public class Main {
 									txtFunding.getText());
 						}
 						issue_screens.get(issue_id).dispose();
-						long id_create= articles_id+1;
+						long id_create = articles_id + 1;
 						articles_id++;
 						if (setting_meta.compareToIgnoreCase("true") == 0) {
 							metadata_storage.put(id_create, meta_update);
@@ -7053,12 +6939,13 @@ public class Main {
 						Issue current_issue = issue_storage.get(issue_id);
 						Article new_article = new Article(id_create, lblTitleText.getText(), entered_sectionID,
 								entered_pages, lblAbstract.getText(), datePickerAccepted.getDate(), current_issue,
-								datePickerAccepted.getDate(), journal_storage.get(Long.parseLong(app_settings.get("journal_id"))));
+								datePickerAccepted.getDate(),
+								journal_storage.get(Long.parseLong(app_settings.get("journal_id"))));
 						new_article.setDoi(doi.getText());
 						try {
 							String test_published = sdf.format(datePicker.getDate());
 							new_article.setDate_published(datePicker.getDate());
-							long id_publish_create= published_articles_id+1;
+							long id_publish_create = published_articles_id + 1;
 							published_articles_id++;
 							new_article.setPublished_pk(id_publish_create);
 						} catch (Exception ex) {
@@ -7087,21 +6974,21 @@ public class Main {
 						author_primary_storage.put(new_article.getId(), author_primary);
 						article.dispose();
 						issue_storage.put(issue_id, current_issue);
-						Object[] new_row = { new_article.getId(), issue_id, 1, "title", 1, "abstract", sdf.format(current),
-								"View", "Edit", "Delete" };
+						Object[] new_row = { new_article.getId(), issue_id, 1, "title", 1, "abstract",
+								sdf.format(current), "View", "Edit", "Delete" };
 						ConcurrentHashMap<Long, JFrame> issue_articles = article_screens.get(issue_id);
 						System.out.println(new_article.getId());
 						issue_articles.put(new_article.getId(), new JFrame());
 						article_screens.put(issue_id, issue_articles);
 						System.out.println(article_screens.get(issue_id).containsKey(new_article.getId()));
-						Metadata meta = metadata_storage.get((long)new_article.getId());
+						Metadata meta = metadata_storage.get((long) new_article.getId());
 						if (meta == null) {
 							metadata_id++;
-							meta = new Metadata(metadata_id,new_article.getId());
+							meta = new Metadata(metadata_id, new_article.getId());
 						}
 						meta.setCompeting_interests(txtCompetingInterests.getText());
 						meta.setFunding(txtFunding.getText());
-						metadata_storage.put((long)new_article.getId(), meta);
+						metadata_storage.put((long) new_article.getId(), meta);
 						issue(issue_id);
 					}
 					/*
@@ -8834,6 +8721,8 @@ public class Main {
 					issue_storage.put(issue_id, new_issue);
 					issue_screens.put(issue_id, new JFrame());
 					article_screens.put(issue_id, new ConcurrentHashMap<Long, JFrame>());
+					update_articles_local(new_issue, encoding);
+					get_authors_remote(issue_id, encoding, false);
 
 				}
 			}
@@ -10217,6 +10106,7 @@ public class Main {
 		cm.setDefaultMaxPerRoute(50);
 
 		httpClient = new DefaultHttpClient(cm, params);
+		httpClient.getParams().setBooleanParameter("http.protocol.expect-continue", true);
 
 		httpClient.getCredentialsProvider().setCredentials(new AuthScope(AuthScope.ANY_HOST, AuthScope.ANY_PORT),
 				new UsernamePasswordCredentials("ioannis", "root"));
