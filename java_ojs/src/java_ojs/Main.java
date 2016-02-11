@@ -202,7 +202,7 @@ public class Main {
 	private static Connection c = null;
 	private static Statement stmt = null;
 	private String api_insert_or_replace_statement = "INSERT OR REPLACE INTO API(journal_id, intersect_user_id, user_id, key) VALUES (?,?,?,?)";
-	private String journal_insert_or_replace_statement = "INSERT OR REPLACE INTO JOURNAL(id,path,seq,primary_locale,enabled) VALUES (?,?,?,?,?)";
+	private String journal_insert_or_replace_statement = "INSERT OR REPLACE INTO JOURNAL(id,path,seq,primary_locale,enabled,title) VALUES (?,?,?,?,?,?)";
 	private String settings_insert_or_replace_statement = "INSERT OR REPLACE INTO SETTING(NAME,VALUE) VALUES (?,?)";
 	private String issue_insert_or_replace_statement = "INSERT OR REPLACE INTO ISSUE(id,title,volume,number,year,show_title,show_volume,show_number,show_year,date_published,date_accepted, published, current, access_status) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
 	private String section_insert_or_replace_statement = "INSERT OR REPLACE INTO SECTION(id,title) VALUES (?,?)";
@@ -354,6 +354,7 @@ public class Main {
 				journal_prep.setFloat(3, current_journal.getSeq());
 				journal_prep.setString(4, current_journal.getPrimary_locale());
 				journal_prep.setFloat(5, current_journal.getEnabled());
+				journal_prep.setString(6, current_journal.getTitle());
 				journal_prep.executeUpdate();
 			}
 			int journal_issue_count = 0;
@@ -401,8 +402,8 @@ public class Main {
 					article_prep.setString(4, save_article.getPages());
 					article_prep.setString(5, save_article.getAbstract_text() == null ? ""
 							: Jsoup.parse((String) save_article.getAbstract_text()).text());
-					article_prep.setString(6, 
-							save_article.getDate_published() == null ? null : sdf.format(save_article.getDate_published()));
+					article_prep.setString(6, save_article.getDate_published() == null ? null
+							: sdf.format(save_article.getDate_published()));
 
 					article_prep.setString(7, sdf.format(
 							save_article.getDate_accepted() == null ? new Date() : save_article.getDate_accepted()));
@@ -586,7 +587,7 @@ public class Main {
 				System.out.println(pe);
 			}
 
-			System.out.println("Loading Issue data....");
+			System.out.println("Loading Journal data....");
 			ResultSet rs = c.createStatement().executeQuery("SELECT * FROM JOURNAL ORDER BY id ASC;");
 			while (rs.next()) {
 				long id = rs.getInt("id");
@@ -594,10 +595,11 @@ public class Main {
 				float seq = rs.getFloat("seq");
 				String primary_locale = rs.getString("primary_locale");
 				int enabled = rs.getInt("enabled");
+				String title = rs.getString("title");
 
 				Journal journal = null;
 				journal = new Journal(id, path, seq, primary_locale, enabled);
-
+				journal.setTitle(title);
 				// JOptionPane.showMessageDialog(null, "Deleted");
 
 				journal_storage.put(id, journal);
@@ -608,6 +610,7 @@ public class Main {
 
 			System.out.println(journal_storage);
 			rs.close();
+			System.out.println("Loading Issue data....");
 			rs = c.createStatement().executeQuery("SELECT * FROM ISSUE ORDER BY id ASC;");
 			while (rs.next()) {
 				long id = rs.getInt("id");
@@ -628,7 +631,7 @@ public class Main {
 				Issue issue = null;
 				issue = new Issue(id, title, volume, number, year, show_title, show_volume, show_number, show_year,
 						sdf.parse(date_accepted), sdf.parse(date), published, current, access_status,
-						new Journal(1, "up", (float) 2.0, "en_US", 0));
+						journal_storage.get(Long.parseLong(app_settings.get("journal_id"))));
 
 				// JOptionPane.showMessageDialog(null, "Deleted");
 
@@ -695,15 +698,16 @@ public class Main {
 				String doi = art_s.getString("doi");
 				Integer published_pk = art_s.getInt("published_pk");
 				Article article = null;
-				
+
 				article = new Article(id, title, section_id, pages, abstract_text, sdf.parse(date_accepted),
-						sdf.parse(date_submitted), new Journal(1, "up", (float) 2.0, "en_US", 0));
+						sdf.parse(date_submitted), journal_storage.get(Long.parseLong(app_settings.get("journal_id"))));
 				article.setDoi(doi);
 				article.setPublished_pk(published_pk == null ? -1 : published_pk);
-				try{
+				try {
 					Date test_date = sdf.parse(date);
 					article.setDate_published(test_date);
-				}catch(Exception e){}
+				} catch (Exception e) {
+				}
 
 				article_storage.put(id, article);
 				if (articles_id <= id) {
@@ -992,14 +996,14 @@ public class Main {
 			jsonf = new JsonFactory();
 			result = response.getEntity().getContent();
 			jsonParser = new JSONParser();
-
+			Journal j = null;
 			latest_json = new JSONObject();
 			try {
 				JSONObject latest_obj = (JSONObject) jsonParser.parse(IOUtils.toString(result));
 				String journal = Long.toString((long) latest_obj.get("id"));
 				app_settings.put("journal_id", journal);
 				if (!journal_storage.containsKey(Long.parseLong(journal))) {
-					Journal j = new Journal(Long.parseLong(journal), (String) latest_obj.get("path"),
+					j = new Journal(Long.parseLong(journal), (String) latest_obj.get("path"),
 							Float.parseFloat(Double.toString((double) latest_obj.get("seq"))),
 							(String) latest_obj.get("primary_locale"), (long) latest_obj.get("enabled"));
 					journal_storage.put(Long.parseLong(journal), j);
@@ -1016,6 +1020,59 @@ public class Main {
 			} catch (IOException exc) {
 
 				exc.printStackTrace();
+			}
+			if (j != null) {
+				httpGet = new HttpGet(
+						String.format("%s/get/setting/title/journal/%s/?format=json", base_url, j.getId()));
+				httpGet.addHeader("Authorization", "Basic " + encoding);
+				httpGet.setHeader("Accept", "application/json");
+				httpGet.addHeader("Content-type", "application/json");
+
+				response = null;
+				try {
+					response = httpClient.execute(httpGet);
+				} catch (ClientProtocolException e2) {
+
+					e2.printStackTrace();
+				} catch (IOException e2) {
+
+					e2.printStackTrace();
+				}
+				jsonf = new JsonFactory();
+				result = response.getEntity().getContent();
+				jsonParser = new JSONParser();
+				latest_json = new JSONObject();
+				System.out.println(String.format("%s/get/setting/title/journal/%s/?format=json", base_url, j.getId()));
+				System.out.println(response.getStatusLine().getStatusCode());
+				if (response.getStatusLine().getStatusCode() == 200) {
+					JSONObject setting_json = new JSONObject();
+					try {
+						JSONObject setting = (JSONObject) jsonParser.parse(IOUtils.toString(result));
+						System.out.println(setting.get("count"));
+						System.out.println(setting);
+						Long count = (Long) setting.get("count");
+						if (count == null || count == 0) {
+							exists = false;
+						} else {
+							JSONArray results = (JSONArray) setting.get("results");
+							System.out.println(results.get(0));
+							setting_json = (JSONObject) results.get(0);
+							j.setTitle((String) setting_json.get("setting_value"));
+							// new_issue.setShow_title((String)
+							// setting_json.get("setting_value"));
+						}
+					} catch (ParseException e) {
+
+						e.printStackTrace();
+					}
+				}
+				try {
+					InputStream is = response.getEntity().getContent();
+					is.close();
+				} catch (IOException exc) {
+
+					exc.printStackTrace();
+				}
 			}
 		} catch (ConnectException e) {
 			throw e;
@@ -1187,7 +1244,7 @@ public class Main {
 					+ " key CHAR(256) NOT NULL)";
 			stmt.executeUpdate(sql);
 			sql = "CREATE TABLE IF NOT EXISTS JOURNAL" + "(id INTEGER PRIMARY KEY," + " path CHAR(32) UNIQUE,"
-					+ "seq REAL," + "primary_locale CHAR(5)," + "enabled REAL)";
+					+ "seq REAL," + "primary_locale CHAR(5)," + " title CHAR(500)," + "enabled REAL)";
 			stmt.executeUpdate(sql);
 			sql = "CREATE TABLE IF NOT EXISTS ISSUE" + "(id INTEGER PRIMARY KEY," + " title CHAR(500) NOT NULL,"
 					+ "volume INTEGER," + "number INTEGER," + "year INTEGER," + "published INTEGER,"
@@ -1319,49 +1376,54 @@ public class Main {
 						if (status_online()) {
 							String user = username.getText();
 							String pass = String.valueOf(passwordField.getPassword());
-							BASE64Encoder encoder = new BASE64Encoder();
-							encoding = encoder.encode(String.format("%s:%s", user, pass).getBytes());
-							long user_id = -1;
-							try {
-								user_id = get_intersect_id();
-							} catch (IllegalStateException e1) {
-
-								e1.printStackTrace();
-							} catch (IOException e1) {
-
-								e1.printStackTrace();
-							}
-							try {
-								populate_api(Long.toString(user_id));
-							} catch (SQLException e1) {
-
-								e1.printStackTrace();
-							}
-							app_settings.put("intersect_user_id", Long.toString(user_id));
-							if (user_id != -1) {
-								logged_in = true;
-								login.setVisible(false);
-								login.dispose();
-								System.out.println(app_settings);
-								if (app_settings.get("key") == null || app_settings.get("key").compareTo("") == 0) {
-									api(false);
-								} else {
-									System.out.println(returning_view);
-									if (returning_view.compareTo("api") == 0) {
-										api(true);
-									} else if (returning_view.compareTo("settings") == 0) {
-										settings();
-									} else {
-										dashboard();
-									}
-								}
-							} else {
+							if (pass == null || user == null || user == "" || pass == "") {
 								JOptionPane.showMessageDialog(null, "Wrong username or password");
+							} else {
+								BASE64Encoder encoder = new BASE64Encoder();
+								encoding = encoder.encode(String.format("%s:%s", user, pass).getBytes());
+								long user_id = -1;
+								try {
+									user_id = get_intersect_id();
+								} catch (IllegalStateException e1) {
+
+									e1.printStackTrace();
+								} catch (IOException e1) {
+
+									e1.printStackTrace();
+								}
+								try {
+									populate_api(Long.toString(user_id));
+								} catch (SQLException e1) {
+
+									e1.printStackTrace();
+								}
+								app_settings.put("intersect_user_id", Long.toString(user_id));
+								if (user_id != -1) {
+									logged_in = true;
+									login.setVisible(false);
+									login.dispose();
+									System.out.println(app_settings);
+									if (app_settings.get("key") == null || app_settings.get("key").compareTo("") == 0) {
+										api(false);
+									} else {
+										System.out.println(returning_view);
+										if (returning_view.compareTo("api") == 0) {
+											api(true);
+										} else if (returning_view.compareTo("settings") == 0) {
+											settings();
+										} else {
+											dashboard();
+										}
+									}
+								} else {
+									JOptionPane.showMessageDialog(null, "Wrong username or password");
+								}
 							}
 						} else {
 							JOptionPane.showMessageDialog(null, "Unable to connect to server.");
 
 						}
+
 					}
 				};
 				username.addActionListener(actionSubmit);
@@ -1371,44 +1433,48 @@ public class Main {
 						if (status_online()) {
 							String user = username.getText();
 							String pass = String.valueOf(passwordField.getPassword());
-							BASE64Encoder encoder = new BASE64Encoder();
-							encoding = encoder.encode(String.format("%s:%s", user, pass).getBytes());
-							long user_id = -1;
-							try {
-								user_id = get_intersect_id();
+							if (user.isEmpty() == true || pass.isEmpty() || pass == null || user == null || user == "" || pass == "") {
+								JOptionPane.showMessageDialog(null, "Wrong username or password");
+							} else {
+								BASE64Encoder encoder = new BASE64Encoder();
+								encoding = encoder.encode(String.format("%s:%s", user, pass).getBytes());
+								long user_id = -1;
+								try {
+									user_id = get_intersect_id();
 
-							} catch (IllegalStateException e1) {
+								} catch (IllegalStateException e1) {
 
-								e1.printStackTrace();
-							} catch (IOException e1) {
+									e1.printStackTrace();
+								} catch (IOException e1) {
 
-								e1.printStackTrace();
-							}
-							try {
-								populate_api(Long.toString(user_id));
-							} catch (SQLException e1) {
+									e1.printStackTrace();
+								}
+								try {
+									populate_api(Long.toString(user_id));
+								} catch (SQLException e1) {
 
-								e1.printStackTrace();
-							}
-
-							app_settings.put("intersect_user_id", Long.toString(user_id));
-							if (user_id != -1) {
-								login.setVisible(false);
-								if (app_settings.get("key") == null || app_settings.get("key").compareTo("") == 0) {
-									api(false);
-								} else {
-									System.out.println(returning_view);
-									if (returning_view.compareTo("api") == 0) {
-										api(true);
-									} else if (returning_view.compareTo("settings") == 0) {
-										settings();
-									} else {
-										dashboard();
-									}
+									e1.printStackTrace();
 								}
 
-							} else {
-								JOptionPane.showMessageDialog(null, "Wrong username or password");
+								app_settings.put("intersect_user_id", Long.toString(user_id));
+								if (user_id != -1) {
+									login.setVisible(false);
+									if (app_settings.get("key") == null || app_settings.get("key").compareTo("") == 0) {
+										api(false);
+									} else {
+										System.out.println(returning_view);
+										if (returning_view.compareTo("api") == 0) {
+											api(true);
+										} else if (returning_view.compareTo("settings") == 0) {
+											settings();
+										} else {
+											dashboard();
+										}
+									}
+
+								} else {
+									JOptionPane.showMessageDialog(null, "Wrong username or password");
+								}
 							}
 						} else {
 							JOptionPane.showMessageDialog(null, "Unable to connect to server.");
@@ -3131,7 +3197,8 @@ public class Main {
 						issue.setPublished(published_check.isSelected() == true ? 1 : 0);
 						issue.setCurrent(current_check.isSelected() == true ? 1 : 0);
 						issue.setAccess_status(access_status_check.isSelected() == true ? 1 : 0);
-						issue.setJournal(new Journal(1, "up", (float) 2.0, "en_US", 0));
+						
+						issue.setJournal(journal_storage.get(Long.parseLong(app_settings.get("journal_id"))));
 						// JOptionPane.showMessageDialog(null, "Deleted");
 
 						list_issues.put(i_id, (long) 1);
@@ -3734,7 +3801,7 @@ public class Main {
 								});
 								futures.add(f);
 
-								 f = exec.submit(new Runnable() {
+								f = exec.submit(new Runnable() {
 
 									public void run() {
 										try {
@@ -6920,12 +6987,12 @@ public class Main {
 					try {
 
 						String test_accepted = sdf.format(datePickerAccepted.getDate());
-					//	String test_published = sdf.format(datePicker.getDate());
+						// String test_published =
+						// sdf.format(datePicker.getDate());
 
 					} catch (Exception ex) {
 						validation = false;
-						JOptionPane.showMessageDialog(null,
-								"Use dates from calendar for fields: Date Accepted");
+						JOptionPane.showMessageDialog(null, "Use dates from calendar for fields: Date Accepted");
 					}
 					if (lblFile.getText().contains("Not Uploaded")) {
 						validation = false;
@@ -6955,11 +7022,10 @@ public class Main {
 						list_issues.replace(issue_id, articles_id);
 						Issue current_issue = issue_storage.get(issue_id);
 						Article new_article = new Article(articles_id, lblTitleText.getText(), entered_sectionID,
-								entered_pages, lblAbstract.getText(), datePickerAccepted.getDate(),
-								current_issue, datePickerAccepted.getDate(),
-								new Journal(1, "up", (float) 2.0, "en_US", 0));
+								entered_pages, lblAbstract.getText(), datePickerAccepted.getDate(), current_issue,
+								datePickerAccepted.getDate(), journal_storage.get(Long.parseLong(app_settings.get("journal_id"))));
 						new_article.setDoi(doi.getText());
-						try{
+						try {
 							String test_published = sdf.format(datePicker.getDate());
 							new_article.setDate_published(datePicker.getDate());
 						} catch (Exception ex) {
@@ -9949,8 +10015,8 @@ public class Main {
 		obj.put("year", issue.getYear());
 
 		SimpleDateFormat upload_sdf = new SimpleDateFormat("yyyy-MM-dd");
-		String formated_date_published = issue.getDate_published() == null ? null : upload_sdf
-				.format(issue.getDate_published());
+		String formated_date_published = issue.getDate_published() == null ? null
+				: upload_sdf.format(issue.getDate_published());
 		obj.put("date_published", formated_date_published + "T00:00:00Z");
 		obj.put("published", issue.getPublished());
 		obj.put("show_volume", issue.getShow_volume());

@@ -6,6 +6,8 @@ import java.util.Date;
 public class Journal {
 	private long id;
 	private String path;
+
+	private String title;
 	private float seq;
 	private String primary_locale;
 	private long enabled;
@@ -47,6 +49,13 @@ public class Journal {
 		this.seq = seq;
 		this.primary_locale = primary_locale;
 		this.enabled = enabled;
+		this.title="";
+	}
+	public String getTitle() {
+		return title;
+	}
+	public void setTitle(String title) {
+		this.title = title;
 	}
 	
 }
