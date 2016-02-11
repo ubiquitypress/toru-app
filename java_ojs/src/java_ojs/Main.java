@@ -294,7 +294,7 @@ public class Main {
 				new_jsn.flush();
 				new_jsn.close();
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
+				
 				e.printStackTrace();
 			}
 
@@ -459,12 +459,12 @@ public class Main {
 			c.commit();
 			c.close();
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
+			
 			e.printStackTrace();
 		}
 
 		System.out.println("Done.");
-		JOptionPane.showMessageDialog(null, "Successfully updated database", "Save to Database",
+		JOptionPane.showMessageDialog(null, "Successfully updated local database", "Save to Database",
 				JOptionPane.INFORMATION_MESSAGE);
 
 	}
@@ -473,7 +473,7 @@ public class Main {
 		try {
 			Class.forName("org.sqlite.JDBC");
 		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
+			
 			e.printStackTrace();
 		}
 		c = DriverManager.getConnection("jdbc:sqlite:local_datatabse.db");
@@ -500,13 +500,13 @@ public class Main {
 			try {
 				profile_exists = get_profile_details(Long.parseLong(user_id));
 			} catch (NumberFormatException e) {
-				// TODO Auto-generated catch block
+				
 				e.printStackTrace();
 			} catch (IllegalStateException e) {
-				// TODO Auto-generated catch block
+				
 				e.printStackTrace();
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
+				
 				e.printStackTrace();
 			}
 			if (!profile_exists) {
@@ -539,7 +539,7 @@ public class Main {
 		try {
 			app_settings_exist();
 		} catch (SQLException e2) {
-			// TODO Auto-generated catch block
+			
 			e2.printStackTrace();
 		}
 
@@ -553,10 +553,10 @@ public class Main {
 				try {
 					obj = parser.parse(new FileReader("./settings.json"));
 				} catch (FileNotFoundException e1) {
-					// TODO Auto-generated catch block
+					
 					e1.printStackTrace();
 				} catch (IOException e1) {
-					// TODO Auto-generated catch block
+					
 					e1.printStackTrace();
 				}
 				JSONObject array = (JSONObject) obj;
@@ -830,16 +830,16 @@ public class Main {
 			// JOptionPane.showMessageDialog(null, "Dele
 			c.close();
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
+			
 			e.printStackTrace();
 		}
 		try {
 			latest_ids();
 		} catch (IllegalStateException e) {
-			// TODO Auto-generated catch block
+			
 			e.printStackTrace();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
+			
 			e.printStackTrace();
 		}
 		System.out.println("Done.");
@@ -857,11 +857,11 @@ public class Main {
 		try {
 			response = httpClient.execute(issue_exists);
 		} catch (ClientProtocolException e2) {
-			// TODO Auto-generated catch block
+			
 			delay = 1000;
 			return false;
 		} catch (IOException e2) {
-			// TODO Auto-generated catch block
+			
 			delay = 1000;
 			return false;
 		}
@@ -869,7 +869,7 @@ public class Main {
 			InputStream is = response.getEntity().getContent();
 			is.close();
 		} catch (IOException exc) {
-			// TODO Auto-generated catch block
+			
 			exc.printStackTrace();
 		}
 
@@ -889,10 +889,10 @@ public class Main {
 			try {
 				response = httpClient.execute(httpGet);
 			} catch (ClientProtocolException e2) {
-				// TODO Auto-generated catch block
+				
 				e2.printStackTrace();
 			} catch (IOException e2) {
-				// TODO Auto-generated catch block
+				
 				e2.printStackTrace();
 			}
 			JsonFactory jsonf = new JsonFactory();
@@ -909,7 +909,7 @@ public class Main {
 				user_url = (String) latest_obj.get("user");
 				exists = true;
 			} catch (ParseException e) {
-				// TODO Auto-generated catch block
+				
 				e.printStackTrace();
 			}
 
@@ -917,7 +917,7 @@ public class Main {
 				InputStream is = response.getEntity().getContent();
 				is.close();
 			} catch (IOException exc) {
-				// TODO Auto-generated catch block
+				
 				exc.printStackTrace();
 			}
 			httpGet = new HttpGet(user_url);
@@ -929,10 +929,10 @@ public class Main {
 			try {
 				response = httpClient.execute(httpGet);
 			} catch (ClientProtocolException e2) {
-				// TODO Auto-generated catch block
+				
 				e2.printStackTrace();
 			} catch (IOException e2) {
-				// TODO Auto-generated catch block
+				
 				e2.printStackTrace();
 			}
 			jsonf = new JsonFactory();
@@ -946,7 +946,7 @@ public class Main {
 				app_settings.put("user_id", Long.toString((long) latest_obj.get("id")));
 				exists = true;
 			} catch (ParseException e) {
-				// TODO Auto-generated catch block
+				
 
 				e.printStackTrace();
 			}
@@ -955,7 +955,7 @@ public class Main {
 				InputStream is = response.getEntity().getContent();
 				is.close();
 			} catch (IOException exc) {
-				// TODO Auto-generated catch block
+				
 				exc.printStackTrace();
 			}
 			httpGet = new HttpGet(journal_url);
@@ -967,10 +967,10 @@ public class Main {
 			try {
 				response = httpClient.execute(httpGet);
 			} catch (ClientProtocolException e2) {
-				// TODO Auto-generated catch block
+				
 				e2.printStackTrace();
 			} catch (IOException e2) {
-				// TODO Auto-generated catch block
+				
 				e2.printStackTrace();
 			}
 			jsonf = new JsonFactory();
@@ -990,7 +990,7 @@ public class Main {
 				}
 				exists = true;
 			} catch (ParseException e) {
-				// TODO Auto-generated catch block
+				
 
 				e.printStackTrace();
 			}
@@ -999,7 +999,7 @@ public class Main {
 				InputStream is = response.getEntity().getContent();
 				is.close();
 			} catch (IOException exc) {
-				// TODO Auto-generated catch block
+				
 				exc.printStackTrace();
 			}
 		} catch (ConnectException e) {
@@ -1021,10 +1021,10 @@ public class Main {
 			try {
 				response = httpClient.execute(httpGet);
 			} catch (ClientProtocolException e2) {
-				// TODO Auto-generated catch block
+				
 				e2.printStackTrace();
 			} catch (IOException e2) {
-				// TODO Auto-generated catch block
+				
 				e2.printStackTrace();
 			}
 			JsonFactory jsonf = new JsonFactory();
@@ -1043,7 +1043,7 @@ public class Main {
 					System.out.println(id);
 				}
 			} catch (ParseException e) {
-				// TODO Auto-generated catch block
+				
 				e.printStackTrace();
 			}
 			System.out.println(id);
@@ -1083,10 +1083,10 @@ public class Main {
 			try {
 				response = httpClient.execute(httpGet);
 			} catch (ClientProtocolException e2) {
-				// TODO Auto-generated catch block
+				
 				return latest = 1;
 			} catch (IOException e2) {
-				// TODO Auto-generated catch block
+				
 				return latest = 1;
 			}
 			JsonFactory jsonf = new JsonFactory();
@@ -1109,7 +1109,7 @@ public class Main {
 					System.out.println(latest);
 				}
 			} catch (ParseException e) {
-				// TODO Auto-generated catch block
+				
 				e.printStackTrace();
 			}
 			System.out.println(latest);
@@ -1303,16 +1303,16 @@ public class Main {
 							try {
 								user_id = get_intersect_id();
 							} catch (IllegalStateException e1) {
-								// TODO Auto-generated catch block
+								
 								e1.printStackTrace();
 							} catch (IOException e1) {
-								// TODO Auto-generated catch block
+								
 								e1.printStackTrace();
 							}
 							try {
 								populate_api(Long.toString(user_id));
 							} catch (SQLException e1) {
-								// TODO Auto-generated catch block
+								
 								e1.printStackTrace();
 							}
 							app_settings.put("intersect_user_id", Long.toString(user_id));
@@ -1356,16 +1356,16 @@ public class Main {
 								user_id = get_intersect_id();
 
 							} catch (IllegalStateException e1) {
-								// TODO Auto-generated catch block
+								
 								e1.printStackTrace();
 							} catch (IOException e1) {
-								// TODO Auto-generated catch block
+								
 								e1.printStackTrace();
 							}
 							try {
 								populate_api(Long.toString(user_id));
 							} catch (SQLException e1) {
-								// TODO Auto-generated catch block
+								
 								e1.printStackTrace();
 							}
 
@@ -2338,10 +2338,10 @@ public class Main {
 										try {
 											new_issues = update_get_issues_from_remote(encoding, false);
 										} catch (IllegalStateException e) {
-											// TODO Auto-generated catch block
+											
 											e.printStackTrace();
 										} catch (IOException e) {
-											// TODO Auto-generated catch block
+											
 											e.printStackTrace();
 										}
 											}});
@@ -2472,7 +2472,7 @@ public class Main {
 											}
 										}
 									} catch (IllegalStateException e1) {
-										// TODO Auto-generated catch block
+										
 										e1.printStackTrace();
 									}
 								}
@@ -2485,10 +2485,10 @@ public class Main {
 										try {
 											future.get();
 										} catch (InterruptedException e1) {
-											// TODO Auto-generated catch block
+											
 											e1.printStackTrace();
 										} catch (ExecutionException e1) {
-											// TODO Auto-generated catch block
+											
 											e1.printStackTrace();
 										}
 									}
@@ -3704,7 +3704,7 @@ public class Main {
 											update_articles_intersect(current_issue, encoding);
 
 										} catch (IllegalStateException | IOException e1) {
-											// TODO Auto-generated catch block
+											
 											e1.printStackTrace();
 										}
 									}
@@ -3747,7 +3747,7 @@ public class Main {
 										try {
 											update_articles_local(current_issue, encoding);
 										} catch (IllegalStateException | IOException e1) {
-											// TODO Auto-generated catch block
+											
 											e1.printStackTrace();
 										}
 									}
@@ -3796,19 +3796,19 @@ public class Main {
 								public void run() {
 									try {
 										update_articles_local(current_issue, encoding);
-										articles.dispose();
-										issue(issue_id);
+										
 									} catch (IllegalStateException e1) {
-										// TODO Auto-generated catch block
+										
 										e1.printStackTrace();
 									} catch (IOException e1) {
-										// TODO Auto-generated catch block
+										
 										e1.printStackTrace();
 									}
 								}
 							});
 						}
 						;
+						boolean update_q=update_table;
 						article_progress_executor.execute(new Runnable() {
 							public void run() {
 								try {
@@ -3829,15 +3829,16 @@ public class Main {
 													try {
 														sync_authors_intersect(issue_id, encoding, false);
 													} catch (IllegalStateException e2) {
-														// TODO Auto-generated catch block
+														
 														e2.printStackTrace();
 													} catch (IOException e2) {
-														// TODO Auto-generated catch block
+														
 														e2.printStackTrace();
 													}
 												}
 											});
 
+											futures.add(f);
 										} else if (dialogResult == JOptionPane.YES_OPTION) {
 											Future<?> f = exec.submit(new Runnable() {
 
@@ -3846,18 +3847,25 @@ public class Main {
 													try {
 														get_authors_remote(issue_id, encoding, false);
 													} catch (IllegalStateException e1) {
-														// TODO Auto-generated catch block
+														
 														e1.printStackTrace();
 													} catch (IOException e1) {
-														// TODO Auto-generated catch block
+														
 														e1.printStackTrace();
 													}
 												}
 											});
+											futures.add(f);
 										}
 									}
+									for (Future<?> f : futures) {
+										f.get();
+
+									}
+									articles.dispose();
+									issue(issue_id);
 									//change
-									if (true) {
+									if (update_q) {
 										ConcurrentHashMap<Long, Article> all_articles = current_issue.getArticles_list();
 										Set<Long> keys = all_articles.keySet();
 										ArrayList<List<Object>> rowData = new ArrayList<List<Object>>();
@@ -3881,10 +3889,10 @@ public class Main {
 										try {
 											get_authors_remote(issue_id, encoding, false);
 										} catch (IllegalStateException e1) {
-											// TODO Auto-generated catch block
+											
 											e1.printStackTrace();
 										} catch (IOException e1) {
-											// TODO Auto-generated catch block
+											
 											e1.printStackTrace();
 										}
 										for (long id : keys) {
@@ -3946,10 +3954,10 @@ public class Main {
 									articles.remove(progressBar);
 									articles.repaint();
 								} catch (InterruptedException e3) {
-									// TODO Auto-generated catch block
+									
 									e3.printStackTrace();
 								} catch (ExecutionException e3) {
-									// TODO Auto-generated catch block
+									
 									e3.printStackTrace();
 								}
 							}
@@ -4901,7 +4909,7 @@ public class Main {
 										Files.copy(Paths.get(files.get((long) key).getPath()), Paths.get(output_path),
 												StandardCopyOption.REPLACE_EXISTING);
 									} catch (IOException e1) {
-										// TODO Auto-generated catch block
+										
 										JOptionPane.showMessageDialog(null,
 												String.format("File %s does not exist locally.",
 														files.get((long) key).getPath().substring(
@@ -7124,10 +7132,10 @@ public class Main {
 		try {
 			response = httpClient.execute(article_exists);
 		} catch (ClientProtocolException e2) {
-			// TODO Auto-generated catch block
+			
 			e2.printStackTrace();
 		} catch (IOException e2) {
-			// TODO Auto-generated catch block
+			
 			e2.printStackTrace();
 		}
 		boolean article_created = false;
@@ -7138,7 +7146,7 @@ public class Main {
 			InputStream is = response.getEntity().getContent();
 			is.close();
 		} catch (IOException exc) {
-			// TODO Auto-generated catch block
+			
 			exc.printStackTrace();
 		}
 		if (article_created) {
@@ -7152,17 +7160,17 @@ public class Main {
 			try {
 				response = httpClient.execute(httpPut);
 			} catch (ClientProtocolException e2) {
-				// TODO Auto-generated catch block
+				
 				e2.printStackTrace();
 			} catch (IOException e2) {
-				// TODO Auto-generated catch block
+				
 				e2.printStackTrace();
 			}
 			try {
 				InputStream is = response.getEntity().getContent();
 				is.close();
 			} catch (IOException exc) {
-				// TODO Auto-generated catch block
+				
 				exc.printStackTrace();
 			}
 		} else {
@@ -7176,17 +7184,17 @@ public class Main {
 			try {
 				response = httpClient.execute(createArticle);
 			} catch (ClientProtocolException e2) {
-				// TODO Auto-generated catch block
+				
 				e2.printStackTrace();
 			} catch (IOException e2) {
-				// TODO Auto-generated catch block
+				
 				e2.printStackTrace();
 			}
 			try {
 				InputStream is = response.getEntity().getContent();
 				is.close();
 			} catch (IOException exc) {
-				// TODO Auto-generated catch block
+				
 				exc.printStackTrace();
 			}
 		}
@@ -7202,10 +7210,10 @@ public class Main {
 		try {
 			response = httpClient.execute(settingCheck);
 		} catch (ClientProtocolException e2) {
-			// TODO Auto-generated catch block
+			
 			e2.printStackTrace();
 		} catch (IOException e2) {
-			// TODO Auto-generated catch block
+			
 			e2.printStackTrace();
 		}
 		JsonFactory jsonf = new JsonFactory();
@@ -7232,14 +7240,14 @@ public class Main {
 				setting_json.put("setting_value", article.getTitle());
 			}
 		} catch (ParseException e) {
-			// TODO Auto-generated catch block
+			
 			e.printStackTrace();
 		}
 		try {
 			InputStream is = response.getEntity().getContent();
 			is.close();
 		} catch (IOException exc) {
-			// TODO Auto-generated catch block
+			
 			exc.printStackTrace();
 		}
 		System.out.println(setting_json.isEmpty());
@@ -7267,10 +7275,10 @@ public class Main {
 			try {
 				response = httpClient.execute(httpPost);
 			} catch (ClientProtocolException e2) {
-				// TODO Auto-generated catch block
+				
 				e2.printStackTrace();
 			} catch (IOException e2) {
-				// TODO Auto-generated catch block
+				
 				e2.printStackTrace();
 			}
 		} else {
@@ -7291,10 +7299,10 @@ public class Main {
 			try {
 				response = httpClient.execute(httpPost);
 			} catch (ClientProtocolException e2) {
-				// TODO Auto-generated catch block
+				
 				e2.printStackTrace();
 			} catch (IOException e2) {
-				// TODO Auto-generated catch block
+				
 				e2.printStackTrace();
 			}
 		}
@@ -7302,7 +7310,7 @@ public class Main {
 			InputStream is = response.getEntity().getContent();
 			is.close();
 		} catch (IOException exc) {
-			// TODO Auto-generated catch block
+			
 			exc.printStackTrace();
 		}
 		settingCheck = new HttpGet(
@@ -7316,10 +7324,10 @@ public class Main {
 		try {
 			response = httpClient.execute(settingCheck);
 		} catch (ClientProtocolException e2) {
-			// TODO Auto-generated catch block
+			
 			e2.printStackTrace();
 		} catch (IOException e2) {
-			// TODO Auto-generated catch block
+			
 			e2.printStackTrace();
 		}
 		jsonf = new JsonFactory();
@@ -7346,14 +7354,14 @@ public class Main {
 				setting_json.put("setting_value", article.getAbstract_text());
 			}
 		} catch (ParseException e) {
-			// TODO Auto-generated catch block
+			
 			e.printStackTrace();
 		}
 		try {
 			InputStream is = response.getEntity().getContent();
 			is.close();
 		} catch (IOException exc) {
-			// TODO Auto-generated catch block
+			
 			exc.printStackTrace();
 		}
 		System.out.println(setting_json.isEmpty());
@@ -7382,10 +7390,10 @@ public class Main {
 			try {
 				response = httpClient.execute(httpPost);
 			} catch (ClientProtocolException e2) {
-				// TODO Auto-generated catch block
+				
 				e2.printStackTrace();
 			} catch (IOException e2) {
-				// TODO Auto-generated catch block
+				
 				e2.printStackTrace();
 			}
 		} else {
@@ -7406,10 +7414,10 @@ public class Main {
 			try {
 				response = httpClient.execute(httpPost);
 			} catch (ClientProtocolException e2) {
-				// TODO Auto-generated catch block
+				
 				e2.printStackTrace();
 			} catch (IOException e2) {
-				// TODO Auto-generated catch block
+				
 				e2.printStackTrace();
 			}
 		}
@@ -7417,7 +7425,7 @@ public class Main {
 			InputStream is = response.getEntity().getContent();
 			is.close();
 		} catch (IOException exc) {
-			// TODO Auto-generated catch block
+			
 			exc.printStackTrace();
 		}
 		settingCheck = new HttpGet(
@@ -7431,10 +7439,10 @@ public class Main {
 		try {
 			response = httpClient.execute(settingCheck);
 		} catch (ClientProtocolException e2) {
-			// TODO Auto-generated catch block
+			
 			e2.printStackTrace();
 		} catch (IOException e2) {
-			// TODO Auto-generated catch block
+			
 			e2.printStackTrace();
 		}
 		jsonf = new JsonFactory();
@@ -7461,14 +7469,14 @@ public class Main {
 				setting_json.put("setting_value", article.getDoi());
 			}
 		} catch (ParseException e) {
-			// TODO Auto-generated catch block
+			
 			e.printStackTrace();
 		}
 		try {
 			InputStream is = response.getEntity().getContent();
 			is.close();
 		} catch (IOException exc) {
-			// TODO Auto-generated catch block
+			
 			exc.printStackTrace();
 		}
 		System.out.println(setting_json.isEmpty());
@@ -7497,10 +7505,10 @@ public class Main {
 			try {
 				response = httpClient.execute(httpPost);
 			} catch (ClientProtocolException e2) {
-				// TODO Auto-generated catch block
+				
 				e2.printStackTrace();
 			} catch (IOException e2) {
-				// TODO Auto-generated catch block
+				
 				e2.printStackTrace();
 			}
 		} else {
@@ -7521,10 +7529,10 @@ public class Main {
 			try {
 				response = httpClient.execute(httpPost);
 			} catch (ClientProtocolException e2) {
-				// TODO Auto-generated catch block
+				
 				e2.printStackTrace();
 			} catch (IOException e2) {
-				// TODO Auto-generated catch block
+				
 				e2.printStackTrace();
 			}
 		}
@@ -7532,7 +7540,7 @@ public class Main {
 			InputStream is = response.getEntity().getContent();
 			is.close();
 		} catch (IOException exc) {
-			// TODO Auto-generated catch block
+			
 			exc.printStackTrace();
 		}
 		/*
@@ -7561,10 +7569,10 @@ public class Main {
 		try {
 			response = httpClient.execute(issue_exists);
 		} catch (ClientProtocolException e2) {
-			// TODO Auto-generated catch block
+			
 			e2.printStackTrace();
 		} catch (IOException e2) {
-			// TODO Auto-generated catch block
+			
 			e2.printStackTrace();
 		}
 		boolean issue_created = false;
@@ -7575,7 +7583,7 @@ public class Main {
 			InputStream is = response.getEntity().getContent();
 			is.close();
 		} catch (IOException exc) {
-			// TODO Auto-generated catch block
+			
 			exc.printStackTrace();
 		}
 		if (issue_created) {
@@ -7589,17 +7597,17 @@ public class Main {
 			try {
 				response = httpClient.execute(httpPut);
 			} catch (ClientProtocolException e2) {
-				// TODO Auto-generated catch block
+				
 				e2.printStackTrace();
 			} catch (IOException e2) {
-				// TODO Auto-generated catch block
+				
 				e2.printStackTrace();
 			}
 			try {
 				InputStream is = response.getEntity().getContent();
 				is.close();
 			} catch (IOException exc) {
-				// TODO Auto-generated catch block
+				
 				exc.printStackTrace();
 			}
 		} else {
@@ -7613,17 +7621,17 @@ public class Main {
 			try {
 				response = httpClient.execute(createIssue);
 			} catch (ClientProtocolException e2) {
-				// TODO Auto-generated catch block
+				
 				e2.printStackTrace();
 			} catch (IOException e2) {
-				// TODO Auto-generated catch block
+				
 				e2.printStackTrace();
 			}
 			try {
 				InputStream is = response.getEntity().getContent();
 				is.close();
 			} catch (IOException exc) {
-				// TODO Auto-generated catch block
+				
 				exc.printStackTrace();
 			}
 		}
@@ -7639,10 +7647,10 @@ public class Main {
 		try {
 			response = httpClient.execute(settingCheck);
 		} catch (ClientProtocolException e2) {
-			// TODO Auto-generated catch block
+			
 			e2.printStackTrace();
 		} catch (IOException e2) {
-			// TODO Auto-generated catch block
+			
 			e2.printStackTrace();
 		}
 		JsonFactory jsonf = new JsonFactory();
@@ -7669,14 +7677,14 @@ public class Main {
 				setting_json.put("setting_value", issue.getTitle());
 			}
 		} catch (ParseException e) {
-			// TODO Auto-generated catch block
+			
 			e.printStackTrace();
 		}
 		try {
 			InputStream is = response.getEntity().getContent();
 			is.close();
 		} catch (IOException exc) {
-			// TODO Auto-generated catch block
+			
 			exc.printStackTrace();
 		}
 		System.out.println(setting_json.isEmpty());
@@ -7704,10 +7712,10 @@ public class Main {
 			try {
 				response = httpClient.execute(httpPost);
 			} catch (ClientProtocolException e2) {
-				// TODO Auto-generated catch block
+				
 				e2.printStackTrace();
 			} catch (IOException e2) {
-				// TODO Auto-generated catch block
+				
 				e2.printStackTrace();
 			}
 		} else {
@@ -7720,10 +7728,10 @@ public class Main {
 			try {
 				response = httpClient.execute(httpPost);
 			} catch (ClientProtocolException e2) {
-				// TODO Auto-generated catch block
+				
 				e2.printStackTrace();
 			} catch (IOException e2) {
-				// TODO Auto-generated catch block
+				
 				e2.printStackTrace();
 			}
 		}
@@ -7731,7 +7739,7 @@ public class Main {
 			InputStream is = response.getEntity().getContent();
 			is.close();
 		} catch (IOException exc) {
-			// TODO Auto-generated catch block
+			
 			exc.printStackTrace();
 		}
 		/*
@@ -7763,10 +7771,10 @@ public class Main {
 		try {
 			response = httpClient.execute(issue_exists);
 		} catch (ClientProtocolException e2) {
-			// TODO Auto-generated catch block
+			
 			e2.printStackTrace();
 		} catch (IOException e2) {
-			// TODO Auto-generated catch block
+			
 			e2.printStackTrace();
 		}
 		boolean issue_created = false;
@@ -7777,7 +7785,7 @@ public class Main {
 			InputStream is = response.getEntity().getContent();
 			is.close();
 		} catch (IOException exc) {
-			// TODO Auto-generated catch block
+			
 			exc.printStackTrace();
 		}
 		if (!issue_created) {
@@ -7802,10 +7810,10 @@ public class Main {
 			try {
 				response = httpClient.execute(article_files);
 			} catch (ClientProtocolException e2) {
-				// TODO Auto-generated catch block
+				
 				e2.printStackTrace();
 			} catch (IOException e2) {
-				// TODO Auto-generated catch block
+				
 				e2.printStackTrace();
 			}
 			JsonFactory jsonf = new JsonFactory();
@@ -7824,7 +7832,7 @@ public class Main {
 					InputStream is = response.getEntity().getContent();
 					is.close();
 				} catch (IOException exc) {
-					// TODO Auto-generated catch block
+					
 					exc.printStackTrace();
 				}
 				System.out.println(setting);
@@ -7845,7 +7853,7 @@ public class Main {
 					}
 				}
 			} catch (ParseException e) {
-				// TODO Auto-generated catch block
+				
 				e.printStackTrace();
 			}
 
@@ -7896,7 +7904,7 @@ public class Main {
 			InputStream is = response.getEntity().getContent();
 			is.close();
 		} catch (IOException exc) {
-			// TODO Auto-generated catch block
+			
 			exc.printStackTrace();
 		}
 		if (!issue_created) {
@@ -7915,11 +7923,11 @@ public class Main {
 		try {
 			response = httpClient.execute(published_articles);
 		} catch (ClientProtocolException e2) {
-			// TODO Auto-generated catch block
+			
 			JOptionPane.showMessageDialog(null, "Lost connection to server.");
 			return;
 		} catch (IOException e2) {
-			// TODO Auto-generated catch block
+			
 			JOptionPane.showMessageDialog(null, "Lost connection to server.");
 			return;
 		}
@@ -7936,7 +7944,7 @@ public class Main {
 				InputStream is = response.getEntity().getContent();
 				is.close();
 			} catch (IOException exc) {
-				// TODO Auto-generated catch block
+				
 				exc.printStackTrace();
 			}
 			System.out.println(setting);
@@ -7976,7 +7984,7 @@ public class Main {
 									InputStream is = response.getEntity().getContent();
 									is.close();
 								} catch (IOException exc) {
-									// TODO Auto-generated catch block
+									
 									exc.printStackTrace();
 								}
 								HttpGet article_settings = new HttpGet(
@@ -8024,7 +8032,7 @@ public class Main {
 										InputStream is = response.getEntity().getContent();
 										is.close();
 									} catch (IOException exc) {
-										// TODO Auto-generated catch block
+										
 										exc.printStackTrace();
 									}
 								} else {
@@ -8062,7 +8070,7 @@ public class Main {
 										InputStream is = response.getEntity().getContent();
 										is.close();
 									} catch (IOException exc) {
-										// TODO Auto-generated catch block
+										
 										exc.printStackTrace();
 									}
 								} else {
@@ -8100,7 +8108,7 @@ public class Main {
 										InputStream is = response.getEntity().getContent();
 										is.close();
 									} catch (IOException exc) {
-										// TODO Auto-generated catch block
+										
 										exc.printStackTrace();
 									}
 								} else {
@@ -8133,7 +8141,7 @@ public class Main {
 										InputStream is = response.getEntity().getContent();
 										is.close();
 									} catch (IOException exc) {
-										// TODO Auto-generated catch block
+										
 										exc.printStackTrace();
 									}
 								}
@@ -8142,7 +8150,7 @@ public class Main {
 								articles_list.add(new_article);
 
 							} catch (ParseException e) {
-								// TODO Auto-generated catch block
+								
 								e.printStackTrace();
 							}
 
@@ -8150,7 +8158,7 @@ public class Main {
 							JOptionPane.showMessageDialog(null, "Lost connection to server.");
 							return;
 						} catch (IOException e2) {
-							// TODO Auto-generated catch block
+							
 							JOptionPane.showMessageDialog(null, "Lost connection to server.");
 							return;
 						}
@@ -8161,7 +8169,7 @@ public class Main {
 
 			}
 		} catch (ParseException e) {
-			// TODO Auto-generated catch block
+			
 			e.printStackTrace();
 		}
 		for (Article a : articles_list) {
@@ -8192,7 +8200,7 @@ public class Main {
 						InputStream is = response.getEntity().getContent();
 						is.close();
 					} catch (IOException exc) {
-						// TODO Auto-generated catch block
+						
 						exc.printStackTrace();
 					}
 					System.out.println(setting);
@@ -8211,7 +8219,7 @@ public class Main {
 						}
 					}
 				} catch (ParseException e) {
-					// TODO Auto-generated catch block
+					
 					e.printStackTrace();
 				}
 				a.setIssue_fk(issue);
@@ -8224,7 +8232,7 @@ public class Main {
 				JOptionPane.showMessageDialog(null, "Lost connection to server.");
 				return;
 			} catch (IOException e2) {
-				// TODO Auto-generated catch block
+				
 				JOptionPane.showMessageDialog(null, "Lost connection to server.");
 				return;
 			}
@@ -8249,10 +8257,10 @@ public class Main {
 			try {
 				response = httpClient.execute(settingCheck);
 			} catch (ClientProtocolException e2) {
-				// TODO Auto-generated catch block
+				
 				e2.printStackTrace();
 			} catch (IOException e2) {
-				// TODO Auto-generated catch block
+				
 				e2.printStackTrace();
 			}
 			JsonFactory jsonf = new JsonFactory();
@@ -8272,11 +8280,11 @@ public class Main {
 					InputStream is = response.getEntity().getContent();
 					is.close();
 				} catch (IOException exc) {
-					// TODO Auto-generated catch block
+					
 					exc.printStackTrace();
 				}
 			} catch (ParseException e) {
-				// TODO Auto-generated catch block
+				
 				e.printStackTrace();
 			}
 			return journal;
@@ -8299,10 +8307,10 @@ public class Main {
 		try {
 			response = httpClient.execute(httpGet);
 		} catch (ClientProtocolException e2) {
-			// TODO Auto-generated catch block
+			
 			e2.printStackTrace();
 		} catch (IOException e2) {
-			// TODO Auto-generated catch block
+			
 			e2.printStackTrace();
 		}
 		JsonFactory jsonf = new JsonFactory();
@@ -8347,10 +8355,10 @@ public class Main {
 				try {
 					response = httpClient.execute(settingCheck);
 				} catch (ClientProtocolException e2) {
-					// TODO Auto-generated catch block
+					
 					e2.printStackTrace();
 				} catch (IOException e2) {
-					// TODO Auto-generated catch block
+					
 					e2.printStackTrace();
 				}
 				jsonf = new JsonFactory();
@@ -8375,7 +8383,7 @@ public class Main {
 						// setting_json.get("setting_value"));
 					}
 				} catch (ParseException e) {
-					// TODO Auto-generated catch block
+					
 					e.printStackTrace();
 				}
 				issue_storage.put(issue_id, new_issue);
@@ -8393,14 +8401,14 @@ public class Main {
 			 * JSONToIssue(issue_json, issue); }
 			 */
 		} catch (ParseException e) {
-			// TODO Auto-generated catch block
+			
 			e.printStackTrace();
 		}
 		try {
 			InputStream is = response.getEntity().getContent();
 			is.close();
 		} catch (IOException exc) {
-			// TODO Auto-generated catch block
+			
 			exc.printStackTrace();
 		}
 	}
@@ -8422,10 +8430,10 @@ public class Main {
 		try {
 			response = httpClient.execute(httpGet);
 		} catch (ClientProtocolException e2) {
-			// TODO Auto-generated catch block
+			
 			e2.printStackTrace();
 		} catch (IOException e2) {
-			// TODO Auto-generated catch block
+			
 			e2.printStackTrace();
 		}
 		JsonFactory jsonf = new JsonFactory();
@@ -8473,10 +8481,10 @@ public class Main {
 					try {
 						response = httpClient.execute(settingCheck);
 					} catch (ClientProtocolException e2) {
-						// TODO Auto-generated catch block
+						
 						e2.printStackTrace();
 					} catch (IOException e2) {
-						// TODO Auto-generated catch block
+						
 						e2.printStackTrace();
 					}
 					jsonf = new JsonFactory();
@@ -8501,7 +8509,7 @@ public class Main {
 							// setting_json.get("setting_value"));
 						}
 					} catch (ParseException e) {
-						// TODO Auto-generated catch block
+						
 						e.printStackTrace();
 					}
 
@@ -8522,14 +8530,14 @@ public class Main {
 			 * JSONToIssue(issue_json, issue); }
 			 */
 		} catch (ParseException e) {
-			// TODO Auto-generated catch block
+			
 			e.printStackTrace();
 		}
 		try {
 			InputStream is = response.getEntity().getContent();
 			is.close();
 		} catch (IOException exc) {
-			// TODO Auto-generated catch block
+			
 			exc.printStackTrace();
 		}
 		return new_issues;
@@ -8553,10 +8561,10 @@ public class Main {
 		try {
 			response = httpClient.execute(httpGet);
 		} catch (ClientProtocolException e2) {
-			// TODO Auto-generated catch block
+			
 			e2.printStackTrace();
 		} catch (IOException e2) {
-			// TODO Auto-generated catch block
+			
 			e2.printStackTrace();
 		}
 		JsonFactory jsonf = new JsonFactory();
@@ -8572,7 +8580,7 @@ public class Main {
 				InputStream is = response.getEntity().getContent();
 				is.close();
 			} catch (IOException exc) {
-				// TODO Auto-generated catch block
+				
 				exc.printStackTrace();
 			}
 			for (int i = 0; i < author_ids.size(); i++) {
@@ -8586,10 +8594,10 @@ public class Main {
 				try {
 					response = httpClient.execute(httpGet);
 				} catch (ClientProtocolException e2) {
-					// TODO Auto-generated catch block
+					
 					e2.printStackTrace();
 				} catch (IOException e2) {
-					// TODO Auto-generated catch block
+					
 					e2.printStackTrace();
 				}
 				result = response.getEntity().getContent();
@@ -8620,10 +8628,10 @@ public class Main {
 				try {
 					response = httpClient.execute(settingCheck);
 				} catch (ClientProtocolException e2) {
-					// TODO Auto-generated catch block
+					
 					e2.printStackTrace();
 				} catch (IOException e2) {
-					// TODO Auto-generated catch block
+					
 					e2.printStackTrace();
 				}
 				jsonf = new JsonFactory();
@@ -8646,14 +8654,14 @@ public class Main {
 							new_author.setBio((String) setting_json.get("setting_value"));
 						}
 					} catch (ParseException e) {
-						// TODO Auto-generated catch block
+						
 						e.printStackTrace();
 					}
 					try {
 						InputStream is = response.getEntity().getContent();
 						is.close();
 					} catch (IOException exc) {
-						// TODO Auto-generated catch block
+						
 						exc.printStackTrace();
 					}
 				} else {
@@ -8671,10 +8679,10 @@ public class Main {
 				try {
 					response = httpClient.execute(settingCheck);
 				} catch (ClientProtocolException e2) {
-					// TODO Auto-generated catch block
+					
 					e2.printStackTrace();
 				} catch (IOException e2) {
-					// TODO Auto-generated catch block
+					
 					e2.printStackTrace();
 				}
 				jsonf = new JsonFactory();
@@ -8698,14 +8706,14 @@ public class Main {
 							new_author.setOrcid((String) setting_json.get("setting_value"));
 						}
 					} catch (ParseException e) {
-						// TODO Auto-generated catch block
+						
 						e.printStackTrace();
 					}
 					try {
 						InputStream is = response.getEntity().getContent();
 						is.close();
 					} catch (IOException exc) {
-						// TODO Auto-generated catch block
+						
 						exc.printStackTrace();
 					}
 				} else {
@@ -8723,10 +8731,10 @@ public class Main {
 				try {
 					response = httpClient.execute(settingCheck);
 				} catch (ClientProtocolException e2) {
-					// TODO Auto-generated catch block
+					
 					e2.printStackTrace();
 				} catch (IOException e2) {
-					// TODO Auto-generated catch block
+					
 					e2.printStackTrace();
 				}
 				jsonf = new JsonFactory();
@@ -8750,14 +8758,14 @@ public class Main {
 							new_author.setDepartment((String) setting_json.get("setting_value"));
 						}
 					} catch (ParseException e) {
-						// TODO Auto-generated catch block
+						
 						e.printStackTrace();
 					}
 					try {
 						InputStream is = response.getEntity().getContent();
 						is.close();
 					} catch (IOException exc) {
-						// TODO Auto-generated catch block
+						
 						exc.printStackTrace();
 					}
 				} else {
@@ -8775,10 +8783,10 @@ public class Main {
 				try {
 					response = httpClient.execute(settingCheck);
 				} catch (ClientProtocolException e2) {
-					// TODO Auto-generated catch block
+					
 					e2.printStackTrace();
 				} catch (IOException e2) {
-					// TODO Auto-generated catch block
+					
 					e2.printStackTrace();
 				}
 				jsonf = new JsonFactory();
@@ -8802,14 +8810,14 @@ public class Main {
 							new_author.setAffiliation((String) setting_json.get("setting_value"));
 						}
 					} catch (ParseException e) {
-						// TODO Auto-generated catch block
+						
 						e.printStackTrace();
 					}
 					try {
 						InputStream is = response.getEntity().getContent();
 						is.close();
 					} catch (IOException exc) {
-						// TODO Auto-generated catch block
+						
 						exc.printStackTrace();
 					}
 				} else {
@@ -8827,10 +8835,10 @@ public class Main {
 				try {
 					response = httpClient.execute(settingCheck);
 				} catch (ClientProtocolException e2) {
-					// TODO Auto-generated catch block
+					
 					e2.printStackTrace();
 				} catch (IOException e2) {
-					// TODO Auto-generated catch block
+					
 					e2.printStackTrace();
 				}
 				jsonf = new JsonFactory();
@@ -8854,14 +8862,14 @@ public class Main {
 							new_author.setTwitter((String) setting_json.get("setting_value"));
 						}
 					} catch (ParseException e) {
-						// TODO Auto-generated catch block
+						
 						e.printStackTrace();
 					}
 					try {
 						InputStream is = response.getEntity().getContent();
 						is.close();
 					} catch (IOException exc) {
-						// TODO Auto-generated catch block
+						
 						exc.printStackTrace();
 					}
 				} else {
@@ -8908,14 +8916,14 @@ public class Main {
 			 * JSONToIssue(issue_json, issue); }
 			 */
 		} catch (ParseException e) {
-			// TODO Auto-generated catch block
+			
 			e.printStackTrace();
 		}
 		try {
 			InputStream is = response.getEntity().getContent();
 			is.close();
 		} catch (IOException exc) {
-			// TODO Auto-generated catch block
+			
 			exc.printStackTrace();
 		}
 
@@ -8945,10 +8953,10 @@ public class Main {
 			try {
 				response = httpClient.execute(httpGet);
 			} catch (ClientProtocolException e2) {
-				// TODO Auto-generated catch block
+				
 				e2.printStackTrace();
 			} catch (IOException e2) {
-				// TODO Auto-generated catch block
+				
 				e2.printStackTrace();
 			}
 			boolean author_created = false;
@@ -8961,7 +8969,7 @@ public class Main {
 				InputStream is = response.getEntity().getContent();
 				is.close();
 			} catch (IOException exc) {
-				// TODO Auto-generated catch block
+				
 				exc.printStackTrace();
 			}
 			org.json.simple.parser.JSONParser jsonParser = new JSONParser();
@@ -8976,17 +8984,17 @@ public class Main {
 				try {
 					response = httpClient.execute(httpPut);
 				} catch (ClientProtocolException e2) {
-					// TODO Auto-generated catch block
+					
 					e2.printStackTrace();
 				} catch (IOException e2) {
-					// TODO Auto-generated catch block
+					
 					e2.printStackTrace();
 				}
 				try {
 					InputStream is = response.getEntity().getContent();
 					is.close();
 				} catch (IOException exc) {
-					// TODO Auto-generated catch block
+					
 					exc.printStackTrace();
 				}
 			} else {
@@ -9001,17 +9009,17 @@ public class Main {
 				try {
 					response = httpClient.execute(createAuthor);
 				} catch (ClientProtocolException e2) {
-					// TODO Auto-generated catch block
+					
 					e2.printStackTrace();
 				} catch (IOException e2) {
-					// TODO Auto-generated catch block
+					
 					e2.printStackTrace();
 				}
 				try {
 					InputStream is = response.getEntity().getContent();
 					is.close();
 				} catch (IOException exc) {
-					// TODO Auto-generated catch block
+					
 					exc.printStackTrace();
 				}
 			}
@@ -9026,10 +9034,10 @@ public class Main {
 			try {
 				response = httpClient.execute(settingCheck);
 			} catch (ClientProtocolException e2) {
-				// TODO Auto-generated catch block
+				
 				e2.printStackTrace();
 			} catch (IOException e2) {
-				// TODO Auto-generated catch block
+				
 				e2.printStackTrace();
 			}
 			jsonf = new JsonFactory();
@@ -9060,14 +9068,14 @@ public class Main {
 					setting_json.put("setting_value", author.getBio());
 				}
 			} catch (ParseException e) {
-				// TODO Auto-generated catch block
+				
 				e.printStackTrace();
 			}
 			try {
 				InputStream is = response.getEntity().getContent();
 				is.close();
 			} catch (IOException exc) {
-				// TODO Auto-generated catch block
+				
 				exc.printStackTrace();
 			}
 			System.out.println(setting_json.isEmpty());
@@ -9087,10 +9095,10 @@ public class Main {
 				try {
 					response = httpClient.execute(httpPost);
 				} catch (ClientProtocolException e2) {
-					// TODO Auto-generated catch block
+					
 					e2.printStackTrace();
 				} catch (IOException e2) {
-					// TODO Auto-generated catch block
+					
 					e2.printStackTrace();
 				}
 			} else {
@@ -9112,10 +9120,10 @@ public class Main {
 				try {
 					response = httpClient.execute(httpPost);
 				} catch (ClientProtocolException e2) {
-					// TODO Auto-generated catch block
+					
 					e2.printStackTrace();
 				} catch (IOException e2) {
-					// TODO Auto-generated catch block
+					
 					e2.printStackTrace();
 				}
 			}
@@ -9130,7 +9138,7 @@ public class Main {
 				InputStream is = response.getEntity().getContent();
 				is.close();
 			} catch (IOException exc) {
-				// TODO Auto-generated catch block
+				
 				exc.printStackTrace();
 			}
 
@@ -9145,10 +9153,10 @@ public class Main {
 			try {
 				response = httpClient.execute(settingCheck);
 			} catch (ClientProtocolException e2) {
-				// TODO Auto-generated catch block
+				
 				e2.printStackTrace();
 			} catch (IOException e2) {
-				// TODO Auto-generated catch block
+				
 				e2.printStackTrace();
 			}
 			jsonf = new JsonFactory();
@@ -9179,14 +9187,14 @@ public class Main {
 					setting_json.put("setting_value", author.getOrcid());
 				}
 			} catch (ParseException e) {
-				// TODO Auto-generated catch block
+				
 				e.printStackTrace();
 			}
 			try {
 				InputStream is = response.getEntity().getContent();
 				is.close();
 			} catch (IOException exc) {
-				// TODO Auto-generated catch block
+				
 				exc.printStackTrace();
 			}
 			System.out.println(setting_json.isEmpty());
@@ -9206,10 +9214,10 @@ public class Main {
 				try {
 					response = httpClient.execute(httpPost);
 				} catch (ClientProtocolException e2) {
-					// TODO Auto-generated catch block
+					
 					e2.printStackTrace();
 				} catch (IOException e2) {
-					// TODO Auto-generated catch block
+					
 					e2.printStackTrace();
 				}
 			} else {
@@ -9231,10 +9239,10 @@ public class Main {
 				try {
 					response = httpClient.execute(httpPost);
 				} catch (ClientProtocolException e2) {
-					// TODO Auto-generated catch block
+					
 					e2.printStackTrace();
 				} catch (IOException e2) {
-					// TODO Auto-generated catch block
+					
 					e2.printStackTrace();
 				}
 			}
@@ -9242,7 +9250,7 @@ public class Main {
 				InputStream is = response.getEntity().getContent();
 				is.close();
 			} catch (IOException exc) {
-				// TODO Auto-generated catch block
+				
 				exc.printStackTrace();
 			}
 			settingCheck = new HttpGet(
@@ -9256,10 +9264,10 @@ public class Main {
 			try {
 				response = httpClient.execute(settingCheck);
 			} catch (ClientProtocolException e2) {
-				// TODO Auto-generated catch block
+				
 				e2.printStackTrace();
 			} catch (IOException e2) {
-				// TODO Auto-generated catch block
+				
 				e2.printStackTrace();
 			}
 			jsonf = new JsonFactory();
@@ -9290,14 +9298,14 @@ public class Main {
 					setting_json.put("setting_value", author.getDepartment());
 				}
 			} catch (ParseException e) {
-				// TODO Auto-generated catch block
+				
 				e.printStackTrace();
 			}
 			try {
 				InputStream is = response.getEntity().getContent();
 				is.close();
 			} catch (IOException exc) {
-				// TODO Auto-generated catch block
+				
 				exc.printStackTrace();
 			}
 			System.out.println(setting_json.isEmpty());
@@ -9318,10 +9326,10 @@ public class Main {
 				try {
 					response = httpClient.execute(httpPost);
 				} catch (ClientProtocolException e2) {
-					// TODO Auto-generated catch block
+					
 					e2.printStackTrace();
 				} catch (IOException e2) {
-					// TODO Auto-generated catch block
+					
 					e2.printStackTrace();
 				}
 			} else {
@@ -9343,10 +9351,10 @@ public class Main {
 				try {
 					response = httpClient.execute(httpPost);
 				} catch (ClientProtocolException e2) {
-					// TODO Auto-generated catch block
+					
 					e2.printStackTrace();
 				} catch (IOException e2) {
-					// TODO Auto-generated catch block
+					
 					e2.printStackTrace();
 				}
 			}
@@ -9354,7 +9362,7 @@ public class Main {
 				InputStream is = response.getEntity().getContent();
 				is.close();
 			} catch (IOException exc) {
-				// TODO Auto-generated catch block
+				
 				exc.printStackTrace();
 			}
 			//
@@ -9369,10 +9377,10 @@ public class Main {
 			try {
 				response = httpClient.execute(settingCheck);
 			} catch (ClientProtocolException e2) {
-				// TODO Auto-generated catch block
+				
 				e2.printStackTrace();
 			} catch (IOException e2) {
-				// TODO Auto-generated catch block
+				
 				e2.printStackTrace();
 			}
 			jsonf = new JsonFactory();
@@ -9403,14 +9411,14 @@ public class Main {
 					setting_json.put("setting_value", author.getTwitter());
 				}
 			} catch (ParseException e) {
-				// TODO Auto-generated catch block
+				
 				e.printStackTrace();
 			}
 			try {
 				InputStream is = response.getEntity().getContent();
 				is.close();
 			} catch (IOException exc) {
-				// TODO Auto-generated catch block
+				
 				exc.printStackTrace();
 			}
 			System.out.println(setting_json.isEmpty());
@@ -9431,10 +9439,10 @@ public class Main {
 				try {
 					response = httpClient.execute(httpPost);
 				} catch (ClientProtocolException e2) {
-					// TODO Auto-generated catch block
+					
 					e2.printStackTrace();
 				} catch (IOException e2) {
-					// TODO Auto-generated catch block
+					
 					e2.printStackTrace();
 				}
 			} else {
@@ -9456,10 +9464,10 @@ public class Main {
 				try {
 					response = httpClient.execute(httpPost);
 				} catch (ClientProtocolException e2) {
-					// TODO Auto-generated catch block
+					
 					e2.printStackTrace();
 				} catch (IOException e2) {
-					// TODO Auto-generated catch block
+					
 					e2.printStackTrace();
 				}
 			}
@@ -9467,7 +9475,7 @@ public class Main {
 				InputStream is = response.getEntity().getContent();
 				is.close();
 			} catch (IOException exc) {
-				// TODO Auto-generated catch block
+				
 				exc.printStackTrace();
 			}
 			settingCheck = new HttpGet(
@@ -9481,10 +9489,10 @@ public class Main {
 			try {
 				response = httpClient.execute(settingCheck);
 			} catch (ClientProtocolException e2) {
-				// TODO Auto-generated catch block
+				
 				e2.printStackTrace();
 			} catch (IOException e2) {
-				// TODO Auto-generated catch block
+				
 				e2.printStackTrace();
 			}
 			jsonf = new JsonFactory();
@@ -9515,14 +9523,14 @@ public class Main {
 					setting_json.put("setting_value", author.getAffiliation());
 				}
 			} catch (ParseException e) {
-				// TODO Auto-generated catch block
+				
 				e.printStackTrace();
 			}
 			try {
 				InputStream is = response.getEntity().getContent();
 				is.close();
 			} catch (IOException exc) {
-				// TODO Auto-generated catch block
+				
 				exc.printStackTrace();
 			}
 			System.out.println(setting_json.isEmpty());
@@ -9543,10 +9551,10 @@ public class Main {
 				try {
 					response = httpClient.execute(httpPost);
 				} catch (ClientProtocolException e2) {
-					// TODO Auto-generated catch block
+					
 					e2.printStackTrace();
 				} catch (IOException e2) {
-					// TODO Auto-generated catch block
+					
 					e2.printStackTrace();
 				}
 			} else {
@@ -9568,10 +9576,10 @@ public class Main {
 				try {
 					response = httpClient.execute(httpPost);
 				} catch (ClientProtocolException e2) {
-					// TODO Auto-generated catch block
+					
 					e2.printStackTrace();
 				} catch (IOException e2) {
-					// TODO Auto-generated catch block
+					
 					e2.printStackTrace();
 				}
 			}
@@ -9579,7 +9587,7 @@ public class Main {
 				InputStream is = response.getEntity().getContent();
 				is.close();
 			} catch (IOException exc) {
-				// TODO Auto-generated catch block
+				
 				exc.printStackTrace();
 			}
 
@@ -9601,10 +9609,10 @@ public class Main {
 		try {
 			response = httpClient.execute(httpGet);
 		} catch (ClientProtocolException e2) {
-			// TODO Auto-generated catch block
+			
 			e2.printStackTrace();
 		} catch (IOException e2) {
-			// TODO Auto-generated catch block
+			
 			e2.printStackTrace();
 		}
 		JsonFactory jsonf = new JsonFactory();
@@ -9627,14 +9635,14 @@ public class Main {
 				issue = JSONToIssue(issue_json, issue);
 			}
 		} catch (ParseException e) {
-			// TODO Auto-generated catch block
+			
 			e.printStackTrace();
 		}
 		try {
 			InputStream is = response.getEntity().getContent();
 			is.close();
 		} catch (IOException exc) {
-			// TODO Auto-generated catch block
+			
 			exc.printStackTrace();
 		}
 		System.out.println(response.toString());
@@ -9649,10 +9657,10 @@ public class Main {
 		try {
 			response = httpClient.execute(settingCheck);
 		} catch (ClientProtocolException e2) {
-			// TODO Auto-generated catch block
+			
 			e2.printStackTrace();
 		} catch (IOException e2) {
-			// TODO Auto-generated catch block
+			
 			e2.printStackTrace();
 		}
 		jsonf = new JsonFactory();
@@ -9677,7 +9685,7 @@ public class Main {
 				// setting_json.get("setting_value"));
 			}
 		} catch (ParseException e) {
-			// TODO Auto-generated catch block
+			
 			e.printStackTrace();
 		}
 		return issue;
@@ -9713,7 +9721,7 @@ public class Main {
 			try {
 				issue.setDate_published((Date) sdf.parse(date_p.substring(0, 10).replace('-', '/')));
 			} catch (java.text.ParseException e) {
-				// TODO Auto-generated catch block
+				
 				e.printStackTrace();
 			}
 		}
@@ -9778,7 +9786,7 @@ public class Main {
 			try {
 				new_article.setDate_submitted((Date) sdf.parse(date_p.substring(0, 10).replace('-', '/')));
 			} catch (java.text.ParseException e) {
-				// TODO Auto-generated catch block
+				
 				e.printStackTrace();
 			}
 		}
@@ -10032,7 +10040,7 @@ public class Main {
 			Files.copy(Paths.get(source), Paths.get(String.format("src/files/%d/%s", art_id, filename)),
 					StandardCopyOption.REPLACE_EXISTING);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
+			
 			e.printStackTrace();
 		}
 	}
@@ -10081,10 +10089,10 @@ public class Main {
 		try {
 			response = httpClient.execute(fileUpload);
 		} catch (ClientProtocolException e2) {
-			// TODO Auto-generated catch block
+			
 			e2.printStackTrace();
 		} catch (IOException e2) {
-			// TODO Auto-generated catch block
+			
 			e2.printStackTrace();
 		}
 		JsonFactory jsonf = new JsonFactory();
@@ -10126,10 +10134,10 @@ public class Main {
 		try {
 			response = httpClient.execute(fileUpload);
 		} catch (ClientProtocolException e2) {
-			// TODO Auto-generated catch block
+			
 			e2.printStackTrace();
 		} catch (IOException e2) {
-			// TODO Auto-generated catch block
+			
 			e2.printStackTrace();
 		}
 		JsonFactory jsonf = new JsonFactory();
@@ -10171,10 +10179,10 @@ public class Main {
 		try {
 			response = httpClient.execute(fileUpload);
 		} catch (ClientProtocolException e2) {
-			// TODO Auto-generated catch block
+			
 			e2.printStackTrace();
 		} catch (IOException e2) {
-			// TODO Auto-generated catch block
+			
 			e2.printStackTrace();
 		}
 		JsonFactory jsonf = new JsonFactory();
@@ -10201,10 +10209,10 @@ public class Main {
 		try {
 			response = httpClient.execute(fileUpload);
 		} catch (ClientProtocolException e2) {
-			// TODO Auto-generated catch block
+			
 			e2.printStackTrace();
 		} catch (IOException e2) {
-			// TODO Auto-generated catch block
+			
 			e2.printStackTrace();
 		}
 		JsonFactory jsonf = new JsonFactory();
@@ -10230,10 +10238,10 @@ public class Main {
 		try {
 			response = httpClient.execute(fileDetails);
 		} catch (ClientProtocolException e2) {
-			// TODO Auto-generated catch block
+			
 			e2.printStackTrace();
 		} catch (IOException e2) {
-			// TODO Auto-generated catch block
+			
 			e2.printStackTrace();
 		}
 		InputStream result = response.getEntity().getContent();
@@ -10248,7 +10256,7 @@ public class Main {
 			filename = (String) issue_obj.get("original_filename");
 			System.out.println(filename);
 		} catch (ParseException e) {
-			// TODO Auto-generated catch block
+			
 			e.printStackTrace();
 		}
 
@@ -10259,10 +10267,10 @@ public class Main {
 		try {
 			response = httpClient.execute(fileDownload);
 		} catch (ClientProtocolException e2) {
-			// TODO Auto-generated catch block
+			
 			e2.printStackTrace();
 		} catch (IOException e2) {
-			// TODO Auto-generated catch block
+			
 			e2.printStackTrace();
 		}
 		InputStream is = response.getEntity().getContent();
