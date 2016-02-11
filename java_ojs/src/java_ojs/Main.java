@@ -1391,14 +1391,15 @@ public class Main {
 
 									e1.printStackTrace();
 								}
-								try {
-									populate_api(Long.toString(user_id));
-								} catch (SQLException e1) {
-
-									e1.printStackTrace();
-								}
-								app_settings.put("intersect_user_id", Long.toString(user_id));
+							
 								if (user_id != -1) {
+									try {
+										populate_api(Long.toString(user_id));
+									} catch (SQLException e1) {
+
+										e1.printStackTrace();
+									}
+									app_settings.put("intersect_user_id", Long.toString(user_id));
 									logged_in = true;
 									login.setVisible(false);
 									login.dispose();
@@ -1433,7 +1434,7 @@ public class Main {
 						if (status_online()) {
 							String user = username.getText();
 							String pass = String.valueOf(passwordField.getPassword());
-							if (user.isEmpty() == true || pass.isEmpty() || pass == null || user == null || user == "" || pass == "") {
+							if (user.isEmpty() || pass.isEmpty() || pass == null || user == null || user == "" || pass == "") {
 								JOptionPane.showMessageDialog(null, "Wrong username or password");
 							} else {
 								BASE64Encoder encoder = new BASE64Encoder();
@@ -1449,15 +1450,16 @@ public class Main {
 
 									e1.printStackTrace();
 								}
-								try {
-									populate_api(Long.toString(user_id));
-								} catch (SQLException e1) {
+								
 
-									e1.printStackTrace();
-								}
-
-								app_settings.put("intersect_user_id", Long.toString(user_id));
 								if (user_id != -1) {
+									try {
+										populate_api(Long.toString(user_id));
+									} catch (SQLException e1) {
+
+										e1.printStackTrace();
+									}
+									app_settings.put("intersect_user_id", Long.toString(user_id));
 									login.setVisible(false);
 									if (app_settings.get("key") == null || app_settings.get("key").compareTo("") == 0) {
 										api(false);
@@ -1878,6 +1880,7 @@ public class Main {
 					api.getContentPane().add(lblAccessKey);
 
 					JButton btnSubmit = new JButton("Enter");
+					JButton btnReset = new JButton("Reset");
 					Action actionSubmit = new AbstractAction() {
 						@Override
 						public void actionPerformed(ActionEvent e) {
@@ -1896,6 +1899,16 @@ public class Main {
 						}
 					};
 					access_key.addActionListener(actionSubmit);
+					btnReset.addActionListener(new ActionListener() {
+						public void actionPerformed(ActionEvent e) {
+							has_app_settings = false;
+							logged_in = false;
+							login("dashboard");
+							api.dispose();
+							app_settings = new ConcurrentHashMap<String,String>();
+
+						}
+					});
 					btnSubmit.addActionListener(new ActionListener() {
 						public void actionPerformed(ActionEvent e) {
 							String key = String.valueOf(access_key.getPassword());
@@ -1912,12 +1925,15 @@ public class Main {
 						}
 					});
 					if (height_small - 150 > 300) {
-						btnSubmit.setBounds(((width_small / 3) * 2) / 2, height_small - 150, width_small / 3, 29);
+						btnSubmit.setBounds(((width_small / 3) * 2) / 2, height_small - 165, width_small / 3, 29);
+						btnReset.setBounds(((width_small / 3) * 2) / 2+(width_small / 3-width_small / 5)/2, height_small - 121, width_small / 5, 29);
 					} else {
-						btnSubmit.setBounds(((width_small / 3) * 2) / 2, 310, width_small / 3, 29);
+						btnSubmit.setBounds(((width_small / 3) * 2) / 2, 280, width_small / 3, 29);
+						btnReset.setBounds(((width_small / 3) * 2) / 2+(width_small / 3-width_small / 5)/2, 340, width_small / 5, 29);
 					}
 
 					api.getContentPane().add(btnSubmit);
+					api.getContentPane().add(btnReset);
 
 					final JButton btnSync1 = new JButton("Sync");
 					btnSync1.setBounds(width_small - 150, 68, 70, 24);
@@ -2056,6 +2072,8 @@ public class Main {
 							app_settings.put("key", encodeHash(key));
 
 							System.out.println(app_settings);
+
+							database_save();
 
 						}
 					});
