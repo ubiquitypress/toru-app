@@ -208,7 +208,7 @@ public class Main {
 	private String section_insert_or_replace_statement = "INSERT OR REPLACE INTO SECTION(id,title) VALUES (?,?)";
 	private String author_insert_or_replace_statement = "INSERT OR REPLACE INTO AUTHOR(id,first_name,middle_name,last_name,email,affiliation,bio,orcid,department,country,twitter) VALUES (?,?,?,?,?,?,?,?,?,?,?)";
 	private String unique_authors_insert_or_replace_statement = "INSERT OR REPLACE INTO UNIQUE_AUTHORS(first_name,middle_name,last_name,email,affiliation,bio,orcid,department,country) VALUES (?,?,?,?,?,?,?,?,?)";
-	private String article_insert_or_replace_statement = "INSERT OR REPLACE INTO ARTICLE(id,title,section_id,pages,abstract,date_published,date_accepted,date_submitted,locale,language,status,submission_progress,current_round,fast_tracked,hide_author,comments_status,user_id,doi) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+	private String article_insert_or_replace_statement = "INSERT OR REPLACE INTO ARTICLE(id,title,section_id,pages,abstract,date_published,date_accepted,date_submitted,locale,language,status,submission_progress,current_round,fast_tracked,hide_author,comments_status,user_id,doi,published_pk) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
 	private String article_author_insert_or_replace_statement = "INSERT OR REPLACE INTO ARTICLE_AUTHOR(article_id,author_id,primary_author) VALUES (?,?,?)";
 	private String issue_journal_insert_or_replace_statement = "INSERT OR REPLACE INTO ISSUE_JOURNAL(id,journal_id,issue_id) VALUES (?,?,?)";
 	private String issue_article_insert_or_replace_statement = "INSERT OR REPLACE INTO ISSUE_ARTICLE(article_id,issue_id) VALUES (?,?)";
@@ -224,6 +224,8 @@ public class Main {
 	private static SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
 	private static long journal_id = 0;
 	private static long articles_id = 0;
+
+	private static long published_articles_id = 0;
 	private static long file_id = 0;
 
 	private int dialogResult = -1;
@@ -294,7 +296,7 @@ public class Main {
 				new_jsn.flush();
 				new_jsn.close();
 			} catch (IOException e) {
-				
+
 				e.printStackTrace();
 			}
 
@@ -331,14 +333,16 @@ public class Main {
 
 			for (long key : file_art_keys) {
 				ConcurrentHashMap<Long, ArticleFile> files = file_storage.get(key);
-				Set<Long> file_keys = files.keySet();
-				for (long f_key : file_keys) {
-					ArticleFile current_file = files.get((long) f_key);
-					PreparedStatement file_prep = c.prepareStatement(file_insert_or_replace_statement);
-					file_prep.setInt(1, (int) (long) current_file.getId());
-					file_prep.setInt(2, (int) (long) current_file.getArticle_id());
-					file_prep.setString(3, current_file.getPath());
-					file_prep.executeUpdate();
+				if (files != null) {
+					Set<Long> file_keys = files.keySet();
+					for (long f_key : file_keys) {
+						ArticleFile current_file = files.get((long) f_key);
+						PreparedStatement file_prep = c.prepareStatement(file_insert_or_replace_statement);
+						file_prep.setInt(1, (int) (long) current_file.getId());
+						file_prep.setInt(2, (int) (long) current_file.getArticle_id());
+						file_prep.setString(3, current_file.getPath());
+						file_prep.executeUpdate();
+					}
 				}
 			}
 			Set<Long> journal_keys = journal_storage.keySet();
@@ -397,8 +401,8 @@ public class Main {
 					article_prep.setString(4, save_article.getPages());
 					article_prep.setString(5, save_article.getAbstract_text() == null ? ""
 							: Jsoup.parse((String) save_article.getAbstract_text()).text());
-					article_prep.setString(6, sdf.format(
-							save_article.getDate_published() == null ? new Date() : save_article.getDate_published()));
+					article_prep.setString(6, 
+							save_article.getDate_published() == null ? null : sdf.format(save_article.getDate_published()));
 
 					article_prep.setString(7, sdf.format(
 							save_article.getDate_accepted() == null ? new Date() : save_article.getDate_accepted()));
@@ -414,6 +418,7 @@ public class Main {
 					article_prep.setInt(16, save_article.getComments_status());
 					article_prep.setInt(17, (int) (long) save_article.getUser_id());
 					article_prep.setString(18, save_article.getDoi());
+					article_prep.setLong(19, save_article.getPublished_pk());
 					article_prep.executeUpdate();
 					PreparedStatement issue_article_prep = c
 							.prepareStatement(issue_article_insert_or_replace_statement);
@@ -459,7 +464,7 @@ public class Main {
 			c.commit();
 			c.close();
 		} catch (SQLException e) {
-			
+
 			e.printStackTrace();
 		}
 
@@ -473,7 +478,7 @@ public class Main {
 		try {
 			Class.forName("org.sqlite.JDBC");
 		} catch (ClassNotFoundException e) {
-			
+
 			e.printStackTrace();
 		}
 		c = DriverManager.getConnection("jdbc:sqlite:local_datatabse.db");
@@ -500,13 +505,13 @@ public class Main {
 			try {
 				profile_exists = get_profile_details(Long.parseLong(user_id));
 			} catch (NumberFormatException e) {
-				
+
 				e.printStackTrace();
 			} catch (IllegalStateException e) {
-				
+
 				e.printStackTrace();
 			} catch (IOException e) {
-				
+
 				e.printStackTrace();
 			}
 			if (!profile_exists) {
@@ -539,7 +544,7 @@ public class Main {
 		try {
 			app_settings_exist();
 		} catch (SQLException e2) {
-			
+
 			e2.printStackTrace();
 		}
 
@@ -553,10 +558,10 @@ public class Main {
 				try {
 					obj = parser.parse(new FileReader("./settings.json"));
 				} catch (FileNotFoundException e1) {
-					
+
 					e1.printStackTrace();
 				} catch (IOException e1) {
-					
+
 					e1.printStackTrace();
 				}
 				JSONObject array = (JSONObject) obj;
@@ -688,13 +693,25 @@ public class Main {
 				String date_accepted = art_s.getString("date_accepted");
 				String date_submitted = art_s.getString("date_submitted");
 				String doi = art_s.getString("doi");
+				Integer published_pk = art_s.getInt("published_pk");
 				Article article = null;
+				
 				article = new Article(id, title, section_id, pages, abstract_text, sdf.parse(date_accepted),
-						sdf.parse(date), sdf.parse(date_submitted), new Journal(1, "up", (float) 2.0, "en_US", 0));
+						sdf.parse(date_submitted), new Journal(1, "up", (float) 2.0, "en_US", 0));
 				article.setDoi(doi);
+				article.setPublished_pk(published_pk == null ? -1 : published_pk);
+				try{
+					Date test_date = sdf.parse(date);
+					article.setDate_published(test_date);
+				}catch(Exception e){}
 
 				article_storage.put(id, article);
-				articles_id = id;
+				if (articles_id <= id) {
+					articles_id = id;
+				}
+				if (published_articles_id <= published_pk) {
+					published_articles_id = published_pk;
+				}
 				// JOptionPane.showMessageDialog(null, "Deleted");
 
 				ArrayList<Author> new_authors = new ArrayList<Author>();
@@ -830,16 +847,16 @@ public class Main {
 			// JOptionPane.showMessageDialog(null, "Dele
 			c.close();
 		} catch (SQLException e) {
-			
+
 			e.printStackTrace();
 		}
 		try {
 			latest_ids();
 		} catch (IllegalStateException e) {
-			
+
 			e.printStackTrace();
 		} catch (IOException e) {
-			
+
 			e.printStackTrace();
 		}
 		System.out.println("Done.");
@@ -857,11 +874,11 @@ public class Main {
 		try {
 			response = httpClient.execute(issue_exists);
 		} catch (ClientProtocolException e2) {
-			
+
 			delay = 1000;
 			return false;
 		} catch (IOException e2) {
-			
+
 			delay = 1000;
 			return false;
 		}
@@ -869,7 +886,7 @@ public class Main {
 			InputStream is = response.getEntity().getContent();
 			is.close();
 		} catch (IOException exc) {
-			
+
 			exc.printStackTrace();
 		}
 
@@ -889,10 +906,10 @@ public class Main {
 			try {
 				response = httpClient.execute(httpGet);
 			} catch (ClientProtocolException e2) {
-				
+
 				e2.printStackTrace();
 			} catch (IOException e2) {
-				
+
 				e2.printStackTrace();
 			}
 			JsonFactory jsonf = new JsonFactory();
@@ -909,7 +926,7 @@ public class Main {
 				user_url = (String) latest_obj.get("user");
 				exists = true;
 			} catch (ParseException e) {
-				
+
 				e.printStackTrace();
 			}
 
@@ -917,7 +934,7 @@ public class Main {
 				InputStream is = response.getEntity().getContent();
 				is.close();
 			} catch (IOException exc) {
-				
+
 				exc.printStackTrace();
 			}
 			httpGet = new HttpGet(user_url);
@@ -929,10 +946,10 @@ public class Main {
 			try {
 				response = httpClient.execute(httpGet);
 			} catch (ClientProtocolException e2) {
-				
+
 				e2.printStackTrace();
 			} catch (IOException e2) {
-				
+
 				e2.printStackTrace();
 			}
 			jsonf = new JsonFactory();
@@ -946,7 +963,6 @@ public class Main {
 				app_settings.put("user_id", Long.toString((long) latest_obj.get("id")));
 				exists = true;
 			} catch (ParseException e) {
-				
 
 				e.printStackTrace();
 			}
@@ -955,7 +971,7 @@ public class Main {
 				InputStream is = response.getEntity().getContent();
 				is.close();
 			} catch (IOException exc) {
-				
+
 				exc.printStackTrace();
 			}
 			httpGet = new HttpGet(journal_url);
@@ -967,10 +983,10 @@ public class Main {
 			try {
 				response = httpClient.execute(httpGet);
 			} catch (ClientProtocolException e2) {
-				
+
 				e2.printStackTrace();
 			} catch (IOException e2) {
-				
+
 				e2.printStackTrace();
 			}
 			jsonf = new JsonFactory();
@@ -990,7 +1006,6 @@ public class Main {
 				}
 				exists = true;
 			} catch (ParseException e) {
-				
 
 				e.printStackTrace();
 			}
@@ -999,7 +1014,7 @@ public class Main {
 				InputStream is = response.getEntity().getContent();
 				is.close();
 			} catch (IOException exc) {
-				
+
 				exc.printStackTrace();
 			}
 		} catch (ConnectException e) {
@@ -1021,10 +1036,10 @@ public class Main {
 			try {
 				response = httpClient.execute(httpGet);
 			} catch (ClientProtocolException e2) {
-				
+
 				e2.printStackTrace();
 			} catch (IOException e2) {
-				
+
 				e2.printStackTrace();
 			}
 			JsonFactory jsonf = new JsonFactory();
@@ -1043,7 +1058,7 @@ public class Main {
 					System.out.println(id);
 				}
 			} catch (ParseException e) {
-				
+
 				e.printStackTrace();
 			}
 			System.out.println(id);
@@ -1083,10 +1098,10 @@ public class Main {
 			try {
 				response = httpClient.execute(httpGet);
 			} catch (ClientProtocolException e2) {
-				
+
 				return latest = 1;
 			} catch (IOException e2) {
-				
+
 				return latest = 1;
 			}
 			JsonFactory jsonf = new JsonFactory();
@@ -1109,7 +1124,7 @@ public class Main {
 					System.out.println(latest);
 				}
 			} catch (ParseException e) {
-				
+
 				e.printStackTrace();
 			}
 			System.out.println(latest);
@@ -1123,11 +1138,13 @@ public class Main {
 
 		long remote_issue_id = 0;
 		long remote_article_id = 0;
+		long remote_published_article_id = 0;
 		long remote_journal_id = 0;
 		long remote_author_id = 0;
 		long remote_file_id = 0;
 		remote_issue_id = get_remote_id("issue");
 		remote_article_id = get_remote_id("article");
+		remote_published_article_id = get_remote_id("published-article");
 		remote_journal_id = get_remote_id("journal");
 		remote_author_id = get_remote_id("author");
 		remote_file_id = get_remote_id("file");
@@ -1136,6 +1153,9 @@ public class Main {
 		}
 		if (remote_article_id > articles_id) {
 			articles_id = remote_article_id;
+		}
+		if (remote_published_article_id > published_articles_id) {
+			published_articles_id = remote_published_article_id;
 		}
 		if (remote_journal_id > journal_id) {
 			journal_id = remote_journal_id;
@@ -1150,6 +1170,8 @@ public class Main {
 		System.out.println(remote_article_id);
 		System.out.println(remote_journal_id);
 		System.out.println(remote_file_id);
+		;
+		System.out.println(remote_published_article_id);
 		System.out.println(remote_author_id + "-" + author_id);
 	}
 
@@ -1196,7 +1218,7 @@ public class Main {
 					+ "submission_progress INTEGER," + "current_round INTEGER," + "fast_tracked INTEGER,"
 					+ "hide_author INTEGER," + "comments_status INTEGER," + " language CHAR(50) NOT NULL,"
 					+ " locale CHAR(50) NOT NULL," + "user_id REAL NOT NULL, " + " doi CHAR(1000),"
-					+ "FOREIGN KEY (section_id) REFERENCES SECTION(id)" + ")";
+					+ "published_pk INTEGER," + "FOREIGN KEY (section_id) REFERENCES SECTION(id)" + ")";
 			stmt.executeUpdate(sql);
 			sql = "CREATE TABLE IF NOT EXISTS FILE" + "(id INTEGER PRIMARY KEY," + " article_id INTEGER,"
 					+ "path CHAR(1000) NOT NULL," + "FOREIGN KEY (article_id) REFERENCES ARTICLE(id)" + ")";
@@ -1303,16 +1325,16 @@ public class Main {
 							try {
 								user_id = get_intersect_id();
 							} catch (IllegalStateException e1) {
-								
+
 								e1.printStackTrace();
 							} catch (IOException e1) {
-								
+
 								e1.printStackTrace();
 							}
 							try {
 								populate_api(Long.toString(user_id));
 							} catch (SQLException e1) {
-								
+
 								e1.printStackTrace();
 							}
 							app_settings.put("intersect_user_id", Long.toString(user_id));
@@ -1356,16 +1378,16 @@ public class Main {
 								user_id = get_intersect_id();
 
 							} catch (IllegalStateException e1) {
-								
+
 								e1.printStackTrace();
 							} catch (IOException e1) {
-								
+
 								e1.printStackTrace();
 							}
 							try {
 								populate_api(Long.toString(user_id));
 							} catch (SQLException e1) {
-								
+
 								e1.printStackTrace();
 							}
 
@@ -2122,7 +2144,7 @@ public class Main {
 								skipped_dialog = true;
 							}
 							List<Future<?>> futures = new ArrayList<Future<?>>();
-							ExecutorService exec = Executors.newFixedThreadPool(3);
+							ExecutorService exec = Executors.newFixedThreadPool(2);
 							final JProgressBar progressBar = new JProgressBar();
 							progressBar.setValue(0);
 							progressBar.setStringPainted(true);
@@ -2149,24 +2171,42 @@ public class Main {
 										public void run() {
 											int countdown = current_issue.getArticles_list().size() * 7 + 120
 													+ current_issue.getAuthors().size() * 5;
-											System.out.println("countdown " + countdown);
-											double decimal = (current_issue.getArticles_list().size() * 7 + 120
-													+ current_issue.getAuthors().size() * 5) / 100;
-											System.out.println(decimal);
-											for (int i = 0; i < countdown; i++) {
-												final int percent = i;
-												SwingUtilities.invokeLater(new Runnable() {
-													public void run() {
-														progressBar.setValue(percent == 0 ? 0
-																: (int) Double.parseDouble(
-																		String.format("%s", percent / decimal)));
-														progressBar.repaint();
-													}
-												});
+											if (current_issue.getArticles_list().size() == 0) {
+												countdown = 100;
+												for (int i = 0; i < countdown; i++) {
+													final int percent = i;
+													SwingUtilities.invokeLater(new Runnable() {
+														public void run() {
+															progressBar.setValue(percent);
+															progressBar.repaint();
+														}
+													});
 
-												try {
-													Thread.sleep(100);
-												} catch (InterruptedException e) {
+													try {
+														Thread.sleep(100);
+													} catch (InterruptedException e) {
+													}
+												}
+											} else {
+												System.out.println("countdown " + countdown);
+												double decimal = (current_issue.getArticles_list().size() * 7 + 120
+														+ current_issue.getAuthors().size() * 5) / 100;
+												System.out.println(decimal);
+												for (int i = 0; i < countdown; i++) {
+													final int percent = i;
+													SwingUtilities.invokeLater(new Runnable() {
+														public void run() {
+															progressBar.setValue(percent == 0 ? 0
+																	: (int) Double.parseDouble(
+																			String.format("%s", percent / decimal)));
+															progressBar.repaint();
+														}
+													});
+
+													try {
+														Thread.sleep(100);
+													} catch (InterruptedException e) {
+													}
 												}
 											}
 										}
@@ -2193,24 +2233,42 @@ public class Main {
 										public void run() {
 											int countdown = current_issue.getArticles_list().size() * 7 + 120
 													+ current_issue.getAuthors().size() * 5;
-											System.out.println("countdown " + countdown);
-											double decimal = (current_issue.getArticles_list().size() * 7 + 120
-													+ current_issue.getAuthors().size() * 5) / 100;
-											System.out.println(decimal);
-											for (int i = 0; i < countdown; i++) {
-												final int percent = i;
-												SwingUtilities.invokeLater(new Runnable() {
-													public void run() {
-														progressBar.setValue(percent == 0 ? 0
-																: (int) Double.parseDouble(
-																		String.format("%s", percent / decimal)));
-														progressBar.repaint();
-													}
-												});
+											if (current_issue.getArticles_list().size() == 0) {
+												countdown = 100;
+												for (int i = 0; i < countdown; i++) {
+													final int percent = i;
+													SwingUtilities.invokeLater(new Runnable() {
+														public void run() {
+															progressBar.setValue(percent);
+															progressBar.repaint();
+														}
+													});
 
-												try {
-													Thread.sleep(100);
-												} catch (InterruptedException e) {
+													try {
+														Thread.sleep(100);
+													} catch (InterruptedException e) {
+													}
+												}
+											} else {
+												System.out.println("countdown " + countdown);
+												double decimal = (current_issue.getArticles_list().size() * 7 + 120
+														+ current_issue.getAuthors().size() * 5) / 100;
+												System.out.println(decimal);
+												for (int i = 0; i < countdown; i++) {
+													final int percent = i;
+													SwingUtilities.invokeLater(new Runnable() {
+														public void run() {
+															progressBar.setValue(percent == 0 ? 0
+																	: (int) Double.parseDouble(
+																			String.format("%s", percent / decimal)));
+															progressBar.repaint();
+														}
+													});
+
+													try {
+														Thread.sleep(100);
+													} catch (InterruptedException e) {
+													}
 												}
 											}
 										}
@@ -2246,6 +2304,7 @@ public class Main {
 										public void run() {
 											try {
 												update_articles_intersect(current_issue, encoding);
+												sync_authors_intersect(issue_id, encoding, false);
 
 											} catch (IllegalStateException | IOException e1) {
 												// TODO Auto-generated catch
@@ -2263,7 +2322,7 @@ public class Main {
 										public void run() {
 											try {
 												update_articles_local(current_issue, encoding);
-
+												get_authors_remote(issue_id, encoding, false);
 											} catch (IllegalStateException | IOException e1) {
 												// TODO Auto-generated catch
 												// block
@@ -2274,56 +2333,25 @@ public class Main {
 									futures.add(f);
 								}
 
-								if (dialogResult == JOptionPane.NO_OPTION) {
-									Future<?> f = exec.submit(new Runnable() {
-
-										public void run() {
-											try {
-												try {
-													sync_authors_intersect(issue_id, encoding, false);
-												} catch (IllegalStateException e2) {
-													// TODO Auto-generated catch
-													// block
-													e2.printStackTrace();
-												} catch (IOException e2) {
-													// TODO Auto-generated catch
-													// block
-													e2.printStackTrace();
-												}
-											} catch (IllegalStateException e1) {
-												// TODO Auto-generated catch
-												// block
-												e1.printStackTrace();
-											}
-										}
-									});
-									futures.add(f);
-
-								} else if (dialogResult == JOptionPane.YES_OPTION) {
-									Future<?> f = exec.submit(new Runnable() {
-
-										public void run() {
-
-											try {
-												get_authors_remote(issue_id, encoding, false);
-											} catch (IllegalStateException e1) {
-												// TODO Auto-generated catch
-												// block
-												e1.printStackTrace();
-											} catch (IOException e1) {
-												// TODO Auto-generated catch
-												// block
-												e1.printStackTrace();
-											}
-										}
-
-									});
-									futures.add(f);
-
-								}
 							}
 							issues.repaint();
+							progress_executor.execute(new Runnable() {
+								public void run() {
+									synchronized (futures) {
+										for (Future<?> future : futures) {
+											try {
+												future.get();
+											} catch (InterruptedException e1) {
 
+												e1.printStackTrace();
+											} catch (ExecutionException e1) {
+
+												e1.printStackTrace();
+											}
+										}
+									}
+								}
+							});
 							Future<?> f = exec.submit(new Runnable() {
 
 								public void run() {
@@ -2335,16 +2363,17 @@ public class Main {
 										Future<?> f = exec.submit(new Runnable() {
 
 											public void run() {
-										try {
-											new_issues = update_get_issues_from_remote(encoding, false);
-										} catch (IllegalStateException e) {
-											
-											e.printStackTrace();
-										} catch (IOException e) {
-											
-											e.printStackTrace();
-										}
-											}});
+												try {
+													new_issues = update_get_issues_from_remote(encoding, false);
+												} catch (IllegalStateException e) {
+
+													e.printStackTrace();
+												} catch (IOException e) {
+
+													e.printStackTrace();
+												}
+											}
+										});
 										futures.add(f);
 										for (Issue current_issue : new_issues) {
 											long issue_id = current_issue.getId();
@@ -2352,24 +2381,42 @@ public class Main {
 												public void run() {
 													int countdown = current_issue.getArticles_list().size() * 7 + 120
 															+ current_issue.getAuthors().size() * 5;
-													System.out.println("countdown " + countdown);
-													double decimal = (current_issue.getArticles_list().size() * 7 + 120
-															+ current_issue.getAuthors().size() * 5) / 100;
-													System.out.println(decimal);
-													for (int i = 0; i < countdown; i++) {
-														final int percent = i;
-														SwingUtilities.invokeLater(new Runnable() {
-															public void run() {
-																progressBar.setValue(percent == 0 ? 0
-																		: (int) Double.parseDouble(
-																				String.format("%s", percent / decimal)));
-																progressBar.repaint();
-															}
-														});
+													if (current_issue.getArticles_list().size() == 0) {
+														countdown = 100;
+														for (int i = 0; i < countdown; i++) {
+															final int percent = i;
+															SwingUtilities.invokeLater(new Runnable() {
+																public void run() {
+																	progressBar.setValue(percent);
+																	progressBar.repaint();
+																}
+															});
 
-														try {
-															Thread.sleep(100);
-														} catch (InterruptedException e) {
+															try {
+																Thread.sleep(100);
+															} catch (InterruptedException e) {
+															}
+														}
+													} else {
+														System.out.println("countdown " + countdown);
+														double decimal = (current_issue.getArticles_list().size() * 7
+																+ 120 + current_issue.getAuthors().size() * 5) / 100;
+														System.out.println(decimal);
+														for (int i = 0; i < countdown; i++) {
+															final int percent = i;
+															SwingUtilities.invokeLater(new Runnable() {
+																public void run() {
+																	progressBar.setValue(percent == 0 ? 0
+																			: (int) Double.parseDouble(String
+																					.format("%s", percent / decimal)));
+																	progressBar.repaint();
+																}
+															});
+
+															try {
+																Thread.sleep(100);
+															} catch (InterruptedException e) {
+															}
 														}
 													}
 												}
@@ -2382,97 +2429,68 @@ public class Main {
 												f = exec.submit(new Runnable() {
 
 													public void run() {
-												try {
-											
-													update_articles_local(current_issue, encoding);
-													get_authors_remote(issue_id, encoding, false);
-												} catch (IllegalStateException e1) {
-													// TODO Auto-generated catch
-													// block
-													e1.printStackTrace();
-												} catch (IOException e1) {
-													// TODO Auto-generated catch
-													// block
-													e1.printStackTrace();
-												}
-													}});
+														try {
+
+															update_articles_local(current_issue, encoding);
+															get_authors_remote(issue_id, encoding, false);
+														} catch (IllegalStateException e1) {
+															// TODO
+															// Auto-generated
+															// catch
+															// block
+															e1.printStackTrace();
+														} catch (IOException e1) {
+															// TODO
+															// Auto-generated
+															// catch
+															// block
+															e1.printStackTrace();
+														}
+													}
+												});
 												futures.add(f);
 											} else {
 												if (dialogResult == JOptionPane.NO_OPTION) {
 													f = exec.submit(new Runnable() {
 
 														public void run() {
-													try {
-														update_articles_intersect(current_issue, encoding);
+															try {
+																update_articles_intersect(current_issue, encoding);
 
-													} catch (IllegalStateException | IOException e1) {
-														// TODO Auto-generated
-														// catch block
-														e1.printStackTrace();
-													}
-														}});
+																sync_authors_intersect(issue_id, encoding, false);
+															} catch (IllegalStateException | IOException e1) {
+																// TODO
+																// Auto-generated
+																// catch block
+																e1.printStackTrace();
+															}
+														}
+													});
 													futures.add(f);
 												} else if (dialogResult == JOptionPane.YES_OPTION) {
 													System.out.println("update local");
 													f = exec.submit(new Runnable() {
 
 														public void run() {
-													try {
-														update_articles_local(current_issue, encoding);
+															try {
+																update_articles_local(current_issue, encoding);
 
-													} catch (IllegalStateException | IOException e1) {
-														// TODO Auto-generated
-														// catch block
-														e1.printStackTrace();
-													}
-														}});
-													futures.add(f);
-												}
-
-												if (dialogResult == JOptionPane.NO_OPTION) {
-
-													f = exec.submit(new Runnable() {
-
-														public void run() {
-														try {
-															sync_authors_intersect(issue_id, encoding, false);
-														} catch (IllegalStateException e2) {
-															// TODO
-															// Auto-generated
-															// catch
-															// block
-															e2.printStackTrace();
-														} catch (IOException e2) {
-															// TODO
-															// Auto-generated
-															// catch
-															// block
-															e2.printStackTrace();
+																get_authors_remote(issue_id, encoding, false);
+															} catch (IllegalStateException | IOException e1) {
+																// TODO
+																// Auto-generated
+																// catch block
+																e1.printStackTrace();
+															}
 														}
-												}});
-							futures.add(f);
-												} else if (dialogResult == JOptionPane.YES_OPTION) {
-													f = exec.submit(new Runnable() {
-
-														public void run() {
-													try {
-														get_authors_remote(issue_id, encoding, false);
-													} catch (IllegalStateException e1) {
-														// TODO Auto-generated
-														// catch block
-														e1.printStackTrace();
-													} catch (IOException e1) {
-														// TODO Auto-generated
-														// catch block
-														e1.printStackTrace();
-													}
-														}});
+													});
 													futures.add(f);
 												}
+
 											}
 										}
 									} catch (IllegalStateException e1) {
-										
+
 										e1.printStackTrace();
 									}
 								}
@@ -2481,70 +2499,76 @@ public class Main {
 
 							progress_executor.execute(new Runnable() {
 								public void run() {
-									for (Future<?> future : futures) {
-										try {
-											future.get();
-										} catch (InterruptedException e1) {
-											
-											e1.printStackTrace();
-										} catch (ExecutionException e1) {
-											
-											e1.printStackTrace();
+									synchronized (futures) {
+										for (Future<?> future : futures) {
+											try {
+												future.get();
+											} catch (InterruptedException e1) {
+
+												e1.printStackTrace();
+											} catch (ExecutionException e1) {
+
+												e1.printStackTrace();
+											}
+										}
+										issues.remove(progressBar);
+
+										issues.remove(progress_msg);
+										issues.repaint();
+										JOptionPane.showMessageDialog(null, "Sync completed.");
+
+										if (num_rows == 0) {
+											issues.dispose();
+											dashboard();
+										} else {
+											Set<Long> update_issue_keys = issue_storage.keySet();
+											ArrayList<List<Object>> rowData = new ArrayList<List<Object>>();
+											Object[][] rows = new Object[update_issue_keys.size()][6];
+											boolean empty_table = false;
+											if (num_rows != 0) {
+												for (int i = num_rows - 1; i >= 0; i--) {
+													((DefaultTableModel) issues_table.getModel()).removeRow(i);
+												}
+											}
+											int i = 0;
+											for (long id : update_issue_keys) {
+												Issue row_issue = issue_storage.get(id);
+												issue_screens.put(id, new JFrame());
+												article_screens.put(id, new ConcurrentHashMap<Long, JFrame>());
+
+												Object[] row = { row_issue.getId(),
+														row_issue.getShow_title() == 1 ? row_issue.getTitle()
+																: "Hidden",
+														row_issue.getShow_volume() == 1 ? row_issue.getVolume()
+																: "Hidden",
+														row_issue.getShow_number() == 1 ? row_issue.getNumber()
+																: "Hidden",
+														row_issue.getShow_year() == 1 ? row_issue.getYear() : "Hidden",
+														row_issue.getDate_accepted() == null ? "/"
+																: sdf.format(row_issue.getDate_accepted()),
+														row_issue.getDate_published() == null ? "/"
+																: sdf.format(row_issue.getDate_published()),
+														"View", "Edit", "Delete" };
+												rows[i] = row;
+												((DefaultTableModel) issues_table.getModel()).insertRow(0, row);
+												i++;
+
+											}
+											if (num_rows != 0) {
+												((DefaultTableModel) issues_table.getModel()).fireTableRowsUpdated(0,
+														update_issue_keys.size() - 1);
+											}
+											issues_table.repaint();
+											issues.getContentPane().repaint();
+											issues.repaint();
+
+											issues.repaint();
+
 										}
 									}
-									issues.remove(progressBar);
-
-									issues.remove(progress_msg);
-									issues.repaint();
-									JOptionPane.showMessageDialog(null, "Sync completed.");
-									
-									if(num_rows==0){
-									issues.dispose();
-									dashboard();
-									}else{
-									Set<Long> update_issue_keys = issue_storage.keySet();
-									ArrayList<List<Object>> rowData = new ArrayList<List<Object>>();
-									Object[][] rows = new Object[update_issue_keys.size()][6];
-									boolean empty_table = false;
-									if (num_rows != 0) {
-										for (int i = num_rows - 1; i >= 0; i--) {
-											((DefaultTableModel) issues_table.getModel()).removeRow(i);
-										}
-									}
-									int i = 0;
-									for (long id : update_issue_keys) {
-										Issue row_issue = issue_storage.get(id);
-										issue_screens.put(id, new JFrame());
-										article_screens.put(id, new ConcurrentHashMap<Long, JFrame>());
-
-										Object[] row = { row_issue.getId(),
-												row_issue.getShow_title() == 1 ? row_issue.getTitle() : "Hidden",
-												row_issue.getShow_volume() == 1 ? row_issue.getVolume() : "Hidden",
-												row_issue.getShow_number() == 1 ? row_issue.getNumber() : "Hidden",
-												row_issue.getShow_year() == 1 ? row_issue.getYear() : "Hidden",
-												row_issue.getDate_accepted() == null ? "/"
-														: sdf.format(row_issue.getDate_accepted()),
-												row_issue.getDate_published() == null ? "/"
-														: sdf.format(row_issue.getDate_published()),
-												"View", "Edit", "Delete" };
-										rows[i] = row;
-										((DefaultTableModel) issues_table.getModel()).insertRow(0, row);
-										i++;
-
-									}
-									if(num_rows!=0){
-									((DefaultTableModel) issues_table.getModel()).fireTableRowsUpdated(0,
-											update_issue_keys.size() - 1);}
-									issues_table.repaint();
-									issues.getContentPane().repaint();
-									issues.repaint();
-
-									issues.repaint();
-
-								}
 								}
 							});
-						
+
 						} else {
 							JOptionPane.showMessageDialog(null, "Unable to connect to server.");
 
@@ -3704,7 +3728,7 @@ public class Main {
 											update_articles_intersect(current_issue, encoding);
 
 										} catch (IllegalStateException | IOException e1) {
-											
+
 											e1.printStackTrace();
 										}
 									}
@@ -3747,7 +3771,7 @@ public class Main {
 										try {
 											update_articles_local(current_issue, encoding);
 										} catch (IllegalStateException | IOException e1) {
-											
+
 											e1.printStackTrace();
 										}
 									}
@@ -3796,19 +3820,19 @@ public class Main {
 								public void run() {
 									try {
 										update_articles_local(current_issue, encoding);
-										
+
 									} catch (IllegalStateException e1) {
-										
+
 										e1.printStackTrace();
 									} catch (IOException e1) {
-										
+
 										e1.printStackTrace();
 									}
 								}
 							});
 						}
 						;
-						boolean update_q=update_table;
+						boolean update_q = update_table;
 						article_progress_executor.execute(new Runnable() {
 							public void run() {
 								try {
@@ -3829,10 +3853,10 @@ public class Main {
 													try {
 														sync_authors_intersect(issue_id, encoding, false);
 													} catch (IllegalStateException e2) {
-														
+
 														e2.printStackTrace();
 													} catch (IOException e2) {
-														
+
 														e2.printStackTrace();
 													}
 												}
@@ -3847,10 +3871,10 @@ public class Main {
 													try {
 														get_authors_remote(issue_id, encoding, false);
 													} catch (IllegalStateException e1) {
-														
+
 														e1.printStackTrace();
 													} catch (IOException e1) {
-														
+
 														e1.printStackTrace();
 													}
 												}
@@ -3864,9 +3888,10 @@ public class Main {
 									}
 									articles.dispose();
 									issue(issue_id);
-									//change
+									// change
 									if (update_q) {
-										ConcurrentHashMap<Long, Article> all_articles = current_issue.getArticles_list();
+										ConcurrentHashMap<Long, Article> all_articles = current_issue
+												.getArticles_list();
 										Set<Long> keys = all_articles.keySet();
 										ArrayList<List<Object>> rowData = new ArrayList<List<Object>>();
 										Object[][] rows = new Object[all_articles.size()][11];
@@ -3881,18 +3906,18 @@ public class Main {
 												System.out.println(num_rows);
 												((DefaultTableModel) article_table.getModel()).removeRow(i);
 
-												System.out.println(
-														"--" + ((DefaultTableModel) article_table.getModel()).getRowCount());
+												System.out.println("--"
+														+ ((DefaultTableModel) article_table.getModel()).getRowCount());
 											}
 										}
 										int i = 0;
 										try {
 											get_authors_remote(issue_id, encoding, false);
 										} catch (IllegalStateException e1) {
-											
+
 											e1.printStackTrace();
 										} catch (IOException e1) {
-											
+
 											e1.printStackTrace();
 										}
 										for (long id : keys) {
@@ -3927,14 +3952,17 @@ public class Main {
 												date_pub = sdf.format(all_articles.get(id).getDate_published());
 											}
 											Object[] row = { all_articles.get(id).getId(), issue_id,
-													all_articles.get(id).getSection_id(), current_articles.get(id).getTitle(),
-													all_articles.get(id).getPages(), all_articles.get(id).getAbstract_text(),
-													date_submit, date_pub, "View", "Edit", "Delete" };
+													all_articles.get(id).getSection_id(),
+													current_articles.get(id).getTitle(),
+													all_articles.get(id).getPages(),
+													all_articles.get(id).getAbstract_text(), date_submit, date_pub,
+													"View", "Edit", "Delete" };
 											rows[i] = row;
 											rowData.add(data);
 											((DefaultTableModel) article_table.getModel()).insertRow(0, row);
 											i++;
-											System.out.println("++" + ((DefaultTableModel) article_table.getModel()).getRowCount());
+											System.out.println("++"
+													+ ((DefaultTableModel) article_table.getModel()).getRowCount());
 
 										}
 										System.out.println(num_rows);
@@ -3944,7 +3972,8 @@ public class Main {
 										}
 										System.out.println(":::" + num_rows);
 										if (num_rows != 0) {
-											((DefaultTableModel) article_table.getModel()).fireTableRowsUpdated(0, num_rows - 1);
+											((DefaultTableModel) article_table.getModel()).fireTableRowsUpdated(0,
+													num_rows - 1);
 										}
 
 									}
@@ -3954,15 +3983,15 @@ public class Main {
 									articles.remove(progressBar);
 									articles.repaint();
 								} catch (InterruptedException e3) {
-									
+
 									e3.printStackTrace();
 								} catch (ExecutionException e3) {
-									
+
 									e3.printStackTrace();
 								}
 							}
 						});
-					
+
 					}
 
 				});
@@ -4852,115 +4881,120 @@ public class Main {
 
 				if (file_storage.containsKey((long) article_id)) {
 					ConcurrentHashMap<Long, ArticleFile> files = file_storage.get((long) article_id);
-					Set<Long> keys = files.keySet();
-					System.out.println("Files: " + keys.size());
-					int y_f = 23;
-					for (long key : keys) {
-						ImageIcon deleteicon = new ImageIcon("src/lib/remove_xs.png");
-						JButton btnDeleteFile = new JButton(deleteicon);
-						btnDeleteFile.setMargin(new Insets(0, 0, 0, 0));
-						btnDeleteFile.setBorder(null);
-						btnDeleteFile.setFont(new Font("Dialog", Font.BOLD, 12));
+					if (files != null) {
+						Set<Long> keys = files.keySet();
+						System.out.println("Files: " + keys.size());
+						int y_f = 23;
+						for (long key : keys) {
+							ImageIcon deleteicon = new ImageIcon("src/lib/remove_xs.png");
+							JButton btnDeleteFile = new JButton(deleteicon);
+							btnDeleteFile.setMargin(new Insets(0, 0, 0, 0));
+							btnDeleteFile.setBorder(null);
+							btnDeleteFile.setFont(new Font("Dialog", Font.BOLD, 12));
 
-						btnDeleteFile.setBounds(195, y_f, 40, 24);
-						article.getContentPane().add(btnDeleteFile);
+							btnDeleteFile.setBounds(195, y_f, 40, 24);
+							article.getContentPane().add(btnDeleteFile);
 
-						ImageIcon saveicon = new ImageIcon("src/lib/save_xs.png");
-						JButton btnSaveFile = new JButton(saveicon);
-						btnSaveFile.setMargin(new Insets(0, 0, 0, 0));
-						btnSaveFile.setBorder(null);
-						btnSaveFile.setFont(new Font("Dialog", Font.BOLD, 12));
+							ImageIcon saveicon = new ImageIcon("src/lib/save_xs.png");
+							JButton btnSaveFile = new JButton(saveicon);
+							btnSaveFile.setMargin(new Insets(0, 0, 0, 0));
+							btnSaveFile.setBorder(null);
+							btnSaveFile.setFont(new Font("Dialog", Font.BOLD, 12));
 
-						btnSaveFile.setBounds(150, y_f, 40, 24);
-						article.getContentPane().add(btnSaveFile);
-						JLabel file_l = new JLabel(files.get((long) key).getPath()
-								.substring(files.get((long) key).getPath().lastIndexOf("/") + 1));
-						file_l.setBounds(10, y_f, 120, 24);
-						panel11.add(file_l);
-						y_f = y_f + 20;
-						btnSaveFile.setAction(new AbstractAction() {
-							public void actionPerformed(ActionEvent e) {
+							btnSaveFile.setBounds(150, y_f, 40, 24);
+							article.getContentPane().add(btnSaveFile);
+							JLabel file_l = new JLabel(files.get((long) key).getPath()
+									.substring(files.get((long) key).getPath().lastIndexOf("/") + 1));
+							file_l.setBounds(10, y_f, 120, 24);
+							panel11.add(file_l);
+							y_f = y_f + 20;
+							btnSaveFile.setAction(new AbstractAction() {
+								public void actionPerformed(ActionEvent e) {
 
-								JFileChooser fileChooser = new JFileChooser();
-								fileChooser.setDialogTitle("Specify a file to save");
-								FileNameExtensionFilter file = new FileNameExtensionFilter(
-										"Galleys (pdf,xml,html) or Images(jpg,png)", "pdf", "xml", "html", "jpg",
-										"png");
-								fileChooser.setSelectedFile(new File(files.get((long) key).getPath()
-										.substring(files.get((long) key).getPath().lastIndexOf("/") + 1)));
-								fileChooser.setFileFilter(file);
-								// File new_f=new
-								// File(files.get((long)key).getPath());
-								int userSelection = fileChooser.showSaveDialog(panel);
+									JFileChooser fileChooser = new JFileChooser();
+									fileChooser.setDialogTitle("Specify a file to save");
+									FileNameExtensionFilter file = new FileNameExtensionFilter(
+											"Galleys (pdf,xml,html) or Images(jpg,png)", "pdf", "xml", "html", "jpg",
+											"png");
+									fileChooser.setSelectedFile(new File(files.get((long) key).getPath()
+											.substring(files.get((long) key).getPath().lastIndexOf("/") + 1)));
+									fileChooser.setFileFilter(file);
+									// File new_f=new
+									// File(files.get((long)key).getPath());
+									int userSelection = fileChooser.showSaveDialog(panel);
 
-								// fileChooser.setSelectedFile(new
-								// File(files.get((long)key).getPath()));
-								if (userSelection == JFileChooser.APPROVE_OPTION) {
-									System.out.println("Save as file: " + fileChooser.getCurrentDirectory().getPath()
-											+ files.get((long) key).getPath()
-													.substring(files.get((long) key).getPath().lastIndexOf("/")));
-									String output_path = fileChooser.getCurrentDirectory().getPath() + "/"
-											+ fileChooser.getSelectedFile().getName();
-									System.out.println(output_path);
-									System.out.println(fileChooser.getSelectedFile().getName());
-									// files.get((long)key).getPath().substring(files.get((long)key).getPath().lastIndexOf("/"));
+									// fileChooser.setSelectedFile(new
+									// File(files.get((long)key).getPath()));
+									if (userSelection == JFileChooser.APPROVE_OPTION) {
+										System.out
+												.println("Save as file: " + fileChooser.getCurrentDirectory().getPath()
+														+ files.get((long) key).getPath().substring(
+																files.get((long) key).getPath().lastIndexOf("/")));
+										String output_path = fileChooser.getCurrentDirectory().getPath() + "/"
+												+ fileChooser.getSelectedFile().getName();
+										System.out.println(output_path);
+										System.out.println(fileChooser.getSelectedFile().getName());
+										// files.get((long)key).getPath().substring(files.get((long)key).getPath().lastIndexOf("/"));
 
-									try {
-										Files.copy(Paths.get(files.get((long) key).getPath()), Paths.get(output_path),
-												StandardCopyOption.REPLACE_EXISTING);
-									} catch (IOException e1) {
-										
-										JOptionPane.showMessageDialog(null,
-												String.format("File %s does not exist locally.",
-														files.get((long) key).getPath().substring(
-																files.get((long) key).getPath().lastIndexOf("/") + 1)));
-										boolean is_online = status_online();
-										if (is_online) {
-											int dialogResult = JOptionPane.showConfirmDialog(null,
-													"Would you like to download it ?",
+										try {
+											Files.copy(Paths.get(files.get((long) key).getPath()),
+													Paths.get(output_path), StandardCopyOption.REPLACE_EXISTING);
+										} catch (IOException e1) {
 
-													"Warning", 1);
-											if (dialogResult == JOptionPane.YES_OPTION) {
-												try {
-													file_download(article_id, key);
-												} catch (IllegalStateException e2) {
-													// TODO Auto-generated catch
-													// block
-													e2.printStackTrace();
-												} catch (IOException e2) {
-													// TODO Auto-generated catch
-													// block
-													e2.printStackTrace();
+											JOptionPane.showMessageDialog(null, String.format(
+													"File %s does not exist locally.",
+													files.get((long) key).getPath().substring(
+															files.get((long) key).getPath().lastIndexOf("/") + 1)));
+											boolean is_online = status_online();
+											if (is_online) {
+												int dialogResult = JOptionPane.showConfirmDialog(null,
+														"Would you like to download it ?",
+
+														"Warning", 1);
+												if (dialogResult == JOptionPane.YES_OPTION) {
+													try {
+														file_download(article_id, key);
+													} catch (IllegalStateException e2) {
+														// TODO Auto-generated
+														// catch
+														// block
+														e2.printStackTrace();
+													} catch (IOException e2) {
+														// TODO Auto-generated
+														// catch
+														// block
+														e2.printStackTrace();
+													}
+												} else {
 												}
-											} else {
 											}
 										}
+
+										// System.out.println("Save as file: " +
+										// fileToSave.getAbsolutePath());
 									}
-
-									// System.out.println("Save as file: " +
-									// fileToSave.getAbsolutePath());
 								}
-							}
-						});
-						btnDeleteFile.setAction(new AbstractAction() {
-							public void actionPerformed(ActionEvent e) {
+							});
+							btnDeleteFile.setAction(new AbstractAction() {
+								public void actionPerformed(ActionEvent e) {
 
-								File f = new File(files.get((long) key).getPath());
-								f.delete();
-								ConcurrentHashMap<Long, ArticleFile> deleted = file_storage.get((long) article_id);
-								deleted.remove(key);
-								file_storage.put((long) article_id, deleted);
-								article.dispose();
-								article(issue_id, article_id);
+									File f = new File(files.get((long) key).getPath());
+									f.delete();
+									ConcurrentHashMap<Long, ArticleFile> deleted = file_storage.get((long) article_id);
+									deleted.remove(key);
+									file_storage.put((long) article_id, deleted);
+									article.dispose();
+									article(issue_id, article_id);
 
-							}
-						});
-						btnDeleteFile.setIcon(deleteicon);
-						btnSaveFile.setIcon(saveicon);
-						panel11.add(btnSaveFile);
-						panel11.add(btnDeleteFile);
-						String path = files.get((long) key).getPath();
-						label_text = label_text + path.substring(path.lastIndexOf("/") + 1) + "\n";
+								}
+							});
+							btnDeleteFile.setIcon(deleteicon);
+							btnSaveFile.setIcon(saveicon);
+							panel11.add(btnSaveFile);
+							panel11.add(btnDeleteFile);
+							String path = files.get((long) key).getPath();
+							label_text = label_text + path.substring(path.lastIndexOf("/") + 1) + "\n";
+						}
 					}
 				}
 				JTextArea lblFile = new JTextArea(label_text);
@@ -6073,10 +6107,12 @@ public class Main {
 				panel10.setBounds(115, 310, 225, 160);
 				if (file_storage.containsKey((long) article_id)) {
 					ConcurrentHashMap<Long, ArticleFile> files = file_storage.get((long) article_id);
-					Set<Long> keys = files.keySet();
-					for (long key : keys) {
-						String path = files.get((long) key).getPath();
-						label_text = label_text + path.substring(path.lastIndexOf("/") + 1) + "\n";
+					if (files != null) {
+						Set<Long> keys = files.keySet();
+						for (long key : keys) {
+							String path = files.get((long) key).getPath();
+							label_text = label_text + path.substring(path.lastIndexOf("/") + 1) + "\n";
+						}
 					}
 				}
 				lblFile.setText(label_text);
@@ -6234,6 +6270,8 @@ public class Main {
 			ConcurrentHashMap<Long, Boolean> author_primary = new ConcurrentHashMap<Long, Boolean>();
 			String setting_meta = list_settings.get("Metadata");
 			long current_id = articles_id + 1;
+
+			long published_current_id = published_articles_id + 1;
 			long initial_file_num = file_id;
 			final JFrame article = new JFrame();
 			article.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -6300,15 +6338,17 @@ public class Main {
 				public void actionPerformed(ActionEvent arg0) {
 					if (file_storage.containsKey((long) current_id)) {
 						ConcurrentHashMap<Long, ArticleFile> up_files = file_storage.get((long) current_id);
-						Set<Long> keys = up_files.keySet();
-						file_id = initial_file_num;
-						for (long key : keys) {
-							File f = new File(up_files.get((long) key).getPath());
-							f.delete();
+						if (up_files != null) {
+							Set<Long> keys = up_files.keySet();
+							file_id = initial_file_num;
+							for (long key : keys) {
+								File f = new File(up_files.get((long) key).getPath());
+								f.delete();
+							}
+							File folder = new File(String.format("src/files/%d/", current_id));
+							folder.delete();
+							file_storage.remove(current_id);
 						}
-						File folder = new File(String.format("src/files/%d/", current_id));
-						folder.delete();
-						file_storage.remove(current_id);
 					}
 					// database_save();
 					if (issue_screens.get(issue_id) == null) {
@@ -6854,12 +6894,12 @@ public class Main {
 					try {
 
 						String test_accepted = sdf.format(datePickerAccepted.getDate());
-						String test_published = sdf.format(datePicker.getDate());
+					//	String test_published = sdf.format(datePicker.getDate());
 
 					} catch (Exception ex) {
 						validation = false;
 						JOptionPane.showMessageDialog(null,
-								"Use dates from calendar for fields: Date Published and Date Accepted");
+								"Use dates from calendar for fields: Date Accepted");
 					}
 					if (lblFile.getText().contains("Not Uploaded")) {
 						validation = false;
@@ -6879,7 +6919,7 @@ public class Main {
 						}
 						issue_screens.get(issue_id).dispose();
 						articles_id++;
-
+						published_articles_id++;
 						if (setting_meta.compareToIgnoreCase("true") == 0) {
 							metadata_storage.put(articles_id, meta_update);
 							System.out.println("Metadata added");
@@ -6890,9 +6930,15 @@ public class Main {
 						Issue current_issue = issue_storage.get(issue_id);
 						Article new_article = new Article(articles_id, lblTitleText.getText(), entered_sectionID,
 								entered_pages, lblAbstract.getText(), datePickerAccepted.getDate(),
-								datePicker.getDate(), current_issue, datePickerAccepted.getDate(),
+								current_issue, datePickerAccepted.getDate(),
 								new Journal(1, "up", (float) 2.0, "en_US", 0));
 						new_article.setDoi(doi.getText());
+						try{
+							String test_published = sdf.format(datePicker.getDate());
+							new_article.setDate_published(datePicker.getDate());
+						} catch (Exception ex) {
+						}
+						new_article.setPublished_pk(published_articles_id);
 						author_primary_storage.put(articles_id, author_primary);
 						ArrayList<Author> selected_authors = new ArrayList<Author>();
 						int[] selections = listbox.getSelectedIndices();
@@ -7034,16 +7080,17 @@ public class Main {
 				public void actionPerformed(ActionEvent arg0) {
 					if (file_storage.containsKey((long) current_id)) {
 						ConcurrentHashMap<Long, ArticleFile> up_files = file_storage.get((long) current_id);
-						Set<Long> keys = up_files.keySet();
-						file_id = initial_file_num;
-						for (long key : keys) {
-							File f = new File(up_files.get((long) key).getPath());
-							f.delete();
+						if (up_files != null) {
+							Set<Long> keys = up_files.keySet();
+							file_id = initial_file_num;
+							for (long key : keys) {
+								File f = new File(up_files.get((long) key).getPath());
+								f.delete();
+							}
+							File folder = new File(String.format("src/files/%d/", current_id));
+							folder.delete();
+							file_storage.remove(current_id);
 						}
-						File folder = new File(String.format("src/files/%d/", current_id));
-						folder.delete();
-						file_storage.remove(current_id);
-
 					}
 					select.setEnabled(true);
 					upload.setEnabled(false);
@@ -7063,17 +7110,19 @@ public class Main {
 				public void windowClosing(WindowEvent e) {
 					if (file_storage.containsKey((long) current_id) && current_id != articles_id) {
 						ConcurrentHashMap<Long, ArticleFile> up_files = file_storage.get((long) current_id);
-						Set<Long> keys = up_files.keySet();
-						file_id = initial_file_num;
+						if (up_files != null) {
+							Set<Long> keys = up_files.keySet();
+							file_id = initial_file_num;
 
-						for (long key : keys) {
-							File f = new File(up_files.get((long) key).getPath());
-							f.delete();
+							for (long key : keys) {
+								File f = new File(up_files.get((long) key).getPath());
+								f.delete();
+							}
+							File folder = new File(String.format("src/files/%d/", current_id));
+							folder.delete();
+							file_storage.remove(current_id);
+							metadata_storage.remove(current_id);
 						}
-						File folder = new File(String.format("src/files/%d/", current_id));
-						folder.delete();
-						file_storage.remove(current_id);
-						metadata_storage.remove(current_id);
 					}
 					issue(issue_id);
 					// database_save();
@@ -7132,10 +7181,10 @@ public class Main {
 		try {
 			response = httpClient.execute(article_exists);
 		} catch (ClientProtocolException e2) {
-			
+
 			e2.printStackTrace();
 		} catch (IOException e2) {
-			
+
 			e2.printStackTrace();
 		}
 		boolean article_created = false;
@@ -7146,7 +7195,7 @@ public class Main {
 			InputStream is = response.getEntity().getContent();
 			is.close();
 		} catch (IOException exc) {
-			
+
 			exc.printStackTrace();
 		}
 		if (article_created) {
@@ -7160,17 +7209,17 @@ public class Main {
 			try {
 				response = httpClient.execute(httpPut);
 			} catch (ClientProtocolException e2) {
-				
+
 				e2.printStackTrace();
 			} catch (IOException e2) {
-				
+
 				e2.printStackTrace();
 			}
 			try {
 				InputStream is = response.getEntity().getContent();
 				is.close();
 			} catch (IOException exc) {
-				
+
 				exc.printStackTrace();
 			}
 		} else {
@@ -7184,17 +7233,17 @@ public class Main {
 			try {
 				response = httpClient.execute(createArticle);
 			} catch (ClientProtocolException e2) {
-				
+
 				e2.printStackTrace();
 			} catch (IOException e2) {
-				
+
 				e2.printStackTrace();
 			}
 			try {
 				InputStream is = response.getEntity().getContent();
 				is.close();
 			} catch (IOException exc) {
-				
+
 				exc.printStackTrace();
 			}
 		}
@@ -7210,10 +7259,10 @@ public class Main {
 		try {
 			response = httpClient.execute(settingCheck);
 		} catch (ClientProtocolException e2) {
-			
+
 			e2.printStackTrace();
 		} catch (IOException e2) {
-			
+
 			e2.printStackTrace();
 		}
 		JsonFactory jsonf = new JsonFactory();
@@ -7227,7 +7276,7 @@ public class Main {
 			System.out.println(setting.get("count"));
 			System.out.println(setting);
 			Long count = (Long) setting.get("count");
-			if (count == 0) {
+			if (count == null || count == 0) {
 				exists = false;
 			} else {
 				JSONArray results = (JSONArray) setting.get("results");
@@ -7240,14 +7289,14 @@ public class Main {
 				setting_json.put("setting_value", article.getTitle());
 			}
 		} catch (ParseException e) {
-			
+
 			e.printStackTrace();
 		}
 		try {
 			InputStream is = response.getEntity().getContent();
 			is.close();
 		} catch (IOException exc) {
-			
+
 			exc.printStackTrace();
 		}
 		System.out.println(setting_json.isEmpty());
@@ -7275,10 +7324,10 @@ public class Main {
 			try {
 				response = httpClient.execute(httpPost);
 			} catch (ClientProtocolException e2) {
-				
+
 				e2.printStackTrace();
 			} catch (IOException e2) {
-				
+
 				e2.printStackTrace();
 			}
 		} else {
@@ -7299,10 +7348,10 @@ public class Main {
 			try {
 				response = httpClient.execute(httpPost);
 			} catch (ClientProtocolException e2) {
-				
+
 				e2.printStackTrace();
 			} catch (IOException e2) {
-				
+
 				e2.printStackTrace();
 			}
 		}
@@ -7310,7 +7359,7 @@ public class Main {
 			InputStream is = response.getEntity().getContent();
 			is.close();
 		} catch (IOException exc) {
-			
+
 			exc.printStackTrace();
 		}
 		settingCheck = new HttpGet(
@@ -7324,10 +7373,10 @@ public class Main {
 		try {
 			response = httpClient.execute(settingCheck);
 		} catch (ClientProtocolException e2) {
-			
+
 			e2.printStackTrace();
 		} catch (IOException e2) {
-			
+
 			e2.printStackTrace();
 		}
 		jsonf = new JsonFactory();
@@ -7341,7 +7390,7 @@ public class Main {
 			System.out.println(setting.get("count"));
 			System.out.println(setting);
 			Long count = (Long) setting.get("count");
-			if (count == 0) {
+			if (count == null || count == 0) {
 				exists = false;
 			} else {
 				JSONArray results = (JSONArray) setting.get("results");
@@ -7354,14 +7403,14 @@ public class Main {
 				setting_json.put("setting_value", article.getAbstract_text());
 			}
 		} catch (ParseException e) {
-			
+
 			e.printStackTrace();
 		}
 		try {
 			InputStream is = response.getEntity().getContent();
 			is.close();
 		} catch (IOException exc) {
-			
+
 			exc.printStackTrace();
 		}
 		System.out.println(setting_json.isEmpty());
@@ -7390,10 +7439,10 @@ public class Main {
 			try {
 				response = httpClient.execute(httpPost);
 			} catch (ClientProtocolException e2) {
-				
+
 				e2.printStackTrace();
 			} catch (IOException e2) {
-				
+
 				e2.printStackTrace();
 			}
 		} else {
@@ -7414,10 +7463,10 @@ public class Main {
 			try {
 				response = httpClient.execute(httpPost);
 			} catch (ClientProtocolException e2) {
-				
+
 				e2.printStackTrace();
 			} catch (IOException e2) {
-				
+
 				e2.printStackTrace();
 			}
 		}
@@ -7425,7 +7474,7 @@ public class Main {
 			InputStream is = response.getEntity().getContent();
 			is.close();
 		} catch (IOException exc) {
-			
+
 			exc.printStackTrace();
 		}
 		settingCheck = new HttpGet(
@@ -7439,10 +7488,10 @@ public class Main {
 		try {
 			response = httpClient.execute(settingCheck);
 		} catch (ClientProtocolException e2) {
-			
+
 			e2.printStackTrace();
 		} catch (IOException e2) {
-			
+
 			e2.printStackTrace();
 		}
 		jsonf = new JsonFactory();
@@ -7456,7 +7505,7 @@ public class Main {
 			System.out.println(setting.get("count"));
 			System.out.println(setting);
 			Long count = (Long) setting.get("count");
-			if (count == 0) {
+			if (count == null || count == 0) {
 				exists = false;
 			} else {
 				JSONArray results = (JSONArray) setting.get("results");
@@ -7469,14 +7518,14 @@ public class Main {
 				setting_json.put("setting_value", article.getDoi());
 			}
 		} catch (ParseException e) {
-			
+
 			e.printStackTrace();
 		}
 		try {
 			InputStream is = response.getEntity().getContent();
 			is.close();
 		} catch (IOException exc) {
-			
+
 			exc.printStackTrace();
 		}
 		System.out.println(setting_json.isEmpty());
@@ -7505,10 +7554,10 @@ public class Main {
 			try {
 				response = httpClient.execute(httpPost);
 			} catch (ClientProtocolException e2) {
-				
+
 				e2.printStackTrace();
 			} catch (IOException e2) {
-				
+
 				e2.printStackTrace();
 			}
 		} else {
@@ -7529,10 +7578,10 @@ public class Main {
 			try {
 				response = httpClient.execute(httpPost);
 			} catch (ClientProtocolException e2) {
-				
+
 				e2.printStackTrace();
 			} catch (IOException e2) {
-				
+
 				e2.printStackTrace();
 			}
 		}
@@ -7540,8 +7589,138 @@ public class Main {
 			InputStream is = response.getEntity().getContent();
 			is.close();
 		} catch (IOException exc) {
-			
+
 			exc.printStackTrace();
+		}
+		if (article.getDate_published() != null) {
+			article_exists = new HttpGet(String.format("%s/get/article/published/%s/", base_url, article.getId()));
+
+			article_exists.addHeader("Authorization", "Basic " + credentials);
+			article_exists.setHeader("Accept", "application/json");
+			article_exists.addHeader("Content-type", "application/json");
+			obj = ArticleToPublishedJSON(article);
+			response = null;
+			try {
+				response = httpClient.execute(article_exists);
+			} catch (ClientProtocolException e2) {
+
+				e2.printStackTrace();
+			} catch (IOException e2) {
+
+				e2.printStackTrace();
+			}
+			boolean article_published = false;
+			if (response.getStatusLine().getStatusCode() == 200) {
+				article_published = true;
+			}
+			try {
+				InputStream is = response.getEntity().getContent();
+				is.close();
+			} catch (IOException exc) {
+
+				exc.printStackTrace();
+			}
+			if (article_published) {
+				HttpPut httpPut = new HttpPut(
+						String.format("%s/published-articles/%s/", base_url, article.getPublished_pk()));
+				httpPut.setEntity(new StringEntity(obj.toJSONString()));
+				httpPut.addHeader("Authorization", "Basic " + credentials);
+				httpPut.setHeader("Accept", "application/json");
+				httpPut.addHeader("Content-type", "application/json");
+
+				response = null;
+				try {
+					response = httpClient.execute(httpPut);
+				} catch (ClientProtocolException e2) {
+
+					e2.printStackTrace();
+				} catch (IOException e2) {
+
+					e2.printStackTrace();
+				}
+				try {
+					InputStream is = response.getEntity().getContent();
+					is.close();
+				} catch (IOException exc) {
+
+					exc.printStackTrace();
+				}
+			} else {
+				HttpPost createArticle = new HttpPost(String.format("%s/published-articles/", base_url));
+				createArticle.setEntity(new StringEntity(obj.toJSONString()));
+				createArticle.addHeader("Authorization", "Basic " + credentials);
+				createArticle.setHeader("Accept", "application/json");
+				createArticle.addHeader("Content-type", "application/json");
+
+				response = null;
+				try {
+					response = httpClient.execute(createArticle);
+				} catch (ClientProtocolException e2) {
+
+					e2.printStackTrace();
+				} catch (IOException e2) {
+
+					e2.printStackTrace();
+				}
+				try {
+					InputStream is = response.getEntity().getContent();
+					is.close();
+				} catch (IOException exc) {
+
+					exc.printStackTrace();
+				}
+				article_exists = new HttpGet(String.format("%s/get/article/published/%s/", base_url, article.getId()));
+
+				article_exists.addHeader("Authorization", "Basic " + credentials);
+				article_exists.setHeader("Accept", "application/json");
+				article_exists.addHeader("Content-type", "application/json");
+				obj = ArticleToPublishedJSON(article);
+				response = null;
+				try {
+					response = httpClient.execute(article_exists);
+				} catch (ClientProtocolException e2) {
+
+					e2.printStackTrace();
+				} catch (IOException e2) {
+
+					e2.printStackTrace();
+				}
+				article_published = false;
+				if (response.getStatusLine().getStatusCode() == 200) {
+					article_published = true;
+				}
+				if (article_published) {
+					result = response.getEntity().getContent();
+					jsonParser = new JSONParser();
+					exists = true;
+					setting_json = new JSONObject();
+
+					try {
+						JSONObject setting = (JSONObject) jsonParser.parse(IOUtils.toString(result));
+						article.setPublished_pk((int) (long) setting.get("id"));
+						article_storage.put(article.getId(), article);
+						Issue current_issue = issue_storage.get(article.getIssue_fk().getId());
+						current_issue.add_article(article.getId(), article);
+						issue_storage.put(current_issue.getId(), current_issue);
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+					try {
+						InputStream is = response.getEntity().getContent();
+						is.close();
+					} catch (IOException exc) {
+
+						exc.printStackTrace();
+					}
+				}
+				try {
+					InputStream is = response.getEntity().getContent();
+					is.close();
+				} catch (IOException exc) {
+
+					exc.printStackTrace();
+				}
+			}
 		}
 		/*
 		 * response = null; try { response = httpClient.execute(httpPost); }
@@ -7569,10 +7748,10 @@ public class Main {
 		try {
 			response = httpClient.execute(issue_exists);
 		} catch (ClientProtocolException e2) {
-			
+
 			e2.printStackTrace();
 		} catch (IOException e2) {
-			
+
 			e2.printStackTrace();
 		}
 		boolean issue_created = false;
@@ -7583,7 +7762,7 @@ public class Main {
 			InputStream is = response.getEntity().getContent();
 			is.close();
 		} catch (IOException exc) {
-			
+
 			exc.printStackTrace();
 		}
 		if (issue_created) {
@@ -7597,17 +7776,17 @@ public class Main {
 			try {
 				response = httpClient.execute(httpPut);
 			} catch (ClientProtocolException e2) {
-				
+
 				e2.printStackTrace();
 			} catch (IOException e2) {
-				
+
 				e2.printStackTrace();
 			}
 			try {
 				InputStream is = response.getEntity().getContent();
 				is.close();
 			} catch (IOException exc) {
-				
+
 				exc.printStackTrace();
 			}
 		} else {
@@ -7621,17 +7800,17 @@ public class Main {
 			try {
 				response = httpClient.execute(createIssue);
 			} catch (ClientProtocolException e2) {
-				
+
 				e2.printStackTrace();
 			} catch (IOException e2) {
-				
+
 				e2.printStackTrace();
 			}
 			try {
 				InputStream is = response.getEntity().getContent();
 				is.close();
 			} catch (IOException exc) {
-				
+
 				exc.printStackTrace();
 			}
 		}
@@ -7647,10 +7826,10 @@ public class Main {
 		try {
 			response = httpClient.execute(settingCheck);
 		} catch (ClientProtocolException e2) {
-			
+
 			e2.printStackTrace();
 		} catch (IOException e2) {
-			
+
 			e2.printStackTrace();
 		}
 		JsonFactory jsonf = new JsonFactory();
@@ -7658,13 +7837,16 @@ public class Main {
 		Long setting_pk = (long) -1;
 		org.json.simple.parser.JSONParser jsonParser = new JSONParser();
 		boolean exists = true;
+		if (response.getStatusLine().getStatusCode() == 200) {
+			exists = false;
+		}
 		JSONObject setting_json = new JSONObject();
 		try {
 			JSONObject setting = (JSONObject) jsonParser.parse(IOUtils.toString(result));
 			System.out.println(setting.get("count"));
 			System.out.println(setting);
 			Long count = (Long) setting.get("count");
-			if (count == 0) {
+			if (count == null || count == 0) {
 				exists = false;
 			} else {
 				JSONArray results = (JSONArray) setting.get("results");
@@ -7677,14 +7859,14 @@ public class Main {
 				setting_json.put("setting_value", issue.getTitle());
 			}
 		} catch (ParseException e) {
-			
+
 			e.printStackTrace();
 		}
 		try {
 			InputStream is = response.getEntity().getContent();
 			is.close();
 		} catch (IOException exc) {
-			
+
 			exc.printStackTrace();
 		}
 		System.out.println(setting_json.isEmpty());
@@ -7712,10 +7894,10 @@ public class Main {
 			try {
 				response = httpClient.execute(httpPost);
 			} catch (ClientProtocolException e2) {
-				
+
 				e2.printStackTrace();
 			} catch (IOException e2) {
-				
+
 				e2.printStackTrace();
 			}
 		} else {
@@ -7728,10 +7910,10 @@ public class Main {
 			try {
 				response = httpClient.execute(httpPost);
 			} catch (ClientProtocolException e2) {
-				
+
 				e2.printStackTrace();
 			} catch (IOException e2) {
-				
+
 				e2.printStackTrace();
 			}
 		}
@@ -7739,7 +7921,7 @@ public class Main {
 			InputStream is = response.getEntity().getContent();
 			is.close();
 		} catch (IOException exc) {
-			
+
 			exc.printStackTrace();
 		}
 		/*
@@ -7771,10 +7953,10 @@ public class Main {
 		try {
 			response = httpClient.execute(issue_exists);
 		} catch (ClientProtocolException e2) {
-			
+
 			e2.printStackTrace();
 		} catch (IOException e2) {
-			
+
 			e2.printStackTrace();
 		}
 		boolean issue_created = false;
@@ -7785,7 +7967,7 @@ public class Main {
 			InputStream is = response.getEntity().getContent();
 			is.close();
 		} catch (IOException exc) {
-			
+
 			exc.printStackTrace();
 		}
 		if (!issue_created) {
@@ -7797,73 +7979,76 @@ public class Main {
 			Article current_article = articles.get(key);
 			update_article_intersect(current_article, credentials);
 			ConcurrentHashMap<Long, ArticleFile> files = file_storage.get((long) current_article.getId());
-			Set<Long> file_keys = files.keySet();
-			HttpGet article_files = new HttpGet(
-					String.format("%s/get/files/%s/?format=json", base_url, current_article.getId()));
-			// settingCheck.setEntity(new
-			// StringEntity(obj.toJSONString()));
-			article_files.addHeader("Authorization", "Basic " + credentials);
-			article_files.setHeader("Accept", "application/json");
-			article_files.addHeader("Content-type", "application/json");
+			// null
+			if (files != null) {
+				Set<Long> file_keys = files.keySet();
+				HttpGet article_files = new HttpGet(
+						String.format("%s/get/files/%s/?format=json", base_url, current_article.getId()));
+				// settingCheck.setEntity(new
+				// StringEntity(obj.toJSONString()));
+				article_files.addHeader("Authorization", "Basic " + credentials);
+				article_files.setHeader("Accept", "application/json");
+				article_files.addHeader("Content-type", "application/json");
 
-			response = null;
-			try {
-				response = httpClient.execute(article_files);
-			} catch (ClientProtocolException e2) {
-				
-				e2.printStackTrace();
-			} catch (IOException e2) {
-				
-				e2.printStackTrace();
-			}
-			JsonFactory jsonf = new JsonFactory();
-			InputStream result = response.getEntity().getContent();
-			org.json.simple.parser.JSONParser jsonParser = new JSONParser();
-
-			long setting_pk = (long) -1;
-			boolean exists = true;
-			JSONObject setting_json = new JSONObject();
-
-			JSONObject setting;
-			try {
-				setting = (JSONObject) jsonParser.parse(IOUtils.toString(result));
-
+				response = null;
 				try {
-					InputStream is = response.getEntity().getContent();
-					is.close();
-				} catch (IOException exc) {
-					
-					exc.printStackTrace();
+					response = httpClient.execute(article_files);
+				} catch (ClientProtocolException e2) {
+
+					e2.printStackTrace();
+				} catch (IOException e2) {
+
+					e2.printStackTrace();
 				}
-				System.out.println(setting);
-				if (setting == null) {
-					exists = false;
-				} else {
-					String[] file_ids = null;
-					String ids = ((String) setting.get("files"));
-					if (ids.contains(",")) {
-						file_ids = ((String) setting.get("files")).split(",");
+				JsonFactory jsonf = new JsonFactory();
+				InputStream result = response.getEntity().getContent();
+				org.json.simple.parser.JSONParser jsonParser = new JSONParser();
+
+				long setting_pk = (long) -1;
+				boolean exists = true;
+				JSONObject setting_json = new JSONObject();
+
+				JSONObject setting;
+				try {
+					setting = (JSONObject) jsonParser.parse(IOUtils.toString(result));
+
+					try {
+						InputStream is = response.getEntity().getContent();
+						is.close();
+					} catch (IOException exc) {
+
+						exc.printStackTrace();
 					}
-					if (file_ids != null) {
-						for (String file_id : file_ids) {
-							if (!files.containsKey((long) Long.parseLong(file_id))) {
-								delete_file((long) Long.parseLong(file_id));
+					System.out.println(setting);
+					if (setting == null) {
+						exists = false;
+					} else {
+						String[] file_ids = null;
+						String ids = ((String) setting.get("files"));
+						if (ids.contains(",")) {
+							file_ids = ((String) setting.get("files")).split(",");
+						}
+						if (file_ids != null) {
+							for (String file_id : file_ids) {
+								if (!files.containsKey((long) Long.parseLong(file_id))) {
+									delete_file((long) Long.parseLong(file_id));
+								}
 							}
 						}
 					}
+				} catch (ParseException e) {
+
+					e.printStackTrace();
 				}
-			} catch (ParseException e) {
-				
-				e.printStackTrace();
-			}
 
-			System.out.println("FILES TO UPLOAD: " + file_keys.size());
-			if (file_keys.size() > 0) {
-				for (long f_key : file_keys) {
+				System.out.println("FILES TO UPLOAD: " + file_keys.size());
+				if (file_keys.size() > 0) {
+					for (long f_key : file_keys) {
 
-					System.out.println("FILE TO UPLOAD: " + f_key);
-					ArticleFile current_file = files.get((long) f_key);
-					file_upload_intersect(current_article.getId(), current_file);
+						System.out.println("FILE TO UPLOAD: " + f_key);
+						ArticleFile current_file = files.get((long) f_key);
+						file_upload_intersect(current_article.getId(), current_file);
+					}
 				}
 			}
 		}
@@ -7904,7 +8089,7 @@ public class Main {
 			InputStream is = response.getEntity().getContent();
 			is.close();
 		} catch (IOException exc) {
-			
+
 			exc.printStackTrace();
 		}
 		if (!issue_created) {
@@ -7923,11 +8108,11 @@ public class Main {
 		try {
 			response = httpClient.execute(published_articles);
 		} catch (ClientProtocolException e2) {
-			
+
 			JOptionPane.showMessageDialog(null, "Lost connection to server.");
 			return;
 		} catch (IOException e2) {
-			
+
 			JOptionPane.showMessageDialog(null, "Lost connection to server.");
 			return;
 		}
@@ -7944,7 +8129,7 @@ public class Main {
 				InputStream is = response.getEntity().getContent();
 				is.close();
 			} catch (IOException exc) {
-				
+
 				exc.printStackTrace();
 			}
 			System.out.println(setting);
@@ -7984,7 +8169,7 @@ public class Main {
 									InputStream is = response.getEntity().getContent();
 									is.close();
 								} catch (IOException exc) {
-									
+
 									exc.printStackTrace();
 								}
 								HttpGet article_settings = new HttpGet(
@@ -8032,7 +8217,7 @@ public class Main {
 										InputStream is = response.getEntity().getContent();
 										is.close();
 									} catch (IOException exc) {
-										
+
 										exc.printStackTrace();
 									}
 								} else {
@@ -8070,7 +8255,7 @@ public class Main {
 										InputStream is = response.getEntity().getContent();
 										is.close();
 									} catch (IOException exc) {
-										
+
 										exc.printStackTrace();
 									}
 								} else {
@@ -8108,7 +8293,7 @@ public class Main {
 										InputStream is = response.getEntity().getContent();
 										is.close();
 									} catch (IOException exc) {
-										
+
 										exc.printStackTrace();
 									}
 								} else {
@@ -8131,7 +8316,8 @@ public class Main {
 
 									try {
 										setting = (JSONObject) jsonParser.parse(IOUtils.toString(result));
-
+										System.out.println("DATE PUBLISHED : " + setting);
+										new_article.setPublished_pk((int) (long) setting.get("id"));
 										new_article.setDate_published(
 												sdf.parse(((String) setting.get("date_published")).replace("-", "/")));
 									} catch (Exception e) {
@@ -8141,7 +8327,7 @@ public class Main {
 										InputStream is = response.getEntity().getContent();
 										is.close();
 									} catch (IOException exc) {
-										
+
 										exc.printStackTrace();
 									}
 								}
@@ -8150,7 +8336,7 @@ public class Main {
 								articles_list.add(new_article);
 
 							} catch (ParseException e) {
-								
+
 								e.printStackTrace();
 							}
 
@@ -8158,7 +8344,7 @@ public class Main {
 							JOptionPane.showMessageDialog(null, "Lost connection to server.");
 							return;
 						} catch (IOException e2) {
-							
+
 							JOptionPane.showMessageDialog(null, "Lost connection to server.");
 							return;
 						}
@@ -8169,7 +8355,7 @@ public class Main {
 
 			}
 		} catch (ParseException e) {
-			
+
 			e.printStackTrace();
 		}
 		for (Article a : articles_list) {
@@ -8200,7 +8386,7 @@ public class Main {
 						InputStream is = response.getEntity().getContent();
 						is.close();
 					} catch (IOException exc) {
-						
+
 						exc.printStackTrace();
 					}
 					System.out.println(setting);
@@ -8219,7 +8405,7 @@ public class Main {
 						}
 					}
 				} catch (ParseException e) {
-					
+
 					e.printStackTrace();
 				}
 				a.setIssue_fk(issue);
@@ -8232,7 +8418,7 @@ public class Main {
 				JOptionPane.showMessageDialog(null, "Lost connection to server.");
 				return;
 			} catch (IOException e2) {
-				
+
 				JOptionPane.showMessageDialog(null, "Lost connection to server.");
 				return;
 			}
@@ -8257,10 +8443,10 @@ public class Main {
 			try {
 				response = httpClient.execute(settingCheck);
 			} catch (ClientProtocolException e2) {
-				
+
 				e2.printStackTrace();
 			} catch (IOException e2) {
-				
+
 				e2.printStackTrace();
 			}
 			JsonFactory jsonf = new JsonFactory();
@@ -8280,11 +8466,11 @@ public class Main {
 					InputStream is = response.getEntity().getContent();
 					is.close();
 				} catch (IOException exc) {
-					
+
 					exc.printStackTrace();
 				}
 			} catch (ParseException e) {
-				
+
 				e.printStackTrace();
 			}
 			return journal;
@@ -8307,10 +8493,10 @@ public class Main {
 		try {
 			response = httpClient.execute(httpGet);
 		} catch (ClientProtocolException e2) {
-			
+
 			e2.printStackTrace();
 		} catch (IOException e2) {
-			
+
 			e2.printStackTrace();
 		}
 		JsonFactory jsonf = new JsonFactory();
@@ -8355,10 +8541,10 @@ public class Main {
 				try {
 					response = httpClient.execute(settingCheck);
 				} catch (ClientProtocolException e2) {
-					
+
 					e2.printStackTrace();
 				} catch (IOException e2) {
-					
+
 					e2.printStackTrace();
 				}
 				jsonf = new JsonFactory();
@@ -8372,7 +8558,7 @@ public class Main {
 					System.out.println(setting.get("count"));
 					System.out.println(setting);
 					Long count = (Long) setting.get("count");
-					if (count == 0) {
+					if (count == null || count == 0) {
 						exists = false;
 					} else {
 						JSONArray results = (JSONArray) setting.get("results");
@@ -8383,7 +8569,7 @@ public class Main {
 						// setting_json.get("setting_value"));
 					}
 				} catch (ParseException e) {
-					
+
 					e.printStackTrace();
 				}
 				issue_storage.put(issue_id, new_issue);
@@ -8401,14 +8587,14 @@ public class Main {
 			 * JSONToIssue(issue_json, issue); }
 			 */
 		} catch (ParseException e) {
-			
+
 			e.printStackTrace();
 		}
 		try {
 			InputStream is = response.getEntity().getContent();
 			is.close();
 		} catch (IOException exc) {
-			
+
 			exc.printStackTrace();
 		}
 	}
@@ -8430,10 +8616,10 @@ public class Main {
 		try {
 			response = httpClient.execute(httpGet);
 		} catch (ClientProtocolException e2) {
-			
+
 			e2.printStackTrace();
 		} catch (IOException e2) {
-			
+
 			e2.printStackTrace();
 		}
 		JsonFactory jsonf = new JsonFactory();
@@ -8481,10 +8667,10 @@ public class Main {
 					try {
 						response = httpClient.execute(settingCheck);
 					} catch (ClientProtocolException e2) {
-						
+
 						e2.printStackTrace();
 					} catch (IOException e2) {
-						
+
 						e2.printStackTrace();
 					}
 					jsonf = new JsonFactory();
@@ -8498,7 +8684,7 @@ public class Main {
 						System.out.println(setting.get("count"));
 						System.out.println(setting);
 						Long count = (Long) setting.get("count");
-						if (count == 0) {
+						if (count == null || count == 0) {
 							exists = false;
 						} else {
 							JSONArray results = (JSONArray) setting.get("results");
@@ -8509,7 +8695,7 @@ public class Main {
 							// setting_json.get("setting_value"));
 						}
 					} catch (ParseException e) {
-						
+
 						e.printStackTrace();
 					}
 
@@ -8530,14 +8716,14 @@ public class Main {
 			 * JSONToIssue(issue_json, issue); }
 			 */
 		} catch (ParseException e) {
-			
+
 			e.printStackTrace();
 		}
 		try {
 			InputStream is = response.getEntity().getContent();
 			is.close();
 		} catch (IOException exc) {
-			
+
 			exc.printStackTrace();
 		}
 		return new_issues;
@@ -8561,10 +8747,10 @@ public class Main {
 		try {
 			response = httpClient.execute(httpGet);
 		} catch (ClientProtocolException e2) {
-			
+
 			e2.printStackTrace();
 		} catch (IOException e2) {
-			
+
 			e2.printStackTrace();
 		}
 		JsonFactory jsonf = new JsonFactory();
@@ -8580,7 +8766,7 @@ public class Main {
 				InputStream is = response.getEntity().getContent();
 				is.close();
 			} catch (IOException exc) {
-				
+
 				exc.printStackTrace();
 			}
 			for (int i = 0; i < author_ids.size(); i++) {
@@ -8594,10 +8780,10 @@ public class Main {
 				try {
 					response = httpClient.execute(httpGet);
 				} catch (ClientProtocolException e2) {
-					
+
 					e2.printStackTrace();
 				} catch (IOException e2) {
-					
+
 					e2.printStackTrace();
 				}
 				result = response.getEntity().getContent();
@@ -8628,10 +8814,10 @@ public class Main {
 				try {
 					response = httpClient.execute(settingCheck);
 				} catch (ClientProtocolException e2) {
-					
+
 					e2.printStackTrace();
 				} catch (IOException e2) {
-					
+
 					e2.printStackTrace();
 				}
 				jsonf = new JsonFactory();
@@ -8645,7 +8831,7 @@ public class Main {
 						JSONObject setting = (JSONObject) jsonParser.parse(IOUtils.toString(result));
 
 						Long count = (Long) setting.get("count");
-						if (count == 0) {
+						if (count == null || count == 0) {
 							exists = false;
 						} else {
 							JSONArray results = (JSONArray) setting.get("results");
@@ -8654,14 +8840,14 @@ public class Main {
 							new_author.setBio((String) setting_json.get("setting_value"));
 						}
 					} catch (ParseException e) {
-						
+
 						e.printStackTrace();
 					}
 					try {
 						InputStream is = response.getEntity().getContent();
 						is.close();
 					} catch (IOException exc) {
-						
+
 						exc.printStackTrace();
 					}
 				} else {
@@ -8679,10 +8865,10 @@ public class Main {
 				try {
 					response = httpClient.execute(settingCheck);
 				} catch (ClientProtocolException e2) {
-					
+
 					e2.printStackTrace();
 				} catch (IOException e2) {
-					
+
 					e2.printStackTrace();
 				}
 				jsonf = new JsonFactory();
@@ -8697,7 +8883,7 @@ public class Main {
 						JSONObject setting = (JSONObject) jsonParser.parse(IOUtils.toString(result));
 
 						Long count = (Long) setting.get("count");
-						if (count == 0) {
+						if (count == null || count == 0) {
 							exists = false;
 						} else {
 							JSONArray results = (JSONArray) setting.get("results");
@@ -8706,14 +8892,14 @@ public class Main {
 							new_author.setOrcid((String) setting_json.get("setting_value"));
 						}
 					} catch (ParseException e) {
-						
+
 						e.printStackTrace();
 					}
 					try {
 						InputStream is = response.getEntity().getContent();
 						is.close();
 					} catch (IOException exc) {
-						
+
 						exc.printStackTrace();
 					}
 				} else {
@@ -8731,10 +8917,10 @@ public class Main {
 				try {
 					response = httpClient.execute(settingCheck);
 				} catch (ClientProtocolException e2) {
-					
+
 					e2.printStackTrace();
 				} catch (IOException e2) {
-					
+
 					e2.printStackTrace();
 				}
 				jsonf = new JsonFactory();
@@ -8749,7 +8935,7 @@ public class Main {
 						JSONObject setting = (JSONObject) jsonParser.parse(IOUtils.toString(result));
 
 						Long count = (Long) setting.get("count");
-						if (count == 0) {
+						if (count == null || count == 0) {
 							exists = false;
 						} else {
 							JSONArray results = (JSONArray) setting.get("results");
@@ -8758,14 +8944,14 @@ public class Main {
 							new_author.setDepartment((String) setting_json.get("setting_value"));
 						}
 					} catch (ParseException e) {
-						
+
 						e.printStackTrace();
 					}
 					try {
 						InputStream is = response.getEntity().getContent();
 						is.close();
 					} catch (IOException exc) {
-						
+
 						exc.printStackTrace();
 					}
 				} else {
@@ -8783,10 +8969,10 @@ public class Main {
 				try {
 					response = httpClient.execute(settingCheck);
 				} catch (ClientProtocolException e2) {
-					
+
 					e2.printStackTrace();
 				} catch (IOException e2) {
-					
+
 					e2.printStackTrace();
 				}
 				jsonf = new JsonFactory();
@@ -8801,7 +8987,7 @@ public class Main {
 						JSONObject setting = (JSONObject) jsonParser.parse(IOUtils.toString(result));
 
 						Long count = (Long) setting.get("count");
-						if (count == 0) {
+						if (count == null || count == 0) {
 							exists = false;
 						} else {
 							JSONArray results = (JSONArray) setting.get("results");
@@ -8810,14 +8996,14 @@ public class Main {
 							new_author.setAffiliation((String) setting_json.get("setting_value"));
 						}
 					} catch (ParseException e) {
-						
+
 						e.printStackTrace();
 					}
 					try {
 						InputStream is = response.getEntity().getContent();
 						is.close();
 					} catch (IOException exc) {
-						
+
 						exc.printStackTrace();
 					}
 				} else {
@@ -8835,10 +9021,10 @@ public class Main {
 				try {
 					response = httpClient.execute(settingCheck);
 				} catch (ClientProtocolException e2) {
-					
+
 					e2.printStackTrace();
 				} catch (IOException e2) {
-					
+
 					e2.printStackTrace();
 				}
 				jsonf = new JsonFactory();
@@ -8853,7 +9039,7 @@ public class Main {
 						JSONObject setting = (JSONObject) jsonParser.parse(IOUtils.toString(result));
 
 						Long count = (Long) setting.get("count");
-						if (count == 0) {
+						if (count == null || count == 0) {
 							exists = false;
 						} else {
 							JSONArray results = (JSONArray) setting.get("results");
@@ -8862,14 +9048,14 @@ public class Main {
 							new_author.setTwitter((String) setting_json.get("setting_value"));
 						}
 					} catch (ParseException e) {
-						
+
 						e.printStackTrace();
 					}
 					try {
 						InputStream is = response.getEntity().getContent();
 						is.close();
 					} catch (IOException exc) {
-						
+
 						exc.printStackTrace();
 					}
 				} else {
@@ -8916,14 +9102,14 @@ public class Main {
 			 * JSONToIssue(issue_json, issue); }
 			 */
 		} catch (ParseException e) {
-			
+
 			e.printStackTrace();
 		}
 		try {
 			InputStream is = response.getEntity().getContent();
 			is.close();
 		} catch (IOException exc) {
-			
+
 			exc.printStackTrace();
 		}
 
@@ -8953,10 +9139,10 @@ public class Main {
 			try {
 				response = httpClient.execute(httpGet);
 			} catch (ClientProtocolException e2) {
-				
+
 				e2.printStackTrace();
 			} catch (IOException e2) {
-				
+
 				e2.printStackTrace();
 			}
 			boolean author_created = false;
@@ -8969,7 +9155,7 @@ public class Main {
 				InputStream is = response.getEntity().getContent();
 				is.close();
 			} catch (IOException exc) {
-				
+
 				exc.printStackTrace();
 			}
 			org.json.simple.parser.JSONParser jsonParser = new JSONParser();
@@ -8984,17 +9170,17 @@ public class Main {
 				try {
 					response = httpClient.execute(httpPut);
 				} catch (ClientProtocolException e2) {
-					
+
 					e2.printStackTrace();
 				} catch (IOException e2) {
-					
+
 					e2.printStackTrace();
 				}
 				try {
 					InputStream is = response.getEntity().getContent();
 					is.close();
 				} catch (IOException exc) {
-					
+
 					exc.printStackTrace();
 				}
 			} else {
@@ -9009,17 +9195,17 @@ public class Main {
 				try {
 					response = httpClient.execute(createAuthor);
 				} catch (ClientProtocolException e2) {
-					
+
 					e2.printStackTrace();
 				} catch (IOException e2) {
-					
+
 					e2.printStackTrace();
 				}
 				try {
 					InputStream is = response.getEntity().getContent();
 					is.close();
 				} catch (IOException exc) {
-					
+
 					exc.printStackTrace();
 				}
 			}
@@ -9034,10 +9220,10 @@ public class Main {
 			try {
 				response = httpClient.execute(settingCheck);
 			} catch (ClientProtocolException e2) {
-				
+
 				e2.printStackTrace();
 			} catch (IOException e2) {
-				
+
 				e2.printStackTrace();
 			}
 			jsonf = new JsonFactory();
@@ -9052,10 +9238,10 @@ public class Main {
 			JSONObject setting_json = new JSONObject();
 			try {
 				JSONObject setting = (JSONObject) jsonParser.parse(IOUtils.toString(result));
-				System.out.println(setting.get("count"));
+
 				System.out.println(setting);
 				Long count = (Long) setting.get("count");
-				if (count == 0) {
+				if (count == null || count == 0) {
 					exists = false;
 				} else {
 					JSONArray results = (JSONArray) setting.get("results");
@@ -9068,14 +9254,14 @@ public class Main {
 					setting_json.put("setting_value", author.getBio());
 				}
 			} catch (ParseException e) {
-				
+
 				e.printStackTrace();
 			}
 			try {
 				InputStream is = response.getEntity().getContent();
 				is.close();
 			} catch (IOException exc) {
-				
+
 				exc.printStackTrace();
 			}
 			System.out.println(setting_json.isEmpty());
@@ -9095,10 +9281,10 @@ public class Main {
 				try {
 					response = httpClient.execute(httpPost);
 				} catch (ClientProtocolException e2) {
-					
+
 					e2.printStackTrace();
 				} catch (IOException e2) {
-					
+
 					e2.printStackTrace();
 				}
 			} else {
@@ -9120,10 +9306,10 @@ public class Main {
 				try {
 					response = httpClient.execute(httpPost);
 				} catch (ClientProtocolException e2) {
-					
+
 					e2.printStackTrace();
 				} catch (IOException e2) {
-					
+
 					e2.printStackTrace();
 				}
 			}
@@ -9138,7 +9324,7 @@ public class Main {
 				InputStream is = response.getEntity().getContent();
 				is.close();
 			} catch (IOException exc) {
-				
+
 				exc.printStackTrace();
 			}
 
@@ -9153,10 +9339,10 @@ public class Main {
 			try {
 				response = httpClient.execute(settingCheck);
 			} catch (ClientProtocolException e2) {
-				
+
 				e2.printStackTrace();
 			} catch (IOException e2) {
-				
+
 				e2.printStackTrace();
 			}
 			jsonf = new JsonFactory();
@@ -9174,7 +9360,7 @@ public class Main {
 				System.out.println(setting.get("count"));
 				System.out.println(setting);
 				Long count = (Long) setting.get("count");
-				if (count == 0) {
+				if (count == null || count == 0) {
 					exists = false;
 				} else {
 					JSONArray results = (JSONArray) setting.get("results");
@@ -9187,14 +9373,14 @@ public class Main {
 					setting_json.put("setting_value", author.getOrcid());
 				}
 			} catch (ParseException e) {
-				
+
 				e.printStackTrace();
 			}
 			try {
 				InputStream is = response.getEntity().getContent();
 				is.close();
 			} catch (IOException exc) {
-				
+
 				exc.printStackTrace();
 			}
 			System.out.println(setting_json.isEmpty());
@@ -9214,10 +9400,10 @@ public class Main {
 				try {
 					response = httpClient.execute(httpPost);
 				} catch (ClientProtocolException e2) {
-					
+
 					e2.printStackTrace();
 				} catch (IOException e2) {
-					
+
 					e2.printStackTrace();
 				}
 			} else {
@@ -9239,10 +9425,10 @@ public class Main {
 				try {
 					response = httpClient.execute(httpPost);
 				} catch (ClientProtocolException e2) {
-					
+
 					e2.printStackTrace();
 				} catch (IOException e2) {
-					
+
 					e2.printStackTrace();
 				}
 			}
@@ -9250,7 +9436,7 @@ public class Main {
 				InputStream is = response.getEntity().getContent();
 				is.close();
 			} catch (IOException exc) {
-				
+
 				exc.printStackTrace();
 			}
 			settingCheck = new HttpGet(
@@ -9264,10 +9450,10 @@ public class Main {
 			try {
 				response = httpClient.execute(settingCheck);
 			} catch (ClientProtocolException e2) {
-				
+
 				e2.printStackTrace();
 			} catch (IOException e2) {
-				
+
 				e2.printStackTrace();
 			}
 			jsonf = new JsonFactory();
@@ -9285,7 +9471,7 @@ public class Main {
 				System.out.println(setting.get("count"));
 				System.out.println(setting);
 				Long count = (Long) setting.get("count");
-				if (count == 0) {
+				if (count == null || count == 0) {
 					exists = false;
 				} else {
 					JSONArray results = (JSONArray) setting.get("results");
@@ -9298,14 +9484,14 @@ public class Main {
 					setting_json.put("setting_value", author.getDepartment());
 				}
 			} catch (ParseException e) {
-				
+
 				e.printStackTrace();
 			}
 			try {
 				InputStream is = response.getEntity().getContent();
 				is.close();
 			} catch (IOException exc) {
-				
+
 				exc.printStackTrace();
 			}
 			System.out.println(setting_json.isEmpty());
@@ -9326,10 +9512,10 @@ public class Main {
 				try {
 					response = httpClient.execute(httpPost);
 				} catch (ClientProtocolException e2) {
-					
+
 					e2.printStackTrace();
 				} catch (IOException e2) {
-					
+
 					e2.printStackTrace();
 				}
 			} else {
@@ -9351,10 +9537,10 @@ public class Main {
 				try {
 					response = httpClient.execute(httpPost);
 				} catch (ClientProtocolException e2) {
-					
+
 					e2.printStackTrace();
 				} catch (IOException e2) {
-					
+
 					e2.printStackTrace();
 				}
 			}
@@ -9362,7 +9548,7 @@ public class Main {
 				InputStream is = response.getEntity().getContent();
 				is.close();
 			} catch (IOException exc) {
-				
+
 				exc.printStackTrace();
 			}
 			//
@@ -9377,10 +9563,10 @@ public class Main {
 			try {
 				response = httpClient.execute(settingCheck);
 			} catch (ClientProtocolException e2) {
-				
+
 				e2.printStackTrace();
 			} catch (IOException e2) {
-				
+
 				e2.printStackTrace();
 			}
 			jsonf = new JsonFactory();
@@ -9398,7 +9584,7 @@ public class Main {
 				System.out.println(setting.get("count"));
 				System.out.println(setting);
 				Long count = (Long) setting.get("count");
-				if (count == 0) {
+				if (count == null || count == 0) {
 					exists = false;
 				} else {
 					JSONArray results = (JSONArray) setting.get("results");
@@ -9411,14 +9597,14 @@ public class Main {
 					setting_json.put("setting_value", author.getTwitter());
 				}
 			} catch (ParseException e) {
-				
+
 				e.printStackTrace();
 			}
 			try {
 				InputStream is = response.getEntity().getContent();
 				is.close();
 			} catch (IOException exc) {
-				
+
 				exc.printStackTrace();
 			}
 			System.out.println(setting_json.isEmpty());
@@ -9439,10 +9625,10 @@ public class Main {
 				try {
 					response = httpClient.execute(httpPost);
 				} catch (ClientProtocolException e2) {
-					
+
 					e2.printStackTrace();
 				} catch (IOException e2) {
-					
+
 					e2.printStackTrace();
 				}
 			} else {
@@ -9464,10 +9650,10 @@ public class Main {
 				try {
 					response = httpClient.execute(httpPost);
 				} catch (ClientProtocolException e2) {
-					
+
 					e2.printStackTrace();
 				} catch (IOException e2) {
-					
+
 					e2.printStackTrace();
 				}
 			}
@@ -9475,7 +9661,7 @@ public class Main {
 				InputStream is = response.getEntity().getContent();
 				is.close();
 			} catch (IOException exc) {
-				
+
 				exc.printStackTrace();
 			}
 			settingCheck = new HttpGet(
@@ -9489,10 +9675,10 @@ public class Main {
 			try {
 				response = httpClient.execute(settingCheck);
 			} catch (ClientProtocolException e2) {
-				
+
 				e2.printStackTrace();
 			} catch (IOException e2) {
-				
+
 				e2.printStackTrace();
 			}
 			jsonf = new JsonFactory();
@@ -9510,7 +9696,7 @@ public class Main {
 				System.out.println(setting.get("count"));
 				System.out.println(setting);
 				Long count = (Long) setting.get("count");
-				if (count == 0) {
+				if (count == null || count == 0) {
 					exists = false;
 				} else {
 					JSONArray results = (JSONArray) setting.get("results");
@@ -9523,14 +9709,14 @@ public class Main {
 					setting_json.put("setting_value", author.getAffiliation());
 				}
 			} catch (ParseException e) {
-				
+
 				e.printStackTrace();
 			}
 			try {
 				InputStream is = response.getEntity().getContent();
 				is.close();
 			} catch (IOException exc) {
-				
+
 				exc.printStackTrace();
 			}
 			System.out.println(setting_json.isEmpty());
@@ -9551,10 +9737,10 @@ public class Main {
 				try {
 					response = httpClient.execute(httpPost);
 				} catch (ClientProtocolException e2) {
-					
+
 					e2.printStackTrace();
 				} catch (IOException e2) {
-					
+
 					e2.printStackTrace();
 				}
 			} else {
@@ -9576,10 +9762,10 @@ public class Main {
 				try {
 					response = httpClient.execute(httpPost);
 				} catch (ClientProtocolException e2) {
-					
+
 					e2.printStackTrace();
 				} catch (IOException e2) {
-					
+
 					e2.printStackTrace();
 				}
 			}
@@ -9587,7 +9773,7 @@ public class Main {
 				InputStream is = response.getEntity().getContent();
 				is.close();
 			} catch (IOException exc) {
-				
+
 				exc.printStackTrace();
 			}
 
@@ -9609,10 +9795,10 @@ public class Main {
 		try {
 			response = httpClient.execute(httpGet);
 		} catch (ClientProtocolException e2) {
-			
+
 			e2.printStackTrace();
 		} catch (IOException e2) {
-			
+
 			e2.printStackTrace();
 		}
 		JsonFactory jsonf = new JsonFactory();
@@ -9635,14 +9821,14 @@ public class Main {
 				issue = JSONToIssue(issue_json, issue);
 			}
 		} catch (ParseException e) {
-			
+
 			e.printStackTrace();
 		}
 		try {
 			InputStream is = response.getEntity().getContent();
 			is.close();
 		} catch (IOException exc) {
-			
+
 			exc.printStackTrace();
 		}
 		System.out.println(response.toString());
@@ -9657,10 +9843,10 @@ public class Main {
 		try {
 			response = httpClient.execute(settingCheck);
 		} catch (ClientProtocolException e2) {
-			
+
 			e2.printStackTrace();
 		} catch (IOException e2) {
-			
+
 			e2.printStackTrace();
 		}
 		jsonf = new JsonFactory();
@@ -9674,7 +9860,7 @@ public class Main {
 			System.out.println(setting.get("count"));
 			System.out.println(setting);
 			Long count = (Long) setting.get("count");
-			if (count == 0) {
+			if (count == null || count == 0) {
 				exists = false;
 			} else {
 				JSONArray results = (JSONArray) setting.get("results");
@@ -9685,7 +9871,7 @@ public class Main {
 				// setting_json.get("setting_value"));
 			}
 		} catch (ParseException e) {
-			
+
 			e.printStackTrace();
 		}
 		return issue;
@@ -9721,7 +9907,7 @@ public class Main {
 			try {
 				issue.setDate_published((Date) sdf.parse(date_p.substring(0, 10).replace('-', '/')));
 			} catch (java.text.ParseException e) {
-				
+
 				e.printStackTrace();
 			}
 		}
@@ -9743,6 +9929,20 @@ public class Main {
 		obj.put("current", issue.getCurrent());
 		obj.put("published", issue.getPublished());
 		obj.put("access_status", issue.getAccess_status());
+		return obj;
+	}
+
+	public static JSONObject ArticleToPublishedJSON(Article article) {
+		JSONObject obj = new JSONObject();
+		obj.put("id", article.getPublished_pk());
+		obj.put("seq", 1.0);
+		obj.put("article", String.format("%s/articles/%s/", base_url, article.getId()));
+		SimpleDateFormat upload_sdf = new SimpleDateFormat("yyyy-MM-dd");
+		String formated_date = upload_sdf
+				.format(article.getDate_published() == null ? new Date() : article.getDate_published());
+		obj.put("date_published", formated_date + "T00:00:00Z");
+		obj.put("issue", String.format("%s/issues/%s/", base_url, article.getIssue_fk().getId()));
+		obj.put("access_status", article.getIssue_fk().getAccess_status());
 		return obj;
 	}
 
@@ -9786,7 +9986,7 @@ public class Main {
 			try {
 				new_article.setDate_submitted((Date) sdf.parse(date_p.substring(0, 10).replace('-', '/')));
 			} catch (java.text.ParseException e) {
-				
+
 				e.printStackTrace();
 			}
 		}
@@ -10040,7 +10240,7 @@ public class Main {
 			Files.copy(Paths.get(source), Paths.get(String.format("src/files/%d/%s", art_id, filename)),
 					StandardCopyOption.REPLACE_EXISTING);
 		} catch (IOException e) {
-			
+
 			e.printStackTrace();
 		}
 	}
@@ -10089,10 +10289,10 @@ public class Main {
 		try {
 			response = httpClient.execute(fileUpload);
 		} catch (ClientProtocolException e2) {
-			
+
 			e2.printStackTrace();
 		} catch (IOException e2) {
-			
+
 			e2.printStackTrace();
 		}
 		JsonFactory jsonf = new JsonFactory();
@@ -10134,10 +10334,10 @@ public class Main {
 		try {
 			response = httpClient.execute(fileUpload);
 		} catch (ClientProtocolException e2) {
-			
+
 			e2.printStackTrace();
 		} catch (IOException e2) {
-			
+
 			e2.printStackTrace();
 		}
 		JsonFactory jsonf = new JsonFactory();
@@ -10179,10 +10379,10 @@ public class Main {
 		try {
 			response = httpClient.execute(fileUpload);
 		} catch (ClientProtocolException e2) {
-			
+
 			e2.printStackTrace();
 		} catch (IOException e2) {
-			
+
 			e2.printStackTrace();
 		}
 		JsonFactory jsonf = new JsonFactory();
@@ -10209,10 +10409,10 @@ public class Main {
 		try {
 			response = httpClient.execute(fileUpload);
 		} catch (ClientProtocolException e2) {
-			
+
 			e2.printStackTrace();
 		} catch (IOException e2) {
-			
+
 			e2.printStackTrace();
 		}
 		JsonFactory jsonf = new JsonFactory();
@@ -10238,10 +10438,10 @@ public class Main {
 		try {
 			response = httpClient.execute(fileDetails);
 		} catch (ClientProtocolException e2) {
-			
+
 			e2.printStackTrace();
 		} catch (IOException e2) {
-			
+
 			e2.printStackTrace();
 		}
 		InputStream result = response.getEntity().getContent();
@@ -10256,7 +10456,7 @@ public class Main {
 			filename = (String) issue_obj.get("original_filename");
 			System.out.println(filename);
 		} catch (ParseException e) {
-			
+
 			e.printStackTrace();
 		}
 
@@ -10267,10 +10467,10 @@ public class Main {
 		try {
 			response = httpClient.execute(fileDownload);
 		} catch (ClientProtocolException e2) {
-			
+
 			e2.printStackTrace();
 		} catch (IOException e2) {
-			
+
 			e2.printStackTrace();
 		}
 		InputStream is = response.getEntity().getContent();

@@ -19,14 +19,15 @@ public class Article {
 	private int current_round;
 	private int fast_tracked;
 	private int hide_author;
+	private long published_pk;
 	private int comments_status;
 	private Date date_submitted;
 	private Date date_accepted;
-	private Date date_published;
+	private Date date_published = null;
 	private Issue issue_fk;
 	private ArrayList<Author> authors;
 
-	public Article(long id, String title, long section_id, String pages, String abstract_text, Date date_accepted, Date date_published,
+	public Article(long id, String title, long section_id, String pages, String abstract_text, Date date_accepted,
 			Issue issue_fk, Date date_submitted, Journal journal) {
 
 		this.title = title;
@@ -35,7 +36,6 @@ public class Article {
 		this.pages = pages;
 		this.abstract_text = abstract_text;
 		this.date_accepted = date_accepted;
-		this.date_published = date_published;
 		this.issue_fk = issue_fk;
 		this.authors = new ArrayList<Author>();
 		this.journal = journal;
@@ -49,8 +49,9 @@ public class Article {
 		this.hide_author = 0;
 		this.comments_status = 0;
 		this.date_submitted = date_submitted;
+		this.published_pk=-1;
 	}
-	public Article(long id, String title, long section_id, String pages, String abstract_text, Date date_accepted, Date date_published, Date date_submitted, Journal journal) {
+	public Article(long id, String title, long section_id, String pages, String abstract_text, Date date_accepted, Date date_submitted, Journal journal) {
 
 		this.title = title;
 		this.id = id;
@@ -58,7 +59,6 @@ public class Article {
 		this.pages = pages;
 		this.abstract_text = abstract_text;
 		this.date_accepted = date_accepted;
-		this.date_published = date_published;
 		this.issue_fk = null;
 		this.authors = new ArrayList<Author>();
 		this.journal = journal;
@@ -72,6 +72,7 @@ public class Article {
 		this.hide_author = 0;
 		this.comments_status = 0;
 		this.date_submitted = date_submitted;
+		this.published_pk=-1;
 	}
 
 	public long getId() {
@@ -222,7 +223,7 @@ public class Article {
 	public Article(long id, String title, long section_id, String pages, String abstract_text, Journal journal,
 			long user_id, String locale, String language, int status, int submission_progress, int current_round,
 			int fast_tracked, int hide_author, int comments_status, Date date_submitted, Date date_accepted,
-			Date date_published, Issue issue_fk, ArrayList<Author> authors) {
+			Issue issue_fk, ArrayList<Author> authors) {
 		super();
 		this.id = id;
 		this.title = title;
@@ -241,9 +242,9 @@ public class Article {
 		this.comments_status = comments_status;
 		this.date_submitted = date_submitted;
 		this.date_accepted = date_accepted;
-		this.date_published = date_published;
 		this.issue_fk = issue_fk;
 		this.authors = authors;
+		this.published_pk=-1;
 	}
 	public Article(long id, long section_id, String pages, long user_id, String locale, String language,
 			int status, int submission_progress, int current_round, int fast_tracked, int hide_author,
@@ -263,6 +264,7 @@ public class Article {
 		this.comments_status = comments_status;
 		this.issue_fk = issue_fk;
 		this.authors = new ArrayList<Author>();
+		this.published_pk=-1;
 	}
 	@Override
 	public String toString() {
@@ -277,7 +279,7 @@ public class Article {
 	public Article(long id, String title, String doi, long section_id, String pages, String abstract_text,
 			Journal journal, long user_id, String locale, String language, int status, int submission_progress,
 			int current_round, int fast_tracked, int hide_author, int comments_status, Date date_submitted,
-			Date date_accepted, Date date_published, Issue issue_fk, ArrayList<Author> authors) {
+			Date date_accepted, Issue issue_fk, ArrayList<Author> authors) {
 		super();
 		this.id = id;
 		this.title = title;
@@ -297,9 +299,15 @@ public class Article {
 		this.comments_status = comments_status;
 		this.date_submitted = date_submitted;
 		this.date_accepted = date_accepted;
-		this.date_published = date_published;
 		this.issue_fk = issue_fk;
 		this.authors = authors;
+		this.published_pk=-1;
+	}
+	public long getPublished_pk() {
+		return published_pk;
+	}
+	public void setPublished_pk(long published_pk) {
+		this.published_pk = published_pk;
 	}
 	
 	
