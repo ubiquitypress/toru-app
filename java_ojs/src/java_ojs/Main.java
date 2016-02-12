@@ -65,6 +65,7 @@ import java.awt.Insets;
 import java.awt.Label;
 import java.awt.Panel;
 import java.awt.SystemColor;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
@@ -1329,8 +1330,11 @@ public class Main {
 				login.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 				login.getContentPane().setForeground(Color.WHITE);
 				login.getContentPane().setBackground(new Color(128, 128, 128));
+				Dimension sreen = Toolkit.getDefaultToolkit().getScreenSize();
 
-				login.setLocationRelativeTo(null);
+				login.setSize(sreen.width / 2 - login.getSize().width / 2,
+						sreen.height / 2 - login.getSize().height / 2);
+				// login.setLocationRelativeTo(null);
 				login.setSize(width_small, height_small);// 400 width and 500
 															// height
 				login.getContentPane().setLayout(null);// using no layout
@@ -2306,7 +2310,8 @@ public class Main {
 												update_issue_intersect(current_issue, encoding);
 
 											} catch (IllegalStateException | IOException e1) {
-												// TODO Auto-generated catch
+												// TODO Auto-generated
+												// catch
 												// block
 												e1.printStackTrace();
 											}
@@ -2363,7 +2368,7 @@ public class Main {
 									issues.add(progressBar);
 									issues.repaint();
 									System.out.println("update local");
-									
+
 									Future<?> f = exec.submit(new Runnable() {
 
 										public void run() {
@@ -2373,7 +2378,8 @@ public class Main {
 												issue_storage.put(issue_id, updated_issue);
 												System.out.println(updated_issue);
 											} catch (IllegalStateException | IOException e1) {
-												// TODO Auto-generated catch
+												// TODO Auto-generated
+												// catch
 												// block
 												e1.printStackTrace();
 
@@ -2394,7 +2400,8 @@ public class Main {
 												sync_authors_intersect(issue_id, encoding, false);
 
 											} catch (IllegalStateException | IOException e1) {
-												// TODO Auto-generated catch
+												// TODO Auto-generated
+												// catch
 												// block
 												e1.printStackTrace();
 											}
@@ -2411,7 +2418,8 @@ public class Main {
 												update_articles_local(current_issue, encoding);
 												get_authors_remote(issue_id, encoding, false);
 											} catch (IllegalStateException | IOException e1) {
-												// TODO Auto-generated catch
+												// TODO Auto-generated
+												// catch
 												// block
 												e1.printStackTrace();
 											}
@@ -2422,6 +2430,7 @@ public class Main {
 
 							}
 							issues.repaint();
+
 							progress_executor.execute(new Runnable() {
 								public void run() {
 									synchronized (futures) {
@@ -2439,6 +2448,7 @@ public class Main {
 									}
 								}
 							});
+
 							Future<?> f = exec.submit(new Runnable() {
 
 								public void run() {
@@ -2446,7 +2456,43 @@ public class Main {
 									Set<Long> issue_keys = issue_storage.keySet();
 
 									new_issues = new ArrayList<Issue>();
-									
+									progress_executor.execute(new Runnable() {
+										public void run() {
+											int countdown = 150;
+											try {
+												countdown = progress_countdown_estimate_total(encoding);
+											} catch (IOException e1) {
+												// TODO Auto-generated catch
+												// block
+												e1.printStackTrace();
+											}
+
+											for (int i = 0; i < countdown; i++) {
+												final int percent = i;
+												final double decimal = countdown / 100;
+												SwingUtilities.invokeLater(new Runnable() {
+													public void run() {
+														progressBar.setValue(
+
+																(int) Double.parseDouble(
+																		String.format("%s", percent / decimal)));
+														progressBar.repaint();
+													}
+												});
+
+												try {
+													Thread.sleep(100);
+												} catch (InterruptedException e) {
+												}
+
+											}
+
+										}
+									});
+									progressBar.setIndeterminate(true);
+									issues.add(progress_msg);
+									issues.add(progressBar);
+									issues.repaint();
 									Future<?> f = exec.submit(new Runnable() {
 
 										public void run() {
@@ -8493,6 +8539,55 @@ public class Main {
 			}
 			return journal;
 		}
+	}
+
+	public static int progress_countdown_estimate_total(String credentials) throws IOException {
+		int countdown = 150;
+		if (!status_online()) {
+			return countdown;
+		}
+		HttpGet totalCheck = new HttpGet(String.format("%s/get/total/count/?format=json", base_url));
+		// settingCheck.setEntity(new
+		// StringEntity(obj.toJSONString()));
+		totalCheck.addHeader("Authorization", "Basic " + credentials);
+		totalCheck.setHeader("Accept", "application/json");
+		totalCheck.addHeader("Content-type", "application/json");
+
+		HttpResponse response = null;
+		try {
+			response = httpClient.execute(totalCheck);
+		} catch (ClientProtocolException e2) {
+
+			e2.printStackTrace();
+		} catch (IOException e2) {
+
+			e2.printStackTrace();
+		}
+		JsonFactory jsonf = new JsonFactory();
+		InputStream result = response.getEntity().getContent();
+		org.json.simple.parser.JSONParser jsonParser = new JSONParser();
+		Long setting_pk = (long) -1;
+		jsonParser = new JSONParser();
+		boolean exists = true;
+		JSONObject setting_json = new JSONObject();
+		try {
+			JSONObject countdown_json = (JSONObject) jsonParser.parse(IOUtils.toString(result));
+			countdown = (int) (((int) (long) countdown_json.get("issues")) * 10.2
+					+ ((int) (long) countdown_json.get("articles")) * 2.5
+					+ ((int) (long) countdown_json.get("authors")) * 2.5);
+			try {
+				InputStream is = response.getEntity().getContent();
+				is.close();
+			} catch (IOException exc) {
+
+				exc.printStackTrace();
+			}
+		} catch (ParseException e) {
+
+			e.printStackTrace();
+		}
+		return countdown;
+
 	}
 
 	public static void get_issue_from_remote(String credentials, long issue_id, boolean update_local)
