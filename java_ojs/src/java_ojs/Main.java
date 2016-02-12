@@ -2234,7 +2234,7 @@ public class Main {
 								skipped_dialog = true;
 							}
 							List<Future<?>> futures = new ArrayList<Future<?>>();
-							ExecutorService exec = Executors.newFixedThreadPool(2);
+							ExecutorService exec = Executors.newFixedThreadPool(4);
 							final JProgressBar progressBar = new JProgressBar();
 							progressBar.setValue(0);
 							progressBar.setStringPainted(true);
@@ -3905,166 +3905,168 @@ public class Main {
 						boolean update_q = update_table;
 						article_progress_executor.execute(new Runnable() {
 							public void run() {
-								try {
-									for (Future<?> f : futures) {
-										f.get();
-
+								boolean done=false;
+								while(!done){
+									done =true;
+								for (Future<?> f : futures) {
+									if(!f.isDone()){
+										done = false;
 									}
-									if (status_online()) {
-										int dialogResult = JOptionPane.showConfirmDialog(null,
-												"Would You Like to replace local Author data (Yes) or update remote Author data (No)",
-												"Warning", 1);
 
-										if (dialogResult == JOptionPane.NO_OPTION) {
-											Future<?> f = exec.submit(new Runnable() {
-
-												public void run() {
-
-													try {
-														sync_authors_intersect(issue_id, encoding, false);
-													} catch (IllegalStateException e2) {
-
-														e2.printStackTrace();
-													} catch (IOException e2) {
-
-														e2.printStackTrace();
-													}
-												}
-											});
-
-											futures.add(f);
-										} else if (dialogResult == JOptionPane.YES_OPTION) {
-											Future<?> f = exec.submit(new Runnable() {
-
-												public void run() {
-
-													try {
-														get_authors_remote(issue_id, encoding, false);
-													} catch (IllegalStateException e1) {
-
-														e1.printStackTrace();
-													} catch (IOException e1) {
-
-														e1.printStackTrace();
-													}
-												}
-											});
-											futures.add(f);
-										}
-									}
-									for (Future<?> f : futures) {
-										f.get();
-
-									}
+								}}
+								if (status_online()) {
 									int dialogResult = JOptionPane.showConfirmDialog(null,
-											"Save changes to local database?", "Warning", 1);
+											"Would You Like to replace local Author data (Yes) or update remote Author data (No)",
+											"Warning", 1);
 
-									if (dialogResult == JOptionPane.YES_OPTION) {
-										database_save();
+									if (dialogResult == JOptionPane.NO_OPTION) {
+										Future<?> f = exec.submit(new Runnable() {
+
+											public void run() {
+
+												try {
+													sync_authors_intersect(issue_id, encoding, false);
+												} catch (IllegalStateException e2) {
+
+													e2.printStackTrace();
+												} catch (IOException e2) {
+
+													e2.printStackTrace();
+												}
+											}
+										});
+
+										futures.add(f);
+									} else if (dialogResult == JOptionPane.YES_OPTION) {
+										Future<?> f = exec.submit(new Runnable() {
+
+											public void run() {
+
+												try {
+													get_authors_remote(issue_id, encoding, false);
+												} catch (IllegalStateException e1) {
+
+													e1.printStackTrace();
+												} catch (IOException e1) {
+
+													e1.printStackTrace();
+												}
+											}
+										});
+										futures.add(f);
 									}
-									articles.dispose();
-									issue(issue_id);
-									// change
-									if (update_q) {
-										ConcurrentHashMap<Long, Article> all_articles = current_issue
-												.getArticles_list();
-										Set<Long> keys = all_articles.keySet();
-										ArrayList<List<Object>> rowData = new ArrayList<List<Object>>();
-										Object[][] rows = new Object[all_articles.size()][11];
-										boolean empty_table = false;
-										int num_rows = 0;
-										try {
-											num_rows = article_table.getRowCount();
-										} catch (NullPointerException n_e) {
-										}
-										if (num_rows != 0) {
-											for (int i = num_rows - 1; i >= 0; i--) {
-												System.out.println(num_rows);
-												((DefaultTableModel) article_table.getModel()).removeRow(i);
-
-												System.out.println("--"
-														+ ((DefaultTableModel) article_table.getModel()).getRowCount());
-											}
-										}
-										int i = 0;
-										try {
-											get_authors_remote(issue_id, encoding, false);
-										} catch (IllegalStateException e1) {
-
-											e1.printStackTrace();
-										} catch (IOException e1) {
-
-											e1.printStackTrace();
-										}
-										for (long id : keys) {
-											Article row_article = all_articles.get(id);
-
-											ArrayList<Object> data = new ArrayList<Object>();
-											issue_articles.put(id, new JFrame());
-
-											data.add(Long.toString(all_articles.get(id).getId()));
-											data.add(Long.toString(current_issue.getId()));
-											data.add(Long.toString((all_articles.get(id).getSection_id())));
-											data.add(all_articles.get(id).getTitle());
-											data.add(all_articles.get(id).getPages() == null ? "/"
-													: all_articles.get(id).getPages());
-											data.add(all_articles.get(id).getAbstract_text());
-											data.add(sdf.format(current));
-											data.add("View");
-											data.add("Edit");
-											data.add("Delete");
-											Date date_submitted = all_articles.get(id).getDate_submitted();
-											String date_submit = "";
-											if (date_submitted == null) {
-												date_submit = "/";
-											} else {
-												date_submit = sdf.format(all_articles.get(id).getDate_submitted());
-											}
-											Date date_published = all_articles.get(id).getDate_published();
-											String date_pub = "";
-											if (date_published == null) {
-												date_pub = "/";
-											} else {
-												date_pub = sdf.format(all_articles.get(id).getDate_published());
-											}
-											Object[] row = { all_articles.get(id).getId(), issue_id,
-													all_articles.get(id).getSection_id(),
-													current_articles.get(id).getTitle(),
-													all_articles.get(id).getPages(),
-													all_articles.get(id).getAbstract_text(), date_submit, date_pub,
-													"View", "Edit", "Delete" };
-											rows[i] = row;
-											rowData.add(data);
-											((DefaultTableModel) article_table.getModel()).insertRow(0, row);
-											i++;
-											System.out.println("++"
-													+ ((DefaultTableModel) article_table.getModel()).getRowCount());
-
-										}
-										System.out.println(num_rows);
-										try {
-											num_rows = ((DefaultTableModel) article_table.getModel()).getRowCount();
-										} catch (NullPointerException n_e) {
-										}
-										System.out.println(":::" + num_rows);
-										if (num_rows != 0) {
-											((DefaultTableModel) article_table.getModel()).fireTableRowsUpdated(0,
-													num_rows - 1);
-										}
-
-									}
-									article_table.repaint();
-									articles.getContentPane().repaint();
-									articles.remove(progress_msg);
-									articles.remove(progressBar);
-									articles.repaint();
-								} catch (InterruptedException e3) {
-
-									e3.printStackTrace();
-								} catch (ExecutionException e3) {
-
-									e3.printStackTrace();
 								}
+								done=false;
+								while(!done){
+									done =true;
+								for (Future<?> f : futures) {
+									if(!f.isDone()){
+										done = false;
+									}
+
+								}}
+								int dialogResult = JOptionPane.showConfirmDialog(null,
+										"Save changes to local database?", "Warning", 1);
+
+								if (dialogResult == JOptionPane.YES_OPTION) {
+									database_save();
+								}
+								articles.dispose();
+								issue(issue_id);
+								// change
+								if (update_q) {
+									ConcurrentHashMap<Long, Article> all_articles = current_issue
+											.getArticles_list();
+									Set<Long> keys = all_articles.keySet();
+									ArrayList<List<Object>> rowData = new ArrayList<List<Object>>();
+									Object[][] rows = new Object[all_articles.size()][11];
+									boolean empty_table = false;
+									int num_rows = 0;
+									try {
+										num_rows = article_table.getRowCount();
+									} catch (NullPointerException n_e) {
+									}
+									if (num_rows != 0) {
+										for (int i = num_rows - 1; i >= 0; i--) {
+											System.out.println(num_rows);
+											((DefaultTableModel) article_table.getModel()).removeRow(i);
+
+											System.out.println("--"
+													+ ((DefaultTableModel) article_table.getModel()).getRowCount());
+										}
+									}
+									int i = 0;
+									try {
+										get_authors_remote(issue_id, encoding, false);
+									} catch (IllegalStateException e1) {
+
+										e1.printStackTrace();
+									} catch (IOException e1) {
+
+										e1.printStackTrace();
+									}
+									for (long id : keys) {
+										Article row_article = all_articles.get(id);
+
+										ArrayList<Object> data = new ArrayList<Object>();
+										issue_articles.put(id, new JFrame());
+
+										data.add(Long.toString(all_articles.get(id).getId()));
+										data.add(Long.toString(current_issue.getId()));
+										data.add(Long.toString((all_articles.get(id).getSection_id())));
+										data.add(all_articles.get(id).getTitle());
+										data.add(all_articles.get(id).getPages() == null ? "/"
+												: all_articles.get(id).getPages());
+										data.add(all_articles.get(id).getAbstract_text());
+										data.add(sdf.format(current));
+										data.add("View");
+										data.add("Edit");
+										data.add("Delete");
+										Date date_submitted = all_articles.get(id).getDate_submitted();
+										String date_submit = "";
+										if (date_submitted == null) {
+											date_submit = "/";
+										} else {
+											date_submit = sdf.format(all_articles.get(id).getDate_submitted());
+										}
+										Date date_published = all_articles.get(id).getDate_published();
+										String date_pub = "";
+										if (date_published == null) {
+											date_pub = "/";
+										} else {
+											date_pub = sdf.format(all_articles.get(id).getDate_published());
+										}
+										Object[] row = { all_articles.get(id).getId(), issue_id,
+												all_articles.get(id).getSection_id(),
+												current_articles.get(id).getTitle(),
+												all_articles.get(id).getPages(),
+												all_articles.get(id).getAbstract_text(), date_submit, date_pub,
+												"View", "Edit", "Delete" };
+										rows[i] = row;
+										rowData.add(data);
+										((DefaultTableModel) article_table.getModel()).insertRow(0, row);
+										i++;
+										System.out.println("++"
+												+ ((DefaultTableModel) article_table.getModel()).getRowCount());
+
+									}
+									System.out.println(num_rows);
+									try {
+										num_rows = ((DefaultTableModel) article_table.getModel()).getRowCount();
+									} catch (NullPointerException n_e) {
+									}
+									System.out.println(":::" + num_rows);
+									if (num_rows != 0) {
+										((DefaultTableModel) article_table.getModel()).fireTableRowsUpdated(0,
+												num_rows - 1);
+									}
+
+								}
+								article_table.repaint();
+								articles.getContentPane().repaint();
+								articles.remove(progress_msg);
+								articles.remove(progressBar);
+								articles.repaint();
 							}
 						});
 
