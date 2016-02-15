@@ -2415,7 +2415,7 @@ public class Main {
 
 										public void run() {
 											try {
-												update_articles_local(current_issue, encoding);
+												update_articles_local_single_request(current_issue, encoding);
 												get_authors_remote(issue_id, encoding, false);
 											} catch (IllegalStateException | IOException e1) {
 												// TODO Auto-generated
@@ -2467,8 +2467,10 @@ public class Main {
 										issues.remove(progress_msg);
 										issues.repaint();
 										progressBar.setIndeterminate(true);
-										
-										}}});
+
+									}
+								}
+							});
 							try {
 								if (check_new_issues(encoding)) {
 									Future<?> f = exec.submit(new Runnable() {
@@ -2479,13 +2481,14 @@ public class Main {
 
 											new_issues = new ArrayList<Issue>();
 
-												progress_executor.execute(new Runnable() {
+											progress_executor.execute(new Runnable() {
 												public void run() {
 													int countdown = 150;
 													try {
 														countdown = progress_countdown_estimate_total(encoding);
 													} catch (IOException e1) {
-														// TODO Auto-generated catch
+														// TODO Auto-generated
+														// catch
 														// block
 														e1.printStackTrace();
 													}
@@ -2497,8 +2500,8 @@ public class Main {
 															public void run() {
 																progressBar.setValue(
 
-																		(int) Double.parseDouble(
-																				String.format("%s", percent / decimal)));
+																		(int) Double.parseDouble(String.format("%s",
+																				percent / decimal)));
 																progressBar.repaint();
 															}
 														});
@@ -3905,15 +3908,16 @@ public class Main {
 						boolean update_q = update_table;
 						article_progress_executor.execute(new Runnable() {
 							public void run() {
-								boolean done=false;
-								while(!done){
-									done =true;
-								for (Future<?> f : futures) {
-									if(!f.isDone()){
-										done = false;
-									}
+								boolean done = false;
+								while (!done) {
+									done = true;
+									for (Future<?> f : futures) {
+										if (!f.isDone()) {
+											done = false;
+										}
 
-								}}
+									}
+								}
 								if (status_online()) {
 									int dialogResult = JOptionPane.showConfirmDialog(null,
 											"Would You Like to replace local Author data (Yes) or update remote Author data (No)",
@@ -3956,15 +3960,16 @@ public class Main {
 										futures.add(f);
 									}
 								}
-								done=false;
-								while(!done){
-									done =true;
-								for (Future<?> f : futures) {
-									if(!f.isDone()){
-										done = false;
-									}
+								done = false;
+								while (!done) {
+									done = true;
+									for (Future<?> f : futures) {
+										if (!f.isDone()) {
+											done = false;
+										}
 
-								}}
+									}
+								}
 								int dialogResult = JOptionPane.showConfirmDialog(null,
 										"Save changes to local database?", "Warning", 1);
 
@@ -3975,8 +3980,7 @@ public class Main {
 								issue(issue_id);
 								// change
 								if (update_q) {
-									ConcurrentHashMap<Long, Article> all_articles = current_issue
-											.getArticles_list();
+									ConcurrentHashMap<Long, Article> all_articles = current_issue.getArticles_list();
 									Set<Long> keys = all_articles.keySet();
 									ArrayList<List<Object>> rowData = new ArrayList<List<Object>>();
 									Object[][] rows = new Object[all_articles.size()][11];
@@ -4038,16 +4042,15 @@ public class Main {
 										}
 										Object[] row = { all_articles.get(id).getId(), issue_id,
 												all_articles.get(id).getSection_id(),
-												current_articles.get(id).getTitle(),
-												all_articles.get(id).getPages(),
-												all_articles.get(id).getAbstract_text(), date_submit, date_pub,
-												"View", "Edit", "Delete" };
+												current_articles.get(id).getTitle(), all_articles.get(id).getPages(),
+												all_articles.get(id).getAbstract_text(), date_submit, date_pub, "View",
+												"Edit", "Delete" };
 										rows[i] = row;
 										rowData.add(data);
 										((DefaultTableModel) article_table.getModel()).insertRow(0, row);
 										i++;
-										System.out.println("++"
-												+ ((DefaultTableModel) article_table.getModel()).getRowCount());
+										System.out.println(
+												"++" + ((DefaultTableModel) article_table.getModel()).getRowCount());
 
 									}
 									System.out.println(num_rows);
@@ -8383,6 +8386,247 @@ public class Main {
 		}
 	}
 
+	public static void update_articles_local_single_request(Issue issue, String credentials)
+			throws IllegalStateException, IOException {
+
+		boolean status = status_online();
+		if (!status) {
+			return;
+		}
+		System.out.println("Getting Articles");
+
+		ArrayList<Article> articles_list = new ArrayList<Article>();
+		JSONObject obj = IssueToJSON(issue);
+		HttpGet issue_exists = new HttpGet(String.format("%s/issues/%s/", base_url, issue.getId()));
+
+		issue_exists.addHeader("Authorization", "Basic " + credentials);
+		issue_exists.setHeader("Accept", "application/json");
+		issue_exists.addHeader("Content-type", "application/json");
+
+		HttpResponse response = null;
+		try {
+			response = httpClient.execute(issue_exists);
+
+			boolean issue_created = false;
+			if (response.getStatusLine().getStatusCode() == 200) {
+				issue_created = true;
+			}
+			try {
+				InputStream is = response.getEntity().getContent();
+				is.close();
+			} catch (IOException exc) {
+
+				exc.printStackTrace();
+			}
+			if (!issue_created) {
+				update_issue_intersect(issue, credentials);
+			}
+
+			System.out.println(response.toString());
+			HttpGet published_articles = new HttpGet(
+					String.format("%s/get/published-articles/%s/?format=json", base_url, issue.getId()));
+			// settingCheck.setEntity(new StringEntity(obj.toJSONString()));
+			published_articles.addHeader("Authorization", "Basic " + credentials);
+			published_articles.setHeader("Accept", "application/json");
+			published_articles.addHeader("Content-type", "application/json");
+
+			response = null;
+
+			response = httpClient.execute(published_articles);
+
+			JsonFactory jsonf = new JsonFactory();
+			InputStream result = response.getEntity().getContent();
+			Long setting_pk = (long) -1;
+			org.json.simple.parser.JSONParser jsonParser = new JSONParser();
+			boolean exists = true;
+			JSONObject setting_json = new JSONObject();
+
+			JSONObject setting = (JSONObject) jsonParser.parse(IOUtils.toString(result));
+			try {
+				InputStream is = response.getEntity().getContent();
+				is.close();
+			} catch (IOException exc) {
+
+				exc.printStackTrace();
+			}
+			System.out.println(setting);
+			if (setting == null) {
+				exists = false;
+			} else {
+				String[] article_ids = null;
+				String ids = ((String) setting.get("articles"));
+				if (ids.contains(",")) {
+					article_ids = ((String) setting.get("articles")).split(",");
+				}
+				if (article_ids != null) {
+					for (String id : article_ids) {
+
+						System.out.println(id);
+						HttpGet single_article = new HttpGet(
+								String.format("%s/app/article-settings/%s/?format=json", base_url, id));
+						// settingCheck.setEntity(new
+						// StringEntity(obj.toJSONString()));
+						single_article.addHeader("Authorization", "Basic " + credentials);
+						single_article.setHeader("Accept", "application/json");
+						single_article.addHeader("Content-type", "application/json");
+
+						response = null;
+
+						response = httpClient.execute(single_article);
+						if (response.getStatusLine().getStatusCode() == 200) {
+							result = response.getEntity().getContent();
+
+							jsonParser = new JSONParser();
+							exists = true;
+							setting_json = new JSONObject();
+
+							setting = (JSONObject) jsonParser.parse(IOUtils.toString(result));
+							System.out.println((JSONObject) setting.get("article"));
+							System.out.println((JSONArray) setting.get("settings"));
+							JSONArray all_settings = (JSONArray) setting.get("settings");
+							try {
+								InputStream is = response.getEntity().getContent();
+								is.close();
+							} catch (IOException exc) {
+
+								exc.printStackTrace();
+							}
+							Article new_article = JSONToArticle_single_request((JSONObject) setting.get("article"),
+									issue);
+							String funding = null;
+							String ci = null;
+							for (Object set : all_settings.toArray()) {
+								JSONObject current_setting = (JSONObject) set;
+								System.out.println(current_setting);
+								switch ((String) current_setting.get("setting_name")) {
+								case "title":
+									new_article.setTitle((String) current_setting.get("setting_value"));
+									continue;
+								case "abstract":
+									String abstract_text = (String) setting_json.get("setting_value");
+									String new_abs = "";
+									if (abstract_text != null) {
+										if (abstract_text.compareTo("") != 0 || abstract_text.isEmpty() == true) {
+											String abs = Jsoup.parse((String) setting_json.get("setting_value")).text();
+											String[] words = abs.split(" ");
+
+											int j = 0;
+											for (String word : words) {
+												new_abs = new_abs + " " + word;
+												if (j % 8 == 0 && j != 0) {
+													new_abs = new_abs + "\r\n";
+												}
+												j++;
+											}
+										}
+									}
+									new_article.setAbstract_text(new_abs);
+									continue;
+								case "funding":
+									funding = (String) current_setting.get("setting_value");
+									continue;
+								case "competingInterests":
+									ci = (String) current_setting.get("setting_value");
+									continue;
+								default:
+									System.out.println("Invalid setting");
+								}
+
+							}
+							if (ci != null || funding != null) {
+								if (metadata_storage.containsKey((long) new_article.getId())) {
+									Metadata meta = metadata_storage.get((long) new_article.getId());
+									meta.setCompeting_interests(ci);
+									meta.setFunding(funding);
+									metadata_storage.put((long) new_article.getId(), meta);
+								} else {
+									metadata_id++;
+									Metadata meta = new Metadata(metadata_id, (long) new_article.getId(), ci, funding);
+									metadata_storage.put((long) new_article.getId(), meta);
+								}
+
+							}
+							System.out.println(new_article);
+							article_author_storage.put(new_article.getId(), new ArrayList<Author>());
+							articles_list.add(new_article);
+						}
+					}
+				}
+			}
+
+			for (Article a : articles_list) {
+
+				HttpGet article_files = new HttpGet(String.format("%s/get/files/%s/?format=json", base_url, a.getId()));
+				// settingCheck.setEntity(new
+				// StringEntity(obj.toJSONString()));
+				article_files.addHeader("Authorization", "Basic " + credentials);
+				article_files.setHeader("Accept", "application/json");
+				article_files.addHeader("Content-type", "application/json");
+
+				response = null;
+				response = httpClient.execute(article_files);
+
+				jsonf = new JsonFactory();
+				result = response.getEntity().getContent();
+				jsonParser = new JSONParser();
+
+				setting_pk = (long) -1;
+				exists = true;
+				setting_json = new JSONObject();
+
+				setting = new JSONObject();
+				try {
+					setting = (JSONObject) jsonParser.parse(IOUtils.toString(result));
+					try {
+						InputStream is = response.getEntity().getContent();
+						is.close();
+					} catch (IOException exc) {
+
+						exc.printStackTrace();
+					}
+
+					System.out.println(setting);
+					if (setting == null) {
+						exists = false;
+					} else {
+						String[] file_ids = null;
+						String ids = ((String) setting.get("files"));
+						if (ids.contains(",")) {
+							file_ids = ((String) setting.get("files")).split(",");
+						}
+						if (file_ids != null) {
+							for (String file_id : file_ids) {
+								file_download(a.getId(), Long.parseLong(file_id));
+							}
+						}
+					}
+				} catch (ParseException e) {
+
+					e.printStackTrace();
+				}
+				a.setIssue_fk(issue);
+				article_storage.put(a.getId(), a);
+				author_primary_storage.put(a.getId(), new ConcurrentHashMap<Long, Boolean>());
+				System.out.println(a.getIssue_fk().getId());
+				issue.add_article(a.getId(), a);
+
+			}
+			System.out.println(articles_list.size() + " - " + article_author_storage.size());
+			issue_storage.put(issue.getId(), issue);
+		} catch (ClientProtocolException e2) {
+
+			JOptionPane.showMessageDialog(null, "Lost connection to server.");
+			return;
+		} catch (IOException e2) {
+
+			JOptionPane.showMessageDialog(null, "Lost connection to server.");
+			return;
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
 	public static void update_articles_local(Issue issue, String credentials)
 			throws IllegalStateException, IOException {
 
@@ -8634,7 +8878,7 @@ public class Main {
 									exc.printStackTrace();
 								}
 								// meta
-								String funding=null;
+								String funding = null;
 								String ci = null;
 								article_settings = new HttpGet(
 										String.format("%s/get/setting/funding/article/%s/?format=json", base_url,
@@ -8660,7 +8904,7 @@ public class Main {
 										System.out.println(results.get(0));
 										setting_json = (JSONObject) results.get(0);
 										// new_article.setTitle((String)
-										funding=(String) setting_json.get("setting_value");
+										funding = (String) setting_json.get("setting_value");
 										System.out.println(setting_json.get("setting_value"));
 									} catch (Exception e) {
 										e.printStackTrace();
@@ -8718,18 +8962,19 @@ public class Main {
 
 									exc.printStackTrace();
 								}
-								if(ci!=null || funding !=null){
-									if(metadata_storage.containsKey((long)new_article.getId())){
-										Metadata meta = metadata_storage.get((long)new_article.getId());
+								if (ci != null || funding != null) {
+									if (metadata_storage.containsKey((long) new_article.getId())) {
+										Metadata meta = metadata_storage.get((long) new_article.getId());
 										meta.setCompeting_interests(ci);
 										meta.setFunding(funding);
-										 metadata_storage.put((long)new_article.getId(),meta);
-									}else{
+										metadata_storage.put((long) new_article.getId(), meta);
+									} else {
 										metadata_id++;
-										Metadata meta = new Metadata(metadata_id,(long)new_article.getId(),ci,funding);
-										metadata_storage.put((long)new_article.getId(),meta);
+										Metadata meta = new Metadata(metadata_id, (long) new_article.getId(), ci,
+												funding);
+										metadata_storage.put((long) new_article.getId(), meta);
 									}
-									
+
 								}
 								article_settings = new HttpGet(String.format(
 										"%s/get/setting/title/article/%s/?format=json", base_url, new_article.getId()));
@@ -9286,7 +9531,7 @@ public class Main {
 					issue_storage.put(issue_id, new_issue);
 					issue_screens.put(issue_id, new JFrame());
 					article_screens.put(issue_id, new ConcurrentHashMap<Long, JFrame>());
-					update_articles_local(new_issue, encoding);
+					update_articles_local_single_request(new_issue, encoding);
 					get_authors_remote(issue_id, encoding, false);
 
 				}
@@ -10588,6 +10833,28 @@ public class Main {
 		return new_article;
 	}
 
+	public static Article JSONToArticle_single_request(JSONObject obj, Issue issue) {
+		String date_p = (String) obj.get("date_submitted");
+		Long user_id = (Long) obj.get("user");
+		System.out.println(user_id);
+
+		Article new_article = new Article((long) obj.get("id"), (long) obj.get("section_id"), (String) obj.get("pages"),
+				user_id, (String) obj.get("locale"), (String) obj.get("language"), (int) (long) obj.get("status"),
+				(int) (long) obj.get("submission_progress"), (int) (long) obj.get("current_round"),
+				(int) (long) obj.get("fast_tracked"), (int) (long) obj.get("hide_author"),
+				(int) (long) obj.get("comments_status"), issue);
+		if (date_p != null && date_p.compareTo("") != 0) {
+
+			try {
+				new_article.setDate_submitted((Date) sdf.parse(date_p.substring(0, 10).replace('-', '/')));
+			} catch (java.text.ParseException e) {
+
+				e.printStackTrace();
+			}
+		}
+		return new_article;
+	}
+
 	public static Author JSONToAuthor(JSONObject obj, Author author) {
 
 		long id = (long) obj.get("id");
@@ -11103,7 +11370,9 @@ public class Main {
 		System.out.println("ioannis:root".hashCode());
 		database_setup();
 		populate_variables();
-
+		//update_get_issues_from_remote(encoding, false);
+		// update_articles_local_single_request(issue_storage.get((long) 5),
+		// encoding);
 		// get_issue_from_remote(encoding, (long) 5, false);
 
 		// file copy to use for file upload
@@ -11112,8 +11381,8 @@ public class Main {
 		// sync_authors_intersect(5, encoding, false);
 		// System.out.println("Latest author id: " + author_id);
 		// ();
-
-		new Main();
+		//
+		 new Main();
 		// file_upload_intersect((long)125,"/home/ioannis/code/toru-app/java_ojs/miglayout-src.zip",25);
 		// file_download(125,16);
 		// System.out.println(file_storage.get((long)125).get((long)5));
