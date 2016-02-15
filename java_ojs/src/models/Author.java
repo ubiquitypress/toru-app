@@ -5,12 +5,12 @@ public class Author {
 	private String middle_name; 
 	private String last_name; 
 	private String email; 
-	private String affiliation; 
-	private String bio; 
-	private String orcid; 
-	private String twitter; 
-	private String department;
-	private String country;
+	private String affiliation=""; 
+	private String bio=""; 
+	private String orcid=""; 
+	private String twitter=""; 
+	private String department="";
+	private String country="";
 	private String url="";
 
 	private long user_group=1;

@@ -12,6 +12,7 @@ import sun.misc.BASE64Encoder;
 
 import org.apache.commons.io.IOUtils;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutionException;
 
 import javax.ws.rs.ext.MessageBodyWorkers;
@@ -233,7 +234,7 @@ public class Main {
 	private static long author_id = 0;
 	private static long section_db_id = 0;
 	private static long metadata_id = 0;
-	private static final int SOCKET_OPERATION_TIMEOUT = 5 * 1000;
+	private static final int SOCKET_OPERATION_TIMEOUT = 10 * 1000;
 	private static String base_url = "http://127.0.0.1:8000";
 	CookieStore cookieStore = new BasicCookieStore();
 	HttpContext httpContext = new BasicHttpContext();
@@ -2233,7 +2234,7 @@ public class Main {
 							if (issue_keys.isEmpty()) {
 								skipped_dialog = true;
 							}
-							List<Future<?>> futures = new ArrayList<Future<?>>();
+							CopyOnWriteArrayList<Future<?>> futures = new CopyOnWriteArrayList<Future<?>>();
 							ExecutorService exec = Executors.newFixedThreadPool(4);
 							final JProgressBar progressBar = new JProgressBar();
 							progressBar.setValue(0);
@@ -2416,7 +2417,7 @@ public class Main {
 										public void run() {
 											try {
 												update_articles_local_single_request(current_issue, encoding);
-												get_authors_remote(issue_id, encoding, false);
+												get_authors_remote_single_request(issue_id, encoding, false);
 											} catch (IllegalStateException | IOException e1) {
 												// TODO Auto-generated
 												// catch
@@ -3947,7 +3948,7 @@ public class Main {
 											public void run() {
 
 												try {
-													get_authors_remote(issue_id, encoding, false);
+													get_authors_remote_single_request(issue_id, encoding, false);
 												} catch (IllegalStateException e1) {
 
 													e1.printStackTrace();
@@ -4001,7 +4002,7 @@ public class Main {
 									}
 									int i = 0;
 									try {
-										get_authors_remote(issue_id, encoding, false);
+										get_authors_remote_single_request(issue_id, encoding, false);
 									} catch (IllegalStateException e1) {
 
 										e1.printStackTrace();
@@ -8483,7 +8484,6 @@ public class Main {
 							setting = (JSONObject) jsonParser.parse(IOUtils.toString(result));
 							System.out.println((JSONObject) setting.get("article"));
 							System.out.println((JSONArray) setting.get("settings"));
-							JSONArray all_settings = (JSONArray) setting.get("settings");
 							try {
 								InputStream is = response.getEntity().getContent();
 								is.close();
@@ -8491,6 +8491,8 @@ public class Main {
 
 								exc.printStackTrace();
 							}
+							JSONArray all_settings = (JSONArray) setting.get("settings");
+
 							Article new_article = JSONToArticle_single_request((JSONObject) setting.get("article"),
 									issue);
 							String funding = null;
@@ -9532,7 +9534,7 @@ public class Main {
 					issue_screens.put(issue_id, new JFrame());
 					article_screens.put(issue_id, new ConcurrentHashMap<Long, JFrame>());
 					update_articles_local_single_request(new_issue, encoding);
-					get_authors_remote(issue_id, encoding, false);
+					get_authors_remote_single_request(issue_id, encoding, false);
 
 				}
 			}
@@ -9939,6 +9941,175 @@ public class Main {
 		} catch (ParseException e) {
 
 			e.printStackTrace();
+		}
+		try {
+			InputStream is = response.getEntity().getContent();
+			is.close();
+		} catch (IOException exc) {
+
+			exc.printStackTrace();
+		}
+
+		System.out.println("Authors: " + author_storage.size());
+		System.out.println("Authors: " + author_count);
+
+	}
+
+	public static void get_authors_remote_single_request(long issue_id, String credentials, boolean update_local)
+			throws IllegalStateException, IOException {
+		boolean status = status_online();
+		System.out.println("GETTING AUTHORS");
+		if (!status) {
+			return;
+		}
+
+		int author_count = 0;
+		HttpGet httpGet = new HttpGet(String.format("%s/get/issue/authors/%s/?format=json", base_url, issue_id));
+		httpGet.addHeader("Authorization", "Basic " + credentials);
+		httpGet.setHeader("Accept", "application/json");
+		httpGet.addHeader("Content-type", "application/json");
+
+		HttpResponse response = null;
+		try {
+			response = httpClient.execute(httpGet);
+		} catch (ClientProtocolException e2) {
+			System.out.println(String.format("%s/get/issue/authors/%s/?format=json", base_url, issue_id));
+			e2.printStackTrace();
+		} catch (IOException e2) {
+
+			System.out.println(String.format("%s/get/issue/authors/%s/?format=json", base_url, issue_id));
+			e2.printStackTrace();
+		}
+		JsonFactory jsonf = new JsonFactory();
+		if (response.getStatusLine().getStatusCode() == 200) {
+			InputStream result = response.getEntity().getContent();
+			org.json.simple.parser.JSONParser jsonParser = new JSONParser();
+			boolean exists = true;
+
+			JSONObject author_json = new JSONObject();
+			try {
+				JSONObject issue_obj = (JSONObject) jsonParser.parse(IOUtils.toString(result));
+				JSONArray author_ids = (JSONArray) issue_obj.get("authors");
+				System.out.println(author_ids);
+				try {
+					InputStream is = response.getEntity().getContent();
+					is.close();
+				} catch (IOException exc) {
+
+					exc.printStackTrace();
+				}
+				for (int i = 0; i < author_ids.size(); i++) {
+					long author_current_id = (long) author_ids.get(i);
+					httpGet = new HttpGet(String.format("%s/app/authors/%s/?format=json", base_url, author_current_id));
+					httpGet.addHeader("Authorization", "Basic " + credentials);
+					httpGet.setHeader("Accept", "application/json");
+					httpGet.addHeader("Content-type", "application/json");
+
+					response = null;
+					try {
+						response = httpClient.execute(httpGet);
+					} catch (ClientProtocolException e2) {
+
+						e2.printStackTrace();
+					} catch (IOException e2) {
+
+						e2.printStackTrace();
+					}
+					result = response.getEntity().getContent();
+					jsonParser = new JSONParser();
+					exists = true;
+					author_json = (JSONObject) jsonParser.parse(IOUtils.toString(result));
+
+					System.out.println(author_storage.containsKey(author_id));
+					System.out.println("---" + author_storage.containsKey((long) author_id));
+					long author_id = (long) author_json.get("id");
+					System.out.println("---" + author_id);
+
+					System.out.println("ELSE");
+					Author new_author = new Author(author_id);
+
+					new_author = JSONToAuthor_single_request(author_json, new_author);
+					
+					JSONArray all_settings = (JSONArray) author_json.get("settings");
+
+					try {
+						InputStream is = response.getEntity().getContent();
+						is.close();
+					} catch (IOException exc) {
+
+						exc.printStackTrace();
+					}
+					System.out.println(all_settings.toArray());
+					for (Object set : all_settings.toArray()) {
+						JSONObject current_setting = (JSONObject) set;
+						System.out.println(current_setting);
+						switch ((String) current_setting.get("setting_name")) {
+						case "biography":
+							new_author.setBio((String) current_setting.get("setting_value"));
+							continue;
+						case "twitter":
+							new_author.setTwitter((String) current_setting.get("setting_value"));
+							continue;
+						case "department":
+							new_author.setDepartment((String) current_setting.get("setting_value"));
+							continue;
+						case "affiliation":
+							new_author.setAffiliation((String) current_setting.get("setting_value"));
+							continue;
+						case "orcid":
+							new_author.setOrcid((String) current_setting.get("setting_value"));
+							continue;
+						default:
+							System.out.println("Invalid setting");
+						}
+
+					}
+
+					System.out.println(article_storage.containsKey((long) new_author.getArticle_id()));
+					System.out.println(article_storage.containsKey(new_author.getArticle_id()));
+					if (article_storage.containsKey((long) new_author.getArticle_id())) {
+						if (!article_author_storage.containsKey(new_author.getArticle_id())) {
+							ArrayList<Author> new_authors = new ArrayList<Author>();
+							new_authors.add(new_author);
+							article_author_storage.put(new_author.getArticle_id(), new_authors);
+						} else {
+							ArrayList<Author> existing_authors = article_author_storage.get(new_author.getArticle_id());
+							existing_authors.add(new_author);
+							article_author_storage.put(new_author.getArticle_id(), existing_authors);
+						}
+						Article this_article = article_storage.get(new_author.getArticle_id());
+						issue_id = this_article.getIssue_fk().getId();
+						Issue this_issue = issue_storage.get(issue_id);
+
+						this_issue.add_author(this_article.getId(), new_author);
+						this_article.add_author(new_author);
+						article_storage.put(this_article.getId(), this_article);
+						this_issue.add_article(this_article.getId(), this_article);
+						issue_storage.put(issue_id, this_issue);
+						System.out.println(new_author);
+						author_storage.put(new_author.getId(), new_author);
+						ConcurrentHashMap<Long, Boolean> primary = author_primary_storage.get(this_article.getId());
+						primary.put(new_author.getId(), false);
+						author_primary_storage.put(this_article.getId(), primary);
+						System.out.println("Authors: " + article_author_storage.get(new_author.getArticle_id()).size());
+
+					}
+				}
+
+				/*
+				 * System.out.println(issue_obj.get("count"));
+				 * System.out.println(issue_obj); String detail = (String)
+				 * issue_obj.get("detail"); if (detail == null) { exists =
+				 * false; } else { JSONArray results = (JSONArray)
+				 * issue_obj.get("results"); System.out.println(results.get(0));
+				 * issue_json = (JSONObject) results.get(0);
+				 * System.out.println(issue_json.get("id")); issue =
+				 * JSONToIssue(issue_json, issue); }
+				 */
+			} catch (ParseException e) {
+
+				e.printStackTrace();
+			}
 		}
 		try {
 			InputStream is = response.getEntity().getContent();
@@ -10883,6 +11054,28 @@ public class Main {
 		return author;
 	}
 
+	public static Author JSONToAuthor_single_request(JSONObject obj, Author author) {
+
+		long id = (long) obj.get("id");
+		long article_id = (Long) obj.get("article");
+
+		author.setArticle_id(article_id);
+
+		String first_name = (String) obj.get("first_name");
+
+		String middle_name = (String) obj.get("middle_name");
+		String last_name = (String) obj.get("last_name");
+		String email = (String) obj.get("email");
+		String country = (String) obj.get("country");
+		author.setFirst_name(first_name);
+		author.setMiddle_name(middle_name);
+		author.setLast_name(last_name);
+		author.setEmail(email);
+		author.setCountry(country);
+
+		return author;
+	}
+
 	public static JSONObject AuthorToJSON(Author author) {
 		JSONObject obj = new JSONObject();
 		obj.put("id", author.getId());
@@ -11370,19 +11563,19 @@ public class Main {
 		System.out.println("ioannis:root".hashCode());
 		database_setup();
 		populate_variables();
-		//update_get_issues_from_remote(encoding, false);
+		// update_get_issues_from_remote(encoding, false);
 		// update_articles_local_single_request(issue_storage.get((long) 5),
 		// encoding);
 		// get_issue_from_remote(encoding, (long) 5, false);
 
 		// file copy to use for file upload
 		// file_copy(1,"src/lib/db_xxs.png");
-		// get_authors_remote(5, encoding, false);
+		// get_authors_remote_single_request(5, encoding, false);
 		// sync_authors_intersect(5, encoding, false);
 		// System.out.println("Latest author id: " + author_id);
 		// ();
 		//
-		 new Main();
+		new Main();
 		// file_upload_intersect((long)125,"/home/ioannis/code/toru-app/java_ojs/miglayout-src.zip",25);
 		// file_download(125,16);
 		// System.out.println(file_storage.get((long)125).get((long)5));
