@@ -13,6 +13,7 @@ public class Issue {
 	private int volume;  
 	private int number;
 	private int year;
+	private boolean sync=false;
 	private int show_title;
 	private int show_volume;
 	private int show_number;
@@ -261,7 +262,12 @@ public class Issue {
 		}
 		return all_authors;
 	}
-	
+	public boolean shouldBeSynced() {
+		return sync;
+	}
+	public void setSync(boolean updated) {
+		this.sync = updated;
+	}
 	
 
 }

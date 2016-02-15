@@ -187,6 +187,8 @@ public class Main {
 	private static ConcurrentHashMap<Long, Long> list_issues;
 	private static ConcurrentHashMap<Long, JFrame> issue_screens;
 	private static ConcurrentHashMap<Long, Issue> issue_storage;
+	private static boolean new_issues_process_done = false;
+	private static ConcurrentHashMap<Long, Boolean> issue_countdown_storage;
 	private static ConcurrentHashMap<String, String> app_settings;
 	private static ConcurrentHashMap<Long, Metadata> metadata_storage;
 	private static ConcurrentHashMap<Long, Section> section_storage;
@@ -206,11 +208,11 @@ public class Main {
 	private String api_insert_or_replace_statement = "INSERT OR REPLACE INTO API(journal_id, intersect_user_id, user_id, key) VALUES (?,?,?,?)";
 	private String journal_insert_or_replace_statement = "INSERT OR REPLACE INTO JOURNAL(id,path,seq,primary_locale,enabled,title) VALUES (?,?,?,?,?,?)";
 	private String settings_insert_or_replace_statement = "INSERT OR REPLACE INTO SETTING(NAME,VALUE) VALUES (?,?)";
-	private String issue_insert_or_replace_statement = "INSERT OR REPLACE INTO ISSUE(id,title,volume,number,year,show_title,show_volume,show_number,show_year,date_published,date_accepted, published, current, access_status) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+	private String issue_insert_or_replace_statement = "INSERT OR REPLACE INTO ISSUE(id,title,volume,number,year,show_title,show_volume,show_number,show_year,date_published,date_accepted, published, current, access_status,sync) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
 	private String section_insert_or_replace_statement = "INSERT OR REPLACE INTO SECTION(id,title) VALUES (?,?)";
 	private String author_insert_or_replace_statement = "INSERT OR REPLACE INTO AUTHOR(id,first_name,middle_name,last_name,email,affiliation,bio,orcid,department,country,twitter) VALUES (?,?,?,?,?,?,?,?,?,?,?)";
 	private String unique_authors_insert_or_replace_statement = "INSERT OR REPLACE INTO UNIQUE_AUTHORS(first_name,middle_name,last_name,email,affiliation,bio,orcid,department,country) VALUES (?,?,?,?,?,?,?,?,?)";
-	private String article_insert_or_replace_statement = "INSERT OR REPLACE INTO ARTICLE(id,title,section_id,pages,abstract,date_published,date_accepted,date_submitted,locale,language,status,submission_progress,current_round,fast_tracked,hide_author,comments_status,user_id,doi,published_pk) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+	private String article_insert_or_replace_statement = "INSERT OR REPLACE INTO ARTICLE(id,title,section_id,pages,abstract,date_published,date_accepted,date_submitted,locale,language,status,submission_progress,current_round,fast_tracked,hide_author,comments_status,user_id,doi,published_pk,sync) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
 	private String article_author_insert_or_replace_statement = "INSERT OR REPLACE INTO ARTICLE_AUTHOR(article_id,author_id,primary_author) VALUES (?,?,?)";
 	private String issue_journal_insert_or_replace_statement = "INSERT OR REPLACE INTO ISSUE_JOURNAL(id,journal_id,issue_id) VALUES (?,?,?)";
 	private String issue_article_insert_or_replace_statement = "INSERT OR REPLACE INTO ISSUE_ARTICLE(article_id,issue_id) VALUES (?,?)";
@@ -382,8 +384,9 @@ public class Main {
 				issue_prep.setString(11,
 						sdf.format(save_issue.getDate_accepted() == null ? new Date() : save_issue.getDate_accepted()));
 				issue_prep.setInt(12, save_issue.getPublished());
-				issue_prep.setInt(12, save_issue.getAccess_status());
-				issue_prep.setInt(12, save_issue.getCurrent());
+				issue_prep.setInt(13, save_issue.getAccess_status());
+				issue_prep.setInt(14, save_issue.getCurrent());
+				issue_prep.setBoolean(15, save_issue.shouldBeSynced());
 
 				issue_prep.executeUpdate();
 				Journal issue_journal = save_issue.getJournal();
@@ -422,6 +425,7 @@ public class Main {
 					article_prep.setInt(17, (int) (long) save_article.getUser_id());
 					article_prep.setString(18, save_article.getDoi());
 					article_prep.setLong(19, save_article.getPublished_pk());
+					article_prep.setBoolean(20, save_article.shouldBeSynced());
 					article_prep.executeUpdate();
 					PreparedStatement issue_article_prep = c
 							.prepareStatement(issue_article_insert_or_replace_statement);
@@ -532,6 +536,7 @@ public class Main {
 		list_settings = new ConcurrentHashMap<String, String>();
 		list_issues = new ConcurrentHashMap<Long, Long>();
 		issue_storage = new ConcurrentHashMap<Long, Issue>();
+		issue_countdown_storage = new ConcurrentHashMap<Long, Boolean>();
 		issue_screens = new ConcurrentHashMap<Long, JFrame>();
 		file_storage = new ConcurrentHashMap<Long, ConcurrentHashMap<Long, ArticleFile>>();
 		article_screens = new ConcurrentHashMap<Long, ConcurrentHashMap<Long, JFrame>>();
@@ -630,13 +635,15 @@ public class Main {
 
 				String date_accepted = rs.getString("date_accepted");
 				String date = rs.getString("date_published");
+
+				Boolean sync = rs.getBoolean("sync");
 				Issue issue = null;
 				issue = new Issue(id, title, volume, number, year, show_title, show_volume, show_number, show_year,
 						sdf.parse(date_accepted), sdf.parse(date), published, current, access_status,
 						journal_storage.get(Long.parseLong(app_settings.get("journal_id"))));
 
 				// JOptionPane.showMessageDialog(null, "Deleted");
-
+				issue.setSync(sync == null ? false : sync);
 				list_issues.put(id, (long) 1);
 				issue_screens.put(id, new JFrame());
 				article_screens.put(id, new ConcurrentHashMap<Long, JFrame>());
@@ -699,11 +706,13 @@ public class Main {
 				String date_submitted = art_s.getString("date_submitted");
 				String doi = art_s.getString("doi");
 				Integer published_pk = art_s.getInt("published_pk");
+				Boolean sync = art_s.getBoolean("sync");
 				Article article = null;
 
 				article = new Article(id, title, section_id, pages, abstract_text, sdf.parse(date_accepted),
 						sdf.parse(date_submitted), journal_storage.get(Long.parseLong(app_settings.get("journal_id"))));
 				article.setDoi(doi);
+				article.setSync(sync == null ? false : sync);
 				article.setPublished_pk(published_pk == null ? -1 : published_pk);
 				try {
 					Date test_date = sdf.parse(date);
@@ -1252,7 +1261,7 @@ public class Main {
 					+ "volume INTEGER," + "number INTEGER," + "year INTEGER," + "published INTEGER,"
 					+ " show_title INTEGER," + "show_volume INTEGER," + "show_number INTEGER," + "show_year INTEGER,"
 					+ "access_status INTEGER," + "current INTEGER," + "date_published CHAR(50),"
-					+ "date_accepted CHAR(50)" + ")";
+					+ "date_accepted CHAR(50)," + "sync BOOLEAN DEFAULT FALSE" + ")";
 			stmt.executeUpdate(sql);
 			sql = "CREATE TABLE IF NOT EXISTS ISSUE_JOURNAL" + "(id INTEGER PRIMARY KEY," + " journal_id INTEGER,"
 					+ " issue_id INTEGER," + "FOREIGN KEY (journal_id) REFERENCES JOURNAL(id),"
@@ -1277,7 +1286,8 @@ public class Main {
 					+ "submission_progress INTEGER," + "current_round INTEGER," + "fast_tracked INTEGER,"
 					+ "hide_author INTEGER," + "comments_status INTEGER," + " language CHAR(50) NOT NULL,"
 					+ " locale CHAR(50) NOT NULL," + "user_id REAL NOT NULL, " + " doi CHAR(1000),"
-					+ "published_pk INTEGER," + "FOREIGN KEY (section_id) REFERENCES SECTION(id)" + ")";
+					+ "published_pk INTEGER," + "sync BOOLEAN DEFAULT FALSE,"
+					+ "FOREIGN KEY (section_id) REFERENCES SECTION(id)" + ")";
 			stmt.executeUpdate(sql);
 			sql = "CREATE TABLE IF NOT EXISTS FILE" + "(id INTEGER PRIMARY KEY," + " article_id INTEGER,"
 					+ "path CHAR(1000) NOT NULL," + "FOREIGN KEY (article_id) REFERENCES ARTICLE(id)" + ")";
@@ -2243,7 +2253,9 @@ public class Main {
 							JLabel progress_msg = new JLabel("Estimated progress per Issue:");
 
 							progress_msg.setBounds(width / 2 - 75, height - 150, 200, 40);
-
+							for (long key : issue_keys) {
+								issue_countdown_storage.put((long) key, false);
+							}
 							for (long key : issue_keys) {
 
 								// progress_increment
@@ -2266,9 +2278,19 @@ public class Main {
 												countdown = 100;
 												for (int i = 0; i < countdown; i++) {
 													final int percent = i;
+													if (issue_countdown_storage.get((long) key) == true) {
+														progressBar.setValue(100);
+														progressBar.repaint();
+														break;
+													}
 													SwingUtilities.invokeLater(new Runnable() {
 														public void run() {
-															progressBar.setValue(percent);
+															if (issue_countdown_storage.get((long) key) == true) {
+																progressBar.setValue(100);
+
+															} else {
+																progressBar.setValue(percent);
+															}
 															progressBar.repaint();
 														}
 													});
@@ -2285,11 +2307,23 @@ public class Main {
 												System.out.println(decimal);
 												for (int i = 0; i < countdown; i++) {
 													final int percent = i;
+													if (issue_countdown_storage.get((long) key) == true) {
+														progressBar.setValue(100);
+														progressBar.repaint();
+														break;
+													}
 													SwingUtilities.invokeLater(new Runnable() {
 														public void run() {
-															progressBar.setValue(percent == 0 ? 0
-																	: (int) Double.parseDouble(
-																			String.format("%s", percent / decimal)));
+															if (issue_countdown_storage.get((long) key) == true) {
+																progressBar.setValue(100);
+
+															} else {
+																progressBar
+																		.setValue(percent == 0 ? 0
+																				: (int) Double
+																						.parseDouble(String.format("%s",
+																								percent / decimal)));
+															}
 															progressBar.repaint();
 														}
 													});
@@ -2474,6 +2508,7 @@ public class Main {
 							});
 							try {
 								if (check_new_issues(encoding)) {
+									new_issues_process_done = false;
 									Future<?> f = exec.submit(new Runnable() {
 
 										public void run() {
@@ -2497,13 +2532,23 @@ public class Main {
 													for (int i = 0; i < countdown; i++) {
 														final int percent = i;
 														final double decimal = countdown / 100;
+														if (new_issues_process_done) {
+															progressBar.setValue(100);
+															progressBar.repaint();
+															break;
+														}
 														SwingUtilities.invokeLater(new Runnable() {
 															public void run() {
-																progressBar.setValue(
+																if (new_issues_process_done) {
+																	progressBar.setValue(100);
+																	progressBar.repaint();
+																} else {
+																	progressBar.setValue(
 
-																		(int) Double.parseDouble(String.format("%s",
-																				percent / decimal)));
-																progressBar.repaint();
+																			(int) Double.parseDouble(String.format("%s",
+																					percent / decimal)));
+																	progressBar.repaint();
+																}
 															}
 														});
 
@@ -3178,7 +3223,7 @@ public class Main {
 						issue.setPublished(published_check.isSelected() == true ? 1 : 0);
 						issue.setCurrent(current_check.isSelected() == true ? 1 : 0);
 						issue.setAccess_status(access_status_check.isSelected() == true ? 1 : 0);
-
+						issue.setSync(true);
 						issue.setJournal(journal_storage.get(Long.parseLong(app_settings.get("journal_id"))));
 						// JOptionPane.showMessageDialog(null, "Deleted");
 
@@ -3496,6 +3541,7 @@ public class Main {
 							current_issue.setShow_year(show_year.isSelected() == true ? 1 : 0);
 							current_issue.setShow_number(show_number.isSelected() == true ? 1 : 0);
 							edit_issue.dispose();
+							current_issue.setSync(true);
 							issue_storage.put(issue_id, current_issue);
 							issues.dispose();
 							dashboard();
@@ -6126,12 +6172,12 @@ public class Main {
 						try {
 
 							String test_accepted = sdf.format(datePickerAccepted.getDate());
-							String test_published = sdf.format(datePicker.getDate());
+						//	String test_published = sdf.format(datePicker.getDate());
 
 						} catch (Exception ex) {
 							validation = false;
 							JOptionPane.showMessageDialog(null,
-									"Use dates from calendar for fields: Date Published and Date Accepted");
+									"Use dates from calendar for fields: Date Accepted");
 						}
 						if (lblFile.getText().contains("Not Uploaded")) {
 							validation = false;
@@ -6155,6 +6201,7 @@ public class Main {
 								}
 							}
 							Article a = article_storage.get(article_id);
+							a.setSync(true);
 							a.setTitle(lblTitleText.getText());
 							ArrayList<Author> updated_authors = a.getAuthors();
 							for (int i = 0; i < updated_authors.size(); i++) {
@@ -6182,6 +6229,7 @@ public class Main {
 							a.setDate_accepted(datePickerAccepted.getDate());
 							a.setDoi(doi.getText());
 							Issue current_issue = issue_storage.get(issue_id);
+							current_issue.setSync(true);
 							issue_storage.get(issue_id).update_article(article_id, a);
 							issue_storage.put(issue_id, current_issue);
 							issue(issue_id);
@@ -7020,6 +7068,7 @@ public class Main {
 								datePickerAccepted.getDate(),
 								journal_storage.get(Long.parseLong(app_settings.get("journal_id"))));
 						new_article.setDoi(doi.getText());
+						new_article.setSync(true);
 						try {
 							String test_published = sdf.format(datePicker.getDate());
 							new_article.setDate_published(datePicker.getDate());
@@ -7045,7 +7094,7 @@ public class Main {
 
 						}
 						current_issue.add_article(new_article.getId(), new_article);
-
+						current_issue.setSync(true);
 						article_storage.put(new_article.getId(), new_article);
 						article_author_storage.put(new_article.getId(), selected_authors);
 
@@ -8070,6 +8119,10 @@ public class Main {
 		if (!status) {
 			return;
 		}
+		if (!issue.shouldBeSynced()) {
+			issue_countdown_storage.put((long) issue.getId(), true);
+			return;
+		}
 		JSONObject obj = IssueToJSON(issue);
 		HttpGet issue_exists = new HttpGet(String.format("%s/issues/%s/", base_url, issue.getId()));
 
@@ -8310,81 +8363,90 @@ public class Main {
 		Set<Long> article_keys = articles.keySet();
 		for (Long key : article_keys) {
 			Article current_article = articles.get(key);
-			update_article_intersect(current_article, credentials);
-			ConcurrentHashMap<Long, ArticleFile> files = file_storage.get((long) current_article.getId());
-			// null
-			if (files != null) {
-				Set<Long> file_keys = files.keySet();
-				HttpGet article_files = new HttpGet(
-						String.format("%s/get/files/%s/?format=json", base_url, current_article.getId()));
-				// settingCheck.setEntity(new
-				// StringEntity(obj.toJSONString()));
-				article_files.addHeader("Authorization", "Basic " + credentials);
-				article_files.setHeader("Accept", "application/json");
-				article_files.addHeader("Content-type", "application/json");
+			if (current_article.shouldBeSynced()) {
+				update_article_intersect(current_article, credentials);
+				current_article.setSync(false);
+				issue.add_article((long) current_article.getId(), current_article);
+				article_storage.put((long) current_article.getId(), current_article);
+				issue_storage.put((long) issue.getId(), issue);
 
-				response = null;
-				try {
-					response = httpClient.execute(article_files);
-				} catch (ClientProtocolException e2) {
+				ConcurrentHashMap<Long, ArticleFile> files = file_storage.get((long) current_article.getId());
+				// null
+				if (files != null) {
+					Set<Long> file_keys = files.keySet();
+					HttpGet article_files = new HttpGet(
+							String.format("%s/get/files/%s/?format=json", base_url, current_article.getId()));
+					// settingCheck.setEntity(new
+					// StringEntity(obj.toJSONString()));
+					article_files.addHeader("Authorization", "Basic " + credentials);
+					article_files.setHeader("Accept", "application/json");
+					article_files.addHeader("Content-type", "application/json");
 
-					e2.printStackTrace();
-				} catch (IOException e2) {
-
-					e2.printStackTrace();
-				}
-				JsonFactory jsonf = new JsonFactory();
-				InputStream result = response.getEntity().getContent();
-				org.json.simple.parser.JSONParser jsonParser = new JSONParser();
-
-				long setting_pk = (long) -1;
-				boolean exists = true;
-				JSONObject setting_json = new JSONObject();
-
-				JSONObject setting;
-				try {
-					setting = (JSONObject) jsonParser.parse(IOUtils.toString(result));
-
+					response = null;
 					try {
-						InputStream is = response.getEntity().getContent();
-						is.close();
-					} catch (IOException exc) {
+						response = httpClient.execute(article_files);
+					} catch (ClientProtocolException e2) {
 
-						exc.printStackTrace();
+						e2.printStackTrace();
+					} catch (IOException e2) {
+
+						e2.printStackTrace();
 					}
-					System.out.println(setting);
-					if (setting == null) {
-						exists = false;
-					} else {
-						String[] file_ids = null;
-						String ids = ((String) setting.get("files"));
-						if (ids.contains(",")) {
-							file_ids = ((String) setting.get("files")).split(",");
+					JsonFactory jsonf = new JsonFactory();
+					InputStream result = response.getEntity().getContent();
+					org.json.simple.parser.JSONParser jsonParser = new JSONParser();
+
+					long setting_pk = (long) -1;
+					boolean exists = true;
+					JSONObject setting_json = new JSONObject();
+
+					JSONObject setting;
+					try {
+						setting = (JSONObject) jsonParser.parse(IOUtils.toString(result));
+
+						try {
+							InputStream is = response.getEntity().getContent();
+							is.close();
+						} catch (IOException exc) {
+
+							exc.printStackTrace();
 						}
-						if (file_ids != null) {
-							for (String file_id : file_ids) {
-								if (!files.containsKey((long) Long.parseLong(file_id))) {
-									delete_file((long) Long.parseLong(file_id));
+						System.out.println(setting);
+						if (setting == null) {
+							exists = false;
+						} else {
+							String[] file_ids = null;
+							String ids = ((String) setting.get("files"));
+							if (ids.contains(",")) {
+								file_ids = ((String) setting.get("files")).split(",");
+							}
+							if (file_ids != null) {
+								for (String file_id : file_ids) {
+									if (!files.containsKey((long) Long.parseLong(file_id))) {
+										delete_file((long) Long.parseLong(file_id));
+									}
 								}
 							}
 						}
+					} catch (ParseException e) {
+
+						e.printStackTrace();
 					}
-				} catch (ParseException e) {
 
-					e.printStackTrace();
-				}
+					System.out.println("FILES TO UPLOAD: " + file_keys.size());
+					if (file_keys.size() > 0) {
+						for (long f_key : file_keys) {
 
-				System.out.println("FILES TO UPLOAD: " + file_keys.size());
-				if (file_keys.size() > 0) {
-					for (long f_key : file_keys) {
-
-						System.out.println("FILE TO UPLOAD: " + f_key);
-						ArticleFile current_file = files.get((long) f_key);
-						file_upload_intersect(current_article.getId(), current_file);
+							System.out.println("FILE TO UPLOAD: " + f_key);
+							ArticleFile current_file = files.get((long) f_key);
+							file_upload_intersect(current_article.getId(), current_file);
+						}
 					}
 				}
 			}
 		}
+		issue.setSync(false);
+		issue_storage.put((long) issue.getId(), issue);
 	}
 
 	public static void update_articles_local_single_request(Issue issue, String credentials)
@@ -8495,6 +8557,7 @@ public class Main {
 
 							Article new_article = JSONToArticle_single_request((JSONObject) setting.get("article"),
 									issue);
+
 							String funding = null;
 							String ci = null;
 							for (Object set : all_settings.toArray()) {
@@ -8530,8 +8593,12 @@ public class Main {
 								case "competingInterests":
 									ci = (String) current_setting.get("setting_value");
 									continue;
+								case "pub-id::doi":
+									new_article.setDoi((String) current_setting.get("setting_value"));
+									continue;
 								default:
-									System.out.println("Invalid setting");
+
+									System.out.println("Invalid setting " + current_setting.get("setting_name"));
 								}
 
 							}
@@ -9288,9 +9355,9 @@ public class Main {
 		JSONObject setting_json = new JSONObject();
 		try {
 			JSONObject countdown_json = (JSONObject) jsonParser.parse(IOUtils.toString(result));
-			countdown = (int) (((int) (long) countdown_json.get("issues")) * 10.2
-					+ ((int) (long) countdown_json.get("articles")) * 2.5
-					+ ((int) (long) countdown_json.get("authors")) * 2.5);
+			countdown = (int) (((int) (long) countdown_json.get("issues")) * 2
+					+ ((int) (long) countdown_json.get("articles")) * 1
+					+ ((int) (long) countdown_json.get("authors")) * 1);
 
 		} catch (ParseException e) {
 
@@ -9402,6 +9469,7 @@ public class Main {
 
 					e.printStackTrace();
 				}
+				new_issue.setSync(true);
 				issue_storage.put(issue_id, new_issue);
 				issue_screens.put(issue_id, new JFrame());
 				article_screens.put(issue_id, new ConcurrentHashMap<Long, JFrame>());
@@ -9558,6 +9626,7 @@ public class Main {
 
 			exc.printStackTrace();
 		}
+		new_issues_process_done = true;
 		return new_issues;
 	}
 
@@ -10029,7 +10098,7 @@ public class Main {
 					Author new_author = new Author(author_id);
 
 					new_author = JSONToAuthor_single_request(author_json, new_author);
-					
+
 					JSONArray all_settings = (JSONArray) author_json.get("settings");
 
 					try {
@@ -10060,7 +10129,7 @@ public class Main {
 							new_author.setOrcid((String) current_setting.get("setting_value"));
 							continue;
 						default:
-							System.out.println("Invalid setting");
+							System.out.println("Invalid setting " + current_setting.get("setting_name"));
 						}
 
 					}
@@ -10131,6 +10200,9 @@ public class Main {
 			return;
 		}
 		Issue issue = issue_storage.get(issue_id);
+		if(!issue.shouldBeSynced()){
+			return;
+		}
 		ArrayList<Author> issue_authors = issue.getAuthors();
 		int author_count = 0;
 		for (Author author : issue_authors) {

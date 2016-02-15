@@ -6,6 +6,7 @@ import java.util.Date;
 public class Article {
 	private long id;
 	private String title;
+	private boolean sync=false;
 	private String doi;
 	private long section_id;
 	private String pages;
@@ -308,6 +309,12 @@ public class Article {
 	}
 	public void setPublished_pk(long published_pk) {
 		this.published_pk = published_pk;
+	}
+	public boolean shouldBeSynced() {
+		return sync;
+	}
+	public void setSync(boolean updated) {
+		this.sync = updated;
 	}
 	
 	
