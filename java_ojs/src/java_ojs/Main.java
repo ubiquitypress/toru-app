@@ -205,19 +205,19 @@ public class Main {
 	private static ArrayList<String> setting_keys = new ArrayList<String>();
 	private static Connection c = null;
 	private static Statement stmt = null;
-	private String api_insert_or_replace_statement = "INSERT OR REPLACE INTO API(journal_id, intersect_user_id, user_id, key) VALUES (?,?,?,?)";
-	private String journal_insert_or_replace_statement = "INSERT OR REPLACE INTO JOURNAL(id,path,seq,primary_locale,enabled,title) VALUES (?,?,?,?,?,?)";
-	private String settings_insert_or_replace_statement = "INSERT OR REPLACE INTO SETTING(NAME,VALUE) VALUES (?,?)";
-	private String issue_insert_or_replace_statement = "INSERT OR REPLACE INTO ISSUE(id,title,volume,number,year,show_title,show_volume,show_number,show_year,date_published,date_accepted, published, current, access_status,sync) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
-	private String section_insert_or_replace_statement = "INSERT OR REPLACE INTO SECTION(id,title) VALUES (?,?)";
-	private String author_insert_or_replace_statement = "INSERT OR REPLACE INTO AUTHOR(id,first_name,middle_name,last_name,email,affiliation,bio,orcid,department,country,twitter) VALUES (?,?,?,?,?,?,?,?,?,?,?)";
-	private String unique_authors_insert_or_replace_statement = "INSERT OR REPLACE INTO UNIQUE_AUTHORS(first_name,middle_name,last_name,email,affiliation,bio,orcid,department,country) VALUES (?,?,?,?,?,?,?,?,?)";
-	private String article_insert_or_replace_statement = "INSERT OR REPLACE INTO ARTICLE(id,title,section_id,pages,abstract,date_published,date_accepted,date_submitted,locale,language,status,submission_progress,current_round,fast_tracked,hide_author,comments_status,user_id,doi,published_pk,sync) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
-	private String article_author_insert_or_replace_statement = "INSERT OR REPLACE INTO ARTICLE_AUTHOR(article_id,author_id,primary_author) VALUES (?,?,?)";
-	private String issue_journal_insert_or_replace_statement = "INSERT OR REPLACE INTO ISSUE_JOURNAL(id,journal_id,issue_id) VALUES (?,?,?)";
-	private String issue_article_insert_or_replace_statement = "INSERT OR REPLACE INTO ISSUE_ARTICLE(article_id,issue_id) VALUES (?,?)";
-	private String file_insert_or_replace_statement = "INSERT OR REPLACE INTO FILE(id,article_id,path) VALUES (?,?,?)";
-	private String metadata_insert_or_replace_statement = "INSERT OR REPLACE INTO METADATA(id,article_id,competing_interests,funding) VALUES (?,?,?,?)";
+	private static String api_insert_or_replace_statement = "INSERT OR REPLACE INTO API(journal_id, intersect_user_id, user_id, key) VALUES (?,?,?,?)";
+	private static String journal_insert_or_replace_statement = "INSERT OR REPLACE INTO JOURNAL(id,path,seq,primary_locale,enabled,title) VALUES (?,?,?,?,?,?)";
+	private static String settings_insert_or_replace_statement = "INSERT OR REPLACE INTO SETTING(NAME,VALUE) VALUES (?,?)";
+	private static String issue_insert_or_replace_statement = "INSERT OR REPLACE INTO ISSUE(id,title,volume,number,year,show_title,show_volume,show_number,show_year,date_published,date_accepted, published, current, access_status,sync) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+	private static String section_insert_or_replace_statement = "INSERT OR REPLACE INTO SECTION(id,title,seq, editor_restricted, meta_indexed, meta_reviewed, abstracts_not_required, hide_title, hide_author, hide_about, disable_comments, abstract_word_count) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)";
+	private static String author_insert_or_replace_statement = "INSERT OR REPLACE INTO AUTHOR(id,first_name,middle_name,last_name,email,affiliation,bio,orcid,department,country,twitter) VALUES (?,?,?,?,?,?,?,?,?,?,?)";
+	private static String unique_authors_insert_or_replace_statement = "INSERT OR REPLACE INTO UNIQUE_AUTHORS(first_name,middle_name,last_name,email,affiliation,bio,orcid,department,country) VALUES (?,?,?,?,?,?,?,?,?)";
+	private static String article_insert_or_replace_statement = "INSERT OR REPLACE INTO ARTICLE(id,title,section_id,pages,abstract,date_published,date_accepted,date_submitted,locale,language,status,submission_progress,current_round,fast_tracked,hide_author,comments_status,user_id,doi,published_pk,sync) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+	private static String article_author_insert_or_replace_statement = "INSERT OR REPLACE INTO ARTICLE_AUTHOR(article_id,author_id,primary_author) VALUES (?,?,?)";
+	private static String issue_journal_insert_or_replace_statement = "INSERT OR REPLACE INTO ISSUE_JOURNAL(id,journal_id,issue_id) VALUES (?,?,?)";
+	private static String issue_article_insert_or_replace_statement = "INSERT OR REPLACE INTO ISSUE_ARTICLE(article_id,issue_id) VALUES (?,?)";
+	private static String file_insert_or_replace_statement = "INSERT OR REPLACE INTO FILE(id,article_id,path) VALUES (?,?,?)";
+	private static String metadata_insert_or_replace_statement = "INSERT OR REPLACE INTO METADATA(id,article_id,competing_interests,funding) VALUES (?,?,?,?)";
 	private static DefaultHttpClient httpClient = new DefaultHttpClient();
 	private String delete_issue_statement = "DELETE FROM ISSUE WHERE id=?";
 	int width = 800;
@@ -245,7 +245,7 @@ public class Main {
 	/*
 	 * Initial setup test
 	 */
-	public void database_save() {
+	public static void database_save() {
 		System.out.println("Saving database...");
 
 		try {
@@ -310,6 +310,19 @@ public class Main {
 				PreparedStatement section_prep = c.prepareStatement(section_insert_or_replace_statement);
 				section_prep.setInt(1, (int) (long) save_section.getId());
 				section_prep.setString(2, save_section.getTitle());
+				section_prep.setDouble(3, save_section.getSeq());
+				section_prep.setInt(4, save_section.getEditor_restricted());
+				section_prep.setInt(5, save_section.getMeta_indexed());
+
+				section_prep.setInt(6, save_section.getMeta_reviewed());
+				section_prep.setInt(7, save_section.getAbstracts_not_required());
+				section_prep.setInt(8, save_section.getHide_title());
+				section_prep.setInt(9, save_section.getHide_author());
+				section_prep.setInt(10, save_section.getHide_about());
+				section_prep.setInt(11, save_section.getDisable_comments());
+
+				section_prep.setInt(12, (int) (long) save_section.getAbstract_word_count());
+
 				section_prep.executeUpdate();
 			}
 
@@ -657,6 +670,16 @@ public class Main {
 				long id = sect_s.getInt("id");
 				String title = sect_s.getString("title");
 				Section new_section = new Section(id, title);
+				new_section.setSeq(sect_s.getDouble("seq"));
+				new_section.setEditor_restricted(sect_s.getInt("editor_restricted"));
+				new_section.setMeta_indexed(sect_s.getInt("meta_indexed"));
+				new_section.setMeta_reviewed(sect_s.getInt("meta_reviewed"));
+				new_section.setAbstracts_not_required(sect_s.getInt("abstracts_not_required"));
+				new_section.setHide_title(sect_s.getInt("hide_title"));
+				new_section.setHide_author(sect_s.getInt("hide_author"));
+				new_section.setHide_about(sect_s.getInt("hide_about"));
+				new_section.setDisable_comments(sect_s.getInt("disable_comments"));
+				new_section.setAbstract_word_count(sect_s.getInt("abstract_word_count"));
 				section_storage.put(id, new_section);
 				section_db_id = id;
 			}
@@ -1210,6 +1233,8 @@ public class Main {
 		long remote_journal_id = 0;
 		long remote_author_id = 0;
 		long remote_file_id = 0;
+		long remote_section_id = 0;
+		remote_section_id = get_remote_id("section");
 		remote_issue_id = get_remote_id("issue");
 		remote_article_id = get_remote_id("article");
 		remote_published_article_id = get_remote_id("published-article");
@@ -1234,11 +1259,14 @@ public class Main {
 		if (remote_file_id > file_id) {
 			file_id = remote_file_id;
 		}
+		if (remote_section_id > section_db_id) {
+			section_db_id = remote_section_id;
+		}
 		System.out.println(remote_issue_id);
 		System.out.println(remote_article_id);
 		System.out.println(remote_journal_id);
 		System.out.println(remote_file_id);
-		;
+		System.out.println(remote_section_id);
 		System.out.println(remote_published_article_id);
 		System.out.println(remote_author_id + "-" + author_id);
 	}
@@ -1267,7 +1295,12 @@ public class Main {
 					+ " issue_id INTEGER," + "FOREIGN KEY (journal_id) REFERENCES JOURNAL(id),"
 					+ "FOREIGN KEY (issue_id) REFERENCES ISSUE(id)" + ")";
 			stmt.executeUpdate(sql);
-			sql = "CREATE TABLE IF NOT EXISTS SECTION" + "(id INTEGER PRIMARY KEY," + " title CHAR(250) NOT NULL)";
+			sql = "CREATE TABLE IF NOT EXISTS SECTION" + "(id INTEGER PRIMARY KEY," + " title CHAR(250) NOT NULL,"
+					+ "editor_restricted INTEGER DEFAULT 0," + "meta_indexed INTEGER DEFAULT 0,"
+					+ "meta_reviewed INTEGER DEFAULT 0," + "abstracts_not_required INTEGER DEFAULT 0,"
+					+ "hide_title INTEGER DEFAULT 0," + "hide_author INTEGER DEFAULT 0,"
+					+ "hide_about INTEGER DEFAULT 0," + "seq REAL," + "disable_comments INTEGER DEFAULT 0,"
+					+ "abstract_word_count" + ");";
 			stmt.executeUpdate(sql);
 			sql = "CREATE TABLE IF NOT EXISTS AUTHOR" + "(id INTEGER PRIMARY KEY," + " first_name CHAR(200) NOT NULL,"
 					+ " middle_name CHAR(200) NOT NULL," + " last_name CHAR(200) NOT NULL,"
@@ -2253,6 +2286,7 @@ public class Main {
 							JLabel progress_msg = new JLabel("Estimated progress per Issue:");
 
 							progress_msg.setBounds(width / 2 - 75, height - 150, 200, 40);
+
 							for (long key : issue_keys) {
 								issue_countdown_storage.put((long) key, false);
 							}
@@ -4976,10 +5010,13 @@ public class Main {
 				titleSection.createHorizontalScrollBar();
 				panel.add(titleSection);
 
-				JLabel lblSectionId = new JLabel(Long.toString(current_article.getSection_id()));
+				JLabel lblSectionId = new JLabel(
+						section_storage.get((long) current_article.getSection_id()).getTitle().compareTo("") == 0
+								? Long.toString(section_storage.get((long) current_article.getSection_id()).getId())
+								: section_storage.get((long) current_article.getSection_id()).getTitle());
 				lblSectionId.setForeground(Color.BLACK);
 				lblSectionId.setFont(new Font("Dialog", Font.BOLD, 14));
-				lblSectionId.setBounds(160, 81, 94, 30);
+				lblSectionId.setBounds(110, 81, 149, 30);
 				panel.add(lblSectionId);
 
 				JLabel lblSection = new JLabel("Section:");
@@ -6054,10 +6091,10 @@ public class Main {
 				// JTextField(Integer.toString(current_article.getSection_id()));
 				lblSectionId.setForeground(Color.BLACK);
 				lblSectionId.setFont(new Font("Dialog", Font.BOLD, 12));
-				lblSectionId.setBounds(95, 83, 140, 26);
+				lblSectionId.setBounds(95, 83, 185, 26);
 				panel.add(lblSectionId);
-				JButton btnAddSections = new JButton("+ Add");
-				btnAddSections.setBounds(236, 83, 85, 27);
+				JButton btnAddSections = new JButton("+");
+				btnAddSections.setBounds(280, 83, 45, 27);
 				panel.add(btnAddSections);
 
 				JPanel panelSection = new JPanel();
@@ -6172,12 +6209,12 @@ public class Main {
 						try {
 
 							String test_accepted = sdf.format(datePickerAccepted.getDate());
-						//	String test_published = sdf.format(datePicker.getDate());
+							// String test_published =
+							// sdf.format(datePicker.getDate());
 
 						} catch (Exception ex) {
 							validation = false;
-							JOptionPane.showMessageDialog(null,
-									"Use dates from calendar for fields: Date Accepted");
+							JOptionPane.showMessageDialog(null, "Use dates from calendar for fields: Date Accepted");
 						}
 						if (lblFile.getText().contains("Not Uploaded")) {
 							validation = false;
@@ -6915,10 +6952,11 @@ public class Main {
 
 			lblSectionId.setForeground(Color.BLACK);
 			lblSectionId.setFont(new Font("Dialog", Font.BOLD, 12));
-			lblSectionId.setBounds(95, 83, 140, 26);
+			lblSectionId.setBounds(95, 83, 185, 26);
 			panel.add(lblSectionId);
-			JButton btnAddSections = new JButton("+ Add");
-			btnAddSections.setBounds(236, 83, 85, 27);
+			JButton btnAddSections = new JButton("+");
+
+			btnAddSections.setBounds(280, 83, 45, 27);
 			panel.add(btnAddSections);
 
 			JPanel panelSection = new JPanel();
@@ -9627,6 +9665,8 @@ public class Main {
 			exc.printStackTrace();
 		}
 		new_issues_process_done = true;
+
+		get_sections(Long.parseLong(app_settings.get("journal_id")), encoding, false);
 		return new_issues;
 	}
 
@@ -10200,7 +10240,7 @@ public class Main {
 			return;
 		}
 		Issue issue = issue_storage.get(issue_id);
-		if(!issue.shouldBeSynced()){
+		if (!issue.shouldBeSynced()) {
 			return;
 		}
 		ArrayList<Author> issue_authors = issue.getAuthors();
@@ -10859,6 +10899,84 @@ public class Main {
 
 	}
 
+	public static void get_sections(long journal_id, String credentials, boolean update_local)
+			throws IllegalStateException, IOException {
+		boolean status = status_online();
+		System.out.println("GETTING SECTIONS");
+		if (!status) {
+			return;
+		}
+
+		int author_count = 0;
+		HttpGet httpGet = new HttpGet(String.format("%s/get/sections/%s/?format=json", base_url, journal_id));
+		httpGet.addHeader("Authorization", "Basic " + credentials);
+		httpGet.setHeader("Accept", "application/json");
+		httpGet.addHeader("Content-type", "application/json");
+
+		HttpResponse response = null;
+		try {
+			response = httpClient.execute(httpGet);
+		} catch (ClientProtocolException e2) {
+			System.out.println(String.format("%s/get/sections/%s/?format=json", base_url, journal_id));
+			e2.printStackTrace();
+		} catch (IOException e2) {
+			System.out.println(String.format("%s/get/sections/%s/?format=json", base_url, journal_id));
+			e2.printStackTrace();
+		}
+		JsonFactory jsonf = new JsonFactory();
+		if (response.getStatusLine().getStatusCode() == 200) {
+			InputStream result = response.getEntity().getContent();
+			org.json.simple.parser.JSONParser jsonParser = new JSONParser();
+			boolean exists = true;
+
+			JSONObject author_json = new JSONObject();
+			try {
+				JSONObject journal_json = (JSONObject) jsonParser.parse(IOUtils.toString(result));
+
+				JSONArray results = (JSONArray) journal_json.get("sections");
+				System.out.println(results);
+				try {
+					InputStream is = response.getEntity().getContent();
+					is.close();
+				} catch (IOException exc) {
+
+					exc.printStackTrace();
+				}
+				for (int i = 0; i < results.size(); i++) {
+					JSONObject section = (JSONObject) results.get(i);
+					Section new_section = JSONToSection(section);
+					System.out.println(new_section);
+					section_storage.put((long) new_section.getId(), new_section);
+				}
+
+				/*
+				 * System.out.println(issue_obj.get("count"));
+				 * System.out.println(issue_obj); String detail = (String)
+				 * issue_obj.get("detail"); if (detail == null) { exists =
+				 * false; } else { JSONArray results = (JSONArray)
+				 * issue_obj.get("results"); System.out.println(results.get(0));
+				 * issue_json = (JSONObject) results.get(0);
+				 * System.out.println(issue_json.get("id")); issue =
+				 * JSONToIssue(issue_json, issue); }
+				 */
+			} catch (ParseException e) {
+
+				e.printStackTrace();
+			}
+		}
+		try {
+			InputStream is = response.getEntity().getContent();
+			is.close();
+		} catch (IOException exc) {
+
+			exc.printStackTrace();
+		}
+
+		System.out.println("Authors: " + author_storage.size());
+		System.out.println("Authors: " + author_count);
+
+	}
+
 	public static Issue update_issue_local(Issue issue, String credentials) throws IllegalStateException, IOException {
 		boolean status = status_online();
 		if (!status) {
@@ -11124,6 +11242,26 @@ public class Main {
 		author.setCountry(country);
 
 		return author;
+	}
+
+	public static Section JSONToSection(JSONObject obj) {
+
+		long id = (long) obj.get("id");
+		double seq = (Double) obj.get("seq");
+		String title = (String) obj.get("title");
+		int editor_restricted = (int) (long) obj.get("editor_restricted");
+		int meta_indexed = (int) (long) obj.get("meta_indexed");
+		int meta_reviewed = (int) (long) obj.get("meta_reviewed");
+		int abstracts_not_required = (int) (long) obj.get("abstracts_not_required");
+		int hide_title = (int) (long) obj.get("hide_title");
+		int hide_author = (int) (long) obj.get("hide_author");
+		int hide_about = (int) (long) obj.get("hide_about");
+		int disable_comments = (int) (long) obj.get("disable_comments");
+		long abstract_word_count = (Integer) (obj.get("abstract_word_count") == null ? 0
+				: obj.get("abstract_word_count"));
+		Section new_section = new Section(id, title, editor_restricted, meta_indexed, meta_reviewed,
+				abstracts_not_required, hide_title, hide_author, hide_about, disable_comments, abstract_word_count);
+		return new_section;
 	}
 
 	public static Author JSONToAuthor_single_request(JSONObject obj, Author author) {
@@ -11647,6 +11785,7 @@ public class Main {
 		// System.out.println("Latest author id: " + author_id);
 		// ();
 		//
+		// database_save();
 		new Main();
 		// file_upload_intersect((long)125,"/home/ioannis/code/toru-app/java_ojs/miglayout-src.zip",25);
 		// file_download(125,16);
