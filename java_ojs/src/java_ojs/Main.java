@@ -178,7 +178,7 @@ public class Main {
 	JFrame login, api, issues, settings;
 	private JTextField access_key, username;
 	private JXTable issues_table, article_table;
-	private static int delay = 1000; // milliseconds
+	private static int delay = 5000; // milliseconds
 	private Executor progress_executor = Executors.newSingleThreadExecutor();
 	// private Executor progress_executord = Executors.newFixedThreadPool(5);
 	private Executor connection_executor = Executors.newSingleThreadExecutor();
@@ -913,11 +913,11 @@ public class Main {
 			response = httpClient.execute(issue_exists);
 		} catch (ClientProtocolException e2) {
 
-			delay = 1000;
+			delay = 2500;
 			return false;
 		} catch (IOException e2) {
 
-			delay = 1000;
+			delay = 2500;
 			return false;
 		}
 		try {
@@ -928,7 +928,7 @@ public class Main {
 			exc.printStackTrace();
 		}
 
-		delay = 4000;
+		delay = 5500;
 		return online;
 	}
 
@@ -2498,7 +2498,8 @@ public class Main {
 										public void run() {
 											try {
 												update_articles_intersect(current_issue, encoding);
-											//	sync_authors_intersect(issue_id, encoding, false);
+												// sync_authors_intersect(issue_id,
+												// encoding, false);
 
 											} catch (IllegalStateException | IOException e1) {
 												// TODO Auto-generated
@@ -3830,7 +3831,7 @@ public class Main {
 						System.out.println(current_issue.getArticles_list().isEmpty());
 						JProgressBar progressBar = new JProgressBar();
 						Executor article_progress_executor = Executors.newSingleThreadExecutor();
-						ExecutorService exec = Executors.newFixedThreadPool(3);
+						ExecutorService exec = Executors.newFixedThreadPool(1);
 
 						progressBar.setValue(0);
 						progressBar.setStringPainted(true);
@@ -3874,8 +3875,7 @@ public class Main {
 											}
 											SwingUtilities.invokeLater(new Runnable() {
 												public void run() {
-													if (issue_countdown_storage
-															.get((long) current_issue.getId())) {
+													if (issue_countdown_storage.get((long) current_issue.getId())) {
 														progressBar.setValue(100);
 													} else {
 														progressBar.setValue(percent == 0 ? 0
@@ -3914,6 +3914,7 @@ public class Main {
 
 									public void run() {
 										try {
+											System.out.println("articles preparing");
 											update_articles_intersect(current_issue, encoding);
 
 										} catch (IllegalStateException | IOException e1) {
@@ -4080,23 +4081,22 @@ public class Main {
 									"Warning", 1);
 
 							if (dialogResult == JOptionPane.NO_OPTION) {
-						/*		Future<?> f = exec.submit(new Runnable() {
-
-									public void run() {
-
-										try {
-											sync_authors_intersect(issue_id, encoding, false);
-										} catch (IllegalStateException e2) {
-
-											e2.printStackTrace();
-										} catch (IOException e2) {
-
-											e2.printStackTrace();
-										}
-									}
-								});
-
-								futures.add(f);*/
+								/*
+								 * Future<?> f = exec.submit(new Runnable() {
+								 * 
+								 * public void run() {
+								 * 
+								 * try { sync_authors_intersect(issue_id,
+								 * encoding, false); } catch
+								 * (IllegalStateException e2) {
+								 * 
+								 * e2.printStackTrace(); } catch (IOException
+								 * e2) {
+								 * 
+								 * e2.printStackTrace(); } } });
+								 * 
+								 * futures.add(f);
+								 */
 							} else if (dialogResult == JOptionPane.YES_OPTION) {
 								Future<?> f = exec.submit(new Runnable() {
 
@@ -7444,6 +7444,7 @@ public class Main {
 		if (!status) {
 			return;
 		}
+		System.out.println("UPLOADING ARTICLE "+article.getId());
 		JSONObject obj = ArticleToJSON(article);
 		HttpGet article_exists = new HttpGet(String.format("%s/articles/%s/", base_url, article.getId()));
 
@@ -8445,6 +8446,310 @@ public class Main {
 		 * block e2.printStackTrace(); } catch (IOException e2) { // TODO
 		 * Auto-generated catch block e2.printStackTrace(); }
 		 */
+
+		System.out.println("issue details synced");
+	}
+	public static void update_article_intersect_less_requests(Article article, String credentials)
+			throws UnsupportedOperationException, IOException {
+
+		boolean status = status_online();
+		if (!status) {
+			return;
+		}
+
+		System.out.println("articles being uploaded "+ article.getId());
+		JSONObject obj = ArticleToJSON(article);
+		HttpGet article_exists = new HttpGet(String.format("%s/articles/%s/", base_url, article.getId()));
+
+		article_exists.addHeader("Authorization", "Basic " + credentials);
+		article_exists.setHeader("Accept", "application/json");
+		article_exists.addHeader("Content-type", "application/json");
+
+		HttpResponse response = null;
+		try {
+			response = httpClient.execute(article_exists);
+		} catch (ClientProtocolException e2) {
+
+			e2.printStackTrace();
+		} catch (IOException e2) {
+
+			e2.printStackTrace();
+		}
+		boolean article_created = false;
+		if (response.getStatusLine().getStatusCode() == 200) {
+			article_created = true;
+		}
+		try {
+			InputStream is = response.getEntity().getContent();
+			is.close();
+		} catch (IOException exc) {
+
+			exc.printStackTrace();
+		}
+
+
+		System.out.println("articles created "+ article_created);
+		if (article_created) {
+
+			System.out.println("articles updating");
+			HttpPut httpPut = new HttpPut(String.format("%s/articles/%s/", base_url, article.getId()));
+			httpPut.setEntity(new StringEntity(obj.toJSONString()));
+			httpPut.addHeader("Authorization", "Basic " + credentials);
+			httpPut.setHeader("Accept", "application/json");
+			httpPut.addHeader("Content-type", "application/json");
+
+			response = null;
+			try {
+				response = httpClient.execute(httpPut);
+			} catch (ClientProtocolException e2) {
+
+				e2.printStackTrace();
+			} catch (IOException e2) {
+
+				e2.printStackTrace();
+			}
+			try {
+				InputStream is = response.getEntity().getContent();
+				is.close();
+			} catch (IOException exc) {
+
+				exc.printStackTrace();
+			}
+		} else {
+
+			System.out.println("articles creating");
+			System.out.println("articles created "+ article_created);
+			HttpPost createArticle = new HttpPost(String.format("%s/articles/", base_url));
+			createArticle.setEntity(new StringEntity(obj.toJSONString()));
+			createArticle.addHeader("Authorization", "Basic " + credentials);
+			createArticle.setHeader("Accept", "application/json");
+			createArticle.addHeader("Content-type", "application/json");
+
+			response = null;
+			try {
+				response = httpClient.execute(createArticle);
+			} catch (ClientProtocolException e2) {
+
+				e2.printStackTrace();
+			} catch (IOException e2) {
+
+				e2.printStackTrace();
+			}
+			try {
+				InputStream is = response.getEntity().getContent();
+				is.close();
+			} catch (IOException exc) {
+
+				exc.printStackTrace();
+			}
+		}
+
+		System.out.println("metadata");
+		Metadata meta = metadata_storage.get((long) article.getId());
+		String ci = null;
+		String funding = null;
+		if (meta == null) {
+			ci = "";
+			funding = "";
+		} else {
+
+			ci = meta.getCompeting_interests();
+			byte[] b = ci.getBytes("windows-1252");
+			ci = new String(b, "UTF-8");
+			funding = meta.getFunding();
+			b = funding.getBytes("windows-1252");
+			funding = new String(b, "UTF-8");
+		}
+
+		System.out.println("abstract");
+		String abstract_text = "<p class=\"p1\">" + article.getAbstract_text().replace("\r\n", "") + "</p>";
+
+		byte[] b = abstract_text.getBytes("windows-1252");
+		abstract_text = new String(b, "UTF-8");
+		String title = article.getTitle();
+
+		b = title.getBytes("windows-1252");
+		title = new String(b, "UTF-8");
+
+		System.out.println("title");
+		String doi = article.getDoi();
+
+		b = doi.getBytes("windows-1252");
+
+		System.out.println("doi");
+		doi = new String(b, "UTF-8");
+		
+		String json_settings = String.format(
+				"{'abstract':'%s','title':'%s','funding':'%s','competing_interests':'%s','article':%s, 'doi':'%s'}",
+				abstract_text, title, funding, ci, article.getId(), doi);
+
+		System.out.println(json_settings);
+		HttpPut httpPut = new HttpPut(
+				String.format("%s/custom/articles/", base_url));
+
+		System.out.println(json_settings);
+		httpPut.setEntity(new StringEntity(json_settings));
+		httpPut.addHeader("Authorization", "Basic " + credentials);
+		httpPut.setHeader("Accept", "application/json");
+		httpPut.addHeader("Content-type", "application/json");
+
+		response = null;
+		try {
+			response = httpClient.execute(httpPut);
+		} catch (ClientProtocolException e2) {
+
+			e2.printStackTrace();
+		} catch (IOException e2) {
+
+			e2.printStackTrace();
+		}
+		try {
+			InputStream is = response.getEntity().getContent();
+			is.close();
+		} catch (IOException exc) {
+
+			exc.printStackTrace();
+		}
+		if (article.getDate_published() != null) {
+			article_exists = new HttpGet(String.format("%s/get/article/published/%s/", base_url, article.getId()));
+
+			article_exists.addHeader("Authorization", "Basic " + credentials);
+			article_exists.setHeader("Accept", "application/json");
+			article_exists.addHeader("Content-type", "application/json");
+			obj = ArticleToPublishedJSON(article);
+			response = null;
+			try {
+				response = httpClient.execute(article_exists);
+			} catch (ClientProtocolException e2) {
+
+				e2.printStackTrace();
+			} catch (IOException e2) {
+
+				e2.printStackTrace();
+			}
+			boolean article_published = false;
+			if (response.getStatusLine().getStatusCode() == 200) {
+				article_published = true;
+			}
+			try {
+				InputStream is = response.getEntity().getContent();
+				is.close();
+			} catch (IOException exc) {
+
+				exc.printStackTrace();
+			}
+			if (article_published) {
+				httpPut = new HttpPut(
+						String.format("%s/published-articles/%s/", base_url, article.getPublished_pk()));
+				httpPut.setEntity(new StringEntity(obj.toJSONString()));
+				httpPut.addHeader("Authorization", "Basic " + credentials);
+				httpPut.setHeader("Accept", "application/json");
+				httpPut.addHeader("Content-type", "application/json");
+
+				response = null;
+				try {
+					response = httpClient.execute(httpPut);
+				} catch (ClientProtocolException e2) {
+
+					e2.printStackTrace();
+				} catch (IOException e2) {
+
+					e2.printStackTrace();
+				}
+				try {
+					InputStream is = response.getEntity().getContent();
+					is.close();
+				} catch (IOException exc) {
+
+					exc.printStackTrace();
+				}
+			} else {
+				HttpPost createArticle = new HttpPost(String.format("%s/published-articles/", base_url));
+				createArticle.setEntity(new StringEntity(obj.toJSONString()));
+				createArticle.addHeader("Authorization", "Basic " + credentials);
+				createArticle.setHeader("Accept", "application/json");
+				createArticle.addHeader("Content-type", "application/json");
+
+				response = null;
+				try {
+					response = httpClient.execute(createArticle);
+				} catch (ClientProtocolException e2) {
+
+					e2.printStackTrace();
+				} catch (IOException e2) {
+
+					e2.printStackTrace();
+				}
+				try {
+					InputStream is = response.getEntity().getContent();
+					is.close();
+				} catch (IOException exc) {
+
+					exc.printStackTrace();
+				}
+				article_exists = new HttpGet(String.format("%s/get/article/published/%s/", base_url, article.getId()));
+
+				article_exists.addHeader("Authorization", "Basic " + credentials);
+				article_exists.setHeader("Accept", "application/json");
+				article_exists.addHeader("Content-type", "application/json");
+				obj = ArticleToPublishedJSON(article);
+				response = null;
+				try {
+					response = httpClient.execute(article_exists);
+				} catch (ClientProtocolException e2) {
+
+					e2.printStackTrace();
+				} catch (IOException e2) {
+
+					e2.printStackTrace();
+				}
+				article_published = false;
+				if (response.getStatusLine().getStatusCode() == 200) {
+					article_published = true;
+				}
+				if (article_published) {
+					InputStream result = response.getEntity().getContent();
+					JSONParser jsonParser = new JSONParser();
+					boolean exists = true;
+					JSONObject setting_json = new JSONObject();
+
+					try {
+						JSONObject setting = (JSONObject) jsonParser.parse(IOUtils.toString(result));
+						article.setPublished_pk((int) (long) setting.get("id"));
+						article_storage.put(article.getId(), article);
+						Issue current_issue = issue_storage.get(article.getIssue_fk().getId());
+						current_issue.add_article(article.getId(), article);
+						issue_storage.put(current_issue.getId(), current_issue);
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+					try {
+						InputStream is = response.getEntity().getContent();
+						is.close();
+					} catch (IOException exc) {
+
+						exc.printStackTrace();
+					}
+				}
+				try {
+					InputStream is = response.getEntity().getContent();
+					is.close();
+				} catch (IOException exc) {
+
+					exc.printStackTrace();
+
+				}
+
+				/*
+				 * response = null; try { response =
+				 * httpClient.execute(httpPost); } catch
+				 * (ClientProtocolException e2) { // TODO Auto-generated catch
+				 * block e2.printStackTrace(); } catch (IOException e2) { //
+				 * TODO Auto-generated catch block e2.printStackTrace(); }
+				 */
+
+			}
+		}
 	}
 
 	public static void update_articles_intersect(Issue issue, String credentials)
@@ -8493,13 +8798,15 @@ public class Main {
 		ConcurrentHashMap<Long, Article> articles = issue.getSyncArticles_list();
 
 		Set<Long> article_keys = articles.keySet();
+
+		System.out.println("articles to sync : "+ articles.size());
 		for (Long key : article_keys) {
 			Article current_article = articles.get(key);
 
 			System.out.println("sync: " + current_article.shouldBeSynced());
 			if (current_article.shouldBeSynced()) {
-				update_article_intersect(current_article, credentials);
-				sync_authors_intersect_article(current_article,credentials,false);
+				update_article_intersect_less_requests(current_article, credentials);
+				sync_authors_intersect_article(current_article, credentials, false);
 				current_article.setSync(false);
 				allarticles.replace((long) current_article.getId(), current_article);
 				article_storage.put((long) current_article.getId(), current_article);
@@ -8582,7 +8889,7 @@ public class Main {
 		issue.setArticles_list(allarticles);
 		issue.setSync(false);
 		issue_storage.put((long) issue.getId(), issue);
-		issue_countdown_storage.put((long) issue.getId(),true);
+		issue_countdown_storage.put((long) issue.getId(), true);
 		System.out.println("END METHD: " + issue.getArticles_list().size());
 	}
 
@@ -9493,8 +9800,8 @@ public class Main {
 		try {
 			JSONObject countdown_json = (JSONObject) jsonParser.parse(IOUtils.toString(result));
 			countdown = (int) (((int) (long) countdown_json.get("issues")) * 2
-					+ ((int) (long) countdown_json.get("articles")) * 1
-					+ ((int) (long) countdown_json.get("authors")) * 1);
+					+ ((int) (long) countdown_json.get("articles")) * 0.5
+					+ ((int) (long) countdown_json.get("authors")) * 0.5);
 
 		} catch (ParseException e) {
 
@@ -10997,6 +11304,7 @@ public class Main {
 		}
 
 	}
+
 	public static void sync_authors_intersect_article(Article article, String credentials, boolean update_local)
 			throws IllegalStateException, IOException {
 		boolean status = status_online();
