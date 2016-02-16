@@ -28,7 +28,7 @@ public class Article {
 	private Issue issue_fk;
 	private ArrayList<Author> authors;
 
-	public Article(long id, String title, long section_id, String pages, String abstract_text, Date date_accepted,
+	public Article(long id, String title, long section_id, String pages, String abstract_text,
 			Issue issue_fk, Date date_submitted, Journal journal) {
 
 		this.title = title;
@@ -52,14 +52,13 @@ public class Article {
 		this.date_submitted = date_submitted;
 		this.published_pk=-1;
 	}
-	public Article(long id, String title, long section_id, String pages, String abstract_text, Date date_accepted, Date date_submitted, Journal journal) {
+	public Article(long id, String title, long section_id, String pages, String abstract_text, Date date_submitted, Journal journal) {
 
 		this.title = title;
 		this.id = id;
 		this.section_id = section_id;
 		this.pages = pages;
 		this.abstract_text = abstract_text;
-		this.date_accepted = date_accepted;
 		this.issue_fk = null;
 		this.authors = new ArrayList<Author>();
 		this.journal = journal;

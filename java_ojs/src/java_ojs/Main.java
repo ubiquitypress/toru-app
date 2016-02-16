@@ -1,65 +1,6 @@
 package java_ojs;
 
-import org.apache.commons.codec.binary.Base64;
-import org.apache.commons.codec.binary.StringUtils;
-import org.apache.http.Header;
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpHost;
-import org.apache.http.HttpResponse;
-
-import sun.misc.BASE64Decoder;
-import sun.misc.BASE64Encoder;
-
-import org.apache.commons.io.IOUtils;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.concurrent.ExecutionException;
-
-import javax.ws.rs.ext.MessageBodyWorkers;
-import org.apache.http.HttpVersion;
-import org.apache.http.auth.AuthSchemeRegistry;
-import org.apache.http.auth.AuthScope;
-import org.apache.http.auth.UsernamePasswordCredentials;
-import org.apache.http.client.AuthCache;
-import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.CookieStore;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.config.AuthSchemes;
-import org.apache.http.client.config.RequestConfig;
-import org.apache.http.client.fluent.Response;
-import org.apache.http.client.methods.HttpDelete;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.client.methods.HttpPut;
-import org.apache.http.client.protocol.ClientContext;
-import org.apache.http.client.protocol.HttpClientContext;
-import org.apache.http.conn.ClientConnectionManager;
-import org.apache.http.conn.scheme.PlainSocketFactory;
-import org.apache.http.conn.scheme.Scheme;
-import org.apache.http.conn.scheme.SchemeRegistry;
-import org.apache.http.conn.ssl.SSLSocketFactory;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.entity.mime.HttpMultipartMode;
-import org.apache.http.entity.mime.MultipartEntity;
-import org.apache.http.entity.mime.MultipartEntityBuilder;
-import org.apache.http.entity.mime.content.FileBody;
-import org.apache.http.entity.mime.content.InputStreamBody;
-import org.apache.http.impl.auth.DigestScheme;
-import org.apache.http.impl.client.BasicAuthCache;
-import org.apache.http.impl.client.BasicCookieStore;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
-import org.apache.http.params.BasicHttpParams;
-import org.apache.http.params.HttpConnectionParams;
-import org.apache.http.params.HttpParams;
-import org.apache.http.params.HttpProtocolParams;
-import org.apache.http.protocol.BasicHttpContext;
-import org.apache.http.protocol.HttpContext;
-import org.apache.http.util.EntityUtils;
-import org.codehaus.jackson.JsonFactory;
-
 import java.awt.Color;
-import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Insets;
@@ -73,9 +14,6 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -84,19 +22,9 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
-import java.net.Authenticator;
 import java.net.ConnectException;
-import java.net.HttpURLConnection;
-import java.net.InetAddress;
-import java.net.InetSocketAddress;
-import java.net.MalformedURLException;
-import java.net.PasswordAuthentication;
-import java.net.ServerSocket;
-import java.net.Socket;
-import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
@@ -113,6 +41,9 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -149,22 +80,47 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.table.DefaultTableModel;
+
+import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.codec.binary.StringUtils;
+import org.apache.commons.io.IOUtils;
+import org.apache.http.HttpResponse;
+import org.apache.http.HttpVersion;
+import org.apache.http.auth.AuthScope;
+import org.apache.http.auth.UsernamePasswordCredentials;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.CookieStore;
+import org.apache.http.client.methods.HttpDelete;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.HttpPut;
+import org.apache.http.conn.scheme.PlainSocketFactory;
+import org.apache.http.conn.scheme.Scheme;
+import org.apache.http.conn.scheme.SchemeRegistry;
+import org.apache.http.conn.ssl.SSLSocketFactory;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.entity.mime.HttpMultipartMode;
+import org.apache.http.entity.mime.MultipartEntityBuilder;
+import org.apache.http.entity.mime.content.FileBody;
+import org.apache.http.impl.client.BasicCookieStore;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
+import org.apache.http.params.BasicHttpParams;
+import org.apache.http.params.HttpConnectionParams;
+import org.apache.http.params.HttpParams;
+import org.apache.http.params.HttpProtocolParams;
+import org.apache.http.protocol.BasicHttpContext;
+import org.apache.http.protocol.HttpContext;
+import org.codehaus.jackson.JsonFactory;
 import org.jdesktop.swingx.JXDatePicker;
 import org.jdesktop.swingx.JXTable;
 import org.jdesktop.swingx.sort.RowFilters;
+import org.json.HTTP;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
-import org.json.*;
 import org.json.simple.parser.ParseException;
 import org.jsoup.Jsoup;
-
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonParser;
-import com.sun.net.httpserver.Headers;
-import com.sun.org.apache.xerces.internal.util.URI;
-import com.sun.org.apache.xerces.internal.util.URI.MalformedURIException;
 
 import models.Article;
 import models.ArticleFile;
@@ -173,11 +129,12 @@ import models.Issue;
 import models.Journal;
 import models.Metadata;
 import models.Section;
+import sun.misc.BASE64Encoder;
 
 public class Main {
 	JFrame login, api, issues, settings;
 	private JTextField access_key, username;
-	private JXTable issues_table, article_table;
+	private JXTable issues_table;
 	private static int delay = 5000; // milliseconds
 	private Executor progress_executor = Executors.newSingleThreadExecutor();
 	// private Executor progress_executord = Executors.newFixedThreadPool(5);
@@ -207,11 +164,9 @@ public class Main {
 	private static Statement stmt = null;
 	private static String api_insert_or_replace_statement = "INSERT OR REPLACE INTO API(journal_id, intersect_user_id, user_id, key) VALUES (?,?,?,?)";
 	private static String journal_insert_or_replace_statement = "INSERT OR REPLACE INTO JOURNAL(id,path,seq,primary_locale,enabled,title) VALUES (?,?,?,?,?,?)";
-	private static String settings_insert_or_replace_statement = "INSERT OR REPLACE INTO SETTING(NAME,VALUE) VALUES (?,?)";
 	private static String issue_insert_or_replace_statement = "INSERT OR REPLACE INTO ISSUE(id,title,volume,number,year,show_title,show_volume,show_number,show_year,date_published,date_accepted, published, current, access_status,sync) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
 	private static String section_insert_or_replace_statement = "INSERT OR REPLACE INTO SECTION(id,title,seq, editor_restricted, meta_indexed, meta_reviewed, abstracts_not_required, hide_title, hide_author, hide_about, disable_comments, abstract_word_count) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)";
 	private static String author_insert_or_replace_statement = "INSERT OR REPLACE INTO AUTHOR(id,first_name,middle_name,last_name,email,affiliation,bio,orcid,department,country,twitter) VALUES (?,?,?,?,?,?,?,?,?,?,?)";
-	private static String unique_authors_insert_or_replace_statement = "INSERT OR REPLACE INTO UNIQUE_AUTHORS(first_name,middle_name,last_name,email,affiliation,bio,orcid,department,country) VALUES (?,?,?,?,?,?,?,?,?)";
 	private static String article_insert_or_replace_statement = "INSERT OR REPLACE INTO ARTICLE(id,title,section_id,pages,abstract,date_published,date_accepted,date_submitted,locale,language,status,submission_progress,current_round,fast_tracked,hide_author,comments_status,user_id,doi,published_pk,sync) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
 	private static String article_author_insert_or_replace_statement = "INSERT OR REPLACE INTO ARTICLE_AUTHOR(article_id,author_id,primary_author) VALUES (?,?,?)";
 	private static String issue_journal_insert_or_replace_statement = "INSERT OR REPLACE INTO ISSUE_JOURNAL(id,journal_id,issue_id) VALUES (?,?,?)";
@@ -219,7 +174,6 @@ public class Main {
 	private static String file_insert_or_replace_statement = "INSERT OR REPLACE INTO FILE(id,article_id,path) VALUES (?,?,?)";
 	private static String metadata_insert_or_replace_statement = "INSERT OR REPLACE INTO METADATA(id,article_id,competing_interests,funding) VALUES (?,?,?,?)";
 	private static DefaultHttpClient httpClient = new DefaultHttpClient();
-	private String delete_issue_statement = "DELETE FROM ISSUE WHERE id=?";
 	int width = 800;
 	private int height = 600;
 	private static Boolean logged_in = false;
@@ -294,7 +248,7 @@ public class Main {
 			StringWriter out = new StringWriter();
 			try {
 				json_file.writeJSONString(out);
-				String s = json_file.toJSONString();
+				json_file.toJSONString();
 				FileWriter new_jsn = new FileWriter("./settings.json");
 				new_jsn.write(out.toString());
 				new_jsn.flush();
@@ -687,7 +641,7 @@ public class Main {
 
 			System.out.println("Loading Author data....");
 			ResultSet authors_s = c.createStatement().executeQuery("SELECT * FROM AUTHOR ORDER BY id ASC;");
-			ResultSetMetaData author_rsmd = authors_s.getMetaData();
+			authors_s.getMetaData();
 			while (authors_s.next()) {
 				long id = authors_s.getInt("id");
 				String first_name = authors_s.getString("first_name");
@@ -727,13 +681,24 @@ public class Main {
 				String date = art_s.getString(rsmd.getColumnName(6));
 				String date_accepted = art_s.getString("date_accepted");
 				String date_submitted = art_s.getString("date_submitted");
+				String date_published = art_s.getString("date_published");
 				String doi = art_s.getString("doi");
 				Integer published_pk = art_s.getInt("published_pk");
 				Boolean sync = art_s.getBoolean("sync");
 				Article article = null;
 
-				article = new Article(id, title, section_id, pages, abstract_text, sdf.parse(date_accepted),
-						sdf.parse(date_submitted), journal_storage.get(Long.parseLong(app_settings.get("journal_id"))));
+				article = new Article(id, title, section_id, pages, abstract_text, sdf.parse(date_submitted),
+						journal_storage.get(Long.parseLong(app_settings.get("journal_id"))));
+				try {
+					article.setDate_published(sdf.parse(date_published));
+				} catch (Exception e) {
+
+				}
+				try {
+					article.setDate_accepted(sdf.parse(date_accepted));
+				} catch (Exception e) {
+
+				}
 				article.setDoi(doi);
 				article.setSync(sync == null ? false : sync);
 				article.setPublished_pk(published_pk == null ? -1 : published_pk);
@@ -950,11 +915,11 @@ public class Main {
 
 				e2.printStackTrace();
 			}
-			JsonFactory jsonf = new JsonFactory();
+			new JsonFactory();
 			InputStream result = response.getEntity().getContent();
 			org.json.simple.parser.JSONParser jsonParser = new JSONParser();
 
-			JSONObject latest_json = new JSONObject();
+			new JSONObject();
 			journal_url = "";
 			user_url = "";
 			try {
@@ -990,11 +955,11 @@ public class Main {
 
 				e2.printStackTrace();
 			}
-			jsonf = new JsonFactory();
+			new JsonFactory();
 			result = response.getEntity().getContent();
 			jsonParser = new JSONParser();
 
-			latest_json = new JSONObject();
+			new JSONObject();
 			try {
 				JSONObject latest_obj = (JSONObject) jsonParser.parse(IOUtils.toString(result));
 
@@ -1027,11 +992,11 @@ public class Main {
 
 				e2.printStackTrace();
 			}
-			jsonf = new JsonFactory();
+			new JsonFactory();
 			result = response.getEntity().getContent();
 			jsonParser = new JSONParser();
 			Journal j = null;
-			latest_json = new JSONObject();
+			new JSONObject();
 			try {
 				JSONObject latest_obj = (JSONObject) jsonParser.parse(IOUtils.toString(result));
 				String journal = Long.toString((long) latest_obj.get("id"));
@@ -1072,10 +1037,10 @@ public class Main {
 
 					e2.printStackTrace();
 				}
-				jsonf = new JsonFactory();
+				new JsonFactory();
 				result = response.getEntity().getContent();
 				jsonParser = new JSONParser();
-				latest_json = new JSONObject();
+				new JSONObject();
 				System.out.println(String.format("%s/get/setting/title/journal/%s/?format=json", base_url, j.getId()));
 				System.out.println(response.getStatusLine().getStatusCode());
 				if (response.getStatusLine().getStatusCode() == 200) {
@@ -1133,17 +1098,15 @@ public class Main {
 
 				e2.printStackTrace();
 			}
-			JsonFactory jsonf = new JsonFactory();
+			new JsonFactory();
 			InputStream result = response.getEntity().getContent();
 			org.json.simple.parser.JSONParser jsonParser = new JSONParser();
-			boolean exists = true;
-			JSONObject latest_json = new JSONObject();
+			new JSONObject();
 			try {
 				JSONObject latest_obj = (JSONObject) jsonParser.parse(IOUtils.toString(result));
 				String detail = (String) latest_obj.get("detail");
 				System.out.println(latest_obj);
 				if (detail != null) {
-					exists = false;
 				} else {
 					id = (long) latest_obj.get("id");
 					System.out.println(id);
@@ -1195,17 +1158,15 @@ public class Main {
 
 				return latest = 1;
 			}
-			JsonFactory jsonf = new JsonFactory();
+			new JsonFactory();
 			InputStream result = response.getEntity().getContent();
 			org.json.simple.parser.JSONParser jsonParser = new JSONParser();
-			boolean exists = true;
 			JSONObject latest_json = new JSONObject();
 			try {
 				JSONObject latest_obj = (JSONObject) jsonParser.parse(IOUtils.toString(result));
 				String detail = (String) latest_obj.get("detail");
 				System.out.println(latest_obj);
 				if (detail != null) {
-					exists = false;
 				} else {
 					JSONArray results = (JSONArray) latest_obj.get("results");
 					System.out.println(latest_obj);
@@ -1719,7 +1680,7 @@ public class Main {
 					}
 					if (!done) {
 						try {
-							int processed = Integer.parseInt(value);
+							Integer.parseInt(value);
 							final JLabel intSampleSettinglbl = new JLabel(setting_keys.get(i));
 							intSampleSettinglbl.setBounds(81, y, 150, 23);
 							final JTextField intSampleSetting = new JTextField(list_settings.get(setting_keys.get(i)));
@@ -1731,7 +1692,7 @@ public class Main {
 								@Override
 								public void insertUpdate(DocumentEvent de) {
 									try {
-										int processed = Integer.parseInt(intSampleSetting.getText());
+										Integer.parseInt(intSampleSetting.getText());
 										list_settings.remove(setting_keys.get(s));
 										list_settings.put(setting_keys.get(s), intSampleSetting.getText());
 									} catch (Exception ex) {
@@ -1744,7 +1705,7 @@ public class Main {
 								@Override
 								public void removeUpdate(DocumentEvent de) {
 									try {
-										int processed = Integer.parseInt(intSampleSetting.getText());
+										Integer.parseInt(intSampleSetting.getText());
 										list_settings.remove(setting_keys.get(s));
 										list_settings.put(setting_keys.get(s), intSampleSetting.getText());
 									} catch (Exception ex) {
@@ -1757,7 +1718,7 @@ public class Main {
 								@Override
 								public void changedUpdate(DocumentEvent de) {
 									try {
-										int processed = Integer.parseInt(intSampleSetting.getText());
+										Integer.parseInt(intSampleSetting.getText());
 										list_settings.remove(setting_keys.get(s));
 										list_settings.put(setting_keys.get(s), intSampleSetting.getText());
 									} catch (Exception ex) {
@@ -1930,6 +1891,11 @@ public class Main {
 					JButton btnSubmit = new JButton("Enter");
 					JButton btnReset = new JButton("Reset");
 					Action actionSubmit = new AbstractAction() {
+						/**
+						 * 
+						 */
+						private static final long serialVersionUID = 1L;
+
 						@Override
 						public void actionPerformed(ActionEvent e) {
 							String key = String.valueOf(access_key.getPassword());
@@ -2100,6 +2066,11 @@ public class Main {
 					}
 
 					Action actionSubmit = new AbstractAction() {
+						/**
+						 * 
+						 */
+						private static final long serialVersionUID = 1L;
+
 						@Override
 						public void actionPerformed(ActionEvent e) {
 							String key = access_key.getText();
@@ -2198,7 +2169,7 @@ public class Main {
 		if (logged_in) {
 
 			if (issues == null || !issues.isVisible()) {
-				Date date = new Date();
+				new Date();
 
 				// Issue issue = new Issue(i_id, "title", 1, 1, 2015, "title",
 				// 1, 1, 2015, date);
@@ -2272,10 +2243,8 @@ public class Main {
 						int num_rows = ((DefaultTableModel) issues_table.getModel()).getRowCount();
 
 						if (status_online()) {
-							boolean skipped_dialog = false;
 							Set<Long> issue_keys = issue_storage.keySet();
 							if (issue_keys.isEmpty()) {
-								skipped_dialog = true;
 							}
 							CopyOnWriteArrayList<Future<?>> futures = new CopyOnWriteArrayList<Future<?>>();
 							ExecutorService exec = Executors.newFixedThreadPool(4);
@@ -2580,14 +2549,14 @@ public class Main {
 
 										public void run() {
 
-											Set<Long> issue_keys = issue_storage.keySet();
+											issue_storage.keySet();
 
 											new_issues = new ArrayList<Issue>();
 
 											progress_executor.execute(new Runnable() {
 												public void run() {
 													int countdown = 300;
-													
+
 													for (int i = 0; i < countdown; i++) {
 														final int percent = i;
 														final double decimal = countdown / 100;
@@ -2679,9 +2648,8 @@ public class Main {
 											dashboard();
 										} else {
 											Set<Long> update_issue_keys = issue_storage.keySet();
-											ArrayList<List<Object>> rowData = new ArrayList<List<Object>>();
+											new ArrayList<List<Object>>();
 											Object[][] rows = new Object[update_issue_keys.size()][6];
-											boolean empty_table = false;
 											if (num_rows != 0) {
 												for (int i = num_rows - 1; i >= 0; i--) {
 													((DefaultTableModel) issues_table.getModel()).removeRow(i);
@@ -2807,6 +2775,11 @@ public class Main {
 				issues.getContentPane().add(search);
 				issues.getContentPane().add(clear);
 				filter.setAction(new AbstractAction("Search") {
+					/**
+					 * 
+					 */
+					private static final long serialVersionUID = 1L;
+
 					public void actionPerformed(ActionEvent e) {
 
 						String searchString = filter.getText().trim();
@@ -2818,6 +2791,11 @@ public class Main {
 					}
 				});
 				search.setAction(new AbstractAction("Search") {
+					/**
+					 * 
+					 */
+					private static final long serialVersionUID = 1L;
+
 					public void actionPerformed(ActionEvent e) {
 
 						String searchString = filter.getText().trim();
@@ -2827,6 +2805,11 @@ public class Main {
 					}
 				});
 				clear.setAction(new AbstractAction("Clear") {
+					/**
+					 * 
+					 */
+					private static final long serialVersionUID = 1L;
+
 					public void actionPerformed(ActionEvent e) {
 						issues_table.setRowFilter(null);
 					}
@@ -2866,8 +2849,13 @@ public class Main {
 					}
 				};
 				new Timer(delay, taskPerformer1).start();
-				DefaultTableModel model = new DefaultTableModel(rows, columnNames);
+				new DefaultTableModel(rows, columnNames);
 				Action delete = new AbstractAction() {
+					/**
+					 * 
+					 */
+					private static final long serialVersionUID = 1L;
+
 					public void actionPerformed(ActionEvent e) {
 						JTable table = (JTable) e.getSource();
 						int modelRow = Integer.valueOf(e.getActionCommand());
@@ -2906,9 +2894,14 @@ public class Main {
 					}
 				};
 				Action view = new AbstractAction() {
+					/**
+					 * 
+					 */
+					private static final long serialVersionUID = 1L;
+
 					public void actionPerformed(ActionEvent e) {
 						JTable table = (JTable) e.getSource();
-						int modelRow = Integer.valueOf(e.getActionCommand());
+						Integer.valueOf(e.getActionCommand());
 						int issue_row = table.getSelectedRow();
 						long selected_issue = (long) table.getModel()
 								.getValueAt(table.convertRowIndexToModel(issue_row), 0);
@@ -2920,9 +2913,14 @@ public class Main {
 					}
 				};
 				Action edit = new AbstractAction() {
+					/**
+					 * 
+					 */
+					private static final long serialVersionUID = 1L;
+
 					public void actionPerformed(ActionEvent e) {
 						JTable table = (JTable) e.getSource();
-						int modelRow = Integer.valueOf(e.getActionCommand());
+						Integer.valueOf(e.getActionCommand());
 						int issue_row = table.getSelectedRow();
 						long selected_issue = (long) table.getModel()
 								.getValueAt(table.convertRowIndexToModel(issue_row), 0);
@@ -3048,7 +3046,6 @@ public class Main {
 			} else {
 				width_small = (int) (960 - (960 * (37.5 / 100)));
 			}
-			final long current_id = i_id + 1;
 			height_small = (int) (680 - (680 * (5 / 100)));
 			final JFrame edit_issue = new JFrame();
 			issue_screens.put(i_id, edit_issue);
@@ -3263,8 +3260,8 @@ public class Main {
 
 					try {
 
-						String test_accepted = sdf.format(datePicker.getDate());
-						String test_published = sdf.format(datePickerPublished.getDate());
+						sdf.format(datePicker.getDate());
+						sdf.format(datePickerPublished.getDate());
 
 					} catch (Exception ex) {
 						validation = false;
@@ -3549,6 +3546,11 @@ public class Main {
 				JButton btnSubmit = new JButton("Save");
 
 				Action actionSubmit = new AbstractAction() {
+					/**
+					 * 
+					 */
+					private static final long serialVersionUID = 1L;
+
 					@Override
 					public void actionPerformed(ActionEvent e) {
 						Boolean validation = true;
@@ -3580,8 +3582,8 @@ public class Main {
 
 						try {
 
-							String test_accepted = sdf.format(datePicker.getDate());
-							String test_published = sdf.format(datePickerPublished.getDate());
+							sdf.format(datePicker.getDate());
+							sdf.format(datePickerPublished.getDate());
 
 						} catch (Exception ex) {
 							validation = false;
@@ -3646,8 +3648,8 @@ public class Main {
 
 						try {
 
-							String test_accepted = sdf.format(datePicker.getDate());
-							String test_published = sdf.format(datePickerPublished.getDate());
+							sdf.format(datePicker.getDate());
+							sdf.format(datePickerPublished.getDate());
 
 						} catch (Exception ex) {
 							validation = false;
@@ -3794,6 +3796,11 @@ public class Main {
 				DefaultTableModel dtm = new DefaultTableModel(rows, columnNames);
 
 				final JXTable article_table = new JXTable(dtm) {
+					/**
+					 * 
+					 */
+					private static final long serialVersionUID = 1L;
+
 					// **** Source:
 					// http://stackoverflow.com/questions/9467093/how-to-add-a-tooltip-to-a-cell-in-a-jtable
 					// ****//
@@ -3814,7 +3821,7 @@ public class Main {
 						return tip;
 					}
 				};
-				article_table.setAutoResizeMode(article_table.AUTO_RESIZE_SUBSEQUENT_COLUMNS);
+				article_table.setAutoResizeMode(JTable.AUTO_RESIZE_SUBSEQUENT_COLUMNS);
 
 				final JButton btnSync = new JButton("Sync");
 				btnSync.setBounds(width - 155, 21, 70, 24);
@@ -3854,14 +3861,17 @@ public class Main {
 									public void run() {
 										int countdown = current_issue.getArticles_list().size() * 6 + 40
 												+ current_issue.getAuthors().size() * 6;
-									//	System.out.println("countdown " + countdown);
+										// System.out.println("countdown " +
+										// countdown);
 										double decimal = (current_issue.getArticles_list().size() * 6 + 40
 												+ current_issue.getAuthors().size() * 6) / 100;
 										System.out.println(decimal);
 										for (int i = 0; i < countdown; i++) {
 											final int percent = i;
-										//	System.out.println("countdown: "+issue_countdown_storage.get((long) current_issue.getId()));
-											
+											// System.out.println("countdown:
+											// "+issue_countdown_storage.get((long)
+											// current_issue.getId()));
+
 											if (issue_countdown_storage.get((long) current_issue.getId())) {
 												progressBar.setValue(100);
 												progressBar.repaint();
@@ -3869,7 +3879,9 @@ public class Main {
 											}
 											SwingUtilities.invokeLater(new Runnable() {
 												public void run() {
-												//	System.out.println("countdown: "+issue_countdown_storage.get((long) current_issue.getId()));
+													// System.out.println("countdown:
+													// "+issue_countdown_storage.get((long)
+													// current_issue.getId()));
 													if (issue_countdown_storage.get((long) current_issue.getId())) {
 														progressBar.setValue(100);
 													} else {
@@ -3926,14 +3938,17 @@ public class Main {
 									public void run() {
 										int countdown = current_issue.getArticles_list().size() * 6 + 40
 												+ current_issue.getAuthors().size() * 6;
-									//	System.out.println("countdown " + countdown);
+										// System.out.println("countdown " +
+										// countdown);
 										double decimal = (current_issue.getArticles_list().size() * 6 + 40
 												+ current_issue.getAuthors().size() * 6) / 100;
-										//System.out.println(decimal);
+										// System.out.println(decimal);
 										for (int i = 0; i < countdown; i++) {
 											final int percent = i;
-										//	System.out.println("countdown: "+issue_countdown_storage.get((long) current_issue.getId()));
-											
+											// System.out.println("countdown:
+											// "+issue_countdown_storage.get((long)
+											// current_issue.getId()));
+
 											if (issue_countdown_storage.get((long) current_issue.getId()) == true) {
 												progressBar.setValue(100);
 												progressBar.repaint();
@@ -3941,8 +3956,10 @@ public class Main {
 											}
 											SwingUtilities.invokeLater(new Runnable() {
 												public void run() {
-											//		System.out.println("countdown: "+issue_countdown_storage.get((long) current_issue.getId()));
-													
+													// System.out.println("countdown:
+													// "+issue_countdown_storage.get((long)
+													// current_issue.getId()));
+
 													if (issue_countdown_storage
 															.get((long) current_issue.getId()) == true) {
 														progressBar.setValue(100);
@@ -3994,21 +4011,23 @@ public class Main {
 							}
 						} else {
 
-							Future<?> f = null;
 							System.out.println("Local");
 
 							article_progress_executor.execute(new Runnable() {
 								public void run() {
 									int countdown = current_issue.getArticles_list().size() * 6 + 40
 											+ current_issue.getAuthors().size() * 6;
-								//	System.out.println("countdown " + countdown);
+									// System.out.println("countdown " +
+									// countdown);
 									double decimal = (current_issue.getArticles_list().size() * 6 + 40
 											+ current_issue.getAuthors().size() * 6) / 100;
 									System.out.println(decimal);
 									for (int i = 0; i < countdown; i++) {
 										final int percent = i;
-									//	System.out.println("countdown: "+issue_countdown_storage.get((long) current_issue.getId()));
-										
+										// System.out.println("countdown:
+										// "+issue_countdown_storage.get((long)
+										// current_issue.getId()));
+
 										if (issue_countdown_storage.get((long) current_issue.getId()) == true) {
 											progressBar.setValue(100);
 											progressBar.repaint();
@@ -4016,8 +4035,10 @@ public class Main {
 										}
 										SwingUtilities.invokeLater(new Runnable() {
 											public void run() {
-											//	System.out.println("countdown: "+issue_countdown_storage.get((long) current_issue.getId()));
-												
+												// System.out.println("countdown:
+												// "+issue_countdown_storage.get((long)
+												// current_issue.getId()));
+
 												if (issue_countdown_storage.get((long) current_issue.getId()) == true) {
 													progressBar.setValue(100);
 													progressBar.repaint();
@@ -4041,7 +4062,7 @@ public class Main {
 							articles.add(progressBar);
 							articles.repaint();
 
-							f = exec.submit(new Runnable() {
+							exec.submit(new Runnable() {
 
 								public void run() {
 									try {
@@ -4158,7 +4179,6 @@ public class Main {
 									Set<Long> keys = all_articles.keySet();
 									ArrayList<List<Object>> rowData = new ArrayList<List<Object>>();
 									Object[][] rows = new Object[all_articles.size()][11];
-									boolean empty_table = false;
 									int num_rows = 0;
 									try {
 										num_rows = article_table.getRowCount();
@@ -4184,7 +4204,7 @@ public class Main {
 										e1.printStackTrace();
 									}
 									for (long id : keys) {
-										Article row_article = all_articles.get(id);
+										all_articles.get(id);
 
 										ArrayList<Object> data = new ArrayList<Object>();
 										issue_articles.put(id, new JFrame());
@@ -4272,6 +4292,11 @@ public class Main {
 				articles.getContentPane().add(search);
 				articles.getContentPane().add(clear);
 				filter.setAction(new AbstractAction("Search") {
+					/**
+					 * 
+					 */
+					private static final long serialVersionUID = 1L;
+
 					public void actionPerformed(ActionEvent e) {
 
 						String searchString = filter.getText().trim();
@@ -4283,6 +4308,11 @@ public class Main {
 					}
 				});
 				search.setAction(new AbstractAction("Search") {
+					/**
+					 * 
+					 */
+					private static final long serialVersionUID = 1L;
+
 					public void actionPerformed(ActionEvent e) {
 
 						String searchString = filter.getText().trim();
@@ -4292,6 +4322,11 @@ public class Main {
 					}
 				});
 				clear.setAction(new AbstractAction("Clear") {
+					/**
+					 * 
+					 */
+					private static final long serialVersionUID = 1L;
+
 					public void actionPerformed(ActionEvent e) {
 						article_table.setRowFilter(null);
 					}
@@ -4329,8 +4364,13 @@ public class Main {
 					}
 				};
 				new Timer(delay * 2, taskPerformer1).start();
-				DefaultTableModel model = new DefaultTableModel(rows, columnNames);
+				new DefaultTableModel(rows, columnNames);
 				Action delete = new AbstractAction() {
+					/**
+					 * 
+					 */
+					private static final long serialVersionUID = 1L;
+
 					public void actionPerformed(ActionEvent e) {
 						JTable table = (JTable) e.getSource();
 						int modelRow = Integer.valueOf(e.getActionCommand());
@@ -4360,11 +4400,16 @@ public class Main {
 					}
 				};
 				Action view = new AbstractAction() {
+					/**
+					 * 
+					 */
+					private static final long serialVersionUID = 1L;
+
 					public void actionPerformed(ActionEvent e) {
 						JTable table = (JTable) e.getSource();
 
 						articles.dispose();
-						int modelRow = Integer.valueOf(e.getActionCommand());
+						Integer.valueOf(e.getActionCommand());
 						int article_row = table.getSelectedRow();
 						long selected_article = (long) table.getModel()
 								.getValueAt(table.convertRowIndexToModel(article_row), 0);
@@ -4377,10 +4422,15 @@ public class Main {
 					}
 				};
 				Action edit = new AbstractAction() {
+					/**
+					 * 
+					 */
+					private static final long serialVersionUID = 1L;
+
 					public void actionPerformed(ActionEvent e) {
 						JTable table = (JTable) e.getSource();
 						articles.dispose();
-						int modelRow = Integer.valueOf(e.getActionCommand());
+						Integer.valueOf(e.getActionCommand());
 						int article_row = table.getSelectedRow();
 						long selected_article = (long) table.getModel()
 								.getValueAt(table.convertRowIndexToModel(article_row), 0);
@@ -4493,43 +4543,10 @@ public class Main {
 				articles.getContentPane().add(panel3);
 				panel3.setLayout(null);
 				panel3.setAutoscrolls(true);
-				int space = 0;
-
 				panel3.setPreferredSize(new Dimension(width, height / 8));
 				JScrollPane abstractSection = new JScrollPane(panel3);
 				panel3.setAutoscrolls(true);
-				/*
-				 * JLabel lblTitle = new JLabel("Title:");
-				 * lblTitle.setBounds(space+20, 10, 35, 16);
-				 * panel3.add(lblTitle); JLabel lblTitleText = new
-				 * JLabel("Abstract"); lblTitleText.setBounds(space+60, 10, 61,
-				 * 16); panel3.add(lblTitleText);
-				 * 
-				 * JLabel lblVolume = new JLabel("Volume:");
-				 * lblVolume.setBounds(space+145, 10, 50, 16);
-				 * panel3.add(lblVolume); JLabel lblVolumeText = new
-				 * JLabel("123"); lblVolumeText.setBounds(space+200, 10, 25,
-				 * 16); panel3.add(lblVolumeText);
-				 * 
-				 * JLabel lblNumber= new JLabel("Number:");
-				 * lblNumber.setBounds(space+249, 10, 55, 16);
-				 * panel3.add(lblNumber); JLabel lblNumberText = new
-				 * JLabel("1"); lblNumberText.setBounds(space+310, 10, 25, 16);
-				 * panel3.add(lblNumberText);
-				 * 
-				 * JLabel lblYear= new JLabel("Year:");
-				 * lblYear.setBounds(space+350, 10, 40, 16);
-				 * panel3.add(lblYear); JLabel lblYearText = new JLabel("2015");
-				 * lblYearText.setBounds(space+390, 10, 35, 16);
-				 * panel3.add(lblYearText);
-				 * 
-				 * JLabel lblDate= new JLabel("Date Published:");
-				 * lblDate.setBounds(space+449, 10, 100, 16);
-				 * panel3.add(lblDate); JLabel lblDateText = new
-				 * JLabel("2015/11/20"); lblDateText.setBounds(space+550, 10,
-				 * 80, 16); panel3.add(lblDateText);
-				 */
-				Date date = new Date();
+				new Date();
 				Issue row_issue = issue_storage.get(issue_id);
 				Object issue_rowData[][] = { { row_issue.getId(), row_issue.getTitle(), row_issue.getVolume(),
 						row_issue.getNumber(), row_issue.getYear(),
@@ -4541,6 +4558,11 @@ public class Main {
 				DefaultTableModel issue_dtm = new DefaultTableModel(issue_rowData, issue_columnNames);
 
 				final JTable issuedetails = new JTable(issue_dtm) {
+					/**
+					 * 
+					 */
+					private static final long serialVersionUID = 1L;
+
 					// **** Source:
 					// http://stackoverflow.com/questions/9467093/how-to-add-a-tooltip-to-a-cell-in-a-jtable
 					// ****//
@@ -4626,10 +4648,6 @@ public class Main {
 						// database_save();
 					}
 				});
-				Object rowData[][] = { { article_id, "Row1-Column1", "Row1-Column2", "View", "Delete" }, };
-
-				Object columnNames[] = { "ID", "Issue", "Section", "Title", "Pages", "Abstract", "Date Published", "",
-						"" };
 				article.getContentPane().setLayout(null);
 
 				JLabel lblArticleDetails = new JLabel("Article Details");
@@ -4719,7 +4737,6 @@ public class Main {
 				article.getContentPane().add(panel);
 				panel.setLayout(null);
 				panel.setAutoscrolls(true);
-				int y = 10;
 				int fields = 5;
 				int settings_height = 210 + 30 * (fields - 8);
 
@@ -4803,7 +4820,7 @@ public class Main {
 
 				panel3.setPreferredSize(new Dimension(640, 640));
 				JScrollPane abstractSection = new JScrollPane(panel3);
-				abstractSection.setHorizontalScrollBarPolicy(abstractSection.HORIZONTAL_SCROLLBAR_ALWAYS);
+				abstractSection.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
 
 				abstractSection.setPreferredSize(new Dimension(600, 8));
 				abstractSection.setBounds(width_small / 2 - 40, 132 + height_small / 2 - 130, width_small / 2,
@@ -4836,7 +4853,7 @@ public class Main {
 				// size
 				JScrollPane authorSection = new JScrollPane(panel6);
 				panel6.setAutoscrolls(true);
-				authorSection.setHorizontalScrollBarPolicy(authorSection.HORIZONTAL_SCROLLBAR_ALWAYS);
+				authorSection.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
 				JLabel lblNewLabel_3 = new JLabel("Author Information");
 				lblNewLabel_3.setBounds(15, 6, 156, 16);
 				panel6.add(lblNewLabel_3);
@@ -4997,7 +5014,7 @@ public class Main {
 				 * lblAuthorInfo.setBackground(SystemColor.window);
 				 * panel6.add(lblAuthorInfo);
 				 */
-				authorSection.setHorizontalScrollBarPolicy(authorSection.HORIZONTAL_SCROLLBAR_ALWAYS);
+				authorSection.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
 
 				authorSection.setPreferredSize(new Dimension(600 * authors.size(), 8));
 				authorSection.setBounds(width_small / 2 - 40, 132 + height_small / 2 - 130, width_small / 2,
@@ -5034,7 +5051,7 @@ public class Main {
 				lblDatePublished.setFont(new Font("Dialog", Font.BOLD, 14));
 				lblDatePublished.setBounds(24, 231, 150, 30);
 				panel.add(lblDatePublished);
-				Date current = new Date();
+				new Date();
 
 				JLabel lblDate = new JLabel(current_article.getDate_published() == null ? "/"
 						: sdf.format(current_article.getDate_published()));
@@ -5043,8 +5060,8 @@ public class Main {
 				lblDate.setFont(new Font("Dialog", Font.BOLD, 14));
 				lblDate.setBounds(160, 240, 125, 30);
 				panel.add(lblDate);
-				JLabel lblDateAccept = new JLabel(current_article.getDate_accepted() == null ? "/"
-						: sdf.format(current_article.getDate_accepted()));
+				JLabel lblDateAccept = new JLabel(current_article.getDate_submitted() == null ? "/"
+						: sdf.format(current_article.getDate_submitted()));
 				lblDateAccept.setVerticalAlignment(SwingConstants.TOP);
 				lblDateAccept.setForeground(Color.BLACK);
 				lblDateAccept.setFont(new Font("Dialog", Font.BOLD, 14));
@@ -5164,6 +5181,11 @@ public class Main {
 							panel11.add(file_l);
 							y_f = y_f + 20;
 							btnSaveFile.setAction(new AbstractAction() {
+								/**
+								 * 
+								 */
+								private static final long serialVersionUID = 1L;
+
 								public void actionPerformed(ActionEvent e) {
 
 									JFileChooser fileChooser = new JFileChooser();
@@ -5231,6 +5253,11 @@ public class Main {
 								}
 							});
 							btnDeleteFile.setAction(new AbstractAction() {
+								/**
+								 * 
+								 */
+								private static final long serialVersionUID = 1L;
+
 								public void actionPerformed(ActionEvent e) {
 
 									File f = new File(files.get((long) key).getPath());
@@ -5329,7 +5356,6 @@ public class Main {
 			if (article_screens.containsKey(issue_id) && article_screens.get(issue_id).containsKey(article_id)
 					&& !article_screens.get(issue_id).get(article_id).isVisible()) {
 				Article current_article = issue_storage.get(issue_id).getArticles_list().get(article_id);
-				long initial_file_num = file_id;
 				int width_small = 0;
 				int height_small = 0;
 				if (height >= 768 && width >= 640) {
@@ -5361,10 +5387,6 @@ public class Main {
 						// database_save();
 					}
 				});
-				Object rowData[][] = { { article_id, "Row1-Column1", "Row1-Column2", "View", "Delete" }, };
-
-				Object columnNames[] = { "ID", "Issue", "Section", "Title", "Pages", "Abstract", "Date Published", "",
-						"" };
 				article.getContentPane().setLayout(null);
 
 				JLabel lblArticleDetails = new JLabel("Article Details");
@@ -5445,7 +5467,6 @@ public class Main {
 				article.getContentPane().add(panel);
 				panel.setLayout(null);
 				panel.setAutoscrolls(true);
-				int y = 10;
 				int fields = 5;
 				int settings_height = 210 + 30 * (fields - 8);
 
@@ -5487,7 +5508,7 @@ public class Main {
 				lblAbstract.setBounds(16, 28, 560, 480 + 10 * lines.length);
 				lblAbstract.setOpaque(true);
 				panel3.add(lblAbstract);
-				abstractSection.setHorizontalScrollBarPolicy(abstractSection.HORIZONTAL_SCROLLBAR_ALWAYS);
+				abstractSection.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
 
 				abstractSection.setPreferredSize(new Dimension(600, 800));
 				abstractSection.setBounds(width_small / 2 - 40, 132, width_small / 2, height_small / 2 - 150);
@@ -6109,7 +6130,7 @@ public class Main {
 				lblDatePublished.setFont(new Font("Dialog", Font.BOLD, 14));
 				lblDatePublished.setBounds(24, 231, 150, 30);
 				panel.add(lblDatePublished);
-				Date current = new Date();
+				new Date();
 
 				final SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
 
@@ -6225,22 +6246,22 @@ public class Main {
 					}
 				});
 
-				final JXDatePicker datePickerAccepted = new JXDatePicker();
-				datePickerAccepted.setFormats(sdf);
+				final JXDatePicker datePickerSubmitted = new JXDatePicker();
+				datePickerSubmitted.setFormats(sdf);
 				final JLabel label_accepted = new JLabel();
 				label_accepted.setText("Choose Date by selecting below.");
-				datePickerAccepted.addActionListener(new ActionListener() {
+				datePickerSubmitted.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
-						label_accepted.setText(datePickerAccepted.getDate().toString());
-						System.out.println(datePickerAccepted.getDate());
+						label_accepted.setText(datePickerSubmitted.getDate().toString());
+						System.out.println(datePickerSubmitted.getDate());
 					}
 				});
 				label_accepted.setBounds(160, 250, 100, 25);
-				datePickerAccepted.setBounds(156, 202, 160, 30);
+				datePickerSubmitted.setBounds(156, 202, 160, 30);
 
-				datePickerAccepted.setDate(current_article.getDate_accepted());
+				datePickerSubmitted.setDate(current_article.getDate_submitted());
 				// panel.add(label);
-				panel.add(datePickerAccepted);
+				panel.add(datePickerSubmitted);
 				final JLabel label = new JLabel();
 				label.setText("Choose Date by selecting below.");
 				final JXDatePicker datePicker = new JXDatePicker();
@@ -6281,7 +6302,7 @@ public class Main {
 					public void actionPerformed(ActionEvent arg0) {
 						Boolean validation = true;
 						long entered_sectionID = 0;
-						String entered_pages = lblPageNum.getText();
+						lblPageNum.getText();
 
 						try {
 							entered_sectionID = sections.get(lblSectionId.getSelectedIndex()).getId();
@@ -6302,13 +6323,11 @@ public class Main {
 
 						try {
 
-							String test_accepted = sdf.format(datePickerAccepted.getDate());
-							// String test_published =
-							// sdf.format(datePicker.getDate());
+							sdf.format(datePickerSubmitted.getDate());
 
 						} catch (Exception ex) {
 							validation = false;
-							JOptionPane.showMessageDialog(null, "Use dates from calendar for fields: Date Accepted");
+							JOptionPane.showMessageDialog(null, "Use dates from calendar for fields: Date Submitted");
 						}
 						if (lblFile.getText().contains("Not Uploaded")) {
 							validation = false;
@@ -6357,7 +6376,7 @@ public class Main {
 							a.setSection_id(sections.get(lblSectionId.getSelectedIndex()).getId());
 							a.setPages(lblPageNum.getText());
 							a.setDate_published(datePicker.getDate());
-							a.setDate_accepted(datePickerAccepted.getDate());
+							a.setDate_submitted(datePickerSubmitted.getDate());
 							a.setDoi(doi.getText());
 							Issue current_issue = issue_storage.get(issue_id);
 							current_issue.setSync(true);
@@ -6440,12 +6459,11 @@ public class Main {
 						select.setEnabled(false);
 						btnClear.setEnabled(false);
 						upload.setEnabled(false);
-						ConcurrentHashMap<Long, ArticleFile> files = null;
 						if (file_storage.containsKey((long) article_id)) {
-							files = file_storage.get((long) article_id);
+							file_storage.get((long) article_id);
 						} else {
 
-							files = new ConcurrentHashMap<Long, ArticleFile>();
+							new ConcurrentHashMap<Long, ArticleFile>();
 						}
 						for (File f : uploaded_files) {
 							file_copy(article_id, f.getPath().toString());
@@ -6537,7 +6555,6 @@ public class Main {
 			String setting_meta = list_settings.get("Metadata");
 			long current_id = articles_id + 1;
 
-			long published_current_id = published_articles_id + 1;
 			long initial_file_num = file_id;
 			final JFrame article = new JFrame();
 			article.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -6639,7 +6656,6 @@ public class Main {
 			article.getContentPane().add(panel);
 			panel.setLayout(null);
 			panel.setAutoscrolls(true);
-			int y = 10;
 			int fields = 5;
 			int settings_height = 210 + 30 * (fields - 8);
 
@@ -6728,7 +6744,7 @@ public class Main {
 			lblAbstract.setBounds(16, 28, 400, 800);
 			lblAbstract.setOpaque(true);
 			panel3.add(lblAbstract);
-			abstractSection.setHorizontalScrollBarPolicy(abstractSection.HORIZONTAL_SCROLLBAR_ALWAYS);
+			abstractSection.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
 
 			abstractSection.setPreferredSize(new Dimension(600, 800));
 			abstractSection.setBounds(width_small / 2 - 40, 132, width_small / 2, height_small / 2 - 150);
@@ -7088,20 +7104,20 @@ public class Main {
 				}
 			});
 
-			final JXDatePicker datePickerAccepted = new JXDatePicker();
-			datePickerAccepted.setFormats(sdf);
+			final JXDatePicker datePickerSubmitted = new JXDatePicker();
+			datePickerSubmitted.setFormats(sdf);
 			final JLabel label_accepted = new JLabel();
 			label_accepted.setText("Choose Date by selecting below.");
-			datePickerAccepted.addActionListener(new ActionListener() {
+			datePickerSubmitted.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
-					label_accepted.setText(datePickerAccepted.getDate().toString());
-					System.out.println(datePickerAccepted.getDate());
+					label_accepted.setText(datePickerSubmitted.getDate().toString());
+					System.out.println(datePickerSubmitted.getDate());
 				}
 			});
 			label_accepted.setBounds(160, 250, 100, 25);
-			datePickerAccepted.setBounds(156, 202, 160, 30);
+			datePickerSubmitted.setBounds(156, 202, 160, 30);
 			// panel.add(label);
-			panel.add(datePickerAccepted);
+			panel.add(datePickerSubmitted);
 			final JLabel label = new JLabel();
 			label.setText("Choose Date by selecting below.");
 			final JXDatePicker datePicker = new JXDatePicker();
@@ -7160,13 +7176,11 @@ public class Main {
 
 					try {
 
-						String test_accepted = sdf.format(datePickerAccepted.getDate());
-						// String test_published =
-						// sdf.format(datePicker.getDate());
+						sdf.format(datePickerSubmitted.getDate());
 
 					} catch (Exception ex) {
 						validation = false;
-						JOptionPane.showMessageDialog(null, "Use dates from calendar for fields: Date Accepted");
+						JOptionPane.showMessageDialog(null, "Use dates from calendar for fields: Date Submitted");
 					}
 					if (lblFile.getText().contains("Not Uploaded")) {
 						validation = false;
@@ -7196,13 +7210,18 @@ public class Main {
 						list_issues.replace(issue_id, id_create);
 						Issue current_issue = issue_storage.get(issue_id);
 						Article new_article = new Article(id_create, lblTitleText.getText(), entered_sectionID,
-								entered_pages, lblAbstract.getText(), datePickerAccepted.getDate(), current_issue,
-								datePickerAccepted.getDate(),
+								entered_pages, lblAbstract.getText(), current_issue, datePickerSubmitted.getDate(),
 								journal_storage.get(Long.parseLong(app_settings.get("journal_id"))));
 						new_article.setDoi(doi.getText());
+						try {
+							sdf.format(datePicker.getDate());
+							new_article.setDate_published(datePicker.getDate());
+						} catch (Exception ex) {
+							ex.printStackTrace();
+						}
 						new_article.setSync(true);
 						try {
-							String test_published = sdf.format(datePicker.getDate());
+							sdf.format(datePicker.getDate());
 							new_article.setDate_published(datePicker.getDate());
 							long id_publish_create = published_articles_id + 1;
 							published_articles_id++;
@@ -7233,8 +7252,8 @@ public class Main {
 						author_primary_storage.put(new_article.getId(), author_primary);
 						article.dispose();
 						issue_storage.put(issue_id, current_issue);
-						Object[] new_row = { new_article.getId(), issue_id, 1, "title", 1, "abstract",
-								sdf.format(current), "View", "Edit", "Delete" };
+						new_article.getId();
+						sdf.format(current);
 						ConcurrentHashMap<Long, JFrame> issue_articles = article_screens.get(issue_id);
 						System.out.println(new_article.getId());
 						issue_articles.put(new_article.getId(), new JFrame());
@@ -7440,811 +7459,6 @@ public class Main {
 		}
 	}
 
-	public static void update_article_intersect(Article article, String credentials)
-			throws IllegalStateException, IOException {
-
-		boolean status = status_online();
-		if (!status) {
-			return;
-		}
-		System.out.println("UPLOADING ARTICLE "+article.getId());
-		JSONObject obj = ArticleToJSON(article);
-		HttpGet article_exists = new HttpGet(String.format("%s/articles/%s/", base_url, article.getId()));
-
-		article_exists.addHeader("Authorization", "Basic " + credentials);
-		article_exists.setHeader("Accept", "application/json");
-		article_exists.addHeader("Content-type", "application/json");
-
-		HttpResponse response = null;
-		try {
-			response = httpClient.execute(article_exists);
-		} catch (ClientProtocolException e2) {
-
-			e2.printStackTrace();
-		} catch (IOException e2) {
-
-			e2.printStackTrace();
-		}
-		boolean article_created = false;
-		if (response.getStatusLine().getStatusCode() == 200) {
-			article_created = true;
-		}
-		try {
-			InputStream is = response.getEntity().getContent();
-			is.close();
-		} catch (IOException exc) {
-
-			exc.printStackTrace();
-		}
-		if (article_created) {
-			HttpPut httpPut = new HttpPut(String.format("%s/articles/%s/", base_url, article.getId()));
-			httpPut.setEntity(new StringEntity(obj.toJSONString()));
-			httpPut.addHeader("Authorization", "Basic " + credentials);
-			httpPut.setHeader("Accept", "application/json");
-			httpPut.addHeader("Content-type", "application/json");
-
-			response = null;
-			try {
-				response = httpClient.execute(httpPut);
-			} catch (ClientProtocolException e2) {
-
-				e2.printStackTrace();
-			} catch (IOException e2) {
-
-				e2.printStackTrace();
-			}
-			try {
-				InputStream is = response.getEntity().getContent();
-				is.close();
-			} catch (IOException exc) {
-
-				exc.printStackTrace();
-			}
-		} else {
-			HttpPost createArticle = new HttpPost(String.format("%s/articles/", base_url));
-			createArticle.setEntity(new StringEntity(obj.toJSONString()));
-			createArticle.addHeader("Authorization", "Basic " + credentials);
-			createArticle.setHeader("Accept", "application/json");
-			createArticle.addHeader("Content-type", "application/json");
-
-			response = null;
-			try {
-				response = httpClient.execute(createArticle);
-			} catch (ClientProtocolException e2) {
-
-				e2.printStackTrace();
-			} catch (IOException e2) {
-
-				e2.printStackTrace();
-			}
-			try {
-				InputStream is = response.getEntity().getContent();
-				is.close();
-			} catch (IOException exc) {
-
-				exc.printStackTrace();
-			}
-		}
-		System.out.println(response.toString());
-		HttpGet settingCheck = new HttpGet(
-				String.format("%s/get/setting/title/article/%s/?format=json", base_url, article.getId()));
-		// settingCheck.setEntity(new StringEntity(obj.toJSONString()));
-		settingCheck.addHeader("Authorization", "Basic " + credentials);
-		settingCheck.setHeader("Accept", "application/json");
-		settingCheck.addHeader("Content-type", "application/json");
-
-		response = null;
-		try {
-			response = httpClient.execute(settingCheck);
-		} catch (ClientProtocolException e2) {
-
-			e2.printStackTrace();
-		} catch (IOException e2) {
-
-			e2.printStackTrace();
-		}
-		JsonFactory jsonf = new JsonFactory();
-		InputStream result = response.getEntity().getContent();
-		Long setting_pk = (long) -1;
-		org.json.simple.parser.JSONParser jsonParser = new JSONParser();
-		boolean exists = true;
-		JSONObject setting_json = new JSONObject();
-		try {
-			JSONObject setting = (JSONObject) jsonParser.parse(IOUtils.toString(result));
-			System.out.println(setting.get("count"));
-			System.out.println(setting);
-			Long count = (Long) setting.get("count");
-			if (count == null || count == 0) {
-				exists = false;
-			} else {
-				JSONArray results = (JSONArray) setting.get("results");
-				System.out.println(results.get(0));
-				setting_json = (JSONObject) results.get(0);
-				System.out.println(setting_json.get("pk"));
-				System.out.println(setting_json.get("setting_name"));
-				System.out.println(setting_json.get("setting_value"));
-				setting_pk = (long) setting_json.get("pk");
-				setting_json.put("setting_value", article.getTitle());
-			}
-		} catch (ParseException e) {
-
-			e.printStackTrace();
-		}
-		try {
-			InputStream is = response.getEntity().getContent();
-			is.close();
-		} catch (IOException exc) {
-
-			exc.printStackTrace();
-		}
-		System.out.println(setting_json.isEmpty());
-		System.out.println(exists);
-		System.out.println(setting_pk);
-		if (setting_json.isEmpty()) {
-			setting_json = SettingToJSON("article", article.getId(), "title", article.getTitle(), "string", "en_US");
-		}
-		System.out.println(setting_json);
-		if (!exists) {
-			String value = setting_json.toJSONString();
-			byte[] b = value.getBytes("windows-1252");
-			for (byte bi : b) {
-				System.out.print(bi + " ");
-			}
-			System.out.println();
-			String setting_value = new String(b, "UTF-8");
-
-			System.out.println(setting_value.getBytes());
-			HttpPost httpPost = new HttpPost(String.format("%s/article-settings/", base_url));
-			httpPost.setEntity(new StringEntity(setting_value));
-			httpPost.addHeader("Authorization", "Basic " + credentials);
-			httpPost.setHeader("Accept", "application/json");
-			httpPost.addHeader("Content-type", "application/json");
-			try {
-				response = httpClient.execute(httpPost);
-			} catch (ClientProtocolException e2) {
-
-				e2.printStackTrace();
-			} catch (IOException e2) {
-
-				e2.printStackTrace();
-			}
-		} else {
-			String value = setting_json.toJSONString();
-			byte[] b = value.getBytes("windows-1252");
-			for (byte bi : b) {
-				System.out.print(bi + " ");
-			}
-			System.out.println();
-			String setting_value = new String(b, "UTF-8");
-
-			System.out.println(setting_value.getBytes());
-			HttpPut httpPost = new HttpPut(String.format("%s/article-settings/%s/", base_url, setting_json.get("pk")));
-			httpPost.setEntity(new StringEntity(setting_value));
-			httpPost.addHeader("Authorization", "Basic " + credentials);
-			httpPost.setHeader("Accept", "application/json");
-			httpPost.addHeader("Content-type", "application/json");
-			try {
-				response = httpClient.execute(httpPost);
-			} catch (ClientProtocolException e2) {
-
-				e2.printStackTrace();
-			} catch (IOException e2) {
-
-				e2.printStackTrace();
-			}
-		}
-		try {
-			InputStream is = response.getEntity().getContent();
-			is.close();
-		} catch (IOException exc) {
-
-			exc.printStackTrace();
-		}
-		settingCheck = new HttpGet(
-				String.format("%s/get/setting/abstract/article/%s/?format=json", base_url, article.getId()));
-		// settingCheck.setEntity(new StringEntity(obj.toJSONString()));
-		settingCheck.addHeader("Authorization", "Basic " + credentials);
-		settingCheck.setHeader("Accept", "application/json");
-		settingCheck.addHeader("Content-type", "application/json");
-
-		response = null;
-		try {
-			response = httpClient.execute(settingCheck);
-		} catch (ClientProtocolException e2) {
-
-			e2.printStackTrace();
-		} catch (IOException e2) {
-
-			e2.printStackTrace();
-		}
-		jsonf = new JsonFactory();
-		result = response.getEntity().getContent();
-		setting_pk = (long) -1;
-		jsonParser = new JSONParser();
-		exists = true;
-		setting_json = new JSONObject();
-		try {
-			JSONObject setting = (JSONObject) jsonParser.parse(IOUtils.toString(result));
-			System.out.println(setting.get("count"));
-			System.out.println(setting);
-			Long count = (Long) setting.get("count");
-			if (count == null || count == 0) {
-				exists = false;
-			} else {
-				JSONArray results = (JSONArray) setting.get("results");
-				System.out.println(results.get(0));
-				setting_json = (JSONObject) results.get(0);
-				System.out.println(setting_json.get("pk"));
-				System.out.println(setting_json.get("setting_name"));
-				System.out.println(setting_json.get("setting_value"));
-				setting_pk = (long) setting_json.get("pk");
-				setting_json.put("setting_value", article.getAbstract_text());
-			}
-		} catch (ParseException e) {
-
-			e.printStackTrace();
-		}
-		try {
-			InputStream is = response.getEntity().getContent();
-			is.close();
-		} catch (IOException exc) {
-
-			exc.printStackTrace();
-		}
-		System.out.println(setting_json.isEmpty());
-		System.out.println(exists);
-		System.out.println(setting_pk);
-		if (setting_json.isEmpty()) {
-			setting_json = SettingToJSON("article", article.getId(), "abstract",
-					"<p class=\"p1\">" + article.getAbstract_text().replace("\r\n", "") + "</p>", "string", "en_US");
-		}
-		System.out.println(setting_json);
-		if (!exists) {
-			String value = setting_json.toJSONString();
-			byte[] b = value.getBytes("windows-1252");
-			for (byte bi : b) {
-				System.out.print(bi + " ");
-			}
-			System.out.println();
-			String setting_value = new String(b, "UTF-8");
-
-			System.out.println(setting_value.getBytes());
-			HttpPost httpPost = new HttpPost(String.format("%s/article-settings/", base_url));
-			httpPost.setEntity(new StringEntity(setting_value));
-			httpPost.addHeader("Authorization", "Basic " + credentials);
-			httpPost.setHeader("Accept", "application/json");
-			httpPost.addHeader("Content-type", "application/json");
-			try {
-				response = httpClient.execute(httpPost);
-			} catch (ClientProtocolException e2) {
-
-				e2.printStackTrace();
-			} catch (IOException e2) {
-
-				e2.printStackTrace();
-			}
-		} else {
-			String value = setting_json.toJSONString();
-			byte[] b = value.getBytes("windows-1252");
-			for (byte bi : b) {
-				System.out.print(bi + " ");
-			}
-			System.out.println();
-			String setting_value = new String(b, "UTF-8");
-
-			System.out.println(setting_value.getBytes());
-			HttpPut httpPost = new HttpPut(String.format("%s/article-settings/%s/", base_url, setting_json.get("pk")));
-			httpPost.setEntity(new StringEntity(setting_value));
-			httpPost.addHeader("Authorization", "Basic " + credentials);
-			httpPost.setHeader("Accept", "application/json");
-			httpPost.addHeader("Content-type", "application/json");
-			try {
-				response = httpClient.execute(httpPost);
-			} catch (ClientProtocolException e2) {
-
-				e2.printStackTrace();
-			} catch (IOException e2) {
-
-				e2.printStackTrace();
-			}
-		}
-		try {
-			InputStream is = response.getEntity().getContent();
-			is.close();
-		} catch (IOException exc) {
-
-			exc.printStackTrace();
-		}
-		settingCheck = new HttpGet(
-				String.format("%s/get/setting/pub-id::doi/article/%s/?format=json", base_url, article.getId()));
-		// settingCheck.setEntity(new StringEntity(obj.toJSONString()));
-		settingCheck.addHeader("Authorization", "Basic " + credentials);
-		settingCheck.setHeader("Accept", "application/json");
-		settingCheck.addHeader("Content-type", "application/json");
-
-		response = null;
-		try {
-			response = httpClient.execute(settingCheck);
-		} catch (ClientProtocolException e2) {
-
-			e2.printStackTrace();
-		} catch (IOException e2) {
-
-			e2.printStackTrace();
-		}
-		jsonf = new JsonFactory();
-		result = response.getEntity().getContent();
-		setting_pk = (long) -1;
-		jsonParser = new JSONParser();
-		exists = true;
-		setting_json = new JSONObject();
-		try {
-			JSONObject setting = (JSONObject) jsonParser.parse(IOUtils.toString(result));
-			System.out.println(setting.get("count"));
-			System.out.println(setting);
-			Long count = (Long) setting.get("count");
-			if (count == null || count == 0) {
-				exists = false;
-			} else {
-				JSONArray results = (JSONArray) setting.get("results");
-				System.out.println(results.get(0));
-				setting_json = (JSONObject) results.get(0);
-				System.out.println(setting_json.get("pk"));
-				System.out.println(setting_json.get("setting_name"));
-				System.out.println(setting_json.get("setting_value"));
-				setting_pk = (long) setting_json.get("pk");
-				setting_json.put("setting_value", article.getDoi());
-			}
-		} catch (ParseException e) {
-
-			e.printStackTrace();
-		}
-		try {
-			InputStream is = response.getEntity().getContent();
-			is.close();
-		} catch (IOException exc) {
-
-			exc.printStackTrace();
-		}
-		System.out.println(setting_json.isEmpty());
-		System.out.println(exists);
-		System.out.println(setting_pk);
-		if (setting_json.isEmpty()) {
-			setting_json = SettingToJSON("article", article.getId(), "pub-id::doi", article.getDoi(), "string",
-					"en_US");
-		}
-		System.out.println(setting_json);
-		if (!exists) {
-			String value = setting_json.toJSONString();
-			byte[] b = value.getBytes("windows-1252");
-			for (byte bi : b) {
-				System.out.print(bi + " ");
-			}
-			System.out.println();
-			String setting_value = new String(b, "UTF-8");
-
-			System.out.println(setting_value.getBytes());
-			HttpPost httpPost = new HttpPost(String.format("%s/article-settings/", base_url));
-			httpPost.setEntity(new StringEntity(setting_value));
-			httpPost.addHeader("Authorization", "Basic " + credentials);
-			httpPost.setHeader("Accept", "application/json");
-			httpPost.addHeader("Content-type", "application/json");
-			try {
-				response = httpClient.execute(httpPost);
-			} catch (ClientProtocolException e2) {
-
-				e2.printStackTrace();
-			} catch (IOException e2) {
-
-				e2.printStackTrace();
-			}
-		} else {
-			String value = setting_json.toJSONString();
-			byte[] b = value.getBytes("windows-1252");
-			for (byte bi : b) {
-				System.out.print(bi + " ");
-			}
-			System.out.println();
-			String setting_value = new String(b, "UTF-8");
-
-			System.out.println(setting_value.getBytes());
-			HttpPut httpPost = new HttpPut(String.format("%s/article-settings/%s/", base_url, setting_json.get("pk")));
-			httpPost.setEntity(new StringEntity(setting_value));
-			httpPost.addHeader("Authorization", "Basic " + credentials);
-			httpPost.setHeader("Accept", "application/json");
-			httpPost.addHeader("Content-type", "application/json");
-			try {
-				response = httpClient.execute(httpPost);
-			} catch (ClientProtocolException e2) {
-
-				e2.printStackTrace();
-			} catch (IOException e2) {
-
-				e2.printStackTrace();
-			}
-		}
-		try {
-			InputStream is = response.getEntity().getContent();
-			is.close();
-		} catch (IOException exc) {
-
-			exc.printStackTrace();
-		}
-		// metadata
-		Metadata meta = metadata_storage.get((long) article.getId());
-		if (meta != null) {
-			settingCheck = new HttpGet(String.format("%s/get/setting/competingInterests/article/%s/?format=json",
-					base_url, article.getId()));
-			// settingCheck.setEntity(new StringEntity(obj.toJSONString()));
-			settingCheck.addHeader("Authorization", "Basic " + credentials);
-			settingCheck.setHeader("Accept", "application/json");
-			settingCheck.addHeader("Content-type", "application/json");
-
-			response = null;
-			try {
-				response = httpClient.execute(settingCheck);
-			} catch (ClientProtocolException e2) {
-
-				e2.printStackTrace();
-			} catch (IOException e2) {
-
-				e2.printStackTrace();
-			}
-			jsonf = new JsonFactory();
-			result = response.getEntity().getContent();
-			setting_pk = (long) -1;
-			jsonParser = new JSONParser();
-			exists = true;
-			setting_json = new JSONObject();
-			try {
-				JSONObject setting = (JSONObject) jsonParser.parse(IOUtils.toString(result));
-				System.out.println(setting.get("count"));
-				System.out.println(setting);
-				Long count = (Long) setting.get("count");
-				if (count == null || count == 0) {
-					exists = false;
-				} else {
-					JSONArray results = (JSONArray) setting.get("results");
-					System.out.println(results.get(0));
-					setting_json = (JSONObject) results.get(0);
-					System.out.println(setting_json.get("pk"));
-					System.out.println(setting_json.get("setting_name"));
-					System.out.println(setting_json.get("setting_value"));
-					setting_pk = (long) setting_json.get("pk");
-					setting_json.put("setting_value", meta.getCompeting_interests());
-				}
-			} catch (ParseException e) {
-
-				e.printStackTrace();
-			}
-			try {
-				InputStream is = response.getEntity().getContent();
-				is.close();
-			} catch (IOException exc) {
-
-				exc.printStackTrace();
-			}
-			System.out.println(setting_json.isEmpty());
-			System.out.println(exists);
-			System.out.println(setting_pk);
-			if (setting_json.isEmpty()) {
-				setting_json = SettingToJSON("article", article.getId(), "competingInterests",
-						meta.getCompeting_interests(), "string", "en_US");
-			}
-			System.out.println(setting_json);
-			if (!exists) {
-				String value = setting_json.toJSONString();
-				byte[] b = value.getBytes("windows-1252");
-				for (byte bi : b) {
-					System.out.print(bi + " ");
-				}
-				System.out.println();
-				String setting_value = new String(b, "UTF-8");
-
-				System.out.println(setting_value.getBytes());
-				HttpPost httpPost = new HttpPost(String.format("%s/article-settings/", base_url));
-				httpPost.setEntity(new StringEntity(setting_value));
-				httpPost.addHeader("Authorization", "Basic " + credentials);
-				httpPost.setHeader("Accept", "application/json");
-				httpPost.addHeader("Content-type", "application/json");
-				try {
-					response = httpClient.execute(httpPost);
-				} catch (ClientProtocolException e2) {
-
-					e2.printStackTrace();
-				} catch (IOException e2) {
-
-					e2.printStackTrace();
-				}
-			} else {
-				String value = setting_json.toJSONString();
-				byte[] b = value.getBytes("windows-1252");
-				for (byte bi : b) {
-					System.out.print(bi + " ");
-				}
-				System.out.println();
-				String setting_value = new String(b, "UTF-8");
-
-				System.out.println(setting_value.getBytes());
-				HttpPut httpPost = new HttpPut(
-						String.format("%s/article-settings/%s/", base_url, setting_json.get("pk")));
-				httpPost.setEntity(new StringEntity(setting_value));
-				httpPost.addHeader("Authorization", "Basic " + credentials);
-				httpPost.setHeader("Accept", "application/json");
-				httpPost.addHeader("Content-type", "application/json");
-				try {
-					response = httpClient.execute(httpPost);
-				} catch (ClientProtocolException e2) {
-
-					e2.printStackTrace();
-				} catch (IOException e2) {
-
-					e2.printStackTrace();
-				}
-			}
-			try {
-				InputStream is = response.getEntity().getContent();
-				is.close();
-			} catch (IOException exc) {
-
-				exc.printStackTrace();
-			}
-			settingCheck = new HttpGet(
-					String.format("%s/get/setting/funding/article/%s/?format=json", base_url, article.getId()));
-			// settingCheck.setEntity(new StringEntity(obj.toJSONString()));
-			settingCheck.addHeader("Authorization", "Basic " + credentials);
-			settingCheck.setHeader("Accept", "application/json");
-			settingCheck.addHeader("Content-type", "application/json");
-
-			response = null;
-			try {
-				response = httpClient.execute(settingCheck);
-			} catch (ClientProtocolException e2) {
-
-				e2.printStackTrace();
-			} catch (IOException e2) {
-
-				e2.printStackTrace();
-			}
-			jsonf = new JsonFactory();
-			result = response.getEntity().getContent();
-			setting_pk = (long) -1;
-			jsonParser = new JSONParser();
-			exists = true;
-			setting_json = new JSONObject();
-			try {
-				JSONObject setting = (JSONObject) jsonParser.parse(IOUtils.toString(result));
-				System.out.println(setting.get("count"));
-				System.out.println(setting);
-				Long count = (Long) setting.get("count");
-				if (count == null || count == 0) {
-					exists = false;
-				} else {
-					JSONArray results = (JSONArray) setting.get("results");
-					System.out.println(results.get(0));
-					setting_json = (JSONObject) results.get(0);
-					System.out.println(setting_json.get("pk"));
-					System.out.println(setting_json.get("setting_name"));
-					System.out.println(setting_json.get("setting_value"));
-					setting_pk = (long) setting_json.get("pk");
-					setting_json.put("setting_value", meta.getFunding());
-				}
-			} catch (ParseException e) {
-
-				e.printStackTrace();
-			}
-			try {
-				InputStream is = response.getEntity().getContent();
-				is.close();
-			} catch (IOException exc) {
-
-				exc.printStackTrace();
-			}
-			System.out.println(setting_json.isEmpty());
-			System.out.println(exists);
-			System.out.println(setting_pk);
-			if (setting_json.isEmpty()) {
-				setting_json = SettingToJSON("article", article.getId(), "funding", meta.getCompeting_interests(),
-						"string", "en_US");
-			}
-			System.out.println(setting_json);
-			if (!exists) {
-				String value = setting_json.toJSONString();
-				byte[] b = value.getBytes("windows-1252");
-				for (byte bi : b) {
-					System.out.print(bi + " ");
-				}
-				System.out.println();
-				String setting_value = new String(b, "UTF-8");
-
-				System.out.println(setting_value.getBytes());
-				HttpPost httpPost = new HttpPost(String.format("%s/article-settings/", base_url));
-				httpPost.setEntity(new StringEntity(setting_value));
-				httpPost.addHeader("Authorization", "Basic " + credentials);
-				httpPost.setHeader("Accept", "application/json");
-				httpPost.addHeader("Content-type", "application/json");
-				try {
-					response = httpClient.execute(httpPost);
-				} catch (ClientProtocolException e2) {
-
-					e2.printStackTrace();
-				} catch (IOException e2) {
-
-					e2.printStackTrace();
-				}
-			} else {
-				String value = setting_json.toJSONString();
-				byte[] b = value.getBytes("windows-1252");
-				for (byte bi : b) {
-					System.out.print(bi + " ");
-				}
-				System.out.println();
-				String setting_value = new String(b, "UTF-8");
-
-				System.out.println(setting_value.getBytes());
-				HttpPut httpPost = new HttpPut(
-						String.format("%s/article-settings/%s/", base_url, setting_json.get("pk")));
-				httpPost.setEntity(new StringEntity(setting_value));
-				httpPost.addHeader("Authorization", "Basic " + credentials);
-				httpPost.setHeader("Accept", "application/json");
-				httpPost.addHeader("Content-type", "application/json");
-				try {
-					response = httpClient.execute(httpPost);
-				} catch (ClientProtocolException e2) {
-
-					e2.printStackTrace();
-				} catch (IOException e2) {
-
-					e2.printStackTrace();
-				}
-			}
-			try {
-				InputStream is = response.getEntity().getContent();
-				is.close();
-			} catch (IOException exc) {
-
-				exc.printStackTrace();
-			}
-		}
-		//
-		if (article.getDate_published() != null) {
-			article_exists = new HttpGet(String.format("%s/get/article/published/%s/", base_url, article.getId()));
-
-			article_exists.addHeader("Authorization", "Basic " + credentials);
-			article_exists.setHeader("Accept", "application/json");
-			article_exists.addHeader("Content-type", "application/json");
-			obj = ArticleToPublishedJSON(article);
-			response = null;
-			try {
-				response = httpClient.execute(article_exists);
-			} catch (ClientProtocolException e2) {
-
-				e2.printStackTrace();
-			} catch (IOException e2) {
-
-				e2.printStackTrace();
-			}
-			boolean article_published = false;
-			if (response.getStatusLine().getStatusCode() == 200) {
-				article_published = true;
-			}
-			try {
-				InputStream is = response.getEntity().getContent();
-				is.close();
-			} catch (IOException exc) {
-
-				exc.printStackTrace();
-			}
-			if (article_published) {
-				HttpPut httpPut = new HttpPut(
-						String.format("%s/published-articles/%s/", base_url, article.getPublished_pk()));
-				httpPut.setEntity(new StringEntity(obj.toJSONString()));
-				httpPut.addHeader("Authorization", "Basic " + credentials);
-				httpPut.setHeader("Accept", "application/json");
-				httpPut.addHeader("Content-type", "application/json");
-
-				response = null;
-				try {
-					response = httpClient.execute(httpPut);
-				} catch (ClientProtocolException e2) {
-
-					e2.printStackTrace();
-				} catch (IOException e2) {
-
-					e2.printStackTrace();
-				}
-				try {
-					InputStream is = response.getEntity().getContent();
-					is.close();
-				} catch (IOException exc) {
-
-					exc.printStackTrace();
-				}
-			} else {
-				HttpPost createArticle = new HttpPost(String.format("%s/published-articles/", base_url));
-				createArticle.setEntity(new StringEntity(obj.toJSONString()));
-				createArticle.addHeader("Authorization", "Basic " + credentials);
-				createArticle.setHeader("Accept", "application/json");
-				createArticle.addHeader("Content-type", "application/json");
-
-				response = null;
-				try {
-					response = httpClient.execute(createArticle);
-				} catch (ClientProtocolException e2) {
-
-					e2.printStackTrace();
-				} catch (IOException e2) {
-
-					e2.printStackTrace();
-				}
-				try {
-					InputStream is = response.getEntity().getContent();
-					is.close();
-				} catch (IOException exc) {
-
-					exc.printStackTrace();
-				}
-				article_exists = new HttpGet(String.format("%s/get/article/published/%s/", base_url, article.getId()));
-
-				article_exists.addHeader("Authorization", "Basic " + credentials);
-				article_exists.setHeader("Accept", "application/json");
-				article_exists.addHeader("Content-type", "application/json");
-				obj = ArticleToPublishedJSON(article);
-				response = null;
-				try {
-					response = httpClient.execute(article_exists);
-				} catch (ClientProtocolException e2) {
-
-					e2.printStackTrace();
-				} catch (IOException e2) {
-
-					e2.printStackTrace();
-				}
-				article_published = false;
-				if (response.getStatusLine().getStatusCode() == 200) {
-					article_published = true;
-				}
-				if (article_published) {
-					result = response.getEntity().getContent();
-					jsonParser = new JSONParser();
-					exists = true;
-					setting_json = new JSONObject();
-
-					try {
-						JSONObject setting = (JSONObject) jsonParser.parse(IOUtils.toString(result));
-						article.setPublished_pk((int) (long) setting.get("id"));
-						article_storage.put(article.getId(), article);
-						Issue current_issue = issue_storage.get(article.getIssue_fk().getId());
-						current_issue.add_article(article.getId(), article);
-						issue_storage.put(current_issue.getId(), current_issue);
-					} catch (Exception e) {
-						e.printStackTrace();
-					}
-					try {
-						InputStream is = response.getEntity().getContent();
-						is.close();
-					} catch (IOException exc) {
-
-						exc.printStackTrace();
-					}
-				}
-				try {
-					InputStream is = response.getEntity().getContent();
-					is.close();
-				} catch (IOException exc) {
-
-					exc.printStackTrace();
-				}
-			}
-		}
-		/*
-		 * response = null; try { response = httpClient.execute(httpPost); }
-		 * catch (ClientProtocolException e2) { // TODO Auto-generated catch
-		 * block e2.printStackTrace(); } catch (IOException e2) { // TODO
-		 * Auto-generated catch block e2.printStackTrace(); }
-		 */
-	}
-
 	public static void update_issue_intersect(Issue issue, String credentials)
 			throws IllegalStateException, IOException {
 
@@ -8351,7 +7565,7 @@ public class Main {
 
 			e2.printStackTrace();
 		}
-		JsonFactory jsonf = new JsonFactory();
+		new JsonFactory();
 		InputStream result = response.getEntity().getContent();
 		Long setting_pk = (long) -1;
 		org.json.simple.parser.JSONParser jsonParser = new JSONParser();
@@ -8452,6 +7666,7 @@ public class Main {
 
 		System.out.println("issue details synced");
 	}
+
 	public static void update_article_intersect_less_requests(Article article, String credentials)
 			throws UnsupportedOperationException, IOException {
 
@@ -8460,7 +7675,7 @@ public class Main {
 			return;
 		}
 
-		System.out.println("articles being uploaded "+ article.getId());
+		System.out.println("articles being uploaded " + article.getId());
 		JSONObject obj = ArticleToJSON(article);
 		HttpGet article_exists = new HttpGet(String.format("%s/articles/%s/", base_url, article.getId()));
 
@@ -8490,8 +7705,7 @@ public class Main {
 			exc.printStackTrace();
 		}
 
-
-		System.out.println("articles created "+ article_created);
+		System.out.println("articles created " + article_created);
 		if (article_created) {
 
 			System.out.println("articles updating");
@@ -8521,7 +7735,7 @@ public class Main {
 		} else {
 
 			System.out.println("articles creating");
-			System.out.println("articles created "+ article_created);
+			System.out.println("articles created " + article_created);
 			HttpPost createArticle = new HttpPost(String.format("%s/articles/", base_url));
 			createArticle.setEntity(new StringEntity(obj.toJSONString()));
 			createArticle.addHeader("Authorization", "Basic " + credentials);
@@ -8562,8 +7776,7 @@ public class Main {
 			funding = meta.getFunding();
 			b = funding.getBytes("windows-1252");
 			funding = new String(b, "UTF-8");
-			
-		
+
 		}
 
 		System.out.println("abstract");
@@ -8583,14 +7796,13 @@ public class Main {
 
 		System.out.println("doi");
 		doi = new String(b, "UTF-8");
-		
+
 		String json_settings = String.format(
 				"{'abstract':'%s','title':'%s','funding':'%s','competing_interests':'%s','article':%s, 'doi':'%s'}",
 				abstract_text, title, funding, ci, article.getId(), doi);
 
 		System.out.println(json_settings);
-		HttpPut httpPut = new HttpPut(
-				String.format("%s/custom/articles/", base_url));
+		HttpPut httpPut = new HttpPut(String.format("%s/custom/articles/", base_url));
 
 		System.out.println(json_settings);
 		httpPut.setEntity(new StringEntity(json_settings));
@@ -8644,8 +7856,7 @@ public class Main {
 				exc.printStackTrace();
 			}
 			if (article_published) {
-				httpPut = new HttpPut(
-						String.format("%s/published-articles/%s/", base_url, article.getPublished_pk()));
+				httpPut = new HttpPut(String.format("%s/published-articles/%s/", base_url, article.getPublished_pk()));
 				httpPut.setEntity(new StringEntity(obj.toJSONString()));
 				httpPut.addHeader("Authorization", "Basic " + credentials);
 				httpPut.setHeader("Accept", "application/json");
@@ -8715,8 +7926,7 @@ public class Main {
 				if (article_published) {
 					InputStream result = response.getEntity().getContent();
 					JSONParser jsonParser = new JSONParser();
-					boolean exists = true;
-					JSONObject setting_json = new JSONObject();
+					new JSONObject();
 
 					try {
 						JSONObject setting = (JSONObject) jsonParser.parse(IOUtils.toString(result));
@@ -8766,8 +7976,8 @@ public class Main {
 		}
 		System.out.println("Getting Articles");
 
-		ArrayList<Article> articles_list = new ArrayList<Article>();
-		JSONObject obj = IssueToJSON(issue);
+		new ArrayList<Article>();
+		IssueToJSON(issue);
 		HttpGet issue_exists = new HttpGet(String.format("%s/issues/%s/", base_url, issue.getId()));
 
 		issue_exists.addHeader("Authorization", "Basic " + credentials);
@@ -8804,7 +8014,7 @@ public class Main {
 
 		Set<Long> article_keys = articles.keySet();
 
-		System.out.println("articles to sync : "+ articles.size());
+		System.out.println("articles to sync : " + articles.size());
 		for (Long key : article_keys) {
 			Article current_article = articles.get(key);
 
@@ -8838,13 +8048,11 @@ public class Main {
 
 						e2.printStackTrace();
 					}
-					JsonFactory jsonf = new JsonFactory();
+					new JsonFactory();
 					InputStream result = response.getEntity().getContent();
 					org.json.simple.parser.JSONParser jsonParser = new JSONParser();
 
-					long setting_pk = (long) -1;
-					boolean exists = true;
-					JSONObject setting_json = new JSONObject();
+					new JSONObject();
 
 					JSONObject setting;
 					try {
@@ -8859,7 +8067,6 @@ public class Main {
 						}
 						System.out.println(setting);
 						if (setting == null) {
-							exists = false;
 						} else {
 							String[] file_ids = null;
 							String ids = ((String) setting.get("files"));
@@ -8895,8 +8102,8 @@ public class Main {
 		issue.setSync(false);
 		issue_storage.put((long) issue.getId(), issue);
 		issue_countdown_storage.put((long) issue.getId(), true);
-		System.out.println("method - countdown: "+issue_countdown_storage.get((long) issue.getId()));
-		
+		System.out.println("method - countdown: " + issue_countdown_storage.get((long) issue.getId()));
+
 		System.out.println("END METHD: " + issue.getArticles_list().size());
 	}
 
@@ -8910,7 +8117,7 @@ public class Main {
 		System.out.println("Getting Articles");
 
 		ArrayList<Article> articles_list = new ArrayList<Article>();
-		JSONObject obj = IssueToJSON(issue);
+		IssueToJSON(issue);
 		HttpGet issue_exists = new HttpGet(String.format("%s/issues/%s/", base_url, issue.getId()));
 
 		issue_exists.addHeader("Authorization", "Basic " + credentials);
@@ -8948,12 +8155,10 @@ public class Main {
 
 			response = httpClient.execute(published_articles);
 
-			JsonFactory jsonf = new JsonFactory();
+			new JsonFactory();
 			InputStream result = response.getEntity().getContent();
-			Long setting_pk = (long) -1;
 			org.json.simple.parser.JSONParser jsonParser = new JSONParser();
-			boolean exists = true;
-			JSONObject setting_json = new JSONObject();
+			new JSONObject();
 
 			JSONObject setting = (JSONObject) jsonParser.parse(IOUtils.toString(result));
 			try {
@@ -8965,7 +8170,6 @@ public class Main {
 			}
 			System.out.println(setting);
 			if (setting == null) {
-				exists = false;
 			} else {
 				String[] article_ids = null;
 				String ids = ((String) setting.get("articles"));
@@ -8991,8 +8195,7 @@ public class Main {
 							result = response.getEntity().getContent();
 
 							jsonParser = new JSONParser();
-							exists = true;
-							setting_json = new JSONObject();
+							new JSONObject();
 
 							setting = (JSONObject) jsonParser.parse(IOUtils.toString(result));
 							System.out.println((JSONObject) setting.get("article"));
@@ -9015,7 +8218,7 @@ public class Main {
 								JSONObject current_setting = (JSONObject) set;
 								System.out.println(current_setting);
 
-								System.out.println("SETTING: "+current_setting.get("setting_name"));
+								System.out.println("SETTING: " + current_setting.get("setting_name"));
 								switch ((String) current_setting.get("setting_name")) {
 								case "title":
 									new_article.setTitle((String) current_setting.get("setting_value"));
@@ -9025,7 +8228,8 @@ public class Main {
 									String new_abs = "";
 									if (abstract_text != null) {
 										if (abstract_text.compareTo("") != 0 || abstract_text.isEmpty() == true) {
-											String abs = Jsoup.parse((String) current_setting.get("setting_value")).text();
+											String abs = Jsoup.parse((String) current_setting.get("setting_value"))
+													.text();
 											String[] words = abs.split(" ");
 
 											int j = 0;
@@ -9039,7 +8243,7 @@ public class Main {
 										}
 									}
 									new_article.setAbstract_text(new_abs);
-									System.out.println("ABSTRACT--- "+new_abs);
+									System.out.println("ABSTRACT--- " + new_abs);
 									System.out.println(abstract_text);
 									continue;
 								case "funding":
@@ -9051,7 +8255,7 @@ public class Main {
 								case "pub-id::doi":
 									new_article.setDoi((String) current_setting.get("setting_value"));
 									continue;
-						
+
 								default:
 
 									System.out.println("Invalid setting " + current_setting.get("setting_name"));
@@ -9071,7 +8275,7 @@ public class Main {
 								}
 
 							}
-							
+
 							System.out.println(new_article);
 							article_author_storage.put(new_article.getId(), new ArrayList<Author>());
 							articles_list.add(new_article);
@@ -9092,13 +8296,11 @@ public class Main {
 				response = null;
 				response = httpClient.execute(article_files);
 
-				jsonf = new JsonFactory();
+				new JsonFactory();
 				result = response.getEntity().getContent();
 				jsonParser = new JSONParser();
 
-				setting_pk = (long) -1;
-				exists = true;
-				setting_json = new JSONObject();
+				new JSONObject();
 
 				setting = new JSONObject();
 				try {
@@ -9113,7 +8315,6 @@ public class Main {
 
 					System.out.println(setting);
 					if (setting == null) {
-						exists = false;
 					} else {
 						String[] file_ids = null;
 						String ids = ((String) setting.get("files"));
@@ -9153,521 +8354,6 @@ public class Main {
 		}
 	}
 
-	public static void update_articles_local(Issue issue, String credentials)
-			throws IllegalStateException, IOException {
-
-		boolean status = status_online();
-		if (!status) {
-			return;
-		}
-		System.out.println("Getting Articles");
-
-		ArrayList<Article> articles_list = new ArrayList<Article>();
-		JSONObject obj = IssueToJSON(issue);
-		HttpGet issue_exists = new HttpGet(String.format("%s/issues/%s/", base_url, issue.getId()));
-
-		issue_exists.addHeader("Authorization", "Basic " + credentials);
-		issue_exists.setHeader("Accept", "application/json");
-		issue_exists.addHeader("Content-type", "application/json");
-
-		HttpResponse response = null;
-		try {
-			response = httpClient.execute(issue_exists);
-		} catch (ClientProtocolException e2) {
-			JOptionPane.showMessageDialog(null, "Lost connection to server.");
-			return;
-		} catch (IOException e2) {
-			JOptionPane.showMessageDialog(null, "Lost connection to server.");
-			return;
-		}
-		boolean issue_created = false;
-		if (response.getStatusLine().getStatusCode() == 200) {
-			issue_created = true;
-		}
-		try {
-			InputStream is = response.getEntity().getContent();
-			is.close();
-		} catch (IOException exc) {
-
-			exc.printStackTrace();
-		}
-		if (!issue_created) {
-			update_issue_intersect(issue, credentials);
-		}
-
-		System.out.println(response.toString());
-		HttpGet published_articles = new HttpGet(
-				String.format("%s/get/published-articles/%s/?format=json", base_url, issue.getId()));
-		// settingCheck.setEntity(new StringEntity(obj.toJSONString()));
-		published_articles.addHeader("Authorization", "Basic " + credentials);
-		published_articles.setHeader("Accept", "application/json");
-		published_articles.addHeader("Content-type", "application/json");
-
-		response = null;
-		try {
-			response = httpClient.execute(published_articles);
-		} catch (ClientProtocolException e2) {
-
-			JOptionPane.showMessageDialog(null, "Lost connection to server.");
-			return;
-		} catch (IOException e2) {
-
-			JOptionPane.showMessageDialog(null, "Lost connection to server.");
-			return;
-		}
-		JsonFactory jsonf = new JsonFactory();
-		InputStream result = response.getEntity().getContent();
-		Long setting_pk = (long) -1;
-		org.json.simple.parser.JSONParser jsonParser = new JSONParser();
-		boolean exists = true;
-		JSONObject setting_json = new JSONObject();
-
-		try {
-			JSONObject setting = (JSONObject) jsonParser.parse(IOUtils.toString(result));
-			try {
-				InputStream is = response.getEntity().getContent();
-				is.close();
-			} catch (IOException exc) {
-
-				exc.printStackTrace();
-			}
-			System.out.println(setting);
-			if (setting == null) {
-				exists = false;
-			} else {
-				String[] article_ids = null;
-				String ids = ((String) setting.get("articles"));
-				if (ids.contains(",")) {
-					article_ids = ((String) setting.get("articles")).split(",");
-				}
-				try {
-					for (String id : article_ids) {
-						try {
-							System.out.println(id);
-							HttpGet single_article = new HttpGet(
-									String.format("%s/articles/%s/?format=json", base_url, id));
-							// settingCheck.setEntity(new
-							// StringEntity(obj.toJSONString()));
-							single_article.addHeader("Authorization", "Basic " + credentials);
-							single_article.setHeader("Accept", "application/json");
-							single_article.addHeader("Content-type", "application/json");
-
-							response = null;
-
-							response = httpClient.execute(single_article);
-
-							result = response.getEntity().getContent();
-
-							jsonParser = new JSONParser();
-							exists = true;
-							setting_json = new JSONObject();
-							try {
-								setting = (JSONObject) jsonParser.parse(IOUtils.toString(result));
-								try {
-									InputStream is = response.getEntity().getContent();
-									is.close();
-								} catch (IOException exc) {
-
-									exc.printStackTrace();
-								}
-								Article new_article = JSONToArticle(setting, issue);
-								System.out.println(new_article);
-
-								HttpGet article_settings = new HttpGet(
-										String.format("%s/get/setting/abstract/article/%s/?format=json", base_url,
-												new_article.getId()));
-								// settingCheck.setEntity(new
-								// StringEntity(obj.toJSONString()));
-								article_settings.addHeader("Authorization", "Basic " + credentials);
-								article_settings.setHeader("Accept", "application/json");
-								article_settings.addHeader("Content-type", "application/json");
-
-								response = null;
-								response = httpClient.execute(article_settings);
-
-								if (response.getStatusLine().getStatusCode() == 200) {
-									result = response.getEntity().getContent();
-									jsonParser = new JSONParser();
-									exists = true;
-									setting_json = new JSONObject();
-
-									try {
-										setting = (JSONObject) jsonParser.parse(IOUtils.toString(result));
-										JSONArray results = (JSONArray) setting.get("results");
-										System.out.println(results.get(0));
-										setting_json = (JSONObject) results.get(0);
-										System.out.println("ABSTRACT");
-										System.out.println(setting_json.get("setting_value"));
-										String abs = Jsoup.parse((String) setting_json.get("setting_value")).text();
-										String[] words = abs.split(" ");
-										String new_abs = "";
-										int j = 0;
-										for (String word : words) {
-											new_abs = new_abs + " " + word;
-											if (j % 8 == 0 && j != 0) {
-												new_abs = new_abs + "\r\n";
-											}
-											j++;
-										}
-										new_article.setAbstract_text(new_abs);
-										System.out.println(setting_json.get("setting_value"));
-									} catch (Exception e) {
-										e.printStackTrace();
-									}
-
-								} else {
-									new_article.setAbstract_text("None.");
-
-								}
-								try {
-									InputStream is = response.getEntity().getContent();
-									is.close();
-								} catch (IOException exc) {
-
-									exc.printStackTrace();
-								}
-								article_settings = new HttpGet(String.format(
-										"%s/get/setting/title/article/%s/?format=json", base_url, new_article.getId()));
-								// settingCheck.setEntity(new
-								// StringEntity(obj.toJSONString()));
-								article_settings.addHeader("Authorization", "Basic " + credentials);
-								article_settings.setHeader("Accept", "application/json");
-								article_settings.addHeader("Content-type", "application/json");
-
-								response = null;
-								response = httpClient.execute(article_settings);
-
-								if (response.getStatusLine().getStatusCode() == 200) {
-									result = response.getEntity().getContent();
-									jsonParser = new JSONParser();
-									exists = true;
-									setting_json = new JSONObject();
-
-									try {
-										setting = (JSONObject) jsonParser.parse(IOUtils.toString(result));
-										JSONArray results = (JSONArray) setting.get("results");
-										System.out.println(results.get(0));
-										setting_json = (JSONObject) results.get(0);
-										new_article.setTitle((String) setting_json.get("setting_value"));
-										System.out.println(setting_json.get("setting_value"));
-									} catch (Exception e) {
-										e.printStackTrace();
-									}
-
-								} else {
-									new_article.setTitle("None.");
-								}
-								try {
-									InputStream is = response.getEntity().getContent();
-									is.close();
-								} catch (IOException exc) {
-
-									exc.printStackTrace();
-								}
-								article_settings = new HttpGet(
-										String.format("%s/get/setting/pub-id::doi/article/%s/?format=json", base_url,
-												new_article.getId()));
-								// settingCheck.setEntity(new
-								// StringEntity(obj.toJSONString()));
-								article_settings.addHeader("Authorization", "Basic " + credentials);
-								article_settings.setHeader("Accept", "application/json");
-								article_settings.addHeader("Content-type", "application/json");
-
-								response = null;
-								response = httpClient.execute(article_settings);
-
-								if (response.getStatusLine().getStatusCode() == 200) {
-									result = response.getEntity().getContent();
-									jsonParser = new JSONParser();
-									exists = true;
-									setting_json = new JSONObject();
-
-									try {
-										setting = (JSONObject) jsonParser.parse(IOUtils.toString(result));
-										JSONArray results = (JSONArray) setting.get("results");
-										System.out.println(results.get(0));
-										setting_json = (JSONObject) results.get(0);
-										new_article.setDoi((String) setting_json.get("setting_value"));
-										System.out.println(setting_json.get("setting_value"));
-									} catch (Exception e) {
-										e.printStackTrace();
-									}
-
-								} else {
-									new_article.setDoi("None.");
-								}
-								try {
-									InputStream is = response.getEntity().getContent();
-									is.close();
-								} catch (IOException exc) {
-
-									exc.printStackTrace();
-								}
-								// meta
-								String funding = null;
-								String ci = null;
-								article_settings = new HttpGet(
-										String.format("%s/get/setting/funding/article/%s/?format=json", base_url,
-												new_article.getId()));
-								// settingCheck.setEntity(new
-								// StringEntity(obj.toJSONString()));
-								article_settings.addHeader("Authorization", "Basic " + credentials);
-								article_settings.setHeader("Accept", "application/json");
-								article_settings.addHeader("Content-type", "application/json");
-
-								response = null;
-								response = httpClient.execute(article_settings);
-
-								if (response.getStatusLine().getStatusCode() == 200) {
-									result = response.getEntity().getContent();
-									jsonParser = new JSONParser();
-									exists = true;
-									setting_json = new JSONObject();
-
-									try {
-										setting = (JSONObject) jsonParser.parse(IOUtils.toString(result));
-										JSONArray results = (JSONArray) setting.get("results");
-										System.out.println(results.get(0));
-										setting_json = (JSONObject) results.get(0);
-										// new_article.setTitle((String)
-										funding = (String) setting_json.get("setting_value");
-										System.out.println(setting_json.get("setting_value"));
-									} catch (Exception e) {
-										e.printStackTrace();
-									}
-
-								} else {
-									// new_article.setTitle("None.");
-								}
-								try {
-									InputStream is = response.getEntity().getContent();
-									is.close();
-								} catch (IOException exc) {
-
-									exc.printStackTrace();
-								}
-								// meta
-								article_settings = new HttpGet(
-										String.format("%s/get/setting/competingInterests/article/%s/?format=json",
-												base_url, new_article.getId()));
-								// settingCheck.setEntity(new
-								// StringEntity(obj.toJSONString()));
-								article_settings.addHeader("Authorization", "Basic " + credentials);
-								article_settings.setHeader("Accept", "application/json");
-								article_settings.addHeader("Content-type", "application/json");
-
-								response = null;
-								response = httpClient.execute(article_settings);
-
-								if (response.getStatusLine().getStatusCode() == 200) {
-									result = response.getEntity().getContent();
-									jsonParser = new JSONParser();
-									exists = true;
-									setting_json = new JSONObject();
-
-									try {
-										setting = (JSONObject) jsonParser.parse(IOUtils.toString(result));
-										JSONArray results = (JSONArray) setting.get("results");
-										System.out.println(results.get(0));
-										setting_json = (JSONObject) results.get(0);
-										// new_article.setTitle((String)
-										// setting_json.get("setting_value"));
-										ci = (String) setting_json.get("setting_value");
-										System.out.println(setting_json.get("setting_value"));
-									} catch (Exception e) {
-										e.printStackTrace();
-									}
-
-								} else {
-									// new_article.setTitle("None.");
-								}
-								try {
-									InputStream is = response.getEntity().getContent();
-									is.close();
-								} catch (IOException exc) {
-
-									exc.printStackTrace();
-								}
-								if (ci != null || funding != null) {
-									if (metadata_storage.containsKey((long) new_article.getId())) {
-										Metadata meta = metadata_storage.get((long) new_article.getId());
-										meta.setCompeting_interests(ci);
-										meta.setFunding(funding);
-										metadata_storage.put((long) new_article.getId(), meta);
-									} else {
-										metadata_id++;
-										Metadata meta = new Metadata(metadata_id, (long) new_article.getId(), ci,
-												funding);
-										metadata_storage.put((long) new_article.getId(), meta);
-									}
-
-								}
-								article_settings = new HttpGet(String.format(
-										"%s/get/setting/title/article/%s/?format=json", base_url, new_article.getId()));
-								// settingCheck.setEntity(new
-								// StringEntity(obj.toJSONString()));
-								article_settings.addHeader("Authorization", "Basic " + credentials);
-								article_settings.setHeader("Accept", "application/json");
-								article_settings.addHeader("Content-type", "application/json");
-
-								response = null;
-								response = httpClient.execute(article_settings);
-
-								if (response.getStatusLine().getStatusCode() == 200) {
-									result = response.getEntity().getContent();
-									jsonParser = new JSONParser();
-									exists = true;
-									setting_json = new JSONObject();
-
-									try {
-										setting = (JSONObject) jsonParser.parse(IOUtils.toString(result));
-										JSONArray results = (JSONArray) setting.get("results");
-										System.out.println(results.get(0));
-										setting_json = (JSONObject) results.get(0);
-										new_article.setTitle((String) setting_json.get("setting_value"));
-										System.out.println(setting_json.get("setting_value"));
-									} catch (Exception e) {
-										e.printStackTrace();
-									}
-
-								} else {
-									new_article.setTitle("None.");
-								}
-								try {
-									InputStream is = response.getEntity().getContent();
-									is.close();
-								} catch (IOException exc) {
-
-									exc.printStackTrace();
-								}
-								HttpGet published_art = new HttpGet(String.format(
-										"%s/get/article/published/%s/?format=json", base_url, new_article.getId()));
-								published_art.addHeader("Authorization", "Basic " + credentials);
-								published_art.setHeader("Accept", "application/json");
-								published_art.addHeader("Content-type", "application/json");
-
-								response = null;
-								response = httpClient.execute(published_art);
-
-								if (response.getStatusLine().getStatusCode() == 200) {
-									result = response.getEntity().getContent();
-									jsonParser = new JSONParser();
-									exists = true;
-									setting_json = new JSONObject();
-
-									try {
-										setting = (JSONObject) jsonParser.parse(IOUtils.toString(result));
-										System.out.println("DATE PUBLISHED : " + setting);
-										new_article.setPublished_pk((int) (long) setting.get("id"));
-										new_article.setDate_published(
-												sdf.parse(((String) setting.get("date_published")).replace("-", "/")));
-									} catch (Exception e) {
-										e.printStackTrace();
-									}
-
-								}
-								try {
-									InputStream is = response.getEntity().getContent();
-									is.close();
-								} catch (IOException exc) {
-
-									exc.printStackTrace();
-								}
-								article_author_storage.put(new_article.getId(), new ArrayList<Author>());
-								articles_list.add(new_article);
-
-							} catch (ParseException e) {
-
-								e.printStackTrace();
-							}
-
-						} catch (ClientProtocolException e2) {
-							JOptionPane.showMessageDialog(null, "Lost connection to server.");
-							return;
-						} catch (IOException e2) {
-
-							JOptionPane.showMessageDialog(null, "Lost connection to server.");
-							return;
-						}
-					}
-				} catch (NullPointerException e_n) {
-					return;
-				}
-
-			}
-		} catch (ParseException e) {
-
-			e.printStackTrace();
-		}
-		for (Article a : articles_list) {
-			try {
-				HttpGet article_files = new HttpGet(String.format("%s/get/files/%s/?format=json", base_url, a.getId()));
-				// settingCheck.setEntity(new
-				// StringEntity(obj.toJSONString()));
-				article_files.addHeader("Authorization", "Basic " + credentials);
-				article_files.setHeader("Accept", "application/json");
-				article_files.addHeader("Content-type", "application/json");
-
-				response = null;
-				response = httpClient.execute(article_files);
-
-				jsonf = new JsonFactory();
-				result = response.getEntity().getContent();
-				jsonParser = new JSONParser();
-
-				setting_pk = (long) -1;
-				exists = true;
-				setting_json = new JSONObject();
-
-				JSONObject setting;
-				try {
-					setting = (JSONObject) jsonParser.parse(IOUtils.toString(result));
-					try {
-						InputStream is = response.getEntity().getContent();
-						is.close();
-					} catch (IOException exc) {
-
-						exc.printStackTrace();
-					}
-
-					System.out.println(setting);
-					if (setting == null) {
-						exists = false;
-					} else {
-						String[] file_ids = null;
-						String ids = ((String) setting.get("files"));
-						if (ids.contains(",")) {
-							file_ids = ((String) setting.get("files")).split(",");
-						}
-						if (file_ids != null) {
-							for (String file_id : file_ids) {
-								file_download(a.getId(), Long.parseLong(file_id));
-							}
-						}
-					}
-				} catch (ParseException e) {
-
-					e.printStackTrace();
-				}
-				a.setIssue_fk(issue);
-				article_storage.put(a.getId(), a);
-				author_primary_storage.put(a.getId(), new ConcurrentHashMap<Long, Boolean>());
-				System.out.println(a.getIssue_fk().getId());
-				issue.add_article(a.getId(), a);
-
-			} catch (ClientProtocolException e2) {
-				JOptionPane.showMessageDialog(null, "Lost connection to server.");
-				return;
-			} catch (IOException e2) {
-
-				JOptionPane.showMessageDialog(null, "Lost connection to server.");
-				return;
-			}
-		}
-		System.out.println(articles_list.size() + " - " + article_author_storage.size());
-		issue_storage.put(issue.getId(), issue);
-	}
-
 	public static Journal get_journal(long journal_id, String credentials) throws IOException {
 		Journal journal = null;
 		if (journal_storage.containsKey(journal_id)) {
@@ -9690,13 +8376,11 @@ public class Main {
 
 				e2.printStackTrace();
 			}
-			JsonFactory jsonf = new JsonFactory();
+			new JsonFactory();
 			InputStream result = response.getEntity().getContent();
 			org.json.simple.parser.JSONParser jsonParser = new JSONParser();
-			Long setting_pk = (long) -1;
 			jsonParser = new JSONParser();
-			boolean exists = true;
-			JSONObject setting_json = new JSONObject();
+			new JSONObject();
 			try {
 				JSONObject journal_json = (JSONObject) jsonParser.parse(IOUtils.toString(result));
 				journal = new Journal((long) journal_json.get("id"), (String) journal_json.get("path"),
@@ -9741,13 +8425,11 @@ public class Main {
 
 			e2.printStackTrace();
 		}
-		JsonFactory jsonf = new JsonFactory();
+		new JsonFactory();
 		InputStream result = response.getEntity().getContent();
 		org.json.simple.parser.JSONParser jsonParser = new JSONParser();
-		Long setting_pk = (long) -1;
 		jsonParser = new JSONParser();
-		boolean exists = true;
-		JSONObject setting_json = new JSONObject();
+		new JSONObject();
 		try {
 			JSONObject issues_json = (JSONObject) jsonParser.parse(IOUtils.toString(result));
 			String[] issue_ids = null;
@@ -9803,13 +8485,11 @@ public class Main {
 
 			e2.printStackTrace();
 		}
-		JsonFactory jsonf = new JsonFactory();
+		new JsonFactory();
 		InputStream result = response.getEntity().getContent();
 		org.json.simple.parser.JSONParser jsonParser = new JSONParser();
-		Long setting_pk = (long) -1;
 		jsonParser = new JSONParser();
-		boolean exists = true;
-		JSONObject setting_json = new JSONObject();
+		new JSONObject();
 		try {
 			JSONObject countdown_json = (JSONObject) jsonParser.parse(IOUtils.toString(result));
 			countdown = (int) (((int) (long) countdown_json.get("issues")) * 2
@@ -9853,12 +8533,10 @@ public class Main {
 
 			e2.printStackTrace();
 		}
-		JsonFactory jsonf = new JsonFactory();
+		new JsonFactory();
 		InputStream result = response.getEntity().getContent();
 		org.json.simple.parser.JSONParser jsonParser = new JSONParser();
-		boolean exists = true;
 		JSONObject issue_json = new JSONObject();
-		Issue issue = null;
 		try {
 			issue_json = (JSONObject) jsonParser.parse(IOUtils.toString(result));
 
@@ -9901,11 +8579,9 @@ public class Main {
 
 					e2.printStackTrace();
 				}
-				jsonf = new JsonFactory();
+				new JsonFactory();
 				result = response.getEntity().getContent();
-				Long setting_pk = (long) -1;
 				jsonParser = new JSONParser();
-				exists = true;
 				JSONObject setting_json = new JSONObject();
 				try {
 					JSONObject setting = (JSONObject) jsonParser.parse(IOUtils.toString(result));
@@ -9913,7 +8589,6 @@ public class Main {
 					System.out.println(setting);
 					Long count = (Long) setting.get("count");
 					if (count == null || count == 0) {
-						exists = false;
 					} else {
 						JSONArray results = (JSONArray) setting.get("results");
 						System.out.println(results.get(0));
@@ -9977,12 +8652,10 @@ public class Main {
 
 			e2.printStackTrace();
 		}
-		JsonFactory jsonf = new JsonFactory();
+		new JsonFactory();
 		InputStream result = response.getEntity().getContent();
 		org.json.simple.parser.JSONParser jsonParser = new JSONParser();
-		boolean exists = true;
 		JSONObject issue_json = new JSONObject();
-		Issue issue = null;
 		try {
 			JSONObject issue_obj = (JSONObject) jsonParser.parse(IOUtils.toString(result));
 			JSONArray array = (JSONArray) issue_obj.get("results");
@@ -10028,11 +8701,9 @@ public class Main {
 
 						e2.printStackTrace();
 					}
-					jsonf = new JsonFactory();
+					new JsonFactory();
 					result = response.getEntity().getContent();
-					Long setting_pk = (long) -1;
 					jsonParser = new JSONParser();
-					exists = true;
 					JSONObject setting_json = new JSONObject();
 					try {
 						JSONObject setting = (JSONObject) jsonParser.parse(IOUtils.toString(result));
@@ -10040,7 +8711,6 @@ public class Main {
 						System.out.println(setting);
 						Long count = (Long) setting.get("count");
 						if (count == null || count == 0) {
-							exists = false;
 						} else {
 							JSONArray results = (JSONArray) setting.get("results");
 							System.out.println(results.get(0));
@@ -10089,400 +8759,6 @@ public class Main {
 		return new_issues;
 	}
 
-	public static void get_authors_remote(long issue_id, String credentials, boolean update_local)
-			throws IllegalStateException, IOException {
-		boolean status = status_online();
-		System.out.println("GETTING AUTHORS");
-		if (!status) {
-			return;
-		}
-
-		int author_count = 0;
-		HttpGet httpGet = new HttpGet(String.format("%s/get/issue/authors/%s/?format=json", base_url, issue_id));
-		httpGet.addHeader("Authorization", "Basic " + credentials);
-		httpGet.setHeader("Accept", "application/json");
-		httpGet.addHeader("Content-type", "application/json");
-
-		HttpResponse response = null;
-		try {
-			response = httpClient.execute(httpGet);
-		} catch (ClientProtocolException e2) {
-
-			e2.printStackTrace();
-		} catch (IOException e2) {
-
-			e2.printStackTrace();
-		}
-		JsonFactory jsonf = new JsonFactory();
-		InputStream result = response.getEntity().getContent();
-		org.json.simple.parser.JSONParser jsonParser = new JSONParser();
-		boolean exists = true;
-		JSONObject author_json = new JSONObject();
-		try {
-			JSONObject issue_obj = (JSONObject) jsonParser.parse(IOUtils.toString(result));
-			JSONArray author_ids = (JSONArray) issue_obj.get("authors");
-			System.out.println(author_ids);
-			try {
-				InputStream is = response.getEntity().getContent();
-				is.close();
-			} catch (IOException exc) {
-
-				exc.printStackTrace();
-			}
-			for (int i = 0; i < author_ids.size(); i++) {
-				long author_current_id = (long) author_ids.get(i);
-				httpGet = new HttpGet(String.format("%s/authors/%s/?format=json", base_url, author_current_id));
-				httpGet.addHeader("Authorization", "Basic " + credentials);
-				httpGet.setHeader("Accept", "application/json");
-				httpGet.addHeader("Content-type", "application/json");
-
-				response = null;
-				try {
-					response = httpClient.execute(httpGet);
-				} catch (ClientProtocolException e2) {
-
-					e2.printStackTrace();
-				} catch (IOException e2) {
-
-					e2.printStackTrace();
-				}
-				result = response.getEntity().getContent();
-				jsonParser = new JSONParser();
-				exists = true;
-				author_json = (JSONObject) jsonParser.parse(IOUtils.toString(result));
-
-				System.out.println(author_storage.containsKey(author_id));
-				System.out.println("---" + author_storage.containsKey((long) author_id));
-				long author_id = (long) author_json.get("id");
-				System.out.println("---" + author_id);
-
-				System.out.println("ELSE");
-				Author new_author = new Author(author_id);
-
-				new_author = JSONToAuthor(author_json, new_author);
-
-				System.out.println(author_json);
-				HttpGet settingCheck = new HttpGet(
-						String.format("%s/get/setting/biography/author/%s/?format=json", base_url, new_author.getId()));
-				// settingCheck.setEntity(new
-				// StringEntity(obj.toJSONString()));
-				settingCheck.addHeader("Authorization", "Basic " + credentials);
-				settingCheck.setHeader("Accept", "application/json");
-				settingCheck.addHeader("Content-type", "application/json");
-
-				response = null;
-				try {
-					response = httpClient.execute(settingCheck);
-				} catch (ClientProtocolException e2) {
-
-					e2.printStackTrace();
-				} catch (IOException e2) {
-
-					e2.printStackTrace();
-				}
-				jsonf = new JsonFactory();
-				result = response.getEntity().getContent();
-				Long setting_pk = (long) -1;
-				jsonParser = new JSONParser();
-				exists = true;
-				JSONObject setting_json = new JSONObject();
-				if (response.getStatusLine().getStatusCode() == 200) {
-					try {
-						JSONObject setting = (JSONObject) jsonParser.parse(IOUtils.toString(result));
-
-						Long count = (Long) setting.get("count");
-						if (count == null || count == 0) {
-							exists = false;
-						} else {
-							JSONArray results = (JSONArray) setting.get("results");
-
-							setting_json = (JSONObject) results.get(0);
-							new_author.setBio((String) setting_json.get("setting_value"));
-						}
-					} catch (ParseException e) {
-
-						e.printStackTrace();
-					}
-
-				} else {
-					new_author.setBio("None");
-				}
-				try {
-					InputStream is = response.getEntity().getContent();
-					is.close();
-				} catch (IOException exc) {
-
-					exc.printStackTrace();
-				}
-				settingCheck = new HttpGet(
-						String.format("%s/get/setting/orcid/author/%s/?format=json", base_url, new_author.getId()));
-				// settingCheck.setEntity(new
-				// StringEntity(obj.toJSONString()));
-				settingCheck.addHeader("Authorization", "Basic " + credentials);
-				settingCheck.setHeader("Accept", "application/json");
-				settingCheck.addHeader("Content-type", "application/json");
-
-				response = null;
-				try {
-					response = httpClient.execute(settingCheck);
-				} catch (ClientProtocolException e2) {
-
-					e2.printStackTrace();
-				} catch (IOException e2) {
-
-					e2.printStackTrace();
-				}
-				jsonf = new JsonFactory();
-				result = response.getEntity().getContent();
-				setting_pk = (long) -1;
-				jsonParser = new JSONParser();
-				exists = true;
-				setting_json = new JSONObject();
-
-				if (response.getStatusLine().getStatusCode() == 200) {
-					try {
-						JSONObject setting = (JSONObject) jsonParser.parse(IOUtils.toString(result));
-
-						Long count = (Long) setting.get("count");
-						if (count == null || count == 0) {
-							exists = false;
-						} else {
-							JSONArray results = (JSONArray) setting.get("results");
-
-							setting_json = (JSONObject) results.get(0);
-							new_author.setOrcid((String) setting_json.get("setting_value"));
-						}
-					} catch (ParseException e) {
-
-						e.printStackTrace();
-					}
-
-				} else {
-					new_author.setOrcid("None.");
-				}
-				try {
-					InputStream is = response.getEntity().getContent();
-					is.close();
-				} catch (IOException exc) {
-
-					exc.printStackTrace();
-				}
-				settingCheck = new HttpGet(String.format("%s/get/setting/department/author/%s/?format=json", base_url,
-						new_author.getId()));
-				// settingCheck.setEntity(new
-				// StringEntity(obj.toJSONString()));
-				settingCheck.addHeader("Authorization", "Basic " + credentials);
-				settingCheck.setHeader("Accept", "application/json");
-				settingCheck.addHeader("Content-type", "application/json");
-
-				response = null;
-				try {
-					response = httpClient.execute(settingCheck);
-				} catch (ClientProtocolException e2) {
-
-					e2.printStackTrace();
-				} catch (IOException e2) {
-
-					e2.printStackTrace();
-				}
-				jsonf = new JsonFactory();
-				result = response.getEntity().getContent();
-				setting_pk = (long) -1;
-				jsonParser = new JSONParser();
-				exists = true;
-				setting_json = new JSONObject();
-
-				if (response.getStatusLine().getStatusCode() == 200) {
-					try {
-						JSONObject setting = (JSONObject) jsonParser.parse(IOUtils.toString(result));
-
-						Long count = (Long) setting.get("count");
-						if (count == null || count == 0) {
-							exists = false;
-						} else {
-							JSONArray results = (JSONArray) setting.get("results");
-
-							setting_json = (JSONObject) results.get(0);
-							new_author.setDepartment((String) setting_json.get("setting_value"));
-						}
-					} catch (ParseException e) {
-
-						e.printStackTrace();
-					}
-
-				} else {
-					new_author.setDepartment("None.");
-				}
-				try {
-					InputStream is = response.getEntity().getContent();
-					is.close();
-				} catch (IOException exc) {
-
-					exc.printStackTrace();
-				}
-				settingCheck = new HttpGet(String.format("%s/get/setting/affiliation/author/%s/?format=json", base_url,
-						new_author.getId()));
-				// settingCheck.setEntity(new
-				// StringEntity(obj.toJSONString()));
-				settingCheck.addHeader("Authorization", "Basic " + credentials);
-				settingCheck.setHeader("Accept", "application/json");
-				settingCheck.addHeader("Content-type", "application/json");
-
-				response = null;
-				try {
-					response = httpClient.execute(settingCheck);
-				} catch (ClientProtocolException e2) {
-
-					e2.printStackTrace();
-				} catch (IOException e2) {
-
-					e2.printStackTrace();
-				}
-				jsonf = new JsonFactory();
-				result = response.getEntity().getContent();
-				setting_pk = (long) -1;
-				jsonParser = new JSONParser();
-				exists = true;
-				setting_json = new JSONObject();
-
-				if (response.getStatusLine().getStatusCode() == 200) {
-					try {
-						JSONObject setting = (JSONObject) jsonParser.parse(IOUtils.toString(result));
-
-						Long count = (Long) setting.get("count");
-						if (count == null || count == 0) {
-							exists = false;
-						} else {
-							JSONArray results = (JSONArray) setting.get("results");
-
-							setting_json = (JSONObject) results.get(0);
-							new_author.setAffiliation((String) setting_json.get("setting_value"));
-						}
-					} catch (ParseException e) {
-
-						e.printStackTrace();
-					}
-
-				} else {
-					new_author.setAffiliation("None.");
-				}
-				try {
-					InputStream is = response.getEntity().getContent();
-					is.close();
-				} catch (IOException exc) {
-
-					exc.printStackTrace();
-				}
-				settingCheck = new HttpGet(
-						String.format("%s/get/setting/twitter/author/%s/?format=json", base_url, new_author.getId()));
-				// settingCheck.setEntity(new
-				// StringEntity(obj.toJSONString()));
-				settingCheck.addHeader("Authorization", "Basic " + credentials);
-				settingCheck.setHeader("Accept", "application/json");
-				settingCheck.addHeader("Content-type", "application/json");
-
-				response = null;
-				try {
-					response = httpClient.execute(settingCheck);
-				} catch (ClientProtocolException e2) {
-
-					e2.printStackTrace();
-				} catch (IOException e2) {
-
-					e2.printStackTrace();
-				}
-				jsonf = new JsonFactory();
-				result = response.getEntity().getContent();
-				setting_pk = (long) -1;
-				jsonParser = new JSONParser();
-				exists = true;
-				setting_json = new JSONObject();
-
-				if (response.getStatusLine().getStatusCode() == 200) {
-					try {
-						JSONObject setting = (JSONObject) jsonParser.parse(IOUtils.toString(result));
-
-						Long count = (Long) setting.get("count");
-						if (count == null || count == 0) {
-							exists = false;
-						} else {
-							JSONArray results = (JSONArray) setting.get("results");
-
-							setting_json = (JSONObject) results.get(0);
-							new_author.setTwitter((String) setting_json.get("setting_value"));
-						}
-					} catch (ParseException e) {
-
-						e.printStackTrace();
-					}
-
-				} else {
-					new_author.setTwitter("None.");
-				}
-				try {
-					InputStream is = response.getEntity().getContent();
-					is.close();
-				} catch (IOException exc) {
-
-					exc.printStackTrace();
-				}
-				System.out.println(article_storage.containsKey((long) new_author.getArticle_id()));
-				System.out.println(article_storage.containsKey(new_author.getArticle_id()));
-				if (article_storage.containsKey((long) new_author.getArticle_id())) {
-					if (!article_author_storage.containsKey(new_author.getArticle_id())) {
-						ArrayList<Author> new_authors = new ArrayList<Author>();
-						new_authors.add(new_author);
-						article_author_storage.put(new_author.getArticle_id(), new_authors);
-					} else {
-						ArrayList<Author> existing_authors = article_author_storage.get(new_author.getArticle_id());
-						existing_authors.add(new_author);
-						article_author_storage.put(new_author.getArticle_id(), existing_authors);
-					}
-					Article this_article = article_storage.get(new_author.getArticle_id());
-					issue_id = this_article.getIssue_fk().getId();
-					Issue this_issue = issue_storage.get(issue_id);
-
-					this_issue.add_author(this_article.getId(), new_author);
-					this_article.add_author(new_author);
-					article_storage.put(this_article.getId(), this_article);
-					this_issue.add_article(this_article.getId(), this_article);
-					issue_storage.put(issue_id, this_issue);
-					System.out.println(new_author);
-					author_storage.put(new_author.getId(), new_author);
-					ConcurrentHashMap<Long, Boolean> primary = author_primary_storage.get(this_article.getId());
-					primary.put(new_author.getId(), false);
-					author_primary_storage.put(this_article.getId(), primary);
-					System.out.println("Authors: " + article_author_storage.get(new_author.getArticle_id()).size());
-
-				}
-			}
-
-			/*
-			 * System.out.println(issue_obj.get("count"));
-			 * System.out.println(issue_obj); String detail = (String)
-			 * issue_obj.get("detail"); if (detail == null) { exists = false; }
-			 * else { JSONArray results = (JSONArray) issue_obj.get("results");
-			 * System.out.println(results.get(0)); issue_json = (JSONObject)
-			 * results.get(0); System.out.println(issue_json.get("id")); issue =
-			 * JSONToIssue(issue_json, issue); }
-			 */
-		} catch (ParseException e) {
-
-			e.printStackTrace();
-		}
-		try {
-			InputStream is = response.getEntity().getContent();
-			is.close();
-		} catch (IOException exc) {
-
-			exc.printStackTrace();
-		}
-
-		System.out.println("Authors: " + author_storage.size());
-		System.out.println("Authors: " + author_count);
-
-	}
-
 	public static void get_authors_remote_single_request(long issue_id, String credentials, boolean update_local)
 			throws IllegalStateException, IOException {
 		boolean status = status_online();
@@ -10508,12 +8784,10 @@ public class Main {
 			System.out.println(String.format("%s/get/issue/authors/%s/?format=json", base_url, issue_id));
 			e2.printStackTrace();
 		}
-		JsonFactory jsonf = new JsonFactory();
+		new JsonFactory();
 		if (response.getStatusLine().getStatusCode() == 200) {
 			InputStream result = response.getEntity().getContent();
 			org.json.simple.parser.JSONParser jsonParser = new JSONParser();
-			boolean exists = true;
-
 			JSONObject author_json = new JSONObject();
 			try {
 				JSONObject issue_obj = (JSONObject) jsonParser.parse(IOUtils.toString(result));
@@ -10545,7 +8819,6 @@ public class Main {
 					}
 					result = response.getEntity().getContent();
 					jsonParser = new JSONParser();
-					exists = true;
 					author_json = (JSONObject) jsonParser.parse(IOUtils.toString(result));
 
 					System.out.println(author_storage.containsKey(author_id));
@@ -10663,7 +8936,6 @@ public class Main {
 			return;
 		}
 		ArrayList<Author> issue_authors = issue.getAuthors();
-		int author_count = 0;
 		for (Author author : issue_authors) {
 
 			JSONObject obj = AuthorToJSON(author);
@@ -10686,7 +8958,7 @@ public class Main {
 			if (response.getStatusLine().getStatusCode() == 200) {
 				author_created = true;
 			}
-			JsonFactory jsonf = new JsonFactory();
+			new JsonFactory();
 			InputStream result = response.getEntity().getContent();
 			try {
 				InputStream is = response.getEntity().getContent();
@@ -10763,9 +9035,8 @@ public class Main {
 
 				e2.printStackTrace();
 			}
-			jsonf = new JsonFactory();
+			new JsonFactory();
 			result = response.getEntity().getContent();
-			boolean setting_created = false;
 			if (response.getStatusLine().getStatusCode() == 200) {
 				author_created = true;
 			}
@@ -10882,9 +9153,8 @@ public class Main {
 
 				e2.printStackTrace();
 			}
-			jsonf = new JsonFactory();
+			new JsonFactory();
 			result = response.getEntity().getContent();
-			setting_created = false;
 			if (response.getStatusLine().getStatusCode() == 200) {
 				author_created = true;
 			}
@@ -10993,9 +9263,8 @@ public class Main {
 
 				e2.printStackTrace();
 			}
-			jsonf = new JsonFactory();
+			new JsonFactory();
 			result = response.getEntity().getContent();
-			setting_created = false;
 			if (response.getStatusLine().getStatusCode() == 200) {
 				author_created = true;
 			}
@@ -11106,9 +9375,8 @@ public class Main {
 
 				e2.printStackTrace();
 			}
-			jsonf = new JsonFactory();
+			new JsonFactory();
 			result = response.getEntity().getContent();
-			setting_created = false;
 			if (response.getStatusLine().getStatusCode() == 200) {
 				author_created = true;
 			}
@@ -11218,9 +9486,8 @@ public class Main {
 
 				e2.printStackTrace();
 			}
-			jsonf = new JsonFactory();
+			new JsonFactory();
 			result = response.getEntity().getContent();
-			setting_created = false;
 			if (response.getStatusLine().getStatusCode() == 200) {
 				author_created = true;
 			}
@@ -11328,7 +9595,6 @@ public class Main {
 			return;
 		}
 		ArrayList<Author> issue_authors = article.getAuthors();
-		int author_count = 0;
 		for (Author author : issue_authors) {
 
 			JSONObject obj = AuthorToJSON(author);
@@ -11351,8 +9617,8 @@ public class Main {
 			if (response.getStatusLine().getStatusCode() == 200) {
 				author_created = true;
 			}
-			JsonFactory jsonf = new JsonFactory();
-			InputStream result = response.getEntity().getContent();
+			new JsonFactory();
+			response.getEntity().getContent();
 			try {
 				InputStream is = response.getEntity().getContent();
 				is.close();
@@ -11360,7 +9626,7 @@ public class Main {
 
 				exc.printStackTrace();
 			}
-			org.json.simple.parser.JSONParser jsonParser = new JSONParser();
+			new JSONParser();
 			if (author_created) {
 				HttpPut httpPut = new HttpPut(String.format("%s/authors/%s/", base_url, author.getId()));
 				httpPut.setEntity(new StringEntity(obj.toJSONString()));
@@ -11413,16 +9679,14 @@ public class Main {
 			}
 			String json_settings = String.format(
 					"{'affiliation':'%s','biography':'%s','department':'%s','orcid':'%s','author':%s, 'twitter':'%s'}",
-					new String(author.getAffiliation().getBytes("windows-1252"), "UTF-8"),
-					new String(author.getBio().getBytes("windows-1252"), "UTF-8"),
-					new String(author.getDepartment().getBytes("windows-1252"), "UTF-8"),
-					new String(author.getOrcid().getBytes("windows-1252"), "UTF-8"),
-					author.getId(),
-					new String(author.getTwitter().getBytes("windows-1252"), "UTF-8"));
-			
+					author.getAffiliation() == null? "" :new String(author.getAffiliation().getBytes("windows-1252"), "UTF-8"),
+					author.getBio() == null? "" :new String(author.getBio().getBytes("windows-1252"), "UTF-8"),
+					author.getDepartment() == null? "" :new String(author.getDepartment().getBytes("windows-1252"), "UTF-8"),
+					author.getOrcid() == null? "" :new String(author.getOrcid().getBytes("windows-1252"), "UTF-8"), author.getId(),
+					author.getTwitter() == null? "" : new String(author.getTwitter().getBytes("windows-1252"), "UTF-8"));
+
 			System.out.println(json_settings);
-			HttpPut httpPut = new HttpPut(
-					String.format("%s/custom/authors/", base_url));
+			HttpPut httpPut = new HttpPut(String.format("%s/custom/authors/", base_url));
 
 			System.out.println(json_settings);
 			httpPut.setEntity(new StringEntity(json_settings));
@@ -11447,7 +9711,7 @@ public class Main {
 
 				exc.printStackTrace();
 			}
-		
+
 		}
 
 	}
@@ -11476,13 +9740,11 @@ public class Main {
 			System.out.println(String.format("%s/get/sections/%s/?format=json", base_url, journal_id));
 			e2.printStackTrace();
 		}
-		JsonFactory jsonf = new JsonFactory();
+		new JsonFactory();
 		if (response.getStatusLine().getStatusCode() == 200) {
 			InputStream result = response.getEntity().getContent();
 			org.json.simple.parser.JSONParser jsonParser = new JSONParser();
-			boolean exists = true;
-
-			JSONObject author_json = new JSONObject();
+			new JSONObject();
 			try {
 				JSONObject journal_json = (JSONObject) jsonParser.parse(IOUtils.toString(result));
 
@@ -11550,10 +9812,9 @@ public class Main {
 
 			e2.printStackTrace();
 		}
-		JsonFactory jsonf = new JsonFactory();
+		new JsonFactory();
 		InputStream result = response.getEntity().getContent();
 		org.json.simple.parser.JSONParser jsonParser = new JSONParser();
-		boolean exists = true;
 		JSONObject issue_json = new JSONObject();
 		try {
 			JSONObject issue_obj = (JSONObject) jsonParser.parse(IOUtils.toString(result));
@@ -11561,7 +9822,6 @@ public class Main {
 			System.out.println(issue_obj);
 			String detail = (String) issue_obj.get("detail");
 			if (detail == null) {
-				exists = false;
 			} else {
 				JSONArray results = (JSONArray) issue_obj.get("results");
 				System.out.println(results.get(0));
@@ -11598,11 +9858,9 @@ public class Main {
 
 			e2.printStackTrace();
 		}
-		jsonf = new JsonFactory();
+		new JsonFactory();
 		result = response.getEntity().getContent();
-		Long setting_pk = (long) -1;
 		jsonParser = new JSONParser();
-		exists = true;
 		JSONObject setting_json = new JSONObject();
 		try {
 			JSONObject setting = (JSONObject) jsonParser.parse(IOUtils.toString(result));
@@ -11610,7 +9868,6 @@ public class Main {
 			System.out.println(setting);
 			Long count = (Long) setting.get("count");
 			if (count == null || count == 0) {
-				exists = false;
 			} else {
 				JSONArray results = (JSONArray) setting.get("results");
 				System.out.println(results.get(0));
@@ -11723,44 +9980,18 @@ public class Main {
 		return obj;
 	}
 
-	public static Article JSONToArticle(JSONObject obj, Issue issue) {
-		String date_p = (String) obj.get("date_submitted");
-		String user_id = (String) obj.get("user");
-		user_id = user_id.substring(0, user_id.lastIndexOf("/"));
-		user_id = user_id.substring(user_id.lastIndexOf("/") + 1);
-		System.out.println(user_id);
-
-		Article new_article = new Article((long) obj.get("id"), (long) obj.get("section_id"), (String) obj.get("pages"),
-				Long.parseLong(user_id), (String) obj.get("locale"), (String) obj.get("language"),
-				(int) (long) obj.get("status"), (int) (long) obj.get("submission_progress"),
-				(int) (long) obj.get("current_round"), (int) (long) obj.get("fast_tracked"),
-				(int) (long) obj.get("hide_author"), (int) (long) obj.get("comments_status"), issue);
-		if (date_p != null && date_p.compareTo("") != 0) {
-
-			try {
-				new_article.setDate_submitted((Date) sdf.parse(date_p.substring(0, 10).replace('-', '/')));
-			} catch (java.text.ParseException e) {
-
-				e.printStackTrace();
-			}
-		}
-		return new_article;
-	}
-
 	public static Article JSONToArticle_single_request(JSONObject obj, Issue issue) {
 		String date_p = (String) obj.get("date_submitted");
 		Long user_id = (Long) obj.get("user");
 		System.out.println(user_id);
 		String date_published = ((String) obj.get("date_published"));
 
-	
-	
 		Article new_article = new Article((long) obj.get("id"), (long) obj.get("section_id"), (String) obj.get("pages"),
 				user_id, (String) obj.get("locale"), (String) obj.get("language"), (int) (long) obj.get("status"),
 				(int) (long) obj.get("submission_progress"), (int) (long) obj.get("current_round"),
 				(int) (long) obj.get("fast_tracked"), (int) (long) obj.get("hide_author"),
 				(int) (long) obj.get("comments_status"), issue);
-		if (date_published!=null && date_p.compareTo("") != 0 && date_published.isEmpty()!=true){
+		if (date_published != null && date_p.compareTo("") != 0 && date_published.isEmpty() != true) {
 			new_article.setPublished_pk((long) obj.get("published_pk"));
 			try {
 				new_article.setDate_published((Date) sdf.parse(date_published.substring(0, 10).replace('-', '/')));
@@ -11783,7 +10014,7 @@ public class Main {
 
 	public static Author JSONToAuthor(JSONObject obj, Author author) {
 
-		long id = (long) obj.get("id");
+		obj.get("id");
 		String article_url = (String) obj.get("article");
 
 		article_url = article_url.substring(0, article_url.lastIndexOf("/"));
@@ -11812,7 +10043,7 @@ public class Main {
 	public static Section JSONToSection(JSONObject obj) {
 
 		long id = (long) obj.get("id");
-		double seq = (Double) obj.get("seq");
+		obj.get("seq");
 		String title = (String) obj.get("title");
 		int editor_restricted = (int) (long) obj.get("editor_restricted");
 		int meta_indexed = (int) (long) obj.get("meta_indexed");
@@ -11831,7 +10062,7 @@ public class Main {
 
 	public static Author JSONToAuthor_single_request(JSONObject obj, Author author) {
 
-		long id = (long) obj.get("id");
+		obj.get("id");
 		long article_id = (Long) obj.get("article");
 
 		author.setArticle_id(article_id);
@@ -12100,7 +10331,7 @@ public class Main {
 		File f = new File(path);
 		System.out.println("File Length = " + f.length());
 
-		FileInputStream input = new FileInputStream(f);
+		new FileInputStream(f);
 		HttpPost fileUpload = new HttpPost(String.format("%s/upload/file/%s/", base_url, article_id));
 
 		fileUpload.addHeader("Authorization", "Basic " + encoding);
@@ -12126,7 +10357,7 @@ public class Main {
 
 			e2.printStackTrace();
 		}
-		JsonFactory jsonf = new JsonFactory();
+		new JsonFactory();
 		System.out.println(response.getStatusLine().getStatusCode());
 		if (response.getStatusLine().getStatusCode() != 204) {
 			InputStream result = response.getEntity().getContent();
@@ -12144,7 +10375,7 @@ public class Main {
 		File f = new File(path);
 		System.out.println("File Length = " + f.length());
 
-		FileInputStream input = new FileInputStream(f);
+		new FileInputStream(f);
 		HttpPost fileUpload = new HttpPost(
 				String.format("%s/upload/specific/file/%d/%d/", base_url, article_id, specific_id));
 
@@ -12171,7 +10402,7 @@ public class Main {
 
 			e2.printStackTrace();
 		}
-		JsonFactory jsonf = new JsonFactory();
+		new JsonFactory();
 		System.out.println(response.getStatusLine().getStatusCode());
 		if (response.getStatusLine().getStatusCode() != 204) {
 			InputStream result = response.getEntity().getContent();
@@ -12189,7 +10420,7 @@ public class Main {
 		File f = new File(file.getPath());
 		System.out.println("File Length = " + f.length());
 
-		FileInputStream input = new FileInputStream(f);
+		new FileInputStream(f);
 		HttpPost fileUpload = new HttpPost(
 				String.format("%s/upload/specific/file/%d/%d/", base_url, article_id, file.getId()));
 
@@ -12216,7 +10447,7 @@ public class Main {
 
 			e2.printStackTrace();
 		}
-		JsonFactory jsonf = new JsonFactory();
+		new JsonFactory();
 		System.out.println(response.getStatusLine().getStatusCode());
 		if (response.getStatusLine().getStatusCode() != 204) {
 			InputStream result = response.getEntity().getContent();
@@ -12246,7 +10477,7 @@ public class Main {
 
 			e2.printStackTrace();
 		}
-		JsonFactory jsonf = new JsonFactory();
+		new JsonFactory();
 		System.out.println(response.getStatusLine().getStatusCode());
 		if (response.getStatusLine().getStatusCode() != 204) {
 			InputStream result = response.getEntity().getContent();
@@ -12276,10 +10507,9 @@ public class Main {
 			e2.printStackTrace();
 		}
 		InputStream result = response.getEntity().getContent();
-		JsonFactory jsonf = new JsonFactory();
+		new JsonFactory();
 		org.json.simple.parser.JSONParser jsonParser = new JSONParser();
-		boolean exists = true;
-		JSONObject author_json = new JSONObject();
+		new JSONObject();
 		JSONObject issue_obj;
 		try {
 			issue_obj = (JSONObject) jsonParser.parse(IOUtils.toString(result));
