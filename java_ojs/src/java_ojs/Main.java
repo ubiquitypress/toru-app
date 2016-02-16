@@ -2290,7 +2290,7 @@ public class Main {
 							for (long key : issue_keys) {
 								issue_countdown_storage.put((long) key, false);
 							}
-							if (!issue_keys.isEmpty()){
+							if (!issue_keys.isEmpty()) {
 								int dialogResult2 = JOptionPane.showConfirmDialog(null,
 										"Would You Like to replace local Section data (Yes) or update remote Secton data (No)",
 										"Warning", 1);
@@ -2303,13 +2303,16 @@ public class Main {
 												get_sections(Long.parseLong(app_settings.get("journal_id")), encoding,
 														false);
 											} catch (NumberFormatException e) {
-												// TODO Auto-generated catch block
+												// TODO Auto-generated catch
+												// block
 												e.printStackTrace();
 											} catch (IllegalStateException e) {
-												// TODO Auto-generated catch block
+												// TODO Auto-generated catch
+												// block
 												e.printStackTrace();
 											} catch (IOException e) {
-												// TODO Auto-generated catch block
+												// TODO Auto-generated catch
+												// block
 												e.printStackTrace();
 											}
 										}
@@ -2329,7 +2332,9 @@ public class Main {
 												"Issue %s <%s>: Would You Like to replace local data (Yes) or update remote data (No)",
 												current_issue.getTitle(), Long.toString(issue_id)),
 										"Warning", 1);
-
+								if (dialogResult == JOptionPane.CANCEL_OPTION) {
+									issue_countdown_storage.put((long) current_issue.getId(), true);
+								}
 								if (dialogResult == JOptionPane.NO_OPTION) {
 									progress_executor.execute(new Runnable() {
 										public void run() {
@@ -2493,7 +2498,7 @@ public class Main {
 										public void run() {
 											try {
 												update_articles_intersect(current_issue, encoding);
-												sync_authors_intersect(issue_id, encoding, false);
+											//	sync_authors_intersect(issue_id, encoding, false);
 
 											} catch (IllegalStateException | IOException e1) {
 												// TODO Auto-generated
@@ -2629,8 +2634,8 @@ public class Main {
 
 												public void run() {
 													try {
-														get_sections(Long.parseLong(app_settings.get("journal_id")), encoding,
-																false);
+														get_sections(Long.parseLong(app_settings.get("journal_id")),
+																encoding, false);
 														new_issues = update_get_issues_from_remote(encoding, false);
 													} catch (IllegalStateException e) {
 
@@ -3843,32 +3848,46 @@ public class Main {
 
 						boolean update_table = false;
 						if (!current_issue.getArticles_list().isEmpty()) {
+
+							issue_countdown_storage.put((long) current_issue.getId(), false);
 							int dialogResult = JOptionPane.showConfirmDialog(null,
 									"Would You Like to replace local data (Yes) or update remote data (No)", "Warning",
 									1);
-
+							if (dialogResult == JOptionPane.CANCEL_OPTION) {
+								issue_countdown_storage.put((long) current_issue.getId(), true);
+							}
 							if (dialogResult == JOptionPane.NO_OPTION) {
-								progress_executor.execute(new Runnable() {
+								article_progress_executor.execute(new Runnable() {
 									public void run() {
-										int countdown = current_issue.getArticles_list().size() * 7 + 80
-												+ current_issue.getAuthors().size() * 5;
+										int countdown = current_issue.getArticles_list().size() * 10 + 80
+												+ current_issue.getAuthors().size() * 8;
 										System.out.println("countdown " + countdown);
-										double decimal = (current_issue.getArticles_list().size() * 7 + 80
-												+ current_issue.getAuthors().size() * 5) / 100;
+										double decimal = (current_issue.getArticles_list().size() * 10 + 80
+												+ current_issue.getAuthors().size() * 8) / 100;
 										System.out.println(decimal);
 										for (int i = 0; i < countdown; i++) {
 											final int percent = i;
+											if (issue_countdown_storage.get((long) current_issue.getId())) {
+												progressBar.setValue(100);
+												progressBar.repaint();
+												break;
+											}
 											SwingUtilities.invokeLater(new Runnable() {
 												public void run() {
-													progressBar.setValue(percent == 0 ? 0
-															: (int) Double.parseDouble(
-																	String.format("%s", percent / decimal)));
-													progressBar.repaint();
+													if (issue_countdown_storage
+															.get((long) current_issue.getId())) {
+														progressBar.setValue(100);
+													} else {
+														progressBar.setValue(percent == 0 ? 0
+																: (int) Double.parseDouble(
+																		String.format("%s", percent / decimal)));
+														progressBar.repaint();
+													}
 												}
 											});
 
 											try {
-												Thread.sleep(100);
+												Thread.sleep(95);
 											} catch (InterruptedException e) {
 											}
 										}
@@ -3917,12 +3936,23 @@ public class Main {
 										System.out.println(decimal);
 										for (int i = 0; i < countdown; i++) {
 											final int percent = i;
+											if (issue_countdown_storage.get((long) current_issue.getId()) == true) {
+												progressBar.setValue(100);
+												progressBar.repaint();
+												break;
+											}
 											SwingUtilities.invokeLater(new Runnable() {
 												public void run() {
-													progressBar.setValue(percent == 0 ? 0
-															: (int) Double.parseDouble(
-																	String.format("%s", percent / decimal)));
-													progressBar.repaint();
+													if (issue_countdown_storage
+															.get((long) current_issue.getId()) == true) {
+														progressBar.setValue(100);
+														progressBar.repaint();
+													} else {
+														progressBar.setValue(percent == 0 ? 0
+																: (int) Double.parseDouble(
+																		String.format("%s", percent / decimal)));
+														progressBar.repaint();
+													}
 												}
 											});
 
@@ -3960,7 +3990,6 @@ public class Main {
 									}
 								});
 								futures.add(f);
-								articles.repaint();
 
 							}
 						} else {
@@ -3978,12 +4007,22 @@ public class Main {
 									System.out.println(decimal);
 									for (int i = 0; i < countdown; i++) {
 										final int percent = i;
+										if (issue_countdown_storage.get((long) current_issue.getId()) == true) {
+											progressBar.setValue(100);
+											progressBar.repaint();
+											break;
+										}
 										SwingUtilities.invokeLater(new Runnable() {
 											public void run() {
-												progressBar.setValue(percent == 0 ? 0
-														: (int) Double
-																.parseDouble(String.format("%s", percent / decimal)));
-												progressBar.repaint();
+												if (issue_countdown_storage.get((long) current_issue.getId()) == true) {
+													progressBar.setValue(100);
+													progressBar.repaint();
+												} else {
+													progressBar.setValue(percent == 0 ? 0
+															: (int) Double.parseDouble(
+																	String.format("%s", percent / decimal)));
+													progressBar.repaint();
+												}
 											}
 										});
 
@@ -4014,80 +4053,102 @@ public class Main {
 								}
 							});
 						}
-						;
+
 						boolean update_q = update_table;
 						article_progress_executor.execute(new Runnable() {
 							public void run() {
-								boolean done = false;
-								while (!done) {
-									done = true;
-									for (Future<?> f : futures) {
-										if (!f.isDone()) {
-											done = false;
+								for (Future<?> f : futures) {
+									try {
+										f.get();
+									} catch (InterruptedException e) {
+										// TODO Auto-generated catch block
+										e.printStackTrace();
+									} catch (ExecutionException e) {
+										// TODO Auto-generated catch block
+										e.printStackTrace();
+									}
+
+								}
+							}
+						});
+						System.out.println("ARTICLES: " + current_issue.getArticles_list().size());
+						System.out.println("ARTICLES: "
+								+ issue_storage.get((long) current_issue.getId()).getArticles_list().size());
+						if (status_online()) {
+							dialogResult = JOptionPane.showConfirmDialog(null,
+									"Would You Like to replace local Author data (Yes) or update remote Author data (No)",
+									"Warning", 1);
+
+							if (dialogResult == JOptionPane.NO_OPTION) {
+						/*		Future<?> f = exec.submit(new Runnable() {
+
+									public void run() {
+
+										try {
+											sync_authors_intersect(issue_id, encoding, false);
+										} catch (IllegalStateException e2) {
+
+											e2.printStackTrace();
+										} catch (IOException e2) {
+
+											e2.printStackTrace();
 										}
-
 									}
-								}
-								if (status_online()) {
-									int dialogResult = JOptionPane.showConfirmDialog(null,
-											"Would You Like to replace local Author data (Yes) or update remote Author data (No)",
-											"Warning", 1);
+								});
 
-									if (dialogResult == JOptionPane.NO_OPTION) {
-										Future<?> f = exec.submit(new Runnable() {
+								futures.add(f);*/
+							} else if (dialogResult == JOptionPane.YES_OPTION) {
+								Future<?> f = exec.submit(new Runnable() {
 
-											public void run() {
+									public void run() {
 
-												try {
-													sync_authors_intersect(issue_id, encoding, false);
-												} catch (IllegalStateException e2) {
+										try {
+											get_authors_remote_single_request(issue_id, encoding, false);
+										} catch (IllegalStateException e1) {
 
-													e2.printStackTrace();
-												} catch (IOException e2) {
+											e1.printStackTrace();
+										} catch (IOException e1) {
 
-													e2.printStackTrace();
-												}
-											}
-										});
-
-										futures.add(f);
-									} else if (dialogResult == JOptionPane.YES_OPTION) {
-										Future<?> f = exec.submit(new Runnable() {
-
-											public void run() {
-
-												try {
-													get_authors_remote_single_request(issue_id, encoding, false);
-												} catch (IllegalStateException e1) {
-
-													e1.printStackTrace();
-												} catch (IOException e1) {
-
-													e1.printStackTrace();
-												}
-											}
-										});
-										futures.add(f);
-									}
-								}
-								done = false;
-								while (!done) {
-									done = true;
-									for (Future<?> f : futures) {
-										if (!f.isDone()) {
-											done = false;
+											e1.printStackTrace();
 										}
-
 									}
+								});
+								futures.add(f);
+							}
+						}
+
+						article_progress_executor.execute(new Runnable() {
+							public void run() {
+								for (Future<?> f : futures) {
+									try {
+										f.get();
+									} catch (InterruptedException e) {
+										// TODO Auto-generated catch block
+										e.printStackTrace();
+									} catch (ExecutionException e) {
+										// TODO Auto-generated catch block
+										e.printStackTrace();
+									}
+
 								}
+							}
+						});
+						article_progress_executor.execute(new Runnable() {
+							public void run() {
+								System.out.println("AFTER ARTICLES: " + current_issue.getArticles_list().size());
+								System.out.println(" AFTER ARTICLES: "
+										+ issue_storage.get((long) current_issue.getId()).getArticles_list().size());
+
+								articles.dispose();
+								issue(issue_id);
+
 								int dialogResult = JOptionPane.showConfirmDialog(null,
 										"Save changes to local database?", "Warning", 1);
 
 								if (dialogResult == JOptionPane.YES_OPTION) {
 									database_save();
 								}
-								articles.dispose();
-								issue(issue_id);
+								System.out.println("updatet able" + update_q);
 								// change
 								if (update_q) {
 									ConcurrentHashMap<Long, Article> all_articles = current_issue.getArticles_list();
@@ -4175,6 +4236,7 @@ public class Main {
 									}
 
 								}
+
 								article_table.repaint();
 								articles.getContentPane().repaint();
 								articles.remove(progress_msg);
@@ -8426,16 +8488,21 @@ public class Main {
 		if (!issue_created) {
 			update_issue_intersect(issue, credentials);
 		}
-		ConcurrentHashMap<Long, Article> articles = issue.getArticles_list();
+
+		ConcurrentHashMap<Long, Article> allarticles = issue.getArticles_list();
+		ConcurrentHashMap<Long, Article> articles = issue.getSyncArticles_list();
+
 		Set<Long> article_keys = articles.keySet();
 		for (Long key : article_keys) {
 			Article current_article = articles.get(key);
+
+			System.out.println("sync: " + current_article.shouldBeSynced());
 			if (current_article.shouldBeSynced()) {
 				update_article_intersect(current_article, credentials);
+				sync_authors_intersect_article(current_article,credentials,false);
 				current_article.setSync(false);
-				issue.add_article((long) current_article.getId(), current_article);
+				allarticles.replace((long) current_article.getId(), current_article);
 				article_storage.put((long) current_article.getId(), current_article);
-				issue_storage.put((long) issue.getId(), issue);
 
 				ConcurrentHashMap<Long, ArticleFile> files = file_storage.get((long) current_article.getId());
 				// null
@@ -8512,8 +8579,11 @@ public class Main {
 				}
 			}
 		}
+		issue.setArticles_list(allarticles);
 		issue.setSync(false);
 		issue_storage.put((long) issue.getId(), issue);
+		issue_countdown_storage.put((long) issue.getId(),true);
+		System.out.println("END METHD: " + issue.getArticles_list().size());
 	}
 
 	public static void update_articles_local_single_request(Issue issue, String credentials)
@@ -10927,6 +10997,670 @@ public class Main {
 		}
 
 	}
+	public static void sync_authors_intersect_article(Article article, String credentials, boolean update_local)
+			throws IllegalStateException, IOException {
+		boolean status = status_online();
+		if (!status) {
+			return;
+		}
+		if (!article.shouldBeSynced()) {
+			return;
+		}
+		ArrayList<Author> issue_authors = article.getAuthors();
+		int author_count = 0;
+		for (Author author : issue_authors) {
+
+			JSONObject obj = AuthorToJSON(author);
+			HttpGet httpGet = new HttpGet(String.format("%s/authors/%s/?format=json", base_url, author.getId()));
+			httpGet.addHeader("Authorization", "Basic " + credentials);
+			httpGet.setHeader("Accept", "application/json");
+			httpGet.addHeader("Content-type", "application/json");
+
+			HttpResponse response = null;
+			try {
+				response = httpClient.execute(httpGet);
+			} catch (ClientProtocolException e2) {
+
+				e2.printStackTrace();
+			} catch (IOException e2) {
+
+				e2.printStackTrace();
+			}
+			boolean author_created = false;
+			if (response.getStatusLine().getStatusCode() == 200) {
+				author_created = true;
+			}
+			JsonFactory jsonf = new JsonFactory();
+			InputStream result = response.getEntity().getContent();
+			try {
+				InputStream is = response.getEntity().getContent();
+				is.close();
+			} catch (IOException exc) {
+
+				exc.printStackTrace();
+			}
+			org.json.simple.parser.JSONParser jsonParser = new JSONParser();
+			if (author_created) {
+				HttpPut httpPut = new HttpPut(String.format("%s/authors/%s/", base_url, author.getId()));
+				httpPut.setEntity(new StringEntity(obj.toJSONString()));
+				httpPut.addHeader("Authorization", "Basic " + credentials);
+				httpPut.setHeader("Accept", "application/json");
+				httpPut.addHeader("Content-type", "application/json");
+
+				response = null;
+				try {
+					response = httpClient.execute(httpPut);
+				} catch (ClientProtocolException e2) {
+
+					e2.printStackTrace();
+				} catch (IOException e2) {
+
+					e2.printStackTrace();
+				}
+				try {
+					InputStream is = response.getEntity().getContent();
+					is.close();
+				} catch (IOException exc) {
+
+					exc.printStackTrace();
+				}
+			} else {
+				System.out.println(obj.toJSONString());
+				HttpPost createAuthor = new HttpPost(String.format("%s/authors/", base_url));
+				createAuthor.setEntity(new StringEntity(obj.toJSONString()));
+				createAuthor.addHeader("Authorization", "Basic " + credentials);
+				createAuthor.setHeader("Accept", "application/json");
+				createAuthor.addHeader("Content-type", "application/json");
+
+				response = null;
+				try {
+					response = httpClient.execute(createAuthor);
+				} catch (ClientProtocolException e2) {
+
+					e2.printStackTrace();
+				} catch (IOException e2) {
+
+					e2.printStackTrace();
+				}
+				try {
+					InputStream is = response.getEntity().getContent();
+					is.close();
+				} catch (IOException exc) {
+
+					exc.printStackTrace();
+				}
+			}
+			HttpGet settingCheck = new HttpGet(
+					String.format("%s/get/setting/biography/author/%s/?format=json", base_url, author.getId()));
+			// settingCheck.setEntity(new StringEntity(obj.toJSONString()));
+			settingCheck.addHeader("Authorization", "Basic " + credentials);
+			settingCheck.setHeader("Accept", "application/json");
+			settingCheck.addHeader("Content-type", "application/json");
+
+			response = null;
+			try {
+				response = httpClient.execute(settingCheck);
+			} catch (ClientProtocolException e2) {
+
+				e2.printStackTrace();
+			} catch (IOException e2) {
+
+				e2.printStackTrace();
+			}
+			jsonf = new JsonFactory();
+			result = response.getEntity().getContent();
+			boolean setting_created = false;
+			if (response.getStatusLine().getStatusCode() == 200) {
+				author_created = true;
+			}
+			Long setting_pk = (long) -1;
+			jsonParser = new JSONParser();
+			boolean exists = true;
+			JSONObject setting_json = new JSONObject();
+			try {
+				JSONObject setting = (JSONObject) jsonParser.parse(IOUtils.toString(result));
+
+				System.out.println(setting);
+				Long count = (Long) setting.get("count");
+				if (count == null || count == 0) {
+					exists = false;
+				} else {
+					JSONArray results = (JSONArray) setting.get("results");
+					System.out.println(results.get(0));
+					setting_json = (JSONObject) results.get(0);
+					System.out.println(setting_json.get("pk"));
+					System.out.println(setting_json.get("setting_name"));
+					System.out.println(setting_json.get("setting_value"));
+					setting_pk = (long) setting_json.get("pk");
+					setting_json.put("setting_value", author.getBio());
+				}
+			} catch (ParseException e) {
+
+				e.printStackTrace();
+			}
+			try {
+				InputStream is = response.getEntity().getContent();
+				is.close();
+			} catch (IOException exc) {
+
+				exc.printStackTrace();
+			}
+			System.out.println(setting_json.isEmpty());
+			System.out.println(exists);
+			System.out.println(setting_pk);
+			if (setting_json.isEmpty()) {
+				setting_json = SettingToJSON("author", author.getId(), "biography", author.getBio(), "string", "en_US");
+			}
+
+			System.out.println(setting_json);
+			if (!exists) {
+				HttpPost httpPost = new HttpPost(String.format("%s/author-settings/", base_url));
+				httpPost.setEntity(new StringEntity(setting_json.toJSONString()));
+				httpPost.addHeader("Authorization", "Basic " + credentials);
+				httpPost.setHeader("Accept", "application/json");
+				httpPost.addHeader("Content-type", "application/json");
+				try {
+					response = httpClient.execute(httpPost);
+				} catch (ClientProtocolException e2) {
+
+					e2.printStackTrace();
+				} catch (IOException e2) {
+
+					e2.printStackTrace();
+				}
+			} else {
+
+				String value = setting_json.toJSONString();
+				byte[] b = value.getBytes("windows-1252");
+				for (byte bi : b) {
+					System.out.print(bi + " ");
+				}
+				System.out.println();
+				String setting_value = new String(b, "UTF-8");
+
+				System.out.println(setting_value.getBytes());
+				HttpPut httpPost = new HttpPut(String.format("%s/author-settings/%s/", base_url, setting_pk));
+				httpPost.setEntity(new StringEntity(setting_value));
+				httpPost.addHeader("Authorization", "Basic " + credentials);
+				httpPost.setHeader("Accept", "application/json");
+				httpPost.addHeader("Content-type", "application/json");
+				try {
+					response = httpClient.execute(httpPost);
+				} catch (ClientProtocolException e2) {
+
+					e2.printStackTrace();
+				} catch (IOException e2) {
+
+					e2.printStackTrace();
+				}
+			}
+			if (response.getStatusLine().getStatusCode() == 400) {
+				System.out.println("ERROR!! " + setting_json.toJSONString());
+
+				System.out.println("ERROR!! Author " + author.getId());
+
+				System.out.println("ERROR!!" + IOUtils.toString(response.getEntity().getContent()));
+			}
+			try {
+				InputStream is = response.getEntity().getContent();
+				is.close();
+			} catch (IOException exc) {
+
+				exc.printStackTrace();
+			}
+
+			settingCheck = new HttpGet(
+					String.format("%s/get/setting/orcid/author/%s/?format=json", base_url, author.getId()));
+			// settingCheck.setEntity(new StringEntity(obj.toJSONString()));
+			settingCheck.addHeader("Authorization", "Basic " + credentials);
+			settingCheck.setHeader("Accept", "application/json");
+			settingCheck.addHeader("Content-type", "application/json");
+
+			response = null;
+			try {
+				response = httpClient.execute(settingCheck);
+			} catch (ClientProtocolException e2) {
+
+				e2.printStackTrace();
+			} catch (IOException e2) {
+
+				e2.printStackTrace();
+			}
+			jsonf = new JsonFactory();
+			result = response.getEntity().getContent();
+			setting_created = false;
+			if (response.getStatusLine().getStatusCode() == 200) {
+				author_created = true;
+			}
+			setting_pk = (long) -1;
+			jsonParser = new JSONParser();
+			exists = true;
+			setting_json = new JSONObject();
+			try {
+				JSONObject setting = (JSONObject) jsonParser.parse(IOUtils.toString(result));
+				System.out.println(setting.get("count"));
+				System.out.println(setting);
+				Long count = (Long) setting.get("count");
+				if (count == null || count == 0) {
+					exists = false;
+				} else {
+					JSONArray results = (JSONArray) setting.get("results");
+					System.out.println(results.get(0));
+					setting_json = (JSONObject) results.get(0);
+					System.out.println(setting_json.get("pk"));
+					System.out.println(setting_json.get("setting_name"));
+					System.out.println(setting_json.get("setting_value"));
+					setting_pk = (long) setting_json.get("pk");
+					setting_json.put("setting_value", author.getOrcid());
+				}
+			} catch (ParseException e) {
+
+				e.printStackTrace();
+			}
+			try {
+				InputStream is = response.getEntity().getContent();
+				is.close();
+			} catch (IOException exc) {
+
+				exc.printStackTrace();
+			}
+			System.out.println(setting_json.isEmpty());
+			System.out.println(exists);
+			System.out.println(setting_pk);
+			if (setting_json.isEmpty()) {
+				setting_json = SettingToJSON("author", author.getId(), "orcid", author.getOrcid(), "string", "en_US");
+			}
+
+			System.out.println(setting_json);
+			if (!exists) {
+				HttpPost httpPost = new HttpPost(String.format("%s/author-settings/", base_url));
+				httpPost.setEntity(new StringEntity(setting_json.toJSONString()));
+				httpPost.addHeader("Authorization", "Basic " + credentials);
+				httpPost.setHeader("Accept", "application/json");
+				httpPost.addHeader("Content-type", "application/json");
+				try {
+					response = httpClient.execute(httpPost);
+				} catch (ClientProtocolException e2) {
+
+					e2.printStackTrace();
+				} catch (IOException e2) {
+
+					e2.printStackTrace();
+				}
+			} else {
+
+				String value = setting_json.toJSONString();
+				byte[] b = value.getBytes("windows-1252");
+				for (byte bi : b) {
+					System.out.print(bi + " ");
+				}
+				System.out.println();
+				String setting_value = new String(b, "UTF-8");
+
+				System.out.println(setting_value.getBytes());
+				HttpPut httpPost = new HttpPut(String.format("%s/author-settings/%s/", base_url, setting_pk));
+				httpPost.setEntity(new StringEntity(setting_value));
+				httpPost.addHeader("Authorization", "Basic " + credentials);
+				httpPost.setHeader("Accept", "application/json");
+				httpPost.addHeader("Content-type", "application/json");
+				try {
+					response = httpClient.execute(httpPost);
+				} catch (ClientProtocolException e2) {
+
+					e2.printStackTrace();
+				} catch (IOException e2) {
+
+					e2.printStackTrace();
+				}
+			}
+			try {
+				InputStream is = response.getEntity().getContent();
+				is.close();
+			} catch (IOException exc) {
+
+				exc.printStackTrace();
+			}
+			settingCheck = new HttpGet(
+					String.format("%s/get/setting/department/author/%s/?format=json", base_url, author.getId()));
+			// settingCheck.setEntity(new StringEntity(obj.toJSONString()));
+			settingCheck.addHeader("Authorization", "Basic " + credentials);
+			settingCheck.setHeader("Accept", "application/json");
+			settingCheck.addHeader("Content-type", "application/json");
+
+			response = null;
+			try {
+				response = httpClient.execute(settingCheck);
+			} catch (ClientProtocolException e2) {
+
+				e2.printStackTrace();
+			} catch (IOException e2) {
+
+				e2.printStackTrace();
+			}
+			jsonf = new JsonFactory();
+			result = response.getEntity().getContent();
+			setting_created = false;
+			if (response.getStatusLine().getStatusCode() == 200) {
+				author_created = true;
+			}
+			setting_pk = (long) -1;
+			jsonParser = new JSONParser();
+			exists = true;
+			setting_json = new JSONObject();
+			try {
+				JSONObject setting = (JSONObject) jsonParser.parse(IOUtils.toString(result));
+				System.out.println(setting.get("count"));
+				System.out.println(setting);
+				Long count = (Long) setting.get("count");
+				if (count == null || count == 0) {
+					exists = false;
+				} else {
+					JSONArray results = (JSONArray) setting.get("results");
+					System.out.println(results.get(0));
+					setting_json = (JSONObject) results.get(0);
+					System.out.println(setting_json.get("pk"));
+					System.out.println(setting_json.get("setting_name"));
+					System.out.println(setting_json.get("setting_value"));
+					setting_pk = (long) setting_json.get("pk");
+					setting_json.put("setting_value", author.getDepartment());
+				}
+			} catch (ParseException e) {
+
+				e.printStackTrace();
+			}
+			try {
+				InputStream is = response.getEntity().getContent();
+				is.close();
+			} catch (IOException exc) {
+
+				exc.printStackTrace();
+			}
+			System.out.println(setting_json.isEmpty());
+			System.out.println(exists);
+			System.out.println(setting_pk);
+			if (setting_json.isEmpty()) {
+				setting_json = SettingToJSON("author", author.getId(), "department", author.getDepartment(), "string",
+						"en_US");
+			}
+
+			System.out.println(setting_json);
+			if (!exists) {
+				HttpPost httpPost = new HttpPost(String.format("%s/author-settings/", base_url));
+				httpPost.setEntity(new StringEntity(setting_json.toJSONString()));
+				httpPost.addHeader("Authorization", "Basic " + credentials);
+				httpPost.setHeader("Accept", "application/json");
+				httpPost.addHeader("Content-type", "application/json");
+				try {
+					response = httpClient.execute(httpPost);
+				} catch (ClientProtocolException e2) {
+
+					e2.printStackTrace();
+				} catch (IOException e2) {
+
+					e2.printStackTrace();
+				}
+			} else {
+
+				String value = setting_json.toJSONString();
+				byte[] b = value.getBytes("windows-1252");
+				for (byte bi : b) {
+					System.out.print(bi + " ");
+				}
+				System.out.println();
+				String setting_value = new String(b, "UTF-8");
+
+				System.out.println(setting_value.getBytes());
+				HttpPut httpPost = new HttpPut(String.format("%s/author-settings/%s/", base_url, setting_pk));
+				httpPost.setEntity(new StringEntity(setting_value));
+				httpPost.addHeader("Authorization", "Basic " + credentials);
+				httpPost.setHeader("Accept", "application/json");
+				httpPost.addHeader("Content-type", "application/json");
+				try {
+					response = httpClient.execute(httpPost);
+				} catch (ClientProtocolException e2) {
+
+					e2.printStackTrace();
+				} catch (IOException e2) {
+
+					e2.printStackTrace();
+				}
+			}
+			try {
+				InputStream is = response.getEntity().getContent();
+				is.close();
+			} catch (IOException exc) {
+
+				exc.printStackTrace();
+			}
+			//
+			settingCheck = new HttpGet(
+					String.format("%s/get/setting/twitter/author/%s/?format=json", base_url, author.getId()));
+			// settingCheck.setEntity(new StringEntity(obj.toJSONString()));
+			settingCheck.addHeader("Authorization", "Basic " + credentials);
+			settingCheck.setHeader("Accept", "application/json");
+			settingCheck.addHeader("Content-type", "application/json");
+
+			response = null;
+			try {
+				response = httpClient.execute(settingCheck);
+			} catch (ClientProtocolException e2) {
+
+				e2.printStackTrace();
+			} catch (IOException e2) {
+
+				e2.printStackTrace();
+			}
+			jsonf = new JsonFactory();
+			result = response.getEntity().getContent();
+			setting_created = false;
+			if (response.getStatusLine().getStatusCode() == 200) {
+				author_created = true;
+			}
+			setting_pk = (long) -1;
+			jsonParser = new JSONParser();
+			exists = true;
+			setting_json = new JSONObject();
+			try {
+				JSONObject setting = (JSONObject) jsonParser.parse(IOUtils.toString(result));
+				System.out.println(setting.get("count"));
+				System.out.println(setting);
+				Long count = (Long) setting.get("count");
+				if (count == null || count == 0) {
+					exists = false;
+				} else {
+					JSONArray results = (JSONArray) setting.get("results");
+					System.out.println(results.get(0));
+					setting_json = (JSONObject) results.get(0);
+					System.out.println(setting_json.get("pk"));
+					System.out.println(setting_json.get("setting_name"));
+					System.out.println(setting_json.get("setting_value"));
+					setting_pk = (long) setting_json.get("pk");
+					setting_json.put("setting_value", author.getTwitter());
+				}
+			} catch (ParseException e) {
+
+				e.printStackTrace();
+			}
+			try {
+				InputStream is = response.getEntity().getContent();
+				is.close();
+			} catch (IOException exc) {
+
+				exc.printStackTrace();
+			}
+			System.out.println(setting_json.isEmpty());
+			System.out.println(exists);
+			System.out.println(setting_pk);
+			if (setting_json.isEmpty()) {
+				setting_json = SettingToJSON("author", author.getId(), "twitter", author.getTwitter(), "string",
+						"en_US");
+			}
+
+			System.out.println(setting_json);
+			if (!exists) {
+				HttpPost httpPost = new HttpPost(String.format("%s/author-settings/", base_url));
+				httpPost.setEntity(new StringEntity(setting_json.toJSONString()));
+				httpPost.addHeader("Authorization", "Basic " + credentials);
+				httpPost.setHeader("Accept", "application/json");
+				httpPost.addHeader("Content-type", "application/json");
+				try {
+					response = httpClient.execute(httpPost);
+				} catch (ClientProtocolException e2) {
+
+					e2.printStackTrace();
+				} catch (IOException e2) {
+
+					e2.printStackTrace();
+				}
+			} else {
+
+				String value = setting_json.toJSONString();
+				byte[] b = value.getBytes("windows-1252");
+				for (byte bi : b) {
+					System.out.print(bi + " ");
+				}
+				System.out.println();
+				String setting_value = new String(b, "UTF-8");
+
+				System.out.println(setting_value.getBytes());
+				HttpPut httpPost = new HttpPut(String.format("%s/author-settings/%s/", base_url, setting_pk));
+				httpPost.setEntity(new StringEntity(setting_value));
+				httpPost.addHeader("Authorization", "Basic " + credentials);
+				httpPost.setHeader("Accept", "application/json");
+				httpPost.addHeader("Content-type", "application/json");
+				try {
+					response = httpClient.execute(httpPost);
+				} catch (ClientProtocolException e2) {
+
+					e2.printStackTrace();
+				} catch (IOException e2) {
+
+					e2.printStackTrace();
+				}
+			}
+			try {
+				InputStream is = response.getEntity().getContent();
+				is.close();
+			} catch (IOException exc) {
+
+				exc.printStackTrace();
+			}
+			settingCheck = new HttpGet(
+					String.format("%s/get/setting/affiliation/author/%s/?format=json", base_url, author.getId()));
+			// settingCheck.setEntity(new StringEntity(obj.toJSONString()));
+			settingCheck.addHeader("Authorization", "Basic " + credentials);
+			settingCheck.setHeader("Accept", "application/json");
+			settingCheck.addHeader("Content-type", "application/json");
+
+			response = null;
+			try {
+				response = httpClient.execute(settingCheck);
+			} catch (ClientProtocolException e2) {
+
+				e2.printStackTrace();
+			} catch (IOException e2) {
+
+				e2.printStackTrace();
+			}
+			jsonf = new JsonFactory();
+			result = response.getEntity().getContent();
+			setting_created = false;
+			if (response.getStatusLine().getStatusCode() == 200) {
+				author_created = true;
+			}
+			setting_pk = (long) -1;
+			jsonParser = new JSONParser();
+			exists = true;
+			setting_json = new JSONObject();
+			try {
+				JSONObject setting = (JSONObject) jsonParser.parse(IOUtils.toString(result));
+				System.out.println(setting.get("count"));
+				System.out.println(setting);
+				Long count = (Long) setting.get("count");
+				if (count == null || count == 0) {
+					exists = false;
+				} else {
+					JSONArray results = (JSONArray) setting.get("results");
+					System.out.println(results.get(0));
+					setting_json = (JSONObject) results.get(0);
+					System.out.println(setting_json.get("pk"));
+					System.out.println(setting_json.get("setting_name"));
+					System.out.println(setting_json.get("setting_value"));
+					setting_pk = (long) setting_json.get("pk");
+					setting_json.put("setting_value", author.getAffiliation());
+				}
+			} catch (ParseException e) {
+
+				e.printStackTrace();
+			}
+			try {
+				InputStream is = response.getEntity().getContent();
+				is.close();
+			} catch (IOException exc) {
+
+				exc.printStackTrace();
+			}
+			System.out.println(setting_json.isEmpty());
+			System.out.println(exists);
+			System.out.println(setting_pk);
+			if (setting_json.isEmpty()) {
+				setting_json = SettingToJSON("author", author.getId(), "affiliation", author.getAffiliation(), "string",
+						"en_US");
+			}
+
+			System.out.println(setting_json);
+			if (!exists) {
+				HttpPost httpPost = new HttpPost(String.format("%s/author-settings/", base_url));
+				httpPost.setEntity(new StringEntity(setting_json.toJSONString()));
+				httpPost.addHeader("Authorization", "Basic " + credentials);
+				httpPost.setHeader("Accept", "application/json");
+				httpPost.addHeader("Content-type", "application/json");
+				try {
+					response = httpClient.execute(httpPost);
+				} catch (ClientProtocolException e2) {
+
+					e2.printStackTrace();
+				} catch (IOException e2) {
+
+					e2.printStackTrace();
+				}
+			} else {
+
+				String value = setting_json.toJSONString();
+				byte[] b = value.getBytes("windows-1252");
+				for (byte bi : b) {
+					System.out.print(bi + " ");
+				}
+				System.out.println();
+				String setting_value = new String(b, "UTF-8");
+
+				System.out.println(setting_value.getBytes());
+				HttpPut httpPost = new HttpPut(String.format("%s/author-settings/%s/", base_url, setting_pk));
+				httpPost.setEntity(new StringEntity(setting_value));
+				httpPost.addHeader("Authorization", "Basic " + credentials);
+				httpPost.setHeader("Accept", "application/json");
+				httpPost.addHeader("Content-type", "application/json");
+				try {
+					response = httpClient.execute(httpPost);
+				} catch (ClientProtocolException e2) {
+
+					e2.printStackTrace();
+				} catch (IOException e2) {
+
+					e2.printStackTrace();
+				}
+			}
+			try {
+				InputStream is = response.getEntity().getContent();
+				is.close();
+			} catch (IOException exc) {
+
+				exc.printStackTrace();
+			}
+
+		}
+
+	}
 
 	public static void get_sections(long journal_id, String credentials, boolean update_local)
 			throws IllegalStateException, IOException {
@@ -11803,8 +12537,7 @@ public class Main {
 		database_setup();
 		populate_variables();
 		// update_get_issues_from_remote(encoding, false);
-		// update_articles_local_single_request(issue_storage.get((long) 5),
-		// encoding);
+		// update_articles_intersect(issue_storage.get((long) 5),encoding);
 		// get_issue_from_remote(encoding, (long) 5, false);
 
 		// file copy to use for file upload

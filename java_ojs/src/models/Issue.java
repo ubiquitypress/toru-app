@@ -193,6 +193,17 @@ public class Issue {
 	public ConcurrentHashMap<Long, Article> getArticles_list() {
 		return articles_list;
 	}
+	
+	public ConcurrentHashMap<Long, Article> getSyncArticles_list() {
+		ConcurrentHashMap<Long, Article> sync_articles = new ConcurrentHashMap<Long, Article> ();
+		Set<Long> art_keys = articles_list.keySet();
+		for(long key: art_keys){
+			if(articles_list.get((long)key).shouldBeSynced()){
+				sync_articles.put((long)key,articles_list.get((long)key));
+			}
+		}
+		return sync_articles;
+	}
 	public void setArticles_list(ConcurrentHashMap<Long, Article> articles_list) {
 		this.articles_list = articles_list;
 	}
@@ -208,7 +219,7 @@ public class Issue {
 		articles_list.put(article_id,a);
 	}
 	public void update_article(long article_id,Article a){
-		articles_list.put(article_id,a);
+		articles_list.replace(article_id,a);
 	}
 	public void add_author(long article_id,Author a){
 		Article updated=articles_list.get(article_id);
