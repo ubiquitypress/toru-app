@@ -2271,6 +2271,7 @@ public class Main {
 											try {
 												get_sections(Long.parseLong(app_settings.get("journal_id")), encoding,
 														false);
+
 											} catch (NumberFormatException e) {
 												// TODO Auto-generated catch
 												// block
@@ -2283,6 +2284,28 @@ public class Main {
 												// TODO Auto-generated catch
 												// block
 												e.printStackTrace();
+											}
+										}
+									});
+									futures.add(f);
+								} else {
+									Future<?> f = exec.submit(new Runnable() {
+										public void run() {
+											try {
+												update_sections(Long.parseLong(app_settings.get("journal_id")),
+														encoding, false);
+											} catch (NumberFormatException e1) {
+												// TODO Auto-generated catch
+												// block
+												e1.printStackTrace();
+											} catch (IllegalStateException e1) {
+												// TODO Auto-generated catch
+												// block
+												e1.printStackTrace();
+											} catch (IOException e1) {
+												// TODO Auto-generated catch
+												// block
+												e1.printStackTrace();
 											}
 										}
 									});
@@ -3847,9 +3870,61 @@ public class Main {
 						List<Future<?>> futures = new ArrayList<Future<?>>();
 
 						boolean update_table = false;
+
 						if (!current_issue.getArticles_list().isEmpty()) {
 
 							issue_countdown_storage.put((long) current_issue.getId(), false);
+							int dialogResult2 = JOptionPane.showConfirmDialog(null,
+									"Would You Like to replace local Section data (Yes) or update remote Secton data (No)",
+									"Warning", 1);
+
+							if (dialogResult2 == JOptionPane.YES_OPTION) {
+								Future<?> f = exec.submit(new Runnable() {
+									public void run() {
+
+										try {
+											get_sections(Long.parseLong(app_settings.get("journal_id")), encoding,
+													false);
+
+										} catch (NumberFormatException e) {
+											// TODO Auto-generated catch
+											// block
+											e.printStackTrace();
+										} catch (IllegalStateException e) {
+											// TODO Auto-generated catch
+											// block
+											e.printStackTrace();
+										} catch (IOException e) {
+											// TODO Auto-generated catch
+											// block
+											e.printStackTrace();
+										}
+									}
+								});
+								futures.add(f);
+							} else {
+								Future<?> f = exec.submit(new Runnable() {
+									public void run() {
+										try {
+											update_sections(Long.parseLong(app_settings.get("journal_id")), encoding,
+													false);
+										} catch (NumberFormatException e1) {
+											// TODO Auto-generated catch
+											// block
+											e1.printStackTrace();
+										} catch (IllegalStateException e1) {
+											// TODO Auto-generated catch
+											// block
+											e1.printStackTrace();
+										} catch (IOException e1) {
+											// TODO Auto-generated catch
+											// block
+											e1.printStackTrace();
+										}
+									}
+								});
+								futures.add(f);
+							}
 							int dialogResult = JOptionPane.showConfirmDialog(null,
 									"Would You Like to replace local data (Yes) or update remote data (No)", "Warning",
 									1);
@@ -4066,6 +4141,8 @@ public class Main {
 
 								public void run() {
 									try {
+										get_sections(Long.parseLong(app_settings.get("journal_id")), encoding,
+												false);
 										update_articles_local_single_request(current_issue, encoding);
 
 									} catch (IllegalStateException e1) {
@@ -9679,11 +9756,14 @@ public class Main {
 			}
 			String json_settings = String.format(
 					"{'affiliation':'%s','biography':'%s','department':'%s','orcid':'%s','author':%s, 'twitter':'%s'}",
-					author.getAffiliation() == null? "" :new String(author.getAffiliation().getBytes("windows-1252"), "UTF-8"),
-					author.getBio() == null? "" :new String(author.getBio().getBytes("windows-1252"), "UTF-8"),
-					author.getDepartment() == null? "" :new String(author.getDepartment().getBytes("windows-1252"), "UTF-8"),
-					author.getOrcid() == null? "" :new String(author.getOrcid().getBytes("windows-1252"), "UTF-8"), author.getId(),
-					author.getTwitter() == null? "" : new String(author.getTwitter().getBytes("windows-1252"), "UTF-8"));
+					author.getAffiliation() == null ? ""
+							: new String(author.getAffiliation().getBytes("windows-1252"), "UTF-8"),
+					author.getBio() == null ? "" : new String(author.getBio().getBytes("windows-1252"), "UTF-8"),
+					author.getDepartment() == null ? ""
+							: new String(author.getDepartment().getBytes("windows-1252"), "UTF-8"),
+					author.getOrcid() == null ? "" : new String(author.getOrcid().getBytes("windows-1252"), "UTF-8"),
+					author.getId(), author.getTwitter() == null ? ""
+							: new String(author.getTwitter().getBytes("windows-1252"), "UTF-8"));
 
 			System.out.println(json_settings);
 			HttpPut httpPut = new HttpPut(String.format("%s/custom/authors/", base_url));
@@ -9712,6 +9792,251 @@ public class Main {
 				exc.printStackTrace();
 			}
 
+		}
+
+	}
+
+	public static void update_sections(long journal_id, String credentials, boolean update_local)
+			throws IllegalStateException, IOException {
+		boolean status = status_online();
+		System.out.println("GETTING SECTIONS");
+		if (!status) {
+			return;
+		}
+		Set<Long> section_keys = section_storage.keySet();
+		for (Long key : section_keys) {
+			Section section = section_storage.get(key);
+			JSONObject obj = SectionToJSON(section);
+			HttpGet httpGet = new HttpGet(String.format("%s/get/sections/%s/?format=json", base_url, journal_id));
+			httpGet.addHeader("Authorization", "Basic " + credentials);
+			httpGet.setHeader("Accept", "application/json");
+			httpGet.addHeader("Content-type", "application/json");
+
+			HttpResponse response = null;
+			try {
+				response = httpClient.execute(httpGet);
+			} catch (ClientProtocolException e2) {
+				System.out.println(String.format("%s/get/sections/%s/?format=json", base_url, journal_id));
+				e2.printStackTrace();
+			} catch (IOException e2) {
+				System.out.println(String.format("%s/get/sections/%s/?format=json", base_url, journal_id));
+				e2.printStackTrace();
+			}
+			new JsonFactory();
+			if (response.getStatusLine().getStatusCode() == 200) {
+				try {
+					InputStream is = response.getEntity().getContent();
+					is.close();
+				} catch (IOException exc) {
+
+					exc.printStackTrace();
+				}
+				HttpPut httpPut = new HttpPut(String.format("%s/sections/%s/", base_url, section.getId()));
+				httpPut.setEntity(new StringEntity(obj.toJSONString()));
+				httpPut.addHeader("Authorization", "Basic " + credentials);
+				httpPut.setHeader("Accept", "application/json");
+				httpPut.addHeader("Content-type", "application/json");
+
+				response = null;
+				try {
+					response = httpClient.execute(httpPut);
+				} catch (ClientProtocolException e2) {
+
+					e2.printStackTrace();
+				} catch (IOException e2) {
+
+					e2.printStackTrace();
+				}
+				try {
+					InputStream is = response.getEntity().getContent();
+					is.close();
+				} catch (IOException exc) {
+
+					exc.printStackTrace();
+				}
+				HttpGet settingCheck = new HttpGet(
+						String.format("%s/get/setting/title/section/%s/?format=json", base_url, section.getId()));
+				// settingCheck.setEntity(new StringEntity(obj.toJSONString()));
+				settingCheck.addHeader("Authorization", "Basic " + credentials);
+				settingCheck.setHeader("Accept", "application/json");
+				settingCheck.addHeader("Content-type", "application/json");
+
+				response = null;
+				try {
+					response = httpClient.execute(settingCheck);
+				} catch (ClientProtocolException e2) {
+
+					e2.printStackTrace();
+				} catch (IOException e2) {
+
+					e2.printStackTrace();
+				}
+				new JsonFactory();
+				InputStream result = response.getEntity().getContent();
+				Long setting_pk = (long) -1;
+				org.json.simple.parser.JSONParser jsonParser = new JSONParser();
+				boolean exists = true;
+				if (response.getStatusLine().getStatusCode() == 200) {
+					exists = false;
+				}
+				JSONObject setting_json = new JSONObject();
+				try {
+					JSONObject setting = (JSONObject) jsonParser.parse(IOUtils.toString(result));
+					System.out.println(setting.get("count"));
+					System.out.println(setting);
+					Long count = (Long) setting.get("count");
+					if (count == null || count == 0) {
+						exists = false;
+					} else {
+						JSONArray results = (JSONArray) setting.get("results");
+						System.out.println(results.get(0));
+						setting_json = (JSONObject) results.get(0);
+						System.out.println(setting_json.get("pk"));
+						System.out.println(setting_json.get("setting_name"));
+						System.out.println(setting_json.get("setting_value"));
+						setting_pk = (long) setting_json.get("pk");
+						setting_json.put("setting_value", section.getTitle());
+					}
+				} catch (ParseException e) {
+
+					e.printStackTrace();
+				}
+				try {
+					InputStream is = response.getEntity().getContent();
+					is.close();
+				} catch (IOException exc) {
+
+					exc.printStackTrace();
+				}
+				System.out.println(setting_json.isEmpty());
+				System.out.println(exists);
+				System.out.println(setting_pk);
+				if (setting_json.isEmpty()) {
+					setting_json = SettingToJSON("section", section.getId(), "title", section.getTitle(), "string",
+							"en_US");
+				}
+				System.out.println(setting_json);
+				if (!exists) {
+					String value = setting_json.toJSONString();
+					byte[] b = value.getBytes("windows-1252");
+					for (byte bi : b) {
+						System.out.print(bi + " ");
+					}
+					System.out.println();
+					String setting_value = new String(b, "UTF-8");
+
+					System.out.println(setting_value.getBytes());
+					HttpPost httpPost = new HttpPost(String.format("%s/section-settings/", base_url));
+					httpPost.setEntity(new StringEntity(setting_value));
+					httpPost.addHeader("Authorization", "Basic " + credentials);
+					httpPost.setHeader("Accept", "application/json");
+					httpPost.addHeader("Content-type", "application/json");
+					try {
+						response = httpClient.execute(httpPost);
+					} catch (ClientProtocolException e2) {
+
+						e2.printStackTrace();
+					} catch (IOException e2) {
+
+						e2.printStackTrace();
+					}
+					try {
+						InputStream is = response.getEntity().getContent();
+						is.close();
+					} catch (IOException exc) {
+
+						exc.printStackTrace();
+					}
+				} else {
+					HttpPut httpPost = new HttpPut(
+							String.format("%s/update/section/setting/%s/", base_url, setting_json.get("pk")));
+					httpPost.setEntity(new StringEntity(setting_json.toJSONString()));
+					httpPost.addHeader("Authorization", "Basic " + credentials);
+					httpPost.setHeader("Accept", "application/json");
+					httpPost.addHeader("Content-type", "application/json");
+					try {
+						response = httpClient.execute(httpPost);
+					} catch (ClientProtocolException e2) {
+
+						e2.printStackTrace();
+					} catch (IOException e2) {
+
+						e2.printStackTrace();
+					}
+				}
+				try {
+					InputStream is = response.getEntity().getContent();
+					is.close();
+				} catch (IOException exc) {
+
+					exc.printStackTrace();
+				}
+			} else {
+				try {
+					InputStream is = response.getEntity().getContent();
+					is.close();
+				} catch (IOException exc) {
+
+					exc.printStackTrace();
+				}
+				JSONObject setting_json = SettingToJSON("section", section.getId(), "title", section.getTitle(),
+						"string", "en_US");
+
+				HttpPost httpPost = new HttpPost(String.format("%s/sections/", base_url));
+				httpPost.setEntity(new StringEntity(obj.toJSONString()));
+				httpPost.addHeader("Authorization", "Basic " + credentials);
+				httpPost.setHeader("Accept", "application/json");
+				httpPost.addHeader("Content-type", "application/json");
+
+				response = null;
+				try {
+					response = httpClient.execute(httpPost);
+				} catch (ClientProtocolException e2) {
+
+					e2.printStackTrace();
+				} catch (IOException e2) {
+
+					e2.printStackTrace();
+				}
+				try {
+					InputStream is = response.getEntity().getContent();
+					is.close();
+				} catch (IOException exc) {
+
+					exc.printStackTrace();
+				}
+				String value = setting_json.toJSONString();
+				byte[] b = value.getBytes("windows-1252");
+				for (byte bi : b) {
+					System.out.print(bi + " ");
+				}
+				System.out.println();
+				String setting_value = new String(b, "UTF-8");
+
+				System.out.println(setting_value.getBytes());
+				httpPost = new HttpPost(String.format("%s/section-settings/", base_url));
+				httpPost.setEntity(new StringEntity(setting_value));
+				httpPost.addHeader("Authorization", "Basic " + credentials);
+				httpPost.setHeader("Accept", "application/json");
+				httpPost.addHeader("Content-type", "application/json");
+				try {
+					response = httpClient.execute(httpPost);
+				} catch (ClientProtocolException e2) {
+
+					e2.printStackTrace();
+				} catch (IOException e2) {
+
+					e2.printStackTrace();
+				}
+				try {
+					InputStream is = response.getEntity().getContent();
+					is.close();
+				} catch (IOException exc) {
+
+					exc.printStackTrace();
+				}
+
+			}
 		}
 
 	}
@@ -10058,6 +10383,22 @@ public class Main {
 		Section new_section = new Section(id, title, editor_restricted, meta_indexed, meta_reviewed,
 				abstracts_not_required, hide_title, hide_author, hide_about, disable_comments, abstract_word_count);
 		return new_section;
+	}
+
+	public static JSONObject SectionToJSON(Section section) {
+		JSONObject obj = new JSONObject();
+		obj.put("id", section.getId());
+		obj.put("seq", section.getSeq());
+		obj.put("editor_restricted", section.getEditor_restricted());
+		obj.put("meta_indexed", section.getMeta_indexed());
+		obj.put("meta_reviewed", section.getMeta_reviewed());
+		obj.put("abstracts_not_required", section.getAbstracts_not_required());
+		obj.put("hide_title", section.getHide_title());
+		obj.put("hide_about", section.getHide_about());
+		obj.put("hide_author", section.getHide_author());
+		obj.put("disable_comments", section.getDisable_comments());
+		obj.put("abstract_word_count", section.getAbstract_word_count());
+		return obj;
 	}
 
 	public static Author JSONToAuthor_single_request(JSONObject obj, Author author) {
