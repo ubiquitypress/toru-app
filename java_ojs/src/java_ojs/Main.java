@@ -2290,30 +2290,32 @@ public class Main {
 							for (long key : issue_keys) {
 								issue_countdown_storage.put((long) key, false);
 							}
-							dialogResult = JOptionPane.showConfirmDialog(null,
-									"Would You Like to replace local Section data (Yes) or update remote Secton data (No)",
-									"Warning", 1);
+							if (!issue_keys.isEmpty()){
+								int dialogResult2 = JOptionPane.showConfirmDialog(null,
+										"Would You Like to replace local Section data (Yes) or update remote Secton data (No)",
+										"Warning", 1);
 
-							if (dialogResult == JOptionPane.YES_OPTION) {
-								Future<?> f = exec.submit(new Runnable() {
-									public void run() {
+								if (dialogResult2 == JOptionPane.YES_OPTION) {
+									Future<?> f = exec.submit(new Runnable() {
+										public void run() {
 
-										try {
-											get_sections(Long.parseLong(app_settings.get("journal_id")), encoding,
-													false);
-										} catch (NumberFormatException e) {
-											// TODO Auto-generated catch block
-											e.printStackTrace();
-										} catch (IllegalStateException e) {
-											// TODO Auto-generated catch block
-											e.printStackTrace();
-										} catch (IOException e) {
-											// TODO Auto-generated catch block
-											e.printStackTrace();
+											try {
+												get_sections(Long.parseLong(app_settings.get("journal_id")), encoding,
+														false);
+											} catch (NumberFormatException e) {
+												// TODO Auto-generated catch block
+												e.printStackTrace();
+											} catch (IllegalStateException e) {
+												// TODO Auto-generated catch block
+												e.printStackTrace();
+											} catch (IOException e) {
+												// TODO Auto-generated catch block
+												e.printStackTrace();
+											}
 										}
-									}
-								});
-								futures.add(f);
+									});
+									futures.add(f);
+								}
 							}
 							for (long key : issue_keys) {
 
@@ -2627,6 +2629,8 @@ public class Main {
 
 												public void run() {
 													try {
+														get_sections(Long.parseLong(app_settings.get("journal_id")), encoding,
+																false);
 														new_issues = update_get_issues_from_remote(encoding, false);
 													} catch (IllegalStateException e) {
 
