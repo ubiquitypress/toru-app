@@ -4143,8 +4143,7 @@ public class Main {
 
 								public void run() {
 									try {
-										get_sections(Long.parseLong(app_settings.get("journal_id")), encoding,
-												false);
+										get_sections(Long.parseLong(app_settings.get("journal_id")), encoding, false);
 										update_articles_local_single_request(current_issue, encoding);
 
 									} catch (IllegalStateException e1) {
@@ -6292,31 +6291,110 @@ public class Main {
 				panel.add(btnAddSections);
 
 				JPanel panelSection = new JPanel();
-				panelSection.setBounds(0, 0, 480, 150);
+				panelSection.setBounds(0, 0, 480, 240);
 				panelSection.setLayout(null);
 
 				JTextField txtSectionTitle = new JTextField();
-				txtSectionTitle.setBounds(90, 65, 300, 30);
+				txtSectionTitle.setBounds(90, 45, 300, 30);
 				panelSection.add(txtSectionTitle);
 				txtSectionTitle.setColumns(4);
+				final JCheckBox disable_comments = new JCheckBox("Disable Comments", false);
+
+				disable_comments.setBounds(240, 80, 140, 26);
+				panelSection.add(disable_comments);
+				final JCheckBox abstracts_not_required = new JCheckBox("Abstracts Not Required", false);
+
+				abstracts_not_required.setBounds(240, 106, 200, 26);
+				panelSection.add(abstracts_not_required);
+				final JCheckBox editor_restricted = new JCheckBox("Editor Restricted", false);
+
+				editor_restricted.setBounds(240, 132, 200, 26);
+				panelSection.add(editor_restricted);
+				final JCheckBox hide_title = new JCheckBox("Hide Title", false);
+
+				hide_title.setBounds(80, 80, 100, 26);
+				panelSection.add(hide_title);
+				final JCheckBox hide_author = new JCheckBox("Hide Author", false);
+
+				hide_author.setBounds(80, 106, 100, 26);
+				panelSection.add(hide_author);
+				final JCheckBox hide_about = new JCheckBox("Hide About", false);
+
+				hide_about.setBounds(80, 132, 100, 26);
+				panelSection.add(hide_about);
+
+				final JCheckBox metadata_indexed = new JCheckBox("Metadata Indexed", false);
+
+				metadata_indexed.setBounds(80, 158, 180, 26);
+				panelSection.add(metadata_indexed);
+
+				final JCheckBox metadata_reviewed = new JCheckBox("Metadata Reviewed", false);
+
+				metadata_reviewed.setBounds(80, 184, 180, 26);
+				panelSection.add(metadata_reviewed);
+
+				JLabel lblSeq = new JLabel("Seq");
+				lblSeq.setHorizontalAlignment(SwingConstants.CENTER);
+				lblSeq.setBounds(40, 215, 200, 20);
+				panelSection.add(lblSeq);
+
+				JTextField txtSeq = new JTextField("0.0");
+				txtSeq.setBounds(70, 236, 150, 30);
+				panelSection.add(txtSeq);
+				txtSeq.setColumns(4);
+
+				JLabel lblAbstractCount = new JLabel("Abstract Word Count");
+				lblAbstractCount.setHorizontalAlignment(SwingConstants.CENTER);
+				lblAbstractCount.setBounds(240, 215, 200, 20);
+				panelSection.add(lblAbstractCount);
+
+				JTextField txtAbstractCount = new JTextField("0");
+				txtAbstractCount.setBounds(270, 236, 150, 30);
+				panelSection.add(txtAbstractCount);
+				txtAbstractCount.setColumns(4);
 
 				JLabel lblTitleSection = new JLabel("Title");
 				lblTitleSection.setHorizontalAlignment(SwingConstants.CENTER);
-				lblTitleSection.setBounds(190, 40, 100, 20);
+				lblTitleSection.setBounds(190, 25, 100, 20);
 				panelSection.add(lblTitleSection);
-				panelSection.setBounds(0, 0, 480, 150);
-				panelSection.setSize(new Dimension(480, 150));
-				panelSection.setPreferredSize(new Dimension(480, 150));
+				panelSection.setBounds(0, 0, 480, 280);
+				panelSection.setSize(new Dimension(480, 280));
+				panelSection.setPreferredSize(new Dimension(480, 280));
 				panelSection.setVisible(true);
 				btnAddSections.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
 						panelSection.setVisible(true);
 						panelSection.setEnabled(true);
+						boolean validation = false;
 						int result = JOptionPane.showConfirmDialog(null, panelSection, "Add Section",
 								JOptionPane.OK_CANCEL_OPTION);
-						if (result == JOptionPane.OK_OPTION && txtSectionTitle.getText().isEmpty() == false) {
+						String title = txtSectionTitle.getText();
+						if (title == null || title.isEmpty() || title.compareTo("") == 0 || title.compareTo(" ") == 0) {
+							validation = false;
+						} else {
+							validation = true;
+						}
+						try {
+							int wordcount = Integer.parseInt(txtAbstractCount.getText());
+							double seq = Double.parseDouble(txtSeq.getText());
+							validation = true;
+						} catch (Exception es) {
+							validation = false;
+						}
+
+						if (result == JOptionPane.OK_OPTION && validation == true) {
 							section_db_id++;
 							Section new_section = new Section(section_db_id, txtSectionTitle.getText());
+							new_section.setAbstract_word_count(Integer.parseInt(txtAbstractCount.getText()));
+							new_section.setSeq(Double.parseDouble(txtSeq.getText()));
+							new_section.setHide_about(hide_about.isSelected() == true ? 1 : 0);
+							new_section.setHide_author(hide_author.isSelected() == true ? 1 : 0);
+							new_section.setHide_title(hide_title.isSelected() == true ? 1 : 0);
+							new_section.setEditor_restricted(editor_restricted.isSelected() == true ? 1 : 0);
+							new_section.setMeta_indexed(metadata_indexed.isSelected() == true ? 1 : 0);
+							new_section.setMeta_reviewed(metadata_reviewed.isSelected() == true ? 1 : 0);
+							new_section.setDisable_comments(disable_comments.isSelected() == true ? 1 : 0);
+							new_section.setAbstracts_not_required(abstracts_not_required.isSelected() == true ? 1 : 0);
 							section_storage.put(section_db_id, new_section);
 							lblSectionId.addItem(new_section.getTitle());
 							sections.add(new_section);
@@ -7149,35 +7227,113 @@ public class Main {
 			panel.add(btnAddSections);
 
 			JPanel panelSection = new JPanel();
-			panelSection.setBounds(0, 0, 480, 150);
+			panelSection.setBounds(0, 0, 480, 240);
 			panelSection.setLayout(null);
 
 			JTextField txtSectionTitle = new JTextField();
-			txtSectionTitle.setBounds(90, 65, 300, 30);
+			txtSectionTitle.setBounds(90, 45, 300, 30);
 			panelSection.add(txtSectionTitle);
 			txtSectionTitle.setColumns(4);
+			final JCheckBox disable_comments = new JCheckBox("Disable Comments", false);
+
+			disable_comments.setBounds(240, 80, 140, 26);
+			panelSection.add(disable_comments);
+			final JCheckBox abstracts_not_required = new JCheckBox("Abstracts Not Required", false);
+
+			abstracts_not_required.setBounds(240, 106, 200, 26);
+			panelSection.add(abstracts_not_required);
+			final JCheckBox editor_restricted = new JCheckBox("Editor Restricted", false);
+
+			editor_restricted.setBounds(240, 132, 200, 26);
+			panelSection.add(editor_restricted);
+			final JCheckBox hide_title = new JCheckBox("Hide Title", false);
+
+			hide_title.setBounds(80, 80, 100, 26);
+			panelSection.add(hide_title);
+			final JCheckBox hide_author = new JCheckBox("Hide Author", false);
+
+			hide_author.setBounds(80, 106, 100, 26);
+			panelSection.add(hide_author);
+			final JCheckBox hide_about = new JCheckBox("Hide About", false);
+
+			hide_about.setBounds(80, 132, 100, 26);
+			panelSection.add(hide_about);
+
+			final JCheckBox metadata_indexed = new JCheckBox("Metadata Indexed", false);
+
+			metadata_indexed.setBounds(80, 158, 180, 26);
+			panelSection.add(metadata_indexed);
+
+			final JCheckBox metadata_reviewed = new JCheckBox("Metadata Reviewed", false);
+
+			metadata_reviewed.setBounds(80, 184, 180, 26);
+			panelSection.add(metadata_reviewed);
+
+			JLabel lblSeq = new JLabel("Seq");
+			lblSeq.setHorizontalAlignment(SwingConstants.CENTER);
+			lblSeq.setBounds(40, 215, 200, 20);
+			panelSection.add(lblSeq);
+
+			JTextField txtSeq = new JTextField("0.0");
+			txtSeq.setBounds(70, 236, 150, 30);
+			panelSection.add(txtSeq);
+			txtSeq.setColumns(4);
+
+			JLabel lblAbstractCount = new JLabel("Abstract Word Count");
+			lblAbstractCount.setHorizontalAlignment(SwingConstants.CENTER);
+			lblAbstractCount.setBounds(240, 215, 200, 20);
+			panelSection.add(lblAbstractCount);
+
+			JTextField txtAbstractCount = new JTextField("0");
+			txtAbstractCount.setBounds(270, 236, 150, 30);
+			panelSection.add(txtAbstractCount);
+			txtAbstractCount.setColumns(4);
 
 			JLabel lblTitleSection = new JLabel("Title");
 			lblTitleSection.setHorizontalAlignment(SwingConstants.CENTER);
-			lblTitleSection.setBounds(190, 40, 100, 20);
+			lblTitleSection.setBounds(190, 25, 100, 20);
 			panelSection.add(lblTitleSection);
-			panelSection.setBounds(0, 0, 480, 150);
-			panelSection.setSize(new Dimension(480, 150));
-			panelSection.setPreferredSize(new Dimension(480, 150));
+			panelSection.setBounds(0, 0, 480, 280);
+			panelSection.setSize(new Dimension(480, 280));
+			panelSection.setPreferredSize(new Dimension(480, 280));
 			panelSection.setVisible(true);
 			btnAddSections.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
 					panelSection.setVisible(true);
 					panelSection.setEnabled(true);
+					boolean validation = false;
 					int result = JOptionPane.showConfirmDialog(null, panelSection, "Add Section",
 							JOptionPane.OK_CANCEL_OPTION);
-					if (result == JOptionPane.OK_OPTION && txtSectionTitle.getText().isEmpty() == false) {
-						System.out.println(txtSectionTitle.getText());
+					String title = txtSectionTitle.getText();
+					if (title == null || title.isEmpty() || title.compareTo("") == 0 || title.compareTo(" ") == 0) {
+						validation = false;
+					} else {
+						validation = true;
+					}
+					try {
+						int wordcount = Integer.parseInt(txtAbstractCount.getText());
+						double seq = Double.parseDouble(txtSeq.getText());
+						validation = true;
+					} catch (Exception es) {
+						validation = false;
+					}
+
+					if (result == JOptionPane.OK_OPTION && validation == true) {
 						section_db_id++;
 						Section new_section = new Section(section_db_id, txtSectionTitle.getText());
+						new_section.setAbstract_word_count(Integer.parseInt(txtAbstractCount.getText()));
+						new_section.setSeq(Double.parseDouble(txtSeq.getText()));
+						new_section.setHide_about(hide_about.isSelected() == true ? 1 : 0);
+						new_section.setHide_author(hide_author.isSelected() == true ? 1 : 0);
+						new_section.setHide_title(hide_title.isSelected() == true ? 1 : 0);
+						new_section.setEditor_restricted(editor_restricted.isSelected() == true ? 1 : 0);
+						new_section.setMeta_indexed(metadata_indexed.isSelected() == true ? 1 : 0);
+						new_section.setMeta_reviewed(metadata_reviewed.isSelected() == true ? 1 : 0);
+						new_section.setDisable_comments(disable_comments.isSelected() == true ? 1 : 0);
+						new_section.setAbstracts_not_required(abstracts_not_required.isSelected() == true ? 1 : 0);
 						section_storage.put(section_db_id, new_section);
-						sections.add(new_section);
 						lblSectionId.addItem(new_section.getTitle());
+						sections.add(new_section);
 						lblSectionId.repaint();
 					}
 				}
@@ -9756,11 +9912,11 @@ public class Main {
 					exc.printStackTrace();
 				}
 			}
-			
+
 			String json_settings = String.format(
 					"{\"affiliation\":\"%s\",\"biography\":\"%s\",\"department\":\"%s\",\"orcid\":\"%s\",\"author\":%d, \"twitter\":\"%s\"}",
 					author.getAffiliation() == null ? ""
-							: new String(author.getAffiliation().replace("\r\n","").getBytes("windows-1252"), "UTF-8"),
+							: new String(author.getAffiliation().replace("\r\n", "").getBytes("windows-1252"), "UTF-8"),
 					author.getBio() == null ? "" : new String(author.getBio().getBytes("windows-1252"), "UTF-8"),
 					author.getDepartment() == null ? ""
 							: new String(author.getDepartment().getBytes("windows-1252"), "UTF-8"),
@@ -9819,10 +9975,12 @@ public class Main {
 			try {
 				response = httpClient.execute(httpGet);
 			} catch (ClientProtocolException e2) {
-		//		System.out.println(String.format("%s/sections/%s/?format=json", base_url, journal_id));
+				// System.out.println(String.format("%s/sections/%s/?format=json",
+				// base_url, journal_id));
 				e2.printStackTrace();
 			} catch (IOException e2) {
-			//	System.out.println(String.format("%s/sections/%s/?format=json", base_url, journal_id));
+				// System.out.println(String.format("%s/sections/%s/?format=json",
+				// base_url, journal_id));
 				e2.printStackTrace();
 			}
 			new JsonFactory();
@@ -9885,8 +10043,8 @@ public class Main {
 				JSONObject setting_json = new JSONObject();
 				try {
 					JSONObject setting = (JSONObject) jsonParser.parse(IOUtils.toString(result));
-				//	System.out.println(setting.get("count"));
-					//System.out.println(setting);
+					// System.out.println(setting.get("count"));
+					// System.out.println(setting);
 					Long count = (Long) setting.get("count");
 					if (count == null || count == 0) {
 						exists = false;
@@ -9908,12 +10066,12 @@ public class Main {
 
 					exc.printStackTrace();
 				}
-			
+
 				if (setting_json.isEmpty()) {
 					setting_json = SettingToJSON("section", section.getId(), "title", section.getTitle(), "string",
 							"en_US");
 				}
-				System.out.println("Title exists: "+exists);
+				System.out.println("Title exists: " + exists);
 				if (!exists) {
 					String value = setting_json.toJSONString();
 					byte[] b = value.getBytes("windows-1252");
@@ -10387,7 +10545,7 @@ public class Main {
 	public static JSONObject SectionToJSON(Section section) {
 		JSONObject obj = new JSONObject();
 		obj.put("id", section.getId());
-		obj.put("journal",String.format("%s/journals/%s/", base_url,
+		obj.put("journal", String.format("%s/journals/%s/", base_url,
 				app_settings.get("journal_id") == null ? 1 : Long.parseLong(app_settings.get("journal_id"))));
 		obj.put("seq", section.getSeq());
 		obj.put("editor_restricted", section.getEditor_restricted());
@@ -10923,7 +11081,7 @@ public class Main {
 		//
 		// database_save();
 		new Main();
-		//update_sections((long) 1, encoding,false);
+		// update_sections((long) 1, encoding,false);
 		// file_upload_intersect((long)125,"/home/ioannis/code/toru-app/java_ojs/miglayout-src.zip",25);
 		// file_download(125,16);
 		// System.out.println(file_storage.get((long)125).get((long)5));
