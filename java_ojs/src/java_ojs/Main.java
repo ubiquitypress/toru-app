@@ -3693,6 +3693,8 @@ public class Main {
 							current_issue.setShow_year(show_year.isSelected() == true ? 1 : 0);
 							current_issue.setShow_number(show_number.isSelected() == true ? 1 : 0);
 							edit_issue.dispose();
+
+							current_issue.setSync(true);
 							issue_storage.put(issue_id, current_issue);
 							issues.dispose();
 							dashboard();
@@ -3902,7 +3904,7 @@ public class Main {
 									}
 								});
 								futures.add(f);
-							} else {
+							} else if (dialogResult2 == JOptionPane.NO_OPTION) {
 								Future<?> f = exec.submit(new Runnable() {
 									public void run() {
 										try {
@@ -7647,7 +7649,7 @@ public class Main {
 		Long setting_pk = (long) -1;
 		org.json.simple.parser.JSONParser jsonParser = new JSONParser();
 		boolean exists = true;
-		if (response.getStatusLine().getStatusCode() == 200) {
+		if (response.getStatusLine().getStatusCode() != 200) {
 			exists = false;
 		}
 		JSONObject setting_json = new JSONObject();
@@ -7857,7 +7859,7 @@ public class Main {
 		}
 
 		System.out.println("abstract");
-		String abstract_text = "<p class=\"p1\">" + article.getAbstract_text().replace("\r\n", "") + "</p>";
+		String abstract_text = "<p class='p1'>" + article.getAbstract_text().replace("\r\n", "") + "</p>";
 
 		byte[] b = abstract_text.getBytes("windows-1252");
 		abstract_text = new String(b, "UTF-8");
@@ -7875,10 +7877,10 @@ public class Main {
 		doi = new String(b, "UTF-8");
 
 		String json_settings = String.format(
-				"{'abstract':'%s','title':'%s','funding':'%s','competing_interests':'%s','article':%s, 'doi':'%s'}",
+				"{\"abstract\":\"%s\",\"title\":\"%s\",\"funding\":\"%s\",\"competing_interests\":\"%s\",\"article\":%d, \"doi\":\"%s\"}",
 				abstract_text, title, funding, ci, article.getId(), doi);
 
-		System.out.println(json_settings);
+		System.out.println("!article settings" + json_settings);
 		HttpPut httpPut = new HttpPut(String.format("%s/custom/articles/", base_url));
 
 		System.out.println(json_settings);
@@ -9754,10 +9756,11 @@ public class Main {
 					exc.printStackTrace();
 				}
 			}
+			
 			String json_settings = String.format(
-					"{'affiliation':'%s','biography':'%s','department':'%s','orcid':'%s','author':%s, 'twitter':'%s'}",
+					"{\"affiliation\":\"%s\",\"biography\":\"%s\",\"department\":\"%s\",\"orcid\":\"%s\",\"author\":%d, \"twitter\":\"%s\"}",
 					author.getAffiliation() == null ? ""
-							: new String(author.getAffiliation().getBytes("windows-1252"), "UTF-8"),
+							: new String(author.getAffiliation().replace("\r\n","").getBytes("windows-1252"), "UTF-8"),
 					author.getBio() == null ? "" : new String(author.getBio().getBytes("windows-1252"), "UTF-8"),
 					author.getDepartment() == null ? ""
 							: new String(author.getDepartment().getBytes("windows-1252"), "UTF-8"),
@@ -9799,7 +9802,7 @@ public class Main {
 	public static void update_sections(long journal_id, String credentials, boolean update_local)
 			throws IllegalStateException, IOException {
 		boolean status = status_online();
-		System.out.println("GETTING SECTIONS");
+		System.out.println("UPDATING SECTIONS");
 		if (!status) {
 			return;
 		}
@@ -9807,7 +9810,7 @@ public class Main {
 		for (Long key : section_keys) {
 			Section section = section_storage.get(key);
 			JSONObject obj = SectionToJSON(section);
-			HttpGet httpGet = new HttpGet(String.format("%s/get/sections/%s/?format=json", base_url, journal_id));
+			HttpGet httpGet = new HttpGet(String.format("%s/sections/%s/?format=json", base_url, key));
 			httpGet.addHeader("Authorization", "Basic " + credentials);
 			httpGet.setHeader("Accept", "application/json");
 			httpGet.addHeader("Content-type", "application/json");
@@ -9816,10 +9819,10 @@ public class Main {
 			try {
 				response = httpClient.execute(httpGet);
 			} catch (ClientProtocolException e2) {
-				System.out.println(String.format("%s/get/sections/%s/?format=json", base_url, journal_id));
+		//		System.out.println(String.format("%s/sections/%s/?format=json", base_url, journal_id));
 				e2.printStackTrace();
 			} catch (IOException e2) {
-				System.out.println(String.format("%s/get/sections/%s/?format=json", base_url, journal_id));
+			//	System.out.println(String.format("%s/sections/%s/?format=json", base_url, journal_id));
 				e2.printStackTrace();
 			}
 			new JsonFactory();
@@ -9877,13 +9880,13 @@ public class Main {
 				org.json.simple.parser.JSONParser jsonParser = new JSONParser();
 				boolean exists = true;
 				if (response.getStatusLine().getStatusCode() == 200) {
-					exists = false;
+					exists = true;
 				}
 				JSONObject setting_json = new JSONObject();
 				try {
 					JSONObject setting = (JSONObject) jsonParser.parse(IOUtils.toString(result));
-					System.out.println(setting.get("count"));
-					System.out.println(setting);
+				//	System.out.println(setting.get("count"));
+					//System.out.println(setting);
 					Long count = (Long) setting.get("count");
 					if (count == null || count == 0) {
 						exists = false;
@@ -9891,9 +9894,6 @@ public class Main {
 						JSONArray results = (JSONArray) setting.get("results");
 						System.out.println(results.get(0));
 						setting_json = (JSONObject) results.get(0);
-						System.out.println(setting_json.get("pk"));
-						System.out.println(setting_json.get("setting_name"));
-						System.out.println(setting_json.get("setting_value"));
 						setting_pk = (long) setting_json.get("pk");
 						setting_json.put("setting_value", section.getTitle());
 					}
@@ -9908,14 +9908,12 @@ public class Main {
 
 					exc.printStackTrace();
 				}
-				System.out.println(setting_json.isEmpty());
-				System.out.println(exists);
-				System.out.println(setting_pk);
+			
 				if (setting_json.isEmpty()) {
 					setting_json = SettingToJSON("section", section.getId(), "title", section.getTitle(), "string",
 							"en_US");
 				}
-				System.out.println(setting_json);
+				System.out.println("Title exists: "+exists);
 				if (!exists) {
 					String value = setting_json.toJSONString();
 					byte[] b = value.getBytes("windows-1252");
@@ -9925,7 +9923,7 @@ public class Main {
 					System.out.println();
 					String setting_value = new String(b, "UTF-8");
 
-					System.out.println(setting_value.getBytes());
+					System.out.println("SECTION TITLE: " + setting_value);
 					HttpPost httpPost = new HttpPost(String.format("%s/section-settings/", base_url));
 					httpPost.setEntity(new StringEntity(setting_value));
 					httpPost.addHeader("Authorization", "Basic " + credentials);
@@ -9982,6 +9980,7 @@ public class Main {
 				JSONObject setting_json = SettingToJSON("section", section.getId(), "title", section.getTitle(),
 						"string", "en_US");
 
+				System.out.println("SECTION: " + obj.toJSONString());
 				HttpPost httpPost = new HttpPost(String.format("%s/sections/", base_url));
 				httpPost.setEntity(new StringEntity(obj.toJSONString()));
 				httpPost.addHeader("Authorization", "Basic " + credentials);
@@ -10013,7 +10012,7 @@ public class Main {
 				System.out.println();
 				String setting_value = new String(b, "UTF-8");
 
-				System.out.println(setting_value.getBytes());
+				System.out.println(setting_value);
 				httpPost = new HttpPost(String.format("%s/section-settings/", base_url));
 				httpPost.setEntity(new StringEntity(setting_value));
 				httpPost.addHeader("Authorization", "Basic " + credentials);
@@ -10388,6 +10387,8 @@ public class Main {
 	public static JSONObject SectionToJSON(Section section) {
 		JSONObject obj = new JSONObject();
 		obj.put("id", section.getId());
+		obj.put("journal",String.format("%s/journals/%s/", base_url,
+				app_settings.get("journal_id") == null ? 1 : Long.parseLong(app_settings.get("journal_id"))));
 		obj.put("seq", section.getSeq());
 		obj.put("editor_restricted", section.getEditor_restricted());
 		obj.put("meta_indexed", section.getMeta_indexed());
@@ -10922,6 +10923,7 @@ public class Main {
 		//
 		// database_save();
 		new Main();
+		//update_sections((long) 1, encoding,false);
 		// file_upload_intersect((long)125,"/home/ioannis/code/toru-app/java_ojs/miglayout-src.zip",25);
 		// file_download(125,16);
 		// System.out.println(file_storage.get((long)125).get((long)5));
