@@ -3812,7 +3812,7 @@ public class Main {
 			login("dashboard");
 		}
 	}
-	public void add_section() {}
+	
 
 	public void view_section(final long section_id) {}
 
@@ -4289,11 +4289,145 @@ public class Main {
 				panel_1.setBounds(0, 95, width, 5);
 				section_screen.getContentPane().add(panel_1);
 				JButton btnAdd = new JButton("Add");
+				
+				JPanel panelSection = new JPanel();
+				panelSection.setBounds(0, 0, 480, 240);
+				panelSection.setLayout(null);
+
+				JTextField txtSectionTitle = new JTextField();
+				txtSectionTitle.setBounds(90, 45, 300, 30);
+				panelSection.add(txtSectionTitle);
+				txtSectionTitle.setColumns(4);
+				final JCheckBox disable_comments = new JCheckBox("Disable Comments", false);
+
+				disable_comments.setBounds(240, 80, 140, 26);
+				panelSection.add(disable_comments);
+				final JCheckBox abstracts_not_required = new JCheckBox("Abstracts Not Required", false);
+
+				abstracts_not_required.setBounds(240, 106, 200, 26);
+				panelSection.add(abstracts_not_required);
+				final JCheckBox editor_restricted = new JCheckBox("Editor Restricted", false);
+
+				editor_restricted.setBounds(240, 132, 200, 26);
+				panelSection.add(editor_restricted);
+				final JCheckBox hide_title = new JCheckBox("Hide Title", false);
+
+				hide_title.setBounds(80, 80, 100, 26);
+				panelSection.add(hide_title);
+				final JCheckBox hide_author = new JCheckBox("Hide Author", false);
+
+				hide_author.setBounds(80, 106, 100, 26);
+				panelSection.add(hide_author);
+				final JCheckBox hide_about = new JCheckBox("Hide About", false);
+
+				hide_about.setBounds(80, 132, 100, 26);
+				panelSection.add(hide_about);
+
+				final JCheckBox metadata_indexed = new JCheckBox("Metadata Indexed", false);
+
+				metadata_indexed.setBounds(80, 158, 180, 26);
+				panelSection.add(metadata_indexed);
+
+				final JCheckBox metadata_reviewed = new JCheckBox("Metadata Reviewed", false);
+
+				metadata_reviewed.setBounds(80, 184, 180, 26);
+				panelSection.add(metadata_reviewed);
+
+				JLabel lblSeq = new JLabel("Seq");
+				lblSeq.setHorizontalAlignment(SwingConstants.CENTER);
+				lblSeq.setBounds(40, 215, 200, 20);
+				panelSection.add(lblSeq);
+
+				JTextField txtSeq = new JTextField("0.0");
+				txtSeq.setBounds(70, 236, 150, 30);
+				panelSection.add(txtSeq);
+				txtSeq.setColumns(4);
+
+				JLabel lblAbstractCount = new JLabel("Abstract Word Count");
+				lblAbstractCount.setHorizontalAlignment(SwingConstants.CENTER);
+				lblAbstractCount.setBounds(240, 215, 200, 20);
+				panelSection.add(lblAbstractCount);
+
+				JTextField txtAbstractCount = new JTextField("0");
+				txtAbstractCount.setBounds(270, 236, 150, 30);
+				panelSection.add(txtAbstractCount);
+				txtAbstractCount.setColumns(4);
+
+				JLabel lblTitleSection = new JLabel("Title");
+				lblTitleSection.setHorizontalAlignment(SwingConstants.CENTER);
+				lblTitleSection.setBounds(190, 25, 100, 20);
+				panelSection.add(lblTitleSection);
+				panelSection.setBounds(0, 0, 480, 280);
+				panelSection.setSize(new Dimension(480, 280));
+				panelSection.setPreferredSize(new Dimension(480, 280));
+				panelSection.setVisible(true);
+				
+				
 				btnAdd.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
+					
+								panelSection.setVisible(true);
+								panelSection.setEnabled(true);
+								boolean validation = false;
+								int result = JOptionPane.showConfirmDialog(null, panelSection, "Add Section",
+										JOptionPane.OK_CANCEL_OPTION);
+								String title = txtSectionTitle.getText();
+								if (title == null || title.isEmpty() || title.compareTo("") == 0 || title.compareTo(" ") == 0) {
+									validation = false;
+								} else {
+									validation = true;
+								}
+								try {
+									int wordcount = Integer.parseInt(txtAbstractCount.getText());
+									double seq = Double.parseDouble(txtSeq.getText());
+									validation = true;
+								} catch (Exception es) {
+									validation = false;
+								}
 
-						add_section();
+								if (result == JOptionPane.OK_OPTION && validation == true) {
+									section_db_id++;
+									Section new_section = new Section(section_db_id, txtSectionTitle.getText());
+									new_section.setAbstract_word_count(Integer.parseInt(txtAbstractCount.getText()));
+									new_section.setSeq(Double.parseDouble(txtSeq.getText()));
+									new_section.setHide_about(hide_about.isSelected() == true ? 1 : 0);
+									new_section.setHide_author(hide_author.isSelected() == true ? 1 : 0);
+									new_section.setHide_title(hide_title.isSelected() == true ? 1 : 0);
+									new_section.setEditor_restricted(editor_restricted.isSelected() == true ? 1 : 0);
+									new_section.setMeta_indexed(metadata_indexed.isSelected() == true ? 1 : 0);
+									new_section.setMeta_reviewed(metadata_reviewed.isSelected() == true ? 1 : 0);
+									new_section.setDisable_comments(disable_comments.isSelected() == true ? 1 : 0);
+									new_section.setAbstracts_not_required(abstracts_not_required.isSelected() == true ? 1 : 0);
+									section_storage.put(section_db_id, new_section);
+									int num_rows = ((DefaultTableModel) section_table.getModel()).getRowCount();
+									Set<Long>  updated_sect_keys = section_storage.keySet();
+									Object[][] rows = new Object[updated_sect_keys.size()][6];
+									if (num_rows != 0) {
+										for (int i = num_rows - 1; i >= 0; i--) {
+											((DefaultTableModel) section_table.getModel()).removeRow(i);
+										}
+									}
+									int i = 0;
+									for (long id : updated_sect_keys) {
+										Section current_section = section_storage.get(id);
+										section_screens.put(id, new JFrame());
+										
+										Object[] row = { current_section.getId(), current_section.getTitle(), "View", "Edit", "Delete" };
+										
+										rows[i] = row;
+										((DefaultTableModel) section_table.getModel()).insertRow(0, row);
+										i++;
 
+									}
+									if (num_rows != 0) {
+										((DefaultTableModel) section_table.getModel()).fireTableRowsUpdated(0,
+												updated_sect_keys.size() - 1);
+									}
+									section_table.repaint();
+									section_screen.getContentPane().repaint();
+									section_screen.repaint();
+								}
+						
 					}
 				});
 				btnAdd.setBounds(width - 150, height / 16 * 7 - 84, 117, 25);
