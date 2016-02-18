@@ -138,7 +138,7 @@ import models.Section;
 import sun.misc.BASE64Encoder;
 
 public class Main {
-	JFrame login, api, issues, settings,section_screen;
+	JFrame login, api, issues, settings, section_screen;
 	private JTextField access_key, username;
 	private JXTable issues_table;
 	private static int delay = 5000; // milliseconds
@@ -384,10 +384,10 @@ public class Main {
 					article_prep.setString(6, save_article.getDate_published() == null ? "/"
 							: sdf.format(save_article.getDate_published()));
 
-					article_prep.setString(7,save_article.getDate_accepted() == null ? "/" :  sdf
-							.format(save_article.getDate_accepted()));
-					article_prep.setString(8, save_article.getDate_submitted() == null ? "/" :  sdf
-									.format(save_article.getDate_submitted()));
+					article_prep.setString(7, save_article.getDate_accepted() == null ? "/"
+							: sdf.format(save_article.getDate_accepted()));
+					article_prep.setString(8, save_article.getDate_submitted() == null ? "/"
+							: sdf.format(save_article.getDate_submitted()));
 					article_prep.setString(9, save_article.getLocale());
 					article_prep.setString(10, save_article.getLanguage());
 					article_prep.setInt(11, save_article.getStatus());
@@ -614,9 +614,8 @@ public class Main {
 				Boolean sync = rs.getBoolean("sync");
 				Issue issue = null;
 				issue = new Issue(id, title, volume, number, year, show_title, show_volume, show_number, show_year,
-						date_accepted.compareTo("/")==0?null:sdf.parse(date_accepted), 
-								date.compareTo("/")==0?null:sdf.parse(date),
-								published, current, access_status,
+						date_accepted.compareTo("/") == 0 ? null : sdf.parse(date_accepted),
+						date.compareTo("/") == 0 ? null : sdf.parse(date), published, current, access_status,
 						journal_storage.get(Long.parseLong(app_settings.get("journal_id"))));
 
 				// JOptionPane.showMessageDialog(null, "Deleted");
@@ -2245,17 +2244,17 @@ public class Main {
 				issues.getContentPane().setLayout(null);
 
 				final JButton btnSync = new JButton("Sync");
-				
-				
+
 				btnSync.setBounds(width - 155, 21, 70, 24);
 
 				final JButton btnSection = new JButton("Sections");
-				btnSection.setBounds(width - 300, 21, 70, 24);
-				
+				btnSection.setBounds(112, 20, 120, 29);
+
 				btnSection.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
 						sections();
-					}});
+					}
+				});
 				btnSync.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
 
@@ -3302,15 +3301,16 @@ public class Main {
 						validation = false;
 						JOptionPane.showMessageDialog(null, "Use dates from calendar for fields: Date Submitted");
 					}
-					if(published_check.isSelected()){
+					if (published_check.isSelected()) {
 						try {
 
-						//	sdf.format(datePicker.getDate());
-							 sdf.format(datePickerPublished.getDate());
+							// sdf.format(datePicker.getDate());
+							sdf.format(datePickerPublished.getDate());
 
 						} catch (Exception ex) {
 							validation = false;
-							JOptionPane.showMessageDialog(null, "Use dates from calendar for field 'Date Published' or Untick 'Published'");
+							JOptionPane.showMessageDialog(null,
+									"Use dates from calendar for field 'Date Published' or Untick 'Published'");
 						}
 					}
 					if (validation) {
@@ -3650,15 +3650,16 @@ public class Main {
 							validation = false;
 							JOptionPane.showMessageDialog(null, "Use dates from calendar for fields: Date Submitted");
 						}
-						if(published_check.isSelected()){
+						if (published_check.isSelected()) {
 							try {
 
-							//	sdf.format(datePicker.getDate());
-								 sdf.format(datePickerPublished.getDate());
+								// sdf.format(datePicker.getDate());
+								sdf.format(datePickerPublished.getDate());
 
 							} catch (Exception ex) {
 								validation = false;
-								JOptionPane.showMessageDialog(null, "Use dates from calendar for field 'Date Published' or Untick 'Published'");
+								JOptionPane.showMessageDialog(null,
+										"Use dates from calendar for field 'Date Published' or Untick 'Published'");
 							}
 						}
 						if (validation) {
@@ -3734,15 +3735,16 @@ public class Main {
 							validation = false;
 							JOptionPane.showMessageDialog(null, "Use dates from calendar for fields: Date Submitted");
 						}
-						if(published_check.isSelected()){
+						if (published_check.isSelected()) {
 							try {
 
-							//	sdf.format(datePicker.getDate());
-								 sdf.format(datePickerPublished.getDate());
+								// sdf.format(datePicker.getDate());
+								sdf.format(datePickerPublished.getDate());
 
 							} catch (Exception ex) {
 								validation = false;
-								JOptionPane.showMessageDialog(null, "Use dates from calendar for field 'Date Published' or Untick 'Published'");
+								JOptionPane.showMessageDialog(null,
+										"Use dates from calendar for field 'Date Published' or Untick 'Published'");
 							}
 						}
 						if (validation) {
@@ -3812,11 +3814,385 @@ public class Main {
 			login("dashboard");
 		}
 	}
-	
 
-	public void view_section(final long section_id) {}
+	public JPanel get_view_section_panel(final long section_id) {
+		Section section = section_storage.get(section_id);
+		JPanel panelSection = new JPanel();
+		panelSection.setBounds(0, 0, 480, 240);
+		panelSection.setLayout(null);
 
-	public void edit_section(final long section_id) {}
+		JTextField txtSectionTitle = new JTextField(section.getTitle());
+		txtSectionTitle.setBounds(90, 45, 300, 30);
+		panelSection.add(txtSectionTitle);
+		txtSectionTitle.setColumns(4);
+		final JLabel disable_comments = new JLabel(
+				String.format("Disable Comments: %s", section.getDisable_comments() == 1 ? true : false));
+		disable_comments.setBounds(240, 80, 200, 26);
+		panelSection.add(disable_comments);
+
+		final JLabel abstracts_not_required = new JLabel(
+				String.format("Abstracts Not Required: %s", section.getAbstracts_not_required() == 1 ? true : false));
+
+		abstracts_not_required.setBounds(240, 106, 240, 26);
+		panelSection.add(abstracts_not_required);
+		final JLabel editor_restricted = new JLabel(
+				String.format("Editor Restricted: %s", section.getEditor_restricted() == 1 ? true : false));
+
+		editor_restricted.setBounds(240, 132, 200, 26);
+		panelSection.add(editor_restricted);
+		final JLabel hide_title = new JLabel(
+				String.format("Hide Title: %s", section.getHide_title() == 1 ? true : false));
+
+		hide_title.setBounds(80, 80, 200, 26);
+		panelSection.add(hide_title);
+		final JLabel hide_author = new JLabel(
+				String.format("Hide Author: %s", section.getHide_author() == 1 ? true : false));
+
+		hide_author.setBounds(80, 106, 200, 26);
+		panelSection.add(hide_author);
+		final JLabel hide_about = new JLabel(
+				String.format("Hide About: %s", section.getHide_about() == 1 ? true : false));
+
+		hide_about.setBounds(80, 132, 200, 26);
+		panelSection.add(hide_about);
+
+		final JLabel metadata_indexed = new JLabel(
+				String.format("Metadata Indexed: %s", section.getMeta_indexed() == 1 ? true : false));
+
+		metadata_indexed.setBounds(80, 158, 220, 26);
+		panelSection.add(metadata_indexed);
+
+		final JLabel metadata_reviewed = new JLabel(
+				String.format("Metadata Reviewed: %s", section.getMeta_reviewed() == 1 ? true : false));
+
+		metadata_reviewed.setBounds(80, 184, 220, 26);
+		panelSection.add(metadata_reviewed);
+
+		JLabel lblSeq = new JLabel("Seq");
+		lblSeq.setHorizontalAlignment(SwingConstants.CENTER);
+		lblSeq.setBounds(40, 215, 200, 20);
+		panelSection.add(lblSeq);
+
+		JTextField txtSeq = new JTextField(Double.toString(section.getSeq()));
+		txtSeq.setEditable(false);
+		txtSeq.setBounds(70, 236, 150, 30);
+		panelSection.add(txtSeq);
+		txtSeq.setColumns(4);
+
+		JLabel lblAbstractCount = new JLabel("Abstract Word Count");
+		lblAbstractCount.setHorizontalAlignment(SwingConstants.CENTER);
+		lblAbstractCount.setBounds(240, 215, 200, 20);
+		panelSection.add(lblAbstractCount);
+
+		JTextField txtAbstractCount = new JTextField(Long.toString(section.getAbstract_word_count()));
+		txtAbstractCount.setBounds(270, 236, 150, 30);
+		txtAbstractCount.setEditable(false);
+		panelSection.add(txtAbstractCount);
+		txtAbstractCount.setColumns(4);
+
+		JLabel lblTitleSection = new JLabel("Title");
+		lblTitleSection.setHorizontalAlignment(SwingConstants.CENTER);
+		lblTitleSection.setBounds(190, 25, 100, 20);
+		panelSection.add(lblTitleSection);
+		panelSection.setBounds(0, 0, 480, 280);
+		panelSection.setSize(new Dimension(480, 280));
+		panelSection.setPreferredSize(new Dimension(480, 280));
+		panelSection.setVisible(true);
+
+		return panelSection;
+	}
+
+	public JPanel get_edit_section_panel(final long section_id) {
+		Section section = section_storage.get(section_id);
+		JPanel panelSection = new JPanel();
+		panelSection.setBounds(0, 0, 480, 240);
+		panelSection.setLayout(null);
+
+		JTextField txtSectionTitle = new JTextField(section.getTitle());
+		txtSectionTitle.setBounds(90, 45, 300, 30);
+		panelSection.add(txtSectionTitle);
+		txtSectionTitle.setColumns(4);
+		final JCheckBox disable_comments = new JCheckBox("Disable Comments",
+				section.getDisable_comments() == 1 ? true : false);
+
+		disable_comments.setBounds(240, 80, 140, 26);
+		panelSection.add(disable_comments);
+
+		final JCheckBox abstracts_not_required = new JCheckBox("Abstracts Not Required",
+				section.getAbstracts_not_required() == 1 ? true : false);
+
+		abstracts_not_required.setBounds(240, 106, 200, 26);
+		panelSection.add(abstracts_not_required);
+		final JCheckBox editor_restricted = new JCheckBox("Editor Restricted",
+				section.getEditor_restricted() == 1 ? true : false);
+
+		editor_restricted.setBounds(240, 132, 200, 26);
+		panelSection.add(editor_restricted);
+		final JCheckBox hide_title = new JCheckBox("Hide Title", section.getHide_title() == 1 ? true : false);
+
+		hide_title.setBounds(80, 80, 100, 26);
+		panelSection.add(hide_title);
+		final JCheckBox hide_author = new JCheckBox("Hide Author", section.getHide_author() == 1 ? true : false);
+
+		hide_author.setBounds(80, 106, 100, 26);
+		panelSection.add(hide_author);
+		final JCheckBox hide_about = new JCheckBox("Hide About", section.getHide_about() == 1 ? true : false);
+
+		hide_about.setBounds(80, 132, 100, 26);
+		panelSection.add(hide_about);
+
+		final JCheckBox metadata_indexed = new JCheckBox("Metadata Indexed",
+				section.getMeta_indexed() == 1 ? true : false);
+
+		metadata_indexed.setBounds(80, 158, 180, 26);
+		panelSection.add(metadata_indexed);
+
+		final JCheckBox metadata_reviewed = new JCheckBox("Metadata Reviewed",
+				section.getMeta_reviewed() == 1 ? true : false);
+
+		metadata_reviewed.setBounds(80, 184, 180, 26);
+		panelSection.add(metadata_reviewed);
+
+		JLabel lblSeq = new JLabel("Seq");
+		lblSeq.setHorizontalAlignment(SwingConstants.CENTER);
+		lblSeq.setBounds(40, 215, 200, 20);
+		panelSection.add(lblSeq);
+
+		JTextField txtSeq = new JTextField(Double.toString(section.getSeq()));
+		txtSeq.setBounds(70, 236, 150, 30);
+		panelSection.add(txtSeq);
+		txtSeq.setColumns(4);
+
+		JLabel lblAbstractCount = new JLabel("Abstract Word Count");
+		lblAbstractCount.setHorizontalAlignment(SwingConstants.CENTER);
+		lblAbstractCount.setBounds(240, 215, 200, 20);
+		panelSection.add(lblAbstractCount);
+
+		JTextField txtAbstractCount = new JTextField(Long.toString(section.getAbstract_word_count()));
+		txtAbstractCount.setBounds(270, 236, 150, 30);
+		panelSection.add(txtAbstractCount);
+		txtAbstractCount.setColumns(4);
+
+		JLabel lblTitleSection = new JLabel("Title");
+		lblTitleSection.setHorizontalAlignment(SwingConstants.CENTER);
+		lblTitleSection.setBounds(190, 25, 100, 20);
+		panelSection.add(lblTitleSection);
+		panelSection.setBounds(0, 0, 480, 280);
+		panelSection.setSize(new Dimension(480, 280));
+		panelSection.setPreferredSize(new Dimension(480, 280));
+		panelSection.setVisible(true);
+
+		return panelSection;
+	}
+
+	public void edit_section(final long section_id) {
+		JFrame screen = section_screens.get(section_id);
+
+		screen.addWindowListener(new WindowAdapter() {
+			@Override
+			public void windowClosing(WindowEvent e) {
+				// database_save();
+				screen.dispose();
+				sections();
+			}
+		});
+		int height_small = 420;
+		int width_small = 540;
+		screen.setVisible(true);
+		screen.setSize(540, 420);
+		Section section = section_storage.get(section_id);
+		screen.setTitle(String.format("Edit Section <%s>", section.getId()));
+		JPanel panelSection = new JPanel();
+		panelSection.setBounds(0, 0, 540, 240);
+		panelSection.setLayout(null);
+
+		JTextField txtSectionTitle = new JTextField(section.getTitle());
+		txtSectionTitle.setBounds(90, 45, 300, 30);
+		panelSection.add(txtSectionTitle);
+		txtSectionTitle.setColumns(4);
+		final JCheckBox disable_comments = new JCheckBox("Disable Comments",
+				section.getDisable_comments() == 1 ? true : false);
+
+		disable_comments.setBounds(240, 80, 140, 26);
+		panelSection.add(disable_comments);
+
+		final JCheckBox abstracts_not_required = new JCheckBox("Abstracts Not Required",
+				section.getAbstracts_not_required() == 1 ? true : false);
+
+		abstracts_not_required.setBounds(240, 106, 200, 26);
+		panelSection.add(abstracts_not_required);
+		final JCheckBox editor_restricted = new JCheckBox("Editor Restricted",
+				section.getEditor_restricted() == 1 ? true : false);
+
+		editor_restricted.setBounds(240, 132, 200, 26);
+		panelSection.add(editor_restricted);
+		final JCheckBox hide_title = new JCheckBox("Hide Title", section.getHide_title() == 1 ? true : false);
+
+		hide_title.setBounds(80, 80, 100, 26);
+		panelSection.add(hide_title);
+		final JCheckBox hide_author = new JCheckBox("Hide Author", section.getHide_author() == 1 ? true : false);
+
+		hide_author.setBounds(80, 106, 100, 26);
+		panelSection.add(hide_author);
+		final JCheckBox hide_about = new JCheckBox("Hide About", section.getHide_about() == 1 ? true : false);
+
+		hide_about.setBounds(80, 132, 100, 26);
+		panelSection.add(hide_about);
+
+		final JCheckBox metadata_indexed = new JCheckBox("Metadata Indexed",
+				section.getMeta_indexed() == 1 ? true : false);
+
+		metadata_indexed.setBounds(80, 158, 180, 26);
+		panelSection.add(metadata_indexed);
+
+		final JCheckBox metadata_reviewed = new JCheckBox("Metadata Reviewed",
+				section.getMeta_reviewed() == 1 ? true : false);
+
+		metadata_reviewed.setBounds(80, 184, 180, 26);
+		panelSection.add(metadata_reviewed);
+
+		JLabel lblSeq = new JLabel("Seq");
+		lblSeq.setHorizontalAlignment(SwingConstants.CENTER);
+		lblSeq.setBounds(40, 215, 200, 20);
+		panelSection.add(lblSeq);
+
+		JTextField txtSeq = new JTextField(Double.toString(section.getSeq()));
+		txtSeq.setBounds(70, 236, 150, 30);
+		panelSection.add(txtSeq);
+		txtSeq.setColumns(4);
+
+		JLabel lblAbstractCount = new JLabel("Abstract Word Count");
+		lblAbstractCount.setHorizontalAlignment(SwingConstants.CENTER);
+		lblAbstractCount.setBounds(240, 215, 200, 20);
+		panelSection.add(lblAbstractCount);
+
+		JTextField txtAbstractCount = new JTextField(Long.toString(section.getAbstract_word_count()));
+		txtAbstractCount.setBounds(270, 236, 150, 30);
+		panelSection.add(txtAbstractCount);
+		txtAbstractCount.setColumns(4);
+
+		JLabel lblTitleSection = new JLabel("Title");
+		lblTitleSection.setHorizontalAlignment(SwingConstants.CENTER);
+		lblTitleSection.setBounds(190, 25, 100, 20);
+		panelSection.add(lblTitleSection);
+		panelSection.setBounds(0, 0, 540, 280);
+		panelSection.setSize(new Dimension(540, 280));
+		panelSection.setPreferredSize(new Dimension(540, 280));
+		panelSection.setVisible(true);
+
+		JButton btnSubmit = new JButton("Save");
+
+		Action actionSubmit = new AbstractAction() {
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+
+				panelSection.setVisible(true);
+				panelSection.setEnabled(true);
+				boolean validation = false;
+
+				String title = txtSectionTitle.getText();
+				if (title == null || title.isEmpty() || title.compareTo("") == 0 || title.compareTo(" ") == 0) {
+					validation = false;
+				} else {
+					validation = true;
+				}
+				try {
+					int wordcount = Integer.parseInt(txtAbstractCount.getText());
+					double seq = Double.parseDouble(txtSeq.getText());
+					validation = true;
+				} catch (Exception es) {
+					validation = false;
+				}
+
+				section.setAbstract_word_count(Integer.parseInt(txtAbstractCount.getText()));
+				section.setSeq(Double.parseDouble(txtSeq.getText()));
+				section.setHide_about(hide_about.isSelected() == true ? 1 : 0);
+				section.setHide_author(hide_author.isSelected() == true ? 1 : 0);
+				section.setHide_title(hide_title.isSelected() == true ? 1 : 0);
+				section.setEditor_restricted(editor_restricted.isSelected() == true ? 1 : 0);
+				section.setMeta_indexed(metadata_indexed.isSelected() == true ? 1 : 0);
+				section.setMeta_reviewed(metadata_reviewed.isSelected() == true ? 1 : 0);
+				section.setDisable_comments(disable_comments.isSelected() == true ? 1 : 0);
+				section.setAbstracts_not_required(abstracts_not_required.isSelected() == true ? 1 : 0);
+				section_storage.put(section.getId(), section);
+				screen.dispose();
+				sections();
+
+			}
+
+		};
+		/*
+		 * title.addActionListener(actionSubmit);
+		 * volume.addChangeListener((ChangeListener) actionSubmit);
+		 * number.addChangeListener((ChangeListener) actionSubmit);
+		 * year.addActionListener(actionSubmit);
+		 * datePicker.addActionListener(actionSubmit);
+		 */
+		btnSubmit.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+
+				panelSection.setVisible(true);
+				panelSection.setEnabled(true);
+				boolean validation = false;
+
+				String title = txtSectionTitle.getText();
+				if (title == null || title.isEmpty() || title.compareTo("") == 0 || title.compareTo(" ") == 0) {
+					validation = false;
+				} else {
+					validation = true;
+				}
+				try {
+					int wordcount = Integer.parseInt(txtAbstractCount.getText());
+					double seq = Double.parseDouble(txtSeq.getText());
+					validation = true;
+				} catch (Exception es) {
+					validation = false;
+				}
+
+				section.setAbstract_word_count(Integer.parseInt(txtAbstractCount.getText()));
+				section.setSeq(Double.parseDouble(txtSeq.getText()));
+				section.setHide_about(hide_about.isSelected() == true ? 1 : 0);
+				section.setHide_author(hide_author.isSelected() == true ? 1 : 0);
+				section.setHide_title(hide_title.isSelected() == true ? 1 : 0);
+				section.setEditor_restricted(editor_restricted.isSelected() == true ? 1 : 0);
+				section.setMeta_indexed(metadata_indexed.isSelected() == true ? 1 : 0);
+				section.setMeta_reviewed(metadata_reviewed.isSelected() == true ? 1 : 0);
+				section.setDisable_comments(disable_comments.isSelected() == true ? 1 : 0);
+				section.setAbstracts_not_required(abstracts_not_required.isSelected() == true ? 1 : 0);
+				section_storage.put(section.getId(), section);
+				screen.dispose();
+				sections();
+
+			}
+
+		});
+		btnSubmit.setBounds(25, height_small - 100, 150, 30);
+
+		JButton btnCancel = new JButton("Cancel");
+
+		btnCancel.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+
+				screen.dispose();
+				sections();
+
+			}
+
+		});
+		btnCancel.setBounds(width_small - 170, height_small - 100, 150, 30);
+
+		panelSection.add(btnSubmit);
+		panelSection.add(btnCancel);
+		screen.getContentPane().add(panelSection);
+
+		screen.repaint();
+	}
+
 	public void sections() {
 		if (logged_in) {
 			if (section_screen == null || !section_screen.isVisible()) {
@@ -3917,53 +4293,52 @@ public class Main {
 						List<Future<?>> futures = new ArrayList<Future<?>>();
 
 						boolean update_table = false;
-;
-							int dialogResult2 = JOptionPane.showConfirmDialog(null,
-									"Would You Like to replace local Section data (Yes) or update remote Secton data (No)",
-									"Warning", 1);
+						;
+						int dialogResult2 = JOptionPane.showConfirmDialog(null,
+								"Would You Like to replace local Section data (Yes) or update remote Secton data (No)",
+								"Warning", 1);
 
-							if (dialogResult2 == JOptionPane.YES_OPTION) {
-								Future<?> f = exec.submit(new Runnable() {
-									public void run() {
+						if (dialogResult2 == JOptionPane.YES_OPTION) {
+							Future<?> f = exec.submit(new Runnable() {
+								public void run() {
 
-										try {
-											get_sections(Long.parseLong(app_settings.get("journal_id")), encoding,
-													false);
+									try {
+										get_sections(Long.parseLong(app_settings.get("journal_id")), encoding, false);
 
-										} catch (NumberFormatException e) {
+									} catch (NumberFormatException e) {
 
-											e.printStackTrace();
-										} catch (IllegalStateException e) {
+										e.printStackTrace();
+									} catch (IllegalStateException e) {
 
-											e.printStackTrace();
-										} catch (IOException e) {
+										e.printStackTrace();
+									} catch (IOException e) {
 
-											e.printStackTrace();
-										}
+										e.printStackTrace();
 									}
-								});
-								futures.add(f);
-							} else if (dialogResult2 == JOptionPane.NO_OPTION) {
-								Future<?> f = exec.submit(new Runnable() {
-									public void run() {
-										try {
-											update_sections(Long.parseLong(app_settings.get("journal_id")), encoding,
-													false);
-										} catch (NumberFormatException e1) {
+								}
+							});
+							futures.add(f);
+						} else if (dialogResult2 == JOptionPane.NO_OPTION) {
+							Future<?> f = exec.submit(new Runnable() {
+								public void run() {
+									try {
+										update_sections(Long.parseLong(app_settings.get("journal_id")), encoding,
+												false);
+									} catch (NumberFormatException e1) {
 
-											e1.printStackTrace();
-										} catch (IllegalStateException e1) {
+										e1.printStackTrace();
+									} catch (IllegalStateException e1) {
 
-											e1.printStackTrace();
-										} catch (IOException e1) {
+										e1.printStackTrace();
+									} catch (IOException e1) {
 
-											e1.printStackTrace();
-										}
+										e1.printStackTrace();
 									}
-								});
-								futures.add(f);
-							}
-						
+								}
+							});
+							futures.add(f);
+						}
+
 						boolean update_q = update_table;
 						article_progress_executor.execute(new Runnable() {
 							public void run() {
@@ -3980,7 +4355,7 @@ public class Main {
 
 								}
 								section_screen.dispose();
-								
+
 								int dialogResult = JOptionPane.showConfirmDialog(null,
 										"Save changes to local database?", "Warning", 1);
 
@@ -4008,7 +4383,7 @@ public class Main {
 										}
 									}
 									int i = 0;
-									
+
 									for (long id : keys) {
 										Section current_section = section_storage.get(id);
 										ArrayList<Object> data = new ArrayList<Object>();
@@ -4047,10 +4422,9 @@ public class Main {
 								section_screen.remove(progress_msg);
 								section_screen.remove(progressBar);
 								section_screen.repaint();
-						
+
 							}
 						});
-						
 
 					}
 
@@ -4059,7 +4433,7 @@ public class Main {
 
 				JScrollPane scrollPane = new JScrollPane();
 				scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
-				scrollPane.setBounds(15, height / 16 * 7-50, width - 30, (height - 110) - (height / 16 * 7));
+				scrollPane.setBounds(15, height / 16 * 7 - 50, width - 30, (height - 110) - (height / 16 * 7));
 				section_screen.getContentPane().add(scrollPane);
 				// reference:
 				// https://svn.java.net/svn/swinglabs-demos~svn/trunk/src/java/org/jdesktop/demo/sample/
@@ -4165,7 +4539,6 @@ public class Main {
 							long selected_article = (long) table.getModel()
 									.getValueAt(table.convertRowIndexToModel(article_row), 0);
 							section_storage.remove(selected_article);
-							
 
 							if (section_screens.get(selected_article).isVisible()) {
 								section_screens.get(selected_article).dispose();
@@ -4195,7 +4568,11 @@ public class Main {
 						if (section_screens.get(selected_article).isVisible()) {
 							section_screens.get(selected_article).dispose();
 						}
-						view_section(selected_article);
+						int result = JOptionPane.showConfirmDialog(null, get_view_section_panel(selected_article),
+								"Add Section", JOptionPane.OK_CANCEL_OPTION);
+						if (result == JOptionPane.OK_OPTION) {
+
+						}
 						// /
 						// ((DefaultTableModel)table.getModel()).removeRow(modelRow);
 					}
@@ -4232,7 +4609,6 @@ public class Main {
 				lblIssue.setBounds(40, 60, 150, 30);
 				lblIssue.setOpaque(true);
 				section_screen.getContentPane().add(lblIssue);
-
 
 				JButton btnClose = new JButton("Close");
 				btnClose.addActionListener(new ActionListener() {
@@ -4289,7 +4665,7 @@ public class Main {
 				panel_1.setBounds(0, 95, width, 5);
 				section_screen.getContentPane().add(panel_1);
 				JButton btnAdd = new JButton("Add");
-				
+
 				JPanel panelSection = new JPanel();
 				panelSection.setBounds(0, 0, 480, 240);
 				panelSection.setLayout(null);
@@ -4361,73 +4737,74 @@ public class Main {
 				panelSection.setSize(new Dimension(480, 280));
 				panelSection.setPreferredSize(new Dimension(480, 280));
 				panelSection.setVisible(true);
-				
-				
+
 				btnAdd.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
-					
-								panelSection.setVisible(true);
-								panelSection.setEnabled(true);
-								boolean validation = false;
-								int result = JOptionPane.showConfirmDialog(null, panelSection, "Add Section",
-										JOptionPane.OK_CANCEL_OPTION);
-								String title = txtSectionTitle.getText();
-								if (title == null || title.isEmpty() || title.compareTo("") == 0 || title.compareTo(" ") == 0) {
-									validation = false;
-								} else {
-									validation = true;
-								}
-								try {
-									int wordcount = Integer.parseInt(txtAbstractCount.getText());
-									double seq = Double.parseDouble(txtSeq.getText());
-									validation = true;
-								} catch (Exception es) {
-									validation = false;
-								}
 
-								if (result == JOptionPane.OK_OPTION && validation == true) {
-									section_db_id++;
-									Section new_section = new Section(section_db_id, txtSectionTitle.getText());
-									new_section.setAbstract_word_count(Integer.parseInt(txtAbstractCount.getText()));
-									new_section.setSeq(Double.parseDouble(txtSeq.getText()));
-									new_section.setHide_about(hide_about.isSelected() == true ? 1 : 0);
-									new_section.setHide_author(hide_author.isSelected() == true ? 1 : 0);
-									new_section.setHide_title(hide_title.isSelected() == true ? 1 : 0);
-									new_section.setEditor_restricted(editor_restricted.isSelected() == true ? 1 : 0);
-									new_section.setMeta_indexed(metadata_indexed.isSelected() == true ? 1 : 0);
-									new_section.setMeta_reviewed(metadata_reviewed.isSelected() == true ? 1 : 0);
-									new_section.setDisable_comments(disable_comments.isSelected() == true ? 1 : 0);
-									new_section.setAbstracts_not_required(abstracts_not_required.isSelected() == true ? 1 : 0);
-									section_storage.put(section_db_id, new_section);
-									int num_rows = ((DefaultTableModel) section_table.getModel()).getRowCount();
-									Set<Long>  updated_sect_keys = section_storage.keySet();
-									Object[][] rows = new Object[updated_sect_keys.size()][6];
-									if (num_rows != 0) {
-										for (int i = num_rows - 1; i >= 0; i--) {
-											((DefaultTableModel) section_table.getModel()).removeRow(i);
-										}
-									}
-									int i = 0;
-									for (long id : updated_sect_keys) {
-										Section current_section = section_storage.get(id);
-										section_screens.put(id, new JFrame());
-										
-										Object[] row = { current_section.getId(), current_section.getTitle(), "View", "Edit", "Delete" };
-										
-										rows[i] = row;
-										((DefaultTableModel) section_table.getModel()).insertRow(0, row);
-										i++;
+						panelSection.setVisible(true);
+						panelSection.setEnabled(true);
+						boolean validation = false;
+						int result = JOptionPane.showConfirmDialog(null, panelSection, "Add Section",
+								JOptionPane.OK_CANCEL_OPTION);
 
-									}
-									if (num_rows != 0) {
-										((DefaultTableModel) section_table.getModel()).fireTableRowsUpdated(0,
-												updated_sect_keys.size() - 1);
-									}
-									section_table.repaint();
-									section_screen.getContentPane().repaint();
-									section_screen.repaint();
+						String title = txtSectionTitle.getText();
+						if (title == null || title.isEmpty() || title.compareTo("") == 0 || title.compareTo(" ") == 0) {
+							validation = false;
+						} else {
+							validation = true;
+						}
+						try {
+							int wordcount = Integer.parseInt(txtAbstractCount.getText());
+							double seq = Double.parseDouble(txtSeq.getText());
+							validation = true;
+						} catch (Exception es) {
+							validation = false;
+						}
+
+						if (result == JOptionPane.OK_OPTION && validation == true) {
+							section_db_id++;
+							Section new_section = new Section(section_db_id, txtSectionTitle.getText());
+							new_section.setAbstract_word_count(Integer.parseInt(txtAbstractCount.getText()));
+							new_section.setSeq(Double.parseDouble(txtSeq.getText()));
+							new_section.setHide_about(hide_about.isSelected() == true ? 1 : 0);
+							new_section.setHide_author(hide_author.isSelected() == true ? 1 : 0);
+							new_section.setHide_title(hide_title.isSelected() == true ? 1 : 0);
+							new_section.setEditor_restricted(editor_restricted.isSelected() == true ? 1 : 0);
+							new_section.setMeta_indexed(metadata_indexed.isSelected() == true ? 1 : 0);
+							new_section.setMeta_reviewed(metadata_reviewed.isSelected() == true ? 1 : 0);
+							new_section.setDisable_comments(disable_comments.isSelected() == true ? 1 : 0);
+							new_section.setAbstracts_not_required(abstracts_not_required.isSelected() == true ? 1 : 0);
+							section_storage.put(section_db_id, new_section);
+							int num_rows = ((DefaultTableModel) section_table.getModel()).getRowCount();
+							Set<Long> updated_sect_keys = section_storage.keySet();
+							Object[][] rows = new Object[updated_sect_keys.size()][6];
+							if (num_rows != 0) {
+								for (int i = num_rows - 1; i >= 0; i--) {
+									((DefaultTableModel) section_table.getModel()).removeRow(i);
 								}
-						
+							}
+							int i = 0;
+							for (long id : updated_sect_keys) {
+								Section current_section = section_storage.get(id);
+								section_screens.put(id, new JFrame());
+
+								Object[] row = { current_section.getId(), current_section.getTitle(), "View", "Edit",
+										"Delete" };
+
+								rows[i] = row;
+								((DefaultTableModel) section_table.getModel()).insertRow(0, row);
+								i++;
+
+							}
+							if (num_rows != 0) {
+								((DefaultTableModel) section_table.getModel()).fireTableRowsUpdated(0,
+										updated_sect_keys.size() - 1);
+							}
+							section_table.repaint();
+							section_screen.getContentPane().repaint();
+							section_screen.repaint();
+						}
+
 					}
 				});
 				btnAdd.setBounds(width - 150, height / 16 * 7 - 84, 117, 25);
@@ -4442,7 +4819,6 @@ public class Main {
 				panel3.setPreferredSize(new Dimension(width, height / 8));
 				JScrollPane abstractSection = new JScrollPane(panel3);
 				panel3.setAutoscrolls(true);
-			
 
 			}
 
@@ -4450,6 +4826,7 @@ public class Main {
 			login("dashboard");
 		}
 	}
+
 	public void issue(final long issue_id) {
 		if (logged_in) {
 			if (issue_screens.containsKey(issue_id) && !issue_screens.get(issue_id).isVisible()) {
