@@ -138,7 +138,7 @@ import models.Section;
 import sun.misc.BASE64Encoder;
 
 public class Main {
-	JFrame login, api, issues, settings;
+	JFrame login, api, issues, settings,section_screen;
 	private JTextField access_key, username;
 	private JXTable issues_table;
 	private static int delay = 5000; // milliseconds
@@ -165,6 +165,7 @@ public class Main {
 	private static ConcurrentHashMap<Long, ConcurrentHashMap<Long, Boolean>> author_primary_storage;
 	private static ConcurrentHashMap<Long, ConcurrentHashMap<Long, ArticleFile>> file_storage;
 	private static ConcurrentHashMap<Long, ConcurrentHashMap<Long, JFrame>> article_screens;
+	private static ConcurrentHashMap<Long, JFrame> section_screens;
 	private static ArrayList<String> setting_keys = new ArrayList<String>();
 	private static Connection c = null;
 	private static Statement stmt = null;
@@ -513,6 +514,7 @@ public class Main {
 		issue_screens = new ConcurrentHashMap<Long, JFrame>();
 		file_storage = new ConcurrentHashMap<Long, ConcurrentHashMap<Long, ArticleFile>>();
 		article_screens = new ConcurrentHashMap<Long, ConcurrentHashMap<Long, JFrame>>();
+		section_screens = new ConcurrentHashMap<Long, JFrame>();
 		author_storage = new ConcurrentHashMap<Long, Author>();
 		section_storage = new ConcurrentHashMap<Long, Section>();
 		author_primary_storage = new ConcurrentHashMap<Long, ConcurrentHashMap<Long, Boolean>>();
@@ -643,6 +645,7 @@ public class Main {
 				new_section.setDisable_comments(sect_s.getInt("disable_comments"));
 				new_section.setAbstract_word_count(sect_s.getInt("abstract_word_count"));
 				section_storage.put(id, new_section);
+				section_screens.put(id, new JFrame());
 				section_db_id = id;
 			}
 			sect_s.close();
@@ -901,7 +904,7 @@ public class Main {
 			exc.printStackTrace();
 		}
 
-		delay = 5500;
+		delay = 8000;
 		return online;
 	}
 
@@ -2242,8 +2245,17 @@ public class Main {
 				issues.getContentPane().setLayout(null);
 
 				final JButton btnSync = new JButton("Sync");
+				
+				
 				btnSync.setBounds(width - 155, 21, 70, 24);
 
+				final JButton btnSection = new JButton("Sections");
+				btnSection.setBounds(width - 300, 21, 70, 24);
+				
+				btnSection.addActionListener(new ActionListener() {
+					public void actionPerformed(ActionEvent e) {
+						sections();
+					}});
 				btnSync.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
 
@@ -2720,6 +2732,7 @@ public class Main {
 				});
 
 				issues.getContentPane().add(btnSync);
+				issues.getContentPane().add(btnSection);
 				Set<Long> author_keys = author_storage.keySet();
 				ArrayList<Long> author_list = new ArrayList<Long>();
 				String listData[] = new String[author_keys.size()];
@@ -3799,7 +3812,510 @@ public class Main {
 			login("dashboard");
 		}
 	}
+	public void add_section() {}
 
+	public void view_section(final long section_id) {}
+
+	public void edit_section(final long section_id) {}
+	public void sections() {
+		if (logged_in) {
+			if (section_screen == null || !section_screen.isVisible()) {
+
+				final JFrame section_screen = new JFrame();
+				section_screen.setVisible(true);
+				section_screen.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+				width = 640;
+				height = 480;
+				section_screen.setSize(640, 480);
+				ConcurrentHashMap<Long, JFrame> issue_articles = new ConcurrentHashMap<Long, JFrame>();
+				section_screen.getContentPane().setBackground(new Color(128, 128, 128));
+
+				section_screen.setLocationRelativeTo(null);
+				section_screen.setTitle("Sections");
+				section_screen.addWindowListener(new WindowAdapter() {
+					@Override
+					public void windowClosing(WindowEvent e) {
+						// database_save();
+					}
+				});
+				Date current = new Date();
+
+				Set<Long> sect_keys = section_storage.keySet();
+				ArrayList<List<Object>> rowData = new ArrayList<List<Object>>();
+				Object[][] rows = new Object[sect_keys.size()][11];
+				int i = 0;
+				for (long id : sect_keys) {
+
+					Section current_section = section_storage.get(id);
+					ArrayList<Object> data = new ArrayList<Object>();
+					section_screens.put(id, new JFrame());
+					data.add(Long.toString(current_section.getId()));
+					data.add(current_section.getTitle());
+					data.add("View");
+					data.add("Edit");
+					data.add("Delete");
+					Object[] row = { current_section.getId(), current_section.getTitle(), "View", "Edit", "Delete" };
+					rows[i] = row;
+					i++;
+					rowData.add(data);
+
+				}
+				Object columnNames[] = { "ID", "Title", "", "", "" };
+
+				section_screen.getContentPane().setLayout(null);
+
+				DefaultTableModel dtm = new DefaultTableModel(rows, columnNames);
+
+				final JXTable section_table = new JXTable(dtm) {
+					/**
+					 * 
+					 */
+					private static final long serialVersionUID = 1L;
+
+					// **** Source:
+					// http://stackoverflow.com/questions/9467093/how-to-add-a-tooltip-to-a-cell-in-a-jtable
+					// ****//
+					// Implement table cell tool tips.
+					public String getToolTipText(MouseEvent e) {
+						String tip = null;
+						java.awt.Point p = e.getPoint();
+						int rowIndex = rowAtPoint(p);
+						int colIndex = columnAtPoint(p);
+
+						try {
+							tip = getValueAt(rowIndex, colIndex).toString();
+						} catch (RuntimeException e1) {
+							// catch null pointer exception if mouse is over an
+							// empty line
+						}
+
+						return tip;
+					}
+				};
+				section_table.setAutoResizeMode(JTable.AUTO_RESIZE_SUBSEQUENT_COLUMNS);
+
+				final JButton btnSync = new JButton("Sync");
+				btnSync.setBounds(width - 155, 21, 70, 24);
+				btnSync.addActionListener(new ActionListener() {
+					public void actionPerformed(ActionEvent e) {
+						JProgressBar progressBar = new JProgressBar();
+						Executor article_progress_executor = Executors.newSingleThreadExecutor();
+						ExecutorService exec = Executors.newFixedThreadPool(1);
+
+						progressBar.setValue(0);
+						progressBar.setStringPainted(true);
+
+						progressBar.setIndeterminate(true);
+						progressBar.setBounds(width / 2 - 50, height - 117, 150, 40);
+						JLabel progress_msg = new JLabel("Estimated progress per Section:");
+
+						progress_msg.setBounds(width / 2 - 75, height - 150, 200, 40);
+
+						section_screen.add(progress_msg);
+						section_screen.add(progressBar);
+						section_screen.repaint();
+						List<Future<?>> futures = new ArrayList<Future<?>>();
+
+						boolean update_table = false;
+;
+							int dialogResult2 = JOptionPane.showConfirmDialog(null,
+									"Would You Like to replace local Section data (Yes) or update remote Secton data (No)",
+									"Warning", 1);
+
+							if (dialogResult2 == JOptionPane.YES_OPTION) {
+								Future<?> f = exec.submit(new Runnable() {
+									public void run() {
+
+										try {
+											get_sections(Long.parseLong(app_settings.get("journal_id")), encoding,
+													false);
+
+										} catch (NumberFormatException e) {
+
+											e.printStackTrace();
+										} catch (IllegalStateException e) {
+
+											e.printStackTrace();
+										} catch (IOException e) {
+
+											e.printStackTrace();
+										}
+									}
+								});
+								futures.add(f);
+							} else if (dialogResult2 == JOptionPane.NO_OPTION) {
+								Future<?> f = exec.submit(new Runnable() {
+									public void run() {
+										try {
+											update_sections(Long.parseLong(app_settings.get("journal_id")), encoding,
+													false);
+										} catch (NumberFormatException e1) {
+
+											e1.printStackTrace();
+										} catch (IllegalStateException e1) {
+
+											e1.printStackTrace();
+										} catch (IOException e1) {
+
+											e1.printStackTrace();
+										}
+									}
+								});
+								futures.add(f);
+							}
+						
+						boolean update_q = update_table;
+						article_progress_executor.execute(new Runnable() {
+							public void run() {
+								for (Future<?> f : futures) {
+									try {
+										f.get();
+									} catch (InterruptedException e) {
+
+										e.printStackTrace();
+									} catch (ExecutionException e) {
+
+										e.printStackTrace();
+									}
+
+								}
+								section_screen.dispose();
+								
+								int dialogResult = JOptionPane.showConfirmDialog(null,
+										"Save changes to local database?", "Warning", 1);
+
+								if (dialogResult == JOptionPane.YES_OPTION) {
+									database_save();
+								}
+								System.out.println("updatet able" + update_q);
+								// change
+								if (update_q) {
+									Set<Long> keys = section_storage.keySet();
+									ArrayList<List<Object>> rowData = new ArrayList<List<Object>>();
+									Object[][] rows = new Object[keys.size()][11];
+									int num_rows = 0;
+									try {
+										num_rows = section_table.getRowCount();
+									} catch (NullPointerException n_e) {
+									}
+									if (num_rows != 0) {
+										for (int i = num_rows - 1; i >= 0; i--) {
+											System.out.println(num_rows);
+											((DefaultTableModel) section_table.getModel()).removeRow(i);
+
+											System.out.println("--"
+													+ ((DefaultTableModel) section_table.getModel()).getRowCount());
+										}
+									}
+									int i = 0;
+									
+									for (long id : keys) {
+										Section current_section = section_storage.get(id);
+										ArrayList<Object> data = new ArrayList<Object>();
+										issue_articles.put(id, new JFrame());
+
+										data.add(Long.toString(current_section.getId()));
+										data.add(current_section.getTitle());
+										data.add("View");
+										data.add("Edit");
+										data.add("Delete");
+										Object[] row = { current_section.getId(), current_section.getTitle(), "View",
+												"Edit", "Delete" };
+										rows[i] = row;
+										rowData.add(data);
+										((DefaultTableModel) section_table.getModel()).insertRow(0, row);
+										i++;
+										System.out.println(
+												"++" + ((DefaultTableModel) section_table.getModel()).getRowCount());
+
+									}
+									System.out.println(num_rows);
+									try {
+										num_rows = ((DefaultTableModel) section_table.getModel()).getRowCount();
+									} catch (NullPointerException n_e) {
+									}
+									System.out.println(":::" + num_rows);
+									if (num_rows != 0) {
+										((DefaultTableModel) section_table.getModel()).fireTableRowsUpdated(0,
+												num_rows - 1);
+									}
+
+								}
+
+								section_table.repaint();
+								section_screen.getContentPane().repaint();
+								section_screen.remove(progress_msg);
+								section_screen.remove(progressBar);
+								section_screen.repaint();
+						
+							}
+						});
+						
+
+					}
+
+				});
+				section_screen.getContentPane().add(btnSync);
+
+				JScrollPane scrollPane = new JScrollPane();
+				scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+				scrollPane.setBounds(15, height / 16 * 7-50, width - 30, (height - 110) - (height / 16 * 7));
+				section_screen.getContentPane().add(scrollPane);
+				// reference:
+				// https://svn.java.net/svn/swinglabs-demos~svn/trunk/src/java/org/jdesktop/demo/sample/
+				final JTextField filter = new JTextField("");
+				filter.setBounds(150, height / 16 * 7 - 84, 117, 25);
+
+				final JButton search = new JButton("Search");
+				final JButton clear = new JButton("Clear");
+				search.setBounds(268, height / 16 * 7 - 84, 90, 25);
+
+				clear.setBounds(355, height / 16 * 7 - 84, 90, 25);
+				;
+				section_screen.getContentPane().add(filter);
+				section_screen.getContentPane().add(search);
+				section_screen.getContentPane().add(clear);
+				filter.setAction(new AbstractAction("Search") {
+					/**
+					 * 
+					 */
+					private static final long serialVersionUID = 1L;
+
+					public void actionPerformed(ActionEvent e) {
+
+						String searchString = filter.getText().trim();
+						if (searchString.length() > 0) {
+							section_table.setRowFilter(RowFilters.regexFilter(0, searchString));
+						} else {
+							section_table.setRowFilter(null);
+						}
+					}
+				});
+				search.setAction(new AbstractAction("Search") {
+					/**
+					 * 
+					 */
+					private static final long serialVersionUID = 1L;
+
+					public void actionPerformed(ActionEvent e) {
+
+						String searchString = filter.getText().trim();
+						if (searchString.length() > 0) {
+							section_table.setRowFilter(RowFilters.regexFilter(0, searchString));
+						}
+					}
+				});
+				clear.setAction(new AbstractAction("Clear") {
+					/**
+					 * 
+					 */
+					private static final long serialVersionUID = 1L;
+
+					public void actionPerformed(ActionEvent e) {
+						section_table.setRowFilter(null);
+					}
+				});
+				section_table.setAutoCreateRowSorter(true);
+				scrollPane.setViewportView(section_table);
+				section_table.getColumnModel().getColumn(2).setMinWidth(50);
+				section_table.getColumnModel().getColumn(3).setMinWidth(40);
+				section_table.getColumnModel().getColumn(4).setMinWidth(40);
+				section_table.setColumnSelectionAllowed(true);
+				section_table.setBorder(new BevelBorder(BevelBorder.RAISED, null, null, null, null));
+				section_table.setCellSelectionEnabled(true);
+				section_table.setRowHeight(23);
+				final Label internetCheck = new Label("  ONLINE");
+				internetCheck.setFont(new Font("Dialog", Font.BOLD | Font.ITALIC, 12));
+				internetCheck.setBackground(Color.GREEN);
+				internetCheck.setAlignment(1);
+				internetCheck.setForeground(new Color(255, 255, 255));
+				internetCheck.setBounds(width - 85, 22, 65, 22);
+				section_screen.getContentPane().add(internetCheck);
+
+				ActionListener taskPerformer1 = new ActionListener() {
+					public void actionPerformed(ActionEvent evt) {
+						if (status_online()) {
+							internetCheck.setBackground(Color.GREEN);
+							internetCheck.setText("ONLINE");
+							btnSync.setEnabled(true);
+
+						} else {
+							internetCheck.setBackground(Color.RED);
+							internetCheck.setText("OFFLINE");
+							btnSync.setEnabled(false);
+						}
+					}
+				};
+				new Timer(delay * 2, taskPerformer1).start();
+				new DefaultTableModel(rows, columnNames);
+				Action delete = new AbstractAction() {
+					/**
+					 * 
+					 */
+					private static final long serialVersionUID = 1L;
+
+					public void actionPerformed(ActionEvent e) {
+						JTable table = (JTable) e.getSource();
+						int modelRow = Integer.valueOf(e.getActionCommand());
+						// JOptionPane.showMessageDialog(null, "Deleted");
+						int reply = JOptionPane.showConfirmDialog(null, "Are you sure you want to delete this section?",
+								"Delete ?", JOptionPane.YES_NO_OPTION);
+						if (reply == JOptionPane.YES_OPTION) {
+							int article_row = table.getSelectedRow();
+							long selected_article = (long) table.getModel()
+									.getValueAt(table.convertRowIndexToModel(article_row), 0);
+							section_storage.remove(selected_article);
+							
+
+							if (section_screens.get(selected_article).isVisible()) {
+								section_screens.get(selected_article).dispose();
+							}
+							((DefaultTableModel) table.getModel()).removeRow(modelRow);
+							table.repaint();
+						}
+
+						// /
+						// ((DefaultTableModel)table.getModel()).removeRow(modelRow);
+					}
+				};
+				Action view = new AbstractAction() {
+					/**
+					 * 
+					 */
+					private static final long serialVersionUID = 1L;
+
+					public void actionPerformed(ActionEvent e) {
+						JTable table = (JTable) e.getSource();
+
+						section_screen.dispose();
+						Integer.valueOf(e.getActionCommand());
+						int article_row = table.getSelectedRow();
+						long selected_article = (long) table.getModel()
+								.getValueAt(table.convertRowIndexToModel(article_row), 0);
+						if (section_screens.get(selected_article).isVisible()) {
+							section_screens.get(selected_article).dispose();
+						}
+						view_section(selected_article);
+						// /
+						// ((DefaultTableModel)table.getModel()).removeRow(modelRow);
+					}
+				};
+				Action edit = new AbstractAction() {
+					/**
+					 * 
+					 */
+					private static final long serialVersionUID = 1L;
+
+					public void actionPerformed(ActionEvent e) {
+						JTable table = (JTable) e.getSource();
+						section_screen.dispose();
+						Integer.valueOf(e.getActionCommand());
+						int article_row = table.getSelectedRow();
+						long selected_article = (long) table.getModel()
+								.getValueAt(table.convertRowIndexToModel(article_row), 0);
+						if (section_screens.get(selected_article).isVisible()) {
+							section_screens.get(selected_article).dispose();
+						}
+						edit_section(selected_article);
+						// /
+						// ((DefaultTableModel)table.getModel()).removeRow(modelRow);
+					}
+				};
+				ButtonColumn buttonColumn = new ButtonColumn(section_table, view, 2);
+				ButtonColumn buttonColumn2 = new ButtonColumn(section_table, edit, 3);
+				ButtonColumn buttonColumn3 = new ButtonColumn(section_table, delete, 4);
+
+				JLabel lblIssue = new JLabel("Sections");
+				lblIssue.setBackground(new Color(0, 141, 7));
+				lblIssue.setForeground(new Color(240, 255, 255));
+				lblIssue.setFont(new Font("Dialog", Font.BOLD, 28));
+				lblIssue.setBounds(40, 60, 150, 30);
+				lblIssue.setOpaque(true);
+				section_screen.getContentPane().add(lblIssue);
+
+
+				JButton btnClose = new JButton("Close");
+				btnClose.addActionListener(new ActionListener() {
+					public void actionPerformed(ActionEvent arg0) {
+						section_screen.setVisible(false);
+						if (issues == null) {
+							section_screen.dispose();
+							dashboard();
+						} else if (!issues.isVisible()) {
+							section_screen.dispose();
+							issues.setVisible(true);
+						} else {
+							section_screen.dispose();
+						}
+					}
+				});
+				btnClose.setBounds(15, 20, 100, 29);
+				section_screen.getContentPane().add(btnClose);
+				buttonColumn.setMnemonic(KeyEvent.VK_D);
+				buttonColumn2.setMnemonic(KeyEvent.VK_D);
+				buttonColumn3.setMnemonic(KeyEvent.VK_D);
+				ImageIcon db_icon = new ImageIcon("src/lib/db_xxs.png");
+				JButton btnSaveData = new JButton(db_icon);
+				btnSaveData.setFont(new Font("Dialog", Font.BOLD, 24));
+				btnSaveData.addActionListener(new ActionListener() {
+					public void actionPerformed(ActionEvent e) {
+						database_save();
+					}
+				});
+				btnSaveData.setBounds(26, height - 117, 70, 40);
+				section_screen.getContentPane().add(btnSaveData);
+				JLabel lblUpdateDb = new JLabel("Update");
+				lblUpdateDb.setForeground(Color.WHITE);
+				lblUpdateDb.setHorizontalAlignment(SwingConstants.CENTER);
+				lblUpdateDb.setBounds(26, height - 132, 70, 15);
+				section_screen.getContentPane().add(lblUpdateDb);
+				Panel footer_border = new Panel();
+				footer_border.setBackground(new Color(0, 141, 7));
+				footer_border.setBounds(0, height - 74, width, 10);
+				section_screen.getContentPane().add(footer_border);
+
+				Panel footer = new Panel();
+				footer.setBackground(new Color(0, 128, 4));
+				footer.setBounds(0, height - 74, width, 120);
+				section_screen.getContentPane().add(footer);
+
+				Panel panel = new Panel();
+				panel.setBackground(new Color(0, 141, 7));
+				panel.setBounds(0, 55, width, 40);
+				section_screen.getContentPane().add(panel);
+
+				Panel panel_1 = new Panel();
+				panel_1.setBackground(new Color(47, 80, 50));
+				panel_1.setBounds(0, 95, width, 5);
+				section_screen.getContentPane().add(panel_1);
+				JButton btnAdd = new JButton("Add");
+				btnAdd.addActionListener(new ActionListener() {
+					public void actionPerformed(ActionEvent e) {
+
+						add_section();
+
+					}
+				});
+				btnAdd.setBounds(width - 150, height / 16 * 7 - 84, 117, 25);
+				section_screen.getContentPane().add(btnAdd);
+
+				JPanel panel3 = new JPanel();
+				panel3.setBackground(SystemColor.window);
+				panel3.setBounds(20, 108, width - 40, (height / 16) * 2);
+				section_screen.getContentPane().add(panel3);
+				panel3.setLayout(null);
+				panel3.setAutoscrolls(true);
+				panel3.setPreferredSize(new Dimension(width, height / 8));
+				JScrollPane abstractSection = new JScrollPane(panel3);
+				panel3.setAutoscrolls(true);
+			
+
+			}
+
+		} else {
+			login("dashboard");
+		}
+	}
 	public void issue(final long issue_id) {
 		if (logged_in) {
 			if (issue_screens.containsKey(issue_id) && !issue_screens.get(issue_id).isVisible()) {
