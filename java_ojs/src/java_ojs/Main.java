@@ -3987,7 +3987,6 @@ public class Main {
 
 	public void edit_section(final long section_id) {
 		JFrame screen = section_screens.get(section_id);
-
 		screen.addWindowListener(new WindowAdapter() {
 			@Override
 			public void windowClosing(WindowEvent e) {
@@ -4001,6 +4000,9 @@ public class Main {
 		screen.setVisible(true);
 		screen.setSize(540, 420);
 		Section section = section_storage.get(section_id);
+		SpinnerModel count_model = new SpinnerNumberModel(section.getAbstract_word_count(), 0, 5000, 1);
+		SpinnerNumberModel seq_model = new SpinnerNumberModel(section.getSeq(), -1000.0, 1000.0, 0.1);
+
 		screen.setTitle(String.format("Edit Section <%s>", section.getId()));
 		JPanel panelSection = new JPanel();
 		panelSection.setBounds(0, 0, 540, 240);
@@ -4056,20 +4058,18 @@ public class Main {
 		lblSeq.setBounds(40, 215, 200, 20);
 		panelSection.add(lblSeq);
 
-		JTextField txtSeq = new JTextField(Double.toString(section.getSeq()));
+		JSpinner txtSeq = new JSpinner(seq_model);
 		txtSeq.setBounds(70, 236, 150, 30);
 		panelSection.add(txtSeq);
-		txtSeq.setColumns(4);
 
 		JLabel lblAbstractCount = new JLabel("Abstract Word Count");
 		lblAbstractCount.setHorizontalAlignment(SwingConstants.CENTER);
 		lblAbstractCount.setBounds(240, 215, 200, 20);
 		panelSection.add(lblAbstractCount);
 
-		JTextField txtAbstractCount = new JTextField(Long.toString(section.getAbstract_word_count()));
+		JSpinner txtAbstractCount = new JSpinner(count_model);
 		txtAbstractCount.setBounds(270, 236, 150, 30);
 		panelSection.add(txtAbstractCount);
-		txtAbstractCount.setColumns(4);
 
 		JLabel lblTitleSection = new JLabel("Title");
 		lblTitleSection.setHorizontalAlignment(SwingConstants.CENTER);
@@ -4102,15 +4102,15 @@ public class Main {
 					validation = true;
 				}
 				try {
-					int wordcount = Integer.parseInt(txtAbstractCount.getText());
-					double seq = Double.parseDouble(txtSeq.getText());
+					int wordcount = (Integer) txtAbstractCount.getValue();
+					double seq = (Double) txtSeq.getValue();
 					validation = true;
 				} catch (Exception es) {
 					validation = false;
 				}
 
-				section.setAbstract_word_count(Integer.parseInt(txtAbstractCount.getText()));
-				section.setSeq(Double.parseDouble(txtSeq.getText()));
+				section.setAbstract_word_count((Integer) txtAbstractCount.getValue());
+				section.setSeq((Double) txtSeq.getValue());
 				section.setHide_about(hide_about.isSelected() == true ? 1 : 0);
 				section.setHide_author(hide_author.isSelected() == true ? 1 : 0);
 				section.setHide_title(hide_title.isSelected() == true ? 1 : 0);
@@ -4147,15 +4147,15 @@ public class Main {
 					validation = true;
 				}
 				try {
-					int wordcount = Integer.parseInt(txtAbstractCount.getText());
-					double seq = Double.parseDouble(txtSeq.getText());
+					int wordcount = (Integer) txtAbstractCount.getValue();
+					double seq = (Double) txtSeq.getValue();
 					validation = true;
 				} catch (Exception es) {
 					validation = false;
 				}
 
-				section.setAbstract_word_count(Integer.parseInt(txtAbstractCount.getText()));
-				section.setSeq(Double.parseDouble(txtSeq.getText()));
+				section.setAbstract_word_count((Integer) txtAbstractCount.getValue());
+				section.setSeq((Double) txtSeq.getValue());
 				section.setHide_about(hide_about.isSelected() == true ? 1 : 0);
 				section.setHide_author(hide_author.isSelected() == true ? 1 : 0);
 				section.setHide_title(hide_title.isSelected() == true ? 1 : 0);
@@ -4708,26 +4708,26 @@ public class Main {
 
 				metadata_reviewed.setBounds(80, 184, 180, 26);
 				panelSection.add(metadata_reviewed);
+				SpinnerNumberModel seq_model = new SpinnerNumberModel(0.0, -1000.0, 1000.0, 0.1);
 
 				JLabel lblSeq = new JLabel("Seq");
 				lblSeq.setHorizontalAlignment(SwingConstants.CENTER);
 				lblSeq.setBounds(40, 215, 200, 20);
 				panelSection.add(lblSeq);
 
-				JTextField txtSeq = new JTextField("0.0");
+				JSpinner txtSeq = new JSpinner(seq_model);
 				txtSeq.setBounds(70, 236, 150, 30);
 				panelSection.add(txtSeq);
-				txtSeq.setColumns(4);
 
 				JLabel lblAbstractCount = new JLabel("Abstract Word Count");
 				lblAbstractCount.setHorizontalAlignment(SwingConstants.CENTER);
 				lblAbstractCount.setBounds(240, 215, 200, 20);
 				panelSection.add(lblAbstractCount);
+				SpinnerModel count_model = new SpinnerNumberModel(0, 0, 5000, 1);
 
-				JTextField txtAbstractCount = new JTextField("0");
+				JSpinner txtAbstractCount = new JSpinner(count_model);
 				txtAbstractCount.setBounds(270, 236, 150, 30);
 				panelSection.add(txtAbstractCount);
-				txtAbstractCount.setColumns(4);
 
 				JLabel lblTitleSection = new JLabel("Title");
 				lblTitleSection.setHorizontalAlignment(SwingConstants.CENTER);
@@ -4754,8 +4754,8 @@ public class Main {
 							validation = true;
 						}
 						try {
-							int wordcount = Integer.parseInt(txtAbstractCount.getText());
-							double seq = Double.parseDouble(txtSeq.getText());
+							int wordcount = (Integer) txtAbstractCount.getValue();
+							double seq = (Double) txtSeq.getValue();
 							validation = true;
 						} catch (Exception es) {
 							validation = false;
@@ -4764,8 +4764,8 @@ public class Main {
 						if (result == JOptionPane.OK_OPTION && validation == true) {
 							section_db_id++;
 							Section new_section = new Section(section_db_id, txtSectionTitle.getText());
-							new_section.setAbstract_word_count(Integer.parseInt(txtAbstractCount.getText()));
-							new_section.setSeq(Double.parseDouble(txtSeq.getText()));
+							new_section.setAbstract_word_count((Integer) txtAbstractCount.getValue());
+							new_section.setSeq((Double) txtSeq.getValue());
 							new_section.setHide_about(hide_about.isSelected() == true ? 1 : 0);
 							new_section.setHide_author(hide_author.isSelected() == true ? 1 : 0);
 							new_section.setHide_title(hide_title.isSelected() == true ? 1 : 0);
@@ -7365,6 +7365,12 @@ public class Main {
 				JButton btnAddSections = new JButton("+");
 				btnAddSections.setBounds(280, 83, 45, 27);
 				panel.add(btnAddSections);
+				SpinnerNumberModel seq_model;
+				SpinnerModel count_model;
+
+				seq_model = new SpinnerNumberModel(0.0, -1000.0, 1000.0, 0.1);
+
+				count_model = new SpinnerNumberModel(0, 0, 5000, 1);
 
 				JPanel panelSection = new JPanel();
 				panelSection.setBounds(0, 0, 480, 240);
@@ -7414,20 +7420,18 @@ public class Main {
 				lblSeq.setBounds(40, 215, 200, 20);
 				panelSection.add(lblSeq);
 
-				JTextField txtSeq = new JTextField("0.0");
+				JSpinner txtSeq = new JSpinner(seq_model);
 				txtSeq.setBounds(70, 236, 150, 30);
 				panelSection.add(txtSeq);
-				txtSeq.setColumns(4);
 
 				JLabel lblAbstractCount = new JLabel("Abstract Word Count");
 				lblAbstractCount.setHorizontalAlignment(SwingConstants.CENTER);
 				lblAbstractCount.setBounds(240, 215, 200, 20);
 				panelSection.add(lblAbstractCount);
 
-				JTextField txtAbstractCount = new JTextField("0");
+				JSpinner txtAbstractCount = new JSpinner(count_model);
 				txtAbstractCount.setBounds(270, 236, 150, 30);
 				panelSection.add(txtAbstractCount);
-				txtAbstractCount.setColumns(4);
 
 				JLabel lblTitleSection = new JLabel("Title");
 				lblTitleSection.setHorizontalAlignment(SwingConstants.CENTER);
@@ -7451,8 +7455,8 @@ public class Main {
 							validation = true;
 						}
 						try {
-							int wordcount = Integer.parseInt(txtAbstractCount.getText());
-							double seq = Double.parseDouble(txtSeq.getText());
+							int wordcount = (Integer) txtAbstractCount.getValue();
+							double seq = (Double) txtSeq.getValue();
 							validation = true;
 						} catch (Exception es) {
 							validation = false;
@@ -7461,8 +7465,8 @@ public class Main {
 						if (result == JOptionPane.OK_OPTION && validation == true) {
 							section_db_id++;
 							Section new_section = new Section(section_db_id, txtSectionTitle.getText());
-							new_section.setAbstract_word_count(Integer.parseInt(txtAbstractCount.getText()));
-							new_section.setSeq(Double.parseDouble(txtSeq.getText()));
+							new_section.setAbstract_word_count((Integer) txtAbstractCount.getValue());
+							new_section.setSeq((Double) txtSeq.getValue());
 							new_section.setHide_about(hide_about.isSelected() == true ? 1 : 0);
 							new_section.setHide_author(hide_author.isSelected() == true ? 1 : 0);
 							new_section.setHide_title(hide_title.isSelected() == true ? 1 : 0);
@@ -8301,6 +8305,12 @@ public class Main {
 
 			btnAddSections.setBounds(280, 83, 45, 27);
 			panel.add(btnAddSections);
+			SpinnerNumberModel seq_model;
+			SpinnerModel count_model;
+
+			seq_model = new SpinnerNumberModel(0.0, -1000.0, 1000.0, 0.1);
+
+			count_model = new SpinnerNumberModel(0, 0, 5000, 1);
 
 			JPanel panelSection = new JPanel();
 			panelSection.setBounds(0, 0, 480, 240);
@@ -8350,20 +8360,18 @@ public class Main {
 			lblSeq.setBounds(40, 215, 200, 20);
 			panelSection.add(lblSeq);
 
-			JTextField txtSeq = new JTextField("0.0");
+			JSpinner txtSeq = new JSpinner(seq_model);
 			txtSeq.setBounds(70, 236, 150, 30);
 			panelSection.add(txtSeq);
-			txtSeq.setColumns(4);
 
 			JLabel lblAbstractCount = new JLabel("Abstract Word Count");
 			lblAbstractCount.setHorizontalAlignment(SwingConstants.CENTER);
 			lblAbstractCount.setBounds(240, 215, 200, 20);
 			panelSection.add(lblAbstractCount);
 
-			JTextField txtAbstractCount = new JTextField("0");
+			JSpinner txtAbstractCount = new JSpinner(count_model);
 			txtAbstractCount.setBounds(270, 236, 150, 30);
 			panelSection.add(txtAbstractCount);
-			txtAbstractCount.setColumns(4);
 
 			JLabel lblTitleSection = new JLabel("Title");
 			lblTitleSection.setHorizontalAlignment(SwingConstants.CENTER);
@@ -8387,8 +8395,8 @@ public class Main {
 						validation = true;
 					}
 					try {
-						int wordcount = Integer.parseInt(txtAbstractCount.getText());
-						double seq = Double.parseDouble(txtSeq.getText());
+						int wordcount = (Integer) txtAbstractCount.getValue();
+						double seq = (Double) txtSeq.getValue();
 						validation = true;
 					} catch (Exception es) {
 						validation = false;
@@ -8397,8 +8405,8 @@ public class Main {
 					if (result == JOptionPane.OK_OPTION && validation == true) {
 						section_db_id++;
 						Section new_section = new Section(section_db_id, txtSectionTitle.getText());
-						new_section.setAbstract_word_count(Integer.parseInt(txtAbstractCount.getText()));
-						new_section.setSeq(Double.parseDouble(txtSeq.getText()));
+						new_section.setAbstract_word_count((Integer) txtAbstractCount.getValue());
+						new_section.setSeq((Double) txtSeq.getValue());
 						new_section.setHide_about(hide_about.isSelected() == true ? 1 : 0);
 						new_section.setHide_author(hide_author.isSelected() == true ? 1 : 0);
 						new_section.setHide_title(hide_title.isSelected() == true ? 1 : 0);
