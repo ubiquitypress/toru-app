@@ -98,6 +98,20 @@ public class Issue {
 		this.date_published = date_published;
 		this.articles_list = new  ConcurrentHashMap<Long, Article>();
 	}
+	
+	public Issue(long id, String title, int volume, int number, int year, Date date_accepted) {
+		this.title = title;
+		this.id = id;
+		this.volume = volume;
+		this.number = number;
+		this.year = year;
+		this.show_title = 1;
+		this.show_volume = 1;
+		this.show_number = 1;
+		this.show_year = 1;
+		this.date_accepted=date_accepted;
+		this.articles_list = new  ConcurrentHashMap<Long, Article>();
+	}
 	public Issue(long id, String title, int volume, int number, int year, int show_title, int show_volume, int show_number,
 			int show_year, Date date_accepted, Date date_published, int current_article_id) {
 		this.title = title;

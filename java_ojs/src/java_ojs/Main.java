@@ -37,6 +37,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -65,10 +66,14 @@ import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JProgressBar;
 import javax.swing.JScrollPane;
+import javax.swing.JSpinner;
 import javax.swing.JTable;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.ScrollPaneConstants;
+import javax.swing.SpinnerDateModel;
+import javax.swing.SpinnerModel;
+import javax.swing.SpinnerNumberModel;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.Timer;
@@ -76,6 +81,7 @@ import javax.swing.UIManager;
 import javax.swing.UIManager.LookAndFeelInfo;
 import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.border.BevelBorder;
+import javax.swing.event.ChangeListener;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.filechooser.FileNameExtensionFilter;
@@ -345,11 +351,11 @@ public class Main {
 				issue_prep.setInt(8, save_issue.getShow_number());
 				issue_prep.setInt(9, save_issue.getShow_year());
 
-				issue_prep.setString(10, sdf
-						.format(save_issue.getDate_published() == null ? new Date() : save_issue.getDate_published()));
+				issue_prep.setString(10,
+						save_issue.getDate_published() == null ? "/" : sdf.format(save_issue.getDate_published()));
 
 				issue_prep.setString(11,
-						sdf.format(save_issue.getDate_accepted() == null ? new Date() : save_issue.getDate_accepted()));
+						save_issue.getDate_accepted() == null ? "/" : sdf.format(save_issue.getDate_accepted()));
 				issue_prep.setInt(12, save_issue.getPublished());
 				issue_prep.setInt(13, save_issue.getAccess_status());
 				issue_prep.setInt(14, save_issue.getCurrent());
@@ -374,13 +380,13 @@ public class Main {
 					article_prep.setString(4, save_article.getPages());
 					article_prep.setString(5, save_article.getAbstract_text() == null ? ""
 							: Jsoup.parse((String) save_article.getAbstract_text()).text());
-					article_prep.setString(6, save_article.getDate_published() == null ? null
+					article_prep.setString(6, save_article.getDate_published() == null ? "/"
 							: sdf.format(save_article.getDate_published()));
 
-					article_prep.setString(7, sdf.format(
-							save_article.getDate_accepted() == null ? new Date() : save_article.getDate_accepted()));
-					article_prep.setString(8, sdf.format(
-							save_article.getDate_submitted() == null ? new Date() : save_article.getDate_submitted()));
+					article_prep.setString(7,save_article.getDate_accepted() == null ? "/" :  sdf
+							.format(save_article.getDate_accepted()));
+					article_prep.setString(8, save_article.getDate_submitted() == null ? "/" :  sdf
+									.format(save_article.getDate_submitted()));
 					article_prep.setString(9, save_article.getLocale());
 					article_prep.setString(10, save_article.getLanguage());
 					article_prep.setInt(11, save_article.getStatus());
@@ -606,7 +612,9 @@ public class Main {
 				Boolean sync = rs.getBoolean("sync");
 				Issue issue = null;
 				issue = new Issue(id, title, volume, number, year, show_title, show_volume, show_number, show_year,
-						sdf.parse(date_accepted), sdf.parse(date), published, current, access_status,
+						date_accepted.compareTo("/")==0?null:sdf.parse(date_accepted), 
+								date.compareTo("/")==0?null:sdf.parse(date),
+								published, current, access_status,
 						journal_storage.get(Long.parseLong(app_settings.get("journal_id"))));
 
 				// JOptionPane.showMessageDialog(null, "Deleted");
@@ -2169,7 +2177,6 @@ public class Main {
 		if (logged_in) {
 
 			if (issues == null || !issues.isVisible()) {
-				new Date();
 
 				// Issue issue = new Issue(i_id, "title", 1, 1, 2015, "title",
 				// 1, 1, 2015, date);
@@ -2230,7 +2237,7 @@ public class Main {
 					rowData.add(data);
 
 				}
-				Object columnNames[] = { "ID", "Title", "Volume", "Number", "Year", "Date Accepted", "Date Published",
+				Object columnNames[] = { "ID", "Title", "Volume", "Number", "Year", "Date Submitted", "Date Published",
 						"", "", "" };
 				issues.getContentPane().setLayout(null);
 
@@ -2273,16 +2280,13 @@ public class Main {
 														false);
 
 											} catch (NumberFormatException e) {
-												// TODO Auto-generated catch
-												// block
+
 												e.printStackTrace();
 											} catch (IllegalStateException e) {
-												// TODO Auto-generated catch
-												// block
+
 												e.printStackTrace();
 											} catch (IOException e) {
-												// TODO Auto-generated catch
-												// block
+
 												e.printStackTrace();
 											}
 										}
@@ -2295,16 +2299,13 @@ public class Main {
 												update_sections(Long.parseLong(app_settings.get("journal_id")),
 														encoding, false);
 											} catch (NumberFormatException e1) {
-												// TODO Auto-generated catch
-												// block
+
 												e1.printStackTrace();
 											} catch (IllegalStateException e1) {
-												// TODO Auto-generated catch
-												// block
+
 												e1.printStackTrace();
 											} catch (IOException e1) {
-												// TODO Auto-generated catch
-												// block
+
 												e1.printStackTrace();
 											}
 										}
@@ -2403,9 +2404,7 @@ public class Main {
 												update_issue_intersect(current_issue, encoding);
 
 											} catch (IllegalStateException | IOException e1) {
-												// TODO Auto-generated
-												// catch
-												// block
+
 												e1.printStackTrace();
 											}
 										}
@@ -2471,9 +2470,7 @@ public class Main {
 												issue_storage.put(issue_id, updated_issue);
 												System.out.println(updated_issue);
 											} catch (IllegalStateException | IOException e1) {
-												// TODO Auto-generated
-												// catch
-												// block
+
 												e1.printStackTrace();
 
 											}
@@ -2494,9 +2491,7 @@ public class Main {
 												// encoding, false);
 
 											} catch (IllegalStateException | IOException e1) {
-												// TODO Auto-generated
-												// catch
-												// block
+
 												e1.printStackTrace();
 											}
 										}
@@ -2512,9 +2507,7 @@ public class Main {
 												update_articles_local_single_request(current_issue, encoding);
 												get_authors_remote_single_request(issue_id, encoding, false);
 											} catch (IllegalStateException | IOException e1) {
-												// TODO Auto-generated
-												// catch
-												// block
+
 												e1.printStackTrace();
 											}
 										}
@@ -2638,7 +2631,7 @@ public class Main {
 									futures.add(f);
 								}
 							} catch (IOException e2) {
-								// TODO Auto-generated catch block
+
 								e2.printStackTrace();
 							}
 							progress_executor.execute(new Runnable() {
@@ -2731,7 +2724,7 @@ public class Main {
 				ArrayList<Long> author_list = new ArrayList<Long>();
 				String listData[] = new String[author_keys.size()];
 				int j = 0;
-				DefaultListModel listModel = new DefaultListModel();
+				DefaultListModel<String> listModel = new DefaultListModel<String>();
 				for (long key : author_keys) {
 					listModel.addElement(author_storage.get(key).getFull_name());
 					listData[j] = author_storage.get(key).getFull_name();
@@ -2742,7 +2735,7 @@ public class Main {
 
 				// Create a new listbox control
 
-				JList listbox = new JList();
+				JList<String> listbox = new JList<String>();
 				listbox.setModel(listModel);
 				listbox.setBounds(15, 40, 320, 25 * author_list.size());
 				listbox.setBackground(Color.white);
@@ -3110,8 +3103,10 @@ public class Main {
 			title_background.setBounds(-17, 0, width_small + 33, 54);
 			edit_issue.getContentPane().add(title_background);
 
-			final JTextField volume = new JTextField();
-			volume.setColumns(4);
+			SpinnerModel number_model = new SpinnerNumberModel(0, 0, 1000, 1);
+
+			SpinnerModel volume_model = new SpinnerNumberModel(0, 0, 1000, 1);
+			final JSpinner volume = new JSpinner(volume_model);
 			volume.setBounds(100, 270, 250, 26);
 			edit_issue.getContentPane().add(volume);
 			JLabel lblvolume = new JLabel("Volume");
@@ -3120,8 +3115,8 @@ public class Main {
 			lblvolume.setBounds(100, 250, 250, 16);
 			edit_issue.getContentPane().add(lblvolume);
 
-			final JTextField number = new JTextField();
-			number.setColumns(4);
+			final JSpinner number = new JSpinner(number_model);
+			number.setAlignmentX(JSpinner.LEFT_ALIGNMENT);
 			number.setBounds(100, 317, 250, 26);
 			edit_issue.getContentPane().add(number);
 			JLabel lblnumber = new JLabel("Number");
@@ -3130,10 +3125,13 @@ public class Main {
 			lblnumber.setBounds(100, 300, 250, 16);
 			edit_issue.getContentPane().add(lblnumber);
 
-			final JTextField year = new JTextField();
-			year.setColumns(4);
+			Date currentYear = Calendar.getInstance().getTime();
+			SpinnerDateModel year_model = new SpinnerDateModel(currentYear, null, null, Calendar.YEAR);
+			final JSpinner year = new JSpinner(year_model);
+			year.setEditor(new JSpinner.DateEditor(year, "YYYY"));
 			year.setBounds(100, 364, 250, 26);
 			edit_issue.getContentPane().add(year);
+
 			JLabel lblyear = new JLabel("Year");
 			lblyear.setHorizontalAlignment(SwingConstants.CENTER);
 			lblyear.setForeground(new Color(245, 255, 250));
@@ -3257,12 +3255,12 @@ public class Main {
 					Boolean validation = true;
 					int entered_volume = 0;
 					int entered_number = 0;
-					int entered_year = 0;
+					Date entered_year = new Date();
 					try {
 
-						entered_volume = Integer.parseInt(volume.getText());
-						entered_number = Integer.parseInt(number.getText());
-						entered_year = Integer.parseInt(year.getText());
+						entered_volume = (Integer) volume.getValue();
+						entered_number = (Integer) number.getValue();
+						entered_year = (Date) year.getValue();
 
 						number.setBackground(new Color(255, 255, 255));
 						number.setForeground(new Color(0, 0, 0));
@@ -3271,6 +3269,7 @@ public class Main {
 						year.setBackground(new Color(255, 255, 255));
 						year.setForeground(new Color(0, 0, 0));
 					} catch (Exception ex) {
+						ex.printStackTrace();
 						validation = false;
 						number.setBackground(new Color(255, 0, 0));
 						number.setForeground(new Color(255, 255, 255));
@@ -3284,23 +3283,39 @@ public class Main {
 					try {
 
 						sdf.format(datePicker.getDate());
-						sdf.format(datePickerPublished.getDate());
+						// sdf.format(datePickerPublished.getDate());
 
 					} catch (Exception ex) {
 						validation = false;
-						JOptionPane.showMessageDialog(null,
-								"Use dates from calendar for fields: Date Published and Date Accepted");
+						JOptionPane.showMessageDialog(null, "Use dates from calendar for fields: Date Submitted");
 					}
+					if(published_check.isSelected()){
+						try {
 
+						//	sdf.format(datePicker.getDate());
+							 sdf.format(datePickerPublished.getDate());
+
+						} catch (Exception ex) {
+							validation = false;
+							JOptionPane.showMessageDialog(null, "Use dates from calendar for field 'Date Published' or Untick 'Published'");
+						}
+					}
 					if (validation) {
 						i_id++;
-						Issue issue = new Issue(i_id, title.getText(), entered_volume, entered_number, entered_year,
-								datePicker.getDate(), datePickerPublished.getDate());
+
+						SimpleDateFormat year_sdf = new SimpleDateFormat("yyyy");
+						Issue issue = new Issue(i_id, title.getText(), entered_volume, entered_number,
+								Integer.parseInt(year_sdf.format(entered_year)), datePicker.getDate());
 						issue.setShow_title(show_title.isSelected() == true ? 1 : 0);
 						issue.setShow_volume(show_volume.isSelected() == true ? 1 : 0);
 						issue.setShow_year(show_year.isSelected() == true ? 1 : 0);
 						issue.setShow_number(show_number.isSelected() == true ? 1 : 0);
-
+						try {
+							String publ = sdf.format(datePickerPublished.getDate());
+							issue.setDate_published(datePickerPublished.getDate());
+						} catch (Exception se) {
+							// issue.setDate_published();
+						}
 						issue.setPublished(published_check.isSelected() == true ? 1 : 0);
 						issue.setCurrent(current_check.isSelected() == true ? 1 : 0);
 						issue.setAccess_status(access_status_check.isSelected() == true ? 1 : 0);
@@ -3313,9 +3328,10 @@ public class Main {
 						article_screens.put(i_id, new ConcurrentHashMap<Long, JFrame>());
 						issue_storage.put(i_id, issue);
 						Object[] new_row = { i_id, show_title.isSelected() == true ? title.getText() : "Hidden",
-								show_volume.isSelected() == true ? Integer.parseInt(volume.getText()) : "Hidden",
-								show_number.isSelected() == true ? Integer.parseInt(number.getText()) : "Hidden",
-								show_year.isSelected() == true ? Integer.parseInt(year.getText()) : "Hidden",
+								show_volume.isSelected() == true ? (Integer) volume.getValue() : "Hidden",
+								show_number.isSelected() == true ? (Integer) number.getValue() : "Hidden",
+								show_year.isSelected() == true ? Integer.parseInt(year_sdf.format(entered_year))
+										: "Hidden",
 								datePicker.getDate() == null ? "/" : sdf.format(datePicker.getDate()),
 								datePickerPublished.getDate() == null ? "/" : sdf.format(datePickerPublished.getDate()),
 								"View", "Edit", "Delete" };
@@ -3420,9 +3436,10 @@ public class Main {
 				title_background.setBounds(-17, 0, width_small + 33, 54);
 				edit_issue.getContentPane().add(title_background);
 
-				final JTextField volume = new JTextField();
-				volume.setColumns(4);
-				volume.setText(Integer.toString(current_issue.getVolume()));
+				SpinnerModel number_model = new SpinnerNumberModel(current_issue.getNumber(), 0, 1000, 1);
+
+				SpinnerModel volume_model = new SpinnerNumberModel(current_issue.getVolume(), 0, 1000, 1);
+				final JSpinner volume = new JSpinner(volume_model);
 				volume.setBounds(100, 270, 250, 26);
 				edit_issue.getContentPane().add(volume);
 				JLabel lblvolume = new JLabel("Volume");
@@ -3431,9 +3448,7 @@ public class Main {
 				lblvolume.setBounds(100, 250, 250, 16);
 				edit_issue.getContentPane().add(lblvolume);
 
-				final JTextField number = new JTextField();
-				number.setColumns(4);
-				number.setText(Integer.toString(current_issue.getNumber()));
+				final JSpinner number = new JSpinner(number_model);
 				number.setBounds(100, 317, 250, 26);
 				edit_issue.getContentPane().add(number);
 				JLabel lblnumber = new JLabel("Number");
@@ -3442,9 +3457,17 @@ public class Main {
 				lblnumber.setBounds(100, 300, 250, 16);
 				edit_issue.getContentPane().add(lblnumber);
 
-				final JTextField year = new JTextField();
-				year.setColumns(4);
-				year.setText(Integer.toString(current_issue.getYear()));
+				SimpleDateFormat year_sdf = new SimpleDateFormat("yyyy");
+				Date currentYear = new Date();
+				try {
+					currentYear = year_sdf.parse(Integer.toString(current_issue.getYear()));
+				} catch (java.text.ParseException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+				SpinnerDateModel year_model = new SpinnerDateModel(currentYear, null, null, Calendar.YEAR);
+				final JSpinner year = new JSpinner(year_model);
+				year.setEditor(new JSpinner.DateEditor(year, "YYYY"));
 				year.setBounds(100, 364, 250, 26);
 				edit_issue.getContentPane().add(year);
 				JLabel lblyear = new JLabel("Year");
@@ -3580,11 +3603,13 @@ public class Main {
 						int entered_volume = 0;
 						int entered_number = 0;
 						int entered_year = 0;
+
+						SimpleDateFormat year_sdf = new SimpleDateFormat("yyyy");
 						try {
 
-							entered_volume = Integer.parseInt(volume.getText());
-							entered_number = Integer.parseInt(number.getText());
-							entered_year = Integer.parseInt(year.getText());
+							entered_volume = (Integer) volume.getValue();
+							entered_number = (Integer) number.getValue();
+							entered_year = Integer.parseInt(year_sdf.format(year.getValue()));
 
 							number.setBackground(new Color(255, 255, 255));
 							number.setForeground(new Color(0, 0, 0));
@@ -3606,21 +3631,37 @@ public class Main {
 						try {
 
 							sdf.format(datePicker.getDate());
-							sdf.format(datePickerPublished.getDate());
+							// sdf.format(datePickerPublished.getDate());
 
 						} catch (Exception ex) {
 							validation = false;
-							JOptionPane.showMessageDialog(null,
-									"Use dates from calendar for fields: Date Published and Date Accepted");
+							JOptionPane.showMessageDialog(null, "Use dates from calendar for fields: Date Submitted");
 						}
+						if(published_check.isSelected()){
+							try {
 
+							//	sdf.format(datePicker.getDate());
+								 sdf.format(datePickerPublished.getDate());
+
+							} catch (Exception ex) {
+								validation = false;
+								JOptionPane.showMessageDialog(null, "Use dates from calendar for field 'Date Published' or Untick 'Published'");
+							}
+						}
 						if (validation) {
 
 							current_issue.setTitle(title.getText());
 							current_issue.setVolume(entered_volume);
 							current_issue.setNumber(entered_number);
 							current_issue.setYear(entered_year);
-							current_issue.setDate_published(datePickerPublished.getDate());
+
+							try {
+								String publ = sdf.format(datePickerPublished.getDate());
+								current_issue.setDate_published(datePickerPublished.getDate());
+							} catch (Exception se) {
+								// issue.setDate_published();
+								current_issue.setDate_published(null);
+							}
 							current_issue.setDate_accepted(datePicker.getDate());
 							current_issue.setShow_title(show_title.isSelected() == true ? 1 : 0);
 							current_issue.setShow_volume(show_volume.isSelected() == true ? 1 : 0);
@@ -3635,11 +3676,13 @@ public class Main {
 
 					}
 				};
-				title.addActionListener(actionSubmit);
-				volume.addActionListener(actionSubmit);
-				number.addActionListener(actionSubmit);
-				year.addActionListener(actionSubmit);
-				datePicker.addActionListener(actionSubmit);
+				/*
+				 * title.addActionListener(actionSubmit);
+				 * volume.addChangeListener((ChangeListener) actionSubmit);
+				 * number.addChangeListener((ChangeListener) actionSubmit);
+				 * year.addActionListener(actionSubmit);
+				 * datePicker.addActionListener(actionSubmit);
+				 */
 				btnSubmit.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
 						Boolean validation = true;
@@ -3648,9 +3691,9 @@ public class Main {
 						int entered_year = 0;
 						try {
 
-							entered_volume = Integer.parseInt(volume.getText());
-							entered_number = Integer.parseInt(number.getText());
-							entered_year = Integer.parseInt(year.getText());
+							entered_volume = (Integer) volume.getValue();
+							entered_number = (Integer) number.getValue();
+							entered_year = Integer.parseInt(year_sdf.format(year.getValue()));
 
 							number.setBackground(new Color(255, 255, 255));
 							number.setForeground(new Color(0, 0, 0));
@@ -3672,21 +3715,37 @@ public class Main {
 						try {
 
 							sdf.format(datePicker.getDate());
-							sdf.format(datePickerPublished.getDate());
+							// sdf.format(datePickerPublished.getDate());
 
 						} catch (Exception ex) {
 							validation = false;
-							JOptionPane.showMessageDialog(null,
-									"Use dates from calendar for fields: Date Published and Date Accepted");
+							JOptionPane.showMessageDialog(null, "Use dates from calendar for fields: Date Submitted");
 						}
+						if(published_check.isSelected()){
+							try {
 
+							//	sdf.format(datePicker.getDate());
+								 sdf.format(datePickerPublished.getDate());
+
+							} catch (Exception ex) {
+								validation = false;
+								JOptionPane.showMessageDialog(null, "Use dates from calendar for field 'Date Published' or Untick 'Published'");
+							}
+						}
 						if (validation) {
 
 							current_issue.setTitle(title.getText());
 							current_issue.setVolume(entered_volume);
 							current_issue.setNumber(entered_number);
 							current_issue.setYear(entered_year);
-							current_issue.setDate_published(datePickerPublished.getDate());
+
+							try {
+								String publ = sdf.format(datePickerPublished.getDate());
+								current_issue.setDate_published(datePickerPublished.getDate());
+							} catch (Exception se) {
+								// issue.setDate_published();
+								current_issue.setDate_published(null);
+							}
 							current_issue.setDate_accepted(datePicker.getDate());
 							current_issue.setShow_title(show_title.isSelected() == true ? 1 : 0);
 							current_issue.setShow_volume(show_volume.isSelected() == true ? 1 : 0);
@@ -3889,16 +3948,13 @@ public class Main {
 													false);
 
 										} catch (NumberFormatException e) {
-											// TODO Auto-generated catch
-											// block
+
 											e.printStackTrace();
 										} catch (IllegalStateException e) {
-											// TODO Auto-generated catch
-											// block
+
 											e.printStackTrace();
 										} catch (IOException e) {
-											// TODO Auto-generated catch
-											// block
+
 											e.printStackTrace();
 										}
 									}
@@ -3911,16 +3967,13 @@ public class Main {
 											update_sections(Long.parseLong(app_settings.get("journal_id")), encoding,
 													false);
 										} catch (NumberFormatException e1) {
-											// TODO Auto-generated catch
-											// block
+
 											e1.printStackTrace();
 										} catch (IllegalStateException e1) {
-											// TODO Auto-generated catch
-											// block
+
 											e1.printStackTrace();
 										} catch (IOException e1) {
-											// TODO Auto-generated catch
-											// block
+
 											e1.printStackTrace();
 										}
 									}
@@ -3986,8 +4039,7 @@ public class Main {
 											update_issue_intersect(current_issue, encoding);
 
 										} catch (IllegalStateException | IOException e1) {
-											// TODO Auto-generated catch
-											// block
+
 											e1.printStackTrace();
 										}
 									}
@@ -4064,8 +4116,7 @@ public class Main {
 											update_issue_local(current_issue, encoding);
 
 										} catch (IllegalStateException | IOException e1) {
-											// TODO Auto-generated catch
-											// block
+
 											e1.printStackTrace();
 										}
 									}
@@ -4164,10 +4215,10 @@ public class Main {
 									try {
 										f.get();
 									} catch (InterruptedException e) {
-										// TODO Auto-generated catch block
+
 										e.printStackTrace();
 									} catch (ExecutionException e) {
-										// TODO Auto-generated catch block
+
 										e.printStackTrace();
 									}
 
@@ -4225,10 +4276,10 @@ public class Main {
 									try {
 										f.get();
 									} catch (InterruptedException e) {
-										// TODO Auto-generated catch block
+
 										e.printStackTrace();
 									} catch (ExecutionException e) {
-										// TODO Auto-generated catch block
+
 										e.printStackTrace();
 									}
 
@@ -4626,10 +4677,12 @@ public class Main {
 				panel3.setAutoscrolls(true);
 				new Date();
 				Issue row_issue = issue_storage.get(issue_id);
-				Object issue_rowData[][] = { { row_issue.getId(), row_issue.getTitle(), row_issue.getVolume(),
-						row_issue.getNumber(), row_issue.getYear(),
-						row_issue.getDate_accepted() == null ? "/" : sdf.format(row_issue.getDate_accepted()),
-						sdf.format(row_issue.getDate_published()) } };
+				Object issue_rowData[][] = {
+						{ row_issue.getId(), row_issue.getTitle(), row_issue.getVolume(), row_issue.getNumber(),
+								row_issue.getYear(), row_issue.getDate_accepted() == null ? "/"
+										: sdf.format(row_issue.getDate_accepted()),
+								row_issue.getDate_published() == null ? "/"
+										: sdf.format(row_issue.getDate_published()) } };
 				Object issue_columnNames[] = { "ID", "Title", "Volume", "Number", "Year", "Date Accepted",
 						"Date Published" };
 
@@ -5310,14 +5363,10 @@ public class Main {
 													try {
 														file_download(article_id, key);
 													} catch (IllegalStateException e2) {
-														// TODO Auto-generated
-														// catch
-														// block
+
 														e2.printStackTrace();
 													} catch (IOException e2) {
-														// TODO Auto-generated
-														// catch
-														// block
+
 														e2.printStackTrace();
 													}
 												} else {
@@ -5719,7 +5768,7 @@ public class Main {
 				ArrayList<Author> article_authors = new ArrayList<Author>();
 				article_authors = article_author_storage.get(current_article.getId());
 
-				DefaultListModel listModel = new DefaultListModel();
+				DefaultListModel<String> listModel = new DefaultListModel<String>();
 				ArrayList<Long> author_list = new ArrayList<Long>();
 				String listData[] = new String[article_authors.size()];
 				int j = 0;
@@ -5749,7 +5798,7 @@ public class Main {
 				panel15.setAutoscrolls(true);
 				panel15.setPreferredSize(new Dimension(320, 100 + 25 * article_authors.size()));
 				// Create a new listbox control
-				JList listbox = new JList();
+				JList<String> listbox = new JList<String>();
 				listbox.setModel(listModel);
 				listbox.setSelectedIndices(selected);
 				listbox.setBounds(10, 10, 300, 50 + 25 * author_list.size());
@@ -6262,7 +6311,7 @@ public class Main {
 				titleSection.createHorizontalScrollBar();
 				panel.add(titleSection);
 
-				final JComboBox<String> lblSectionId = new JComboBox();
+				final JComboBox<String> lblSectionId = new JComboBox<String>();
 				Set<Long> section_keys = section_storage.keySet();
 				ArrayList<Section> sections = new ArrayList<Section>();
 				int selected_section = -1;
@@ -6970,7 +7019,7 @@ public class Main {
 			 */
 			ArrayList<Author> article_authors = new ArrayList<Author>();
 
-			DefaultListModel listModel = new DefaultListModel();
+			DefaultListModel<String> listModel = new DefaultListModel<String>();
 			ArrayList<Long> author_list = new ArrayList<Long>();
 			int j = 0;
 			int a = 0;
@@ -6990,7 +7039,7 @@ public class Main {
 			JButton btnAddAuthor = new JButton("+ Add new Author");
 			btnAddAuthor.setBounds(156, 12, 180, 25);
 			panel6.add(btnAddAuthor);
-			JList listbox = new JList();
+			JList<String> listbox = new JList<String>();
 			listbox.setModel(listModel);
 			listbox.setBounds(15, 40, 320, 300);
 			listbox.setBackground(Color.white);
@@ -7209,7 +7258,7 @@ public class Main {
 			titleSection.createHorizontalScrollBar();
 			panel.add(titleSection);
 
-			final JComboBox<String> lblSectionId = new JComboBox();
+			final JComboBox<String> lblSectionId = new JComboBox<String>();
 			Set<Long> section_keys = section_storage.keySet();
 			ArrayList<Section> sections = new ArrayList<Section>();
 			for (long key : section_keys) {
@@ -8142,14 +8191,6 @@ public class Main {
 
 				}
 
-				/*
-				 * response = null; try { response =
-				 * httpClient.execute(httpPost); } catch
-				 * (ClientProtocolException e2) { // TODO Auto-generated catch
-				 * block e2.printStackTrace(); } catch (IOException e2) { //
-				 * TODO Auto-generated catch block e2.printStackTrace(); }
-				 */
-
 			}
 		}
 	}
@@ -8544,7 +8585,7 @@ public class Main {
 			JOptionPane.showMessageDialog(null, "Lost connection to server.");
 			return;
 		} catch (ParseException e) {
-			// TODO Auto-generated catch block
+
 			e.printStackTrace();
 		}
 	}
@@ -9631,6 +9672,13 @@ public class Main {
 
 					e2.printStackTrace();
 				}
+				try {
+					InputStream is = response.getEntity().getContent();
+					is.close();
+				} catch (IOException exc) {
+
+					exc.printStackTrace();
+				}
 			} else {
 
 				String value = setting_json.toJSONString();
@@ -9656,14 +9704,15 @@ public class Main {
 
 					e2.printStackTrace();
 				}
-			}
-			try {
-				InputStream is = response.getEntity().getContent();
-				is.close();
-			} catch (IOException exc) {
+				try {
+					InputStream is = response.getEntity().getContent();
+					is.close();
+				} catch (IOException exc) {
 
-				exc.printStackTrace();
+					exc.printStackTrace();
+				}
 			}
+
 			settingCheck = new HttpGet(
 					String.format("%s/get/setting/affiliation/author/%s/?format=json", base_url, author.getId()));
 			// settingCheck.setEntity(new StringEntity(obj.toJSONString()));
@@ -10438,7 +10487,7 @@ public class Main {
 			try {
 				new_article.setDate_published((Date) sdf.parse(date_published.substring(0, 10).replace('-', '/')));
 			} catch (java.text.ParseException e) {
-				// TODO Auto-generated catch block
+
 				e.printStackTrace();
 			}
 		}
