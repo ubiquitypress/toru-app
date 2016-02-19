@@ -1285,7 +1285,7 @@ public class Main {
 					+ "meta_reviewed INTEGER DEFAULT 0," + "abstracts_not_required INTEGER DEFAULT 0,"
 					+ "hide_title INTEGER DEFAULT 0," + "hide_author INTEGER DEFAULT 0,"
 					+ "hide_about INTEGER DEFAULT 0," + "seq REAL," + "disable_comments INTEGER DEFAULT 0,"
-					+ "abstract_word_count" + ");";
+					+ "abstract_word_count INTEGER DEFAULT 0," + "sync BOOLEAN DEFAULT FALSE" + ");";
 			stmt.executeUpdate(sql);
 			sql = "CREATE TABLE IF NOT EXISTS AUTHOR" + "(id INTEGER PRIMARY KEY," + " first_name CHAR(200) NOT NULL,"
 					+ " middle_name CHAR(200) NOT NULL," + " last_name CHAR(200) NOT NULL,"
@@ -4182,8 +4182,8 @@ public class Main {
 				} catch (Exception es) {
 					validation = false;
 				}
-
-				section.setAbstract_word_count((Integer) txtAbstractCount.getValue());
+				section.setTitle(title);
+				section.setAbstract_word_count((int)(double) txtAbstractCount.getValue());
 				section.setSeq((Double) txtSeq.getValue());
 				section.setHide_about(hide_about.isSelected() == true ? 1 : 0);
 				section.setHide_author(hide_author.isSelected() == true ? 1 : 0);
@@ -8944,7 +8944,7 @@ public class Main {
 
 			} else {
 				HttpPut httpPost = new HttpPut(
-						String.format("%s/update/issue/setting/%s/", base_url, setting_json.get("pk")));
+						String.format("%s/issue-settings/%s/", base_url, setting_json.get("pk")));
 				httpPost.setEntity(new StringEntity(setting_json.toJSONString()));
 				httpPost.addHeader("Authorization", "Basic " + credentials);
 				httpPost.setHeader("Accept", "application/json");
@@ -11195,7 +11195,7 @@ public class Main {
 						}
 					} else {
 						HttpPut httpPost = new HttpPut(
-								String.format("%s/update/section/setting/%s/", base_url, setting_json.get("pk")));
+								String.format("%s/section-settings/%s/", base_url, setting_json.get("pk")));
 						httpPost.setEntity(new StringEntity(setting_json.toJSONString()));
 						httpPost.addHeader("Authorization", "Basic " + credentials);
 						httpPost.setHeader("Accept", "application/json");
