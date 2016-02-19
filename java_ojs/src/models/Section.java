@@ -4,6 +4,7 @@ public class Section {
 	private long id;
 	private String title;
 	private double seq=0.0;
+	private boolean sync=false;
 	private int editor_restricted = 0;
 	private int meta_indexed = 0;
 	private int meta_reviewed = 0;
@@ -127,6 +128,14 @@ public class Section {
 
 	public void setSeq(double seq) {
 		this.seq = seq;
+	}
+
+	public boolean shouldBeSynced() {
+		return sync;
+	}
+
+	public void setSync(boolean sync) {
+		this.sync = sync;
 	}
 
 	@Override
