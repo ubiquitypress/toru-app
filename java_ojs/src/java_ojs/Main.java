@@ -171,10 +171,10 @@ public class Main {
 	private static Statement stmt = null;
 	private static String api_insert_or_replace_statement = "INSERT OR REPLACE INTO API(journal_id, intersect_user_id, user_id, key) VALUES (?,?,?,?)";
 	private static String journal_insert_or_replace_statement = "INSERT OR REPLACE INTO JOURNAL(id,path,seq,primary_locale,enabled,title) VALUES (?,?,?,?,?,?)";
-	private static String issue_insert_or_replace_statement = "INSERT OR REPLACE INTO ISSUE(id,title,volume,number,year,show_title,show_volume,show_number,show_year,date_published,date_accepted, published, current, access_status,sync) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+	private static String issue_insert_or_replace_statement = "INSERT OR REPLACE INTO ISSUE(id,title,volume,number,year,show_title,show_volume,show_number,show_year,date_published,date_accepted, published, current, access_status,sync,deleted) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
 	private static String section_insert_or_replace_statement = "INSERT OR REPLACE INTO SECTION(id,title,seq, editor_restricted, meta_indexed, meta_reviewed, abstracts_not_required, hide_title, hide_author, hide_about, disable_comments, abstract_word_count) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)";
-	private static String author_insert_or_replace_statement = "INSERT OR REPLACE INTO AUTHOR(id,first_name,middle_name,last_name,email,affiliation,bio,orcid,department,country,twitter) VALUES (?,?,?,?,?,?,?,?,?,?,?)";
-	private static String article_insert_or_replace_statement = "INSERT OR REPLACE INTO ARTICLE(id,title,section_id,pages,abstract,date_published,date_accepted,date_submitted,locale,language,status,submission_progress,current_round,fast_tracked,hide_author,comments_status,user_id,doi,published_pk,sync) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+	private static String author_insert_or_replace_statement = "INSERT OR REPLACE INTO AUTHOR(id,first_name,middle_name,last_name,email,affiliation,bio,orcid,department,country,twitter,deleted) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)";
+	private static String article_insert_or_replace_statement = "INSERT OR REPLACE INTO ARTICLE(id,title,section_id,pages,abstract,date_published,date_accepted,date_submitted,locale,language,status,submission_progress,current_round,fast_tracked,hide_author,comments_status,user_id,doi,published_pk,sync,deleted) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
 	private static String article_author_insert_or_replace_statement = "INSERT OR REPLACE INTO ARTICLE_AUTHOR(article_id,author_id,primary_author) VALUES (?,?,?)";
 	private static String issue_journal_insert_or_replace_statement = "INSERT OR REPLACE INTO ISSUE_JOURNAL(id,journal_id,issue_id) VALUES (?,?,?)";
 	private static String issue_article_insert_or_replace_statement = "INSERT OR REPLACE INTO ISSUE_ARTICLE(article_id,issue_id) VALUES (?,?)";
@@ -304,6 +304,8 @@ public class Main {
 				author_prep.setString(9, save_author.getDepartment() == null ? "" : save_author.getDepartment());
 				author_prep.setString(10, save_author.getCountry() == null ? "" : save_author.getCountry());
 				author_prep.setString(11, save_author.getTwitter() == null ? "" : save_author.getTwitter());
+				author_prep.setBoolean(12, save_author.isDeleted());
+
 				author_prep.executeUpdate();
 
 			}
@@ -361,6 +363,7 @@ public class Main {
 				issue_prep.setInt(13, save_issue.getAccess_status());
 				issue_prep.setInt(14, save_issue.getCurrent());
 				issue_prep.setBoolean(15, save_issue.shouldBeSynced());
+				issue_prep.setBoolean(16, save_issue.isDeleted());
 
 				issue_prep.executeUpdate();
 				Journal issue_journal = save_issue.getJournal();
@@ -400,6 +403,7 @@ public class Main {
 					article_prep.setString(18, save_article.getDoi());
 					article_prep.setLong(19, save_article.getPublished_pk());
 					article_prep.setBoolean(20, save_article.shouldBeSynced());
+					article_prep.setBoolean(21, save_article.isDeleted());
 					article_prep.executeUpdate();
 					PreparedStatement issue_article_prep = c
 							.prepareStatement(issue_article_insert_or_replace_statement);
@@ -612,6 +616,7 @@ public class Main {
 				String date = rs.getString("date_published");
 
 				Boolean sync = rs.getBoolean("sync");
+				Boolean deleted = rs.getBoolean("deleted");
 				Issue issue = null;
 				issue = new Issue(id, title, volume, number, year, show_title, show_volume, show_number, show_year,
 						date_accepted.compareTo("/") == 0 ? null : sdf.parse(date_accepted),
@@ -620,6 +625,7 @@ public class Main {
 
 				// JOptionPane.showMessageDialog(null, "Deleted");
 				issue.setSync(sync == null ? false : sync);
+				issue.setDeleted(deleted == null ? false : deleted);
 				list_issues.put(id, (long) 1);
 				issue_screens.put(id, new JFrame());
 				article_screens.put(id, new ConcurrentHashMap<Long, JFrame>());
@@ -663,10 +669,12 @@ public class Main {
 				String orcid = authors_s.getString("orcid");
 				String department = authors_s.getString("department");
 				String country = authors_s.getString("country");
+				Boolean deleted = authors_s.getBoolean("deleted");
 
 				Author author = null;
 				author = new Author(id, first_name, middle_name, last_name, email, affiliation, bio, orcid, department,
 						country);
+				author.setDeleted(deleted == null ? false : deleted);
 				author_id = id;
 				author_storage.put(id, author);
 				System.out.println(author_storage.size());
@@ -695,6 +703,7 @@ public class Main {
 				String doi = art_s.getString("doi");
 				Integer published_pk = art_s.getInt("published_pk");
 				Boolean sync = art_s.getBoolean("sync");
+				Boolean deleted = art_s.getBoolean("deleted");
 				Article article = null;
 
 				article = new Article(id, title, section_id, pages, abstract_text, sdf.parse(date_submitted),
@@ -711,6 +720,7 @@ public class Main {
 				}
 				article.setDoi(doi);
 				article.setSync(sync == null ? false : sync);
+				article.setDeleted(deleted == null ? false : deleted);
 				article.setPublished_pk(published_pk == null ? -1 : published_pk);
 				try {
 					Date test_date = sdf.parse(date);
@@ -1260,7 +1270,7 @@ public class Main {
 					+ "volume INTEGER," + "number INTEGER," + "year INTEGER," + "published INTEGER,"
 					+ " show_title INTEGER," + "show_volume INTEGER," + "show_number INTEGER," + "show_year INTEGER,"
 					+ "access_status INTEGER," + "current INTEGER," + "date_published CHAR(50),"
-					+ "date_accepted CHAR(50)," + "sync BOOLEAN DEFAULT FALSE" + ")";
+					+ "date_accepted CHAR(50)," + "sync BOOLEAN DEFAULT FALSE," + "deleted BOOLEAN DEFAULT FALSE" + ")";
 			stmt.executeUpdate(sql);
 			sql = "CREATE TABLE IF NOT EXISTS ISSUE_JOURNAL" + "(id INTEGER PRIMARY KEY," + " journal_id INTEGER,"
 					+ " issue_id INTEGER," + "FOREIGN KEY (journal_id) REFERENCES JOURNAL(id),"
@@ -1277,7 +1287,7 @@ public class Main {
 					+ " middle_name CHAR(200) NOT NULL," + " last_name CHAR(200) NOT NULL,"
 					+ " email CHAR(400) NOT NULL," + " affiliation CHAR(500) NOT NULL," + " bio CHAR(800),"
 					+ " orcid CHAR(100)," + " twitter CHAR(100)," + " department CHAR(300) NOT NULL,"
-					+ " country CHAR(300) NOT NULL" + ")";
+					+ " country CHAR(300) NOT NULL," + "deleted BOOLEAN DEFAULT FALSE" + ")";
 			stmt.executeUpdate(sql);
 			sql = "CREATE TABLE IF NOT EXISTS UNIQUE_AUTHORS" + "(first_name CHAR(200) NOT NULL,"
 					+ " middle_name CHAR(200) NOT NULL," + " last_name CHAR(200) NOT NULL,"
@@ -1290,7 +1300,7 @@ public class Main {
 					+ "submission_progress INTEGER," + "current_round INTEGER," + "fast_tracked INTEGER,"
 					+ "hide_author INTEGER," + "comments_status INTEGER," + " language CHAR(50) NOT NULL,"
 					+ " locale CHAR(50) NOT NULL," + "user_id REAL NOT NULL, " + " doi CHAR(1000),"
-					+ "published_pk INTEGER," + "sync BOOLEAN DEFAULT FALSE,"
+					+ "published_pk INTEGER," + "sync BOOLEAN DEFAULT FALSE," + "deleted BOOLEAN DEFAULT FALSE,"
 					+ "FOREIGN KEY (section_id) REFERENCES SECTION(id)" + ")";
 			stmt.executeUpdate(sql);
 			sql = "CREATE TABLE IF NOT EXISTS FILE" + "(id INTEGER PRIMARY KEY," + " article_id INTEGER,"
@@ -2213,30 +2223,33 @@ public class Main {
 				int i = 0;
 				for (long id : issue_keys) {
 					Issue row_issue = issue_storage.get(id);
-					ArrayList<Object> data = new ArrayList<Object>();
-					issue_screens.put(id, new JFrame());
-					article_screens.put(id, new ConcurrentHashMap<Long, JFrame>());
+					if (!row_issue.isDeleted()) {
+						ArrayList<Object> data = new ArrayList<Object>();
+						issue_screens.put(id, new JFrame());
+						article_screens.put(id, new ConcurrentHashMap<Long, JFrame>());
 
-					data.add(Long.toString(row_issue.getId()));
-					data.add(row_issue.getShow_title() == 1 ? row_issue.getTitle() : "Hidden");
-					data.add(row_issue.getShow_volume() == 1 ? Integer.toString(row_issue.getVolume()) : "Hidden");
-					data.add(row_issue.getShow_number() == 1 ? Integer.toString(row_issue.getNumber()) : "Hidden");
-					data.add(row_issue.getShow_year() == 1 ? Integer.toString(row_issue.getYear()) : "Hidden");
-					data.add(row_issue.getDate_published() == null ? "/" : sdf.format(row_issue.getDate_published()));
-					data.add("View");
-					data.add("Edit");
-					data.add("Delete");
-					Object[] row = { row_issue.getId(),
-							row_issue.getShow_title() == 1 ? row_issue.getTitle() : "Hidden",
-							row_issue.getShow_volume() == 1 ? Integer.toString(row_issue.getVolume()) : "Hidden",
-							row_issue.getShow_number() == 1 ? Integer.toString(row_issue.getNumber()) : "Hidden",
-							row_issue.getShow_year() == 1 ? Integer.toString(row_issue.getYear()) : "Hidden",
-							row_issue.getDate_accepted() == null ? "/" : sdf.format(row_issue.getDate_accepted()),
-							row_issue.getDate_published() == null ? "/" : sdf.format(row_issue.getDate_published()),
-							"View", "Edit", "Delete" };
-					rows[i] = row;
-					i++;
-					rowData.add(data);
+						data.add(Long.toString(row_issue.getId()));
+						data.add(row_issue.getShow_title() == 1 ? row_issue.getTitle() : "Hidden");
+						data.add(row_issue.getShow_volume() == 1 ? Integer.toString(row_issue.getVolume()) : "Hidden");
+						data.add(row_issue.getShow_number() == 1 ? Integer.toString(row_issue.getNumber()) : "Hidden");
+						data.add(row_issue.getShow_year() == 1 ? Integer.toString(row_issue.getYear()) : "Hidden");
+						data.add(row_issue.getDate_published() == null ? "/"
+								: sdf.format(row_issue.getDate_published()));
+						data.add("View");
+						data.add("Edit");
+						data.add("Delete");
+						Object[] row = { row_issue.getId(),
+								row_issue.getShow_title() == 1 ? row_issue.getTitle() : "Hidden",
+								row_issue.getShow_volume() == 1 ? Integer.toString(row_issue.getVolume()) : "Hidden",
+								row_issue.getShow_number() == 1 ? Integer.toString(row_issue.getNumber()) : "Hidden",
+								row_issue.getShow_year() == 1 ? Integer.toString(row_issue.getYear()) : "Hidden",
+								row_issue.getDate_accepted() == null ? "/" : sdf.format(row_issue.getDate_accepted()),
+								row_issue.getDate_published() == null ? "/" : sdf.format(row_issue.getDate_published()),
+								"View", "Edit", "Delete" };
+						rows[i] = row;
+						i++;
+						rowData.add(data);
+					}
 
 				}
 				Object columnNames[] = { "ID", "Title", "Volume", "Number", "Year", "Date Submitted", "Date Published",
@@ -2907,7 +2920,18 @@ public class Main {
 										art_window.dispose();
 									}
 								}
-								issue_storage.remove(selected_issue);
+								Issue current_issue = issue_storage.get((long)selected_issue);
+								current_issue.setDeleted(true);
+								ConcurrentHashMap<Long, Article> articles = current_issue.getArticles_list();
+								Set<Long> art_keys = articles.keySet();
+								for (long art:art_keys){
+									Article current_article = articles.get((long)art);
+									current_article.setDeleted(true);
+									current_article.setSync(true);
+									articles.put((long)art, current_article);
+								}
+								current_issue.setArticles_list(articles);
+								issue_storage.put((long)selected_issue,current_issue);
 								article_screens.remove(selected_issue);
 								issue_screens.get(selected_issue).dispose();
 								System.out.println(issue_screens.get(selected_issue) == null);
@@ -4860,42 +4884,43 @@ public class Main {
 				Object[][] rows = new Object[art_keys.size()][11];
 				int i = 0;
 				for (long id : art_keys) {
-					ArrayList<Object> data = new ArrayList<Object>();
-					issue_articles.put(id, new JFrame());
-					System.out.println("Article: " + current_articles.get(id).getId());
-					data.add(Long.toString(current_articles.get(id).getId()));
-					data.add(Long.toString(issue_id));
-					data.add(Long.toString((current_articles.get(id).getSection_id())));
-					data.add(current_articles.get(id).getTitle());
-					data.add(current_articles.get(id).getPages() == null ? current_articles.get(id).getPages() == null
-							: "/");
-					data.add(current_articles.get(id).getAbstract_text());
-					data.add(sdf.format(current));
-					data.add("View");
-					data.add("Edit");
-					data.add("Delete");
-					Date date_submitted = current_articles.get(id).getDate_submitted();
-					String date_submit = "";
-					if (date_submitted == null) {
-						date_submit = "/";
-					} else {
-						date_submit = sdf.format(current_articles.get(id).getDate_submitted());
+					if (!current_articles.get(id).isDeleted()) {
+						ArrayList<Object> data = new ArrayList<Object>();
+						issue_articles.put(id, new JFrame());
+						System.out.println("Article: " + current_articles.get(id).getId());
+						data.add(Long.toString(current_articles.get(id).getId()));
+						data.add(Long.toString(issue_id));
+						data.add(Long.toString((current_articles.get(id).getSection_id())));
+						data.add(current_articles.get(id).getTitle());
+						data.add(current_articles.get(id).getPages() == null
+								? current_articles.get(id).getPages() == null : "/");
+						data.add(current_articles.get(id).getAbstract_text());
+						data.add(sdf.format(current));
+						data.add("View");
+						data.add("Edit");
+						data.add("Delete");
+						Date date_submitted = current_articles.get(id).getDate_submitted();
+						String date_submit = "";
+						if (date_submitted == null) {
+							date_submit = "/";
+						} else {
+							date_submit = sdf.format(current_articles.get(id).getDate_submitted());
+						}
+						Date date_published = current_articles.get(id).getDate_published();
+						String date_pub = "";
+						if (date_published == null) {
+							date_pub = "/";
+						} else {
+							date_pub = sdf.format(current_articles.get(id).getDate_published());
+						}
+						Object[] row = { current_articles.get(id).getId(), issue_id,
+								current_articles.get(id).getSection_id(), current_articles.get(id).getTitle(),
+								current_articles.get(id).getPages(), current_articles.get(id).getAbstract_text(),
+								date_submit, date_pub, "View", "Edit", "Delete" };
+						rows[i] = row;
+						i++;
+						rowData.add(data);
 					}
-					Date date_published = current_articles.get(id).getDate_published();
-					String date_pub = "";
-					if (date_published == null) {
-						date_pub = "/";
-					} else {
-						date_pub = sdf.format(current_articles.get(id).getDate_published());
-					}
-					Object[] row = { current_articles.get(id).getId(), issue_id,
-							current_articles.get(id).getSection_id(), current_articles.get(id).getTitle(),
-							current_articles.get(id).getPages(), current_articles.get(id).getAbstract_text(),
-							date_submit, date_pub, "View", "Edit", "Delete" };
-					rows[i] = row;
-					i++;
-					rowData.add(data);
-
 				}
 
 				article_screens.put(issue_id, issue_articles);
@@ -5538,7 +5563,10 @@ public class Main {
 							long selected_article = (long) table.getModel()
 									.getValueAt(table.convertRowIndexToModel(article_row), 0);
 							Issue current_issue = issue_storage.get(issue_id);
-							current_issue.remove_article(selected_article);
+							Article current_article = current_issue.getArticles_list().get((long)selected_article);
+							current_article.setDeleted(true);
+							current_article.setSync(true);
+							current_issue.add_article((long)selected_article,current_article);
 							issue_storage.put(issue_id, current_issue);
 							System.out.println("Article ID: " + selected_article + " "
 									+ article_screens.get(issue_id).containsKey(selected_article));
@@ -9283,87 +9311,91 @@ public class Main {
 
 			System.out.println("sync: " + current_article.shouldBeSynced());
 			if (current_article.shouldBeSynced()) {
-				try {
-					update_article_intersect_less_requests(current_article, credentials);
-					sync_authors_intersect_article(current_article, credentials, false);
-				} catch (Exception es) {
-
-					issue_countdown_storage.put((long) issue.getId(), true);
-					JOptionPane.showMessageDialog(null, "Lost connection to server.");
-
-					return;
-				}
-				current_article.setSync(false);
-				allarticles.replace((long) current_article.getId(), current_article);
-				article_storage.put((long) current_article.getId(), current_article);
-
-				ConcurrentHashMap<Long, ArticleFile> files = file_storage.get((long) current_article.getId());
-				// null
-				if (files != null) {
-					Set<Long> file_keys = files.keySet();
-					HttpGet article_files = new HttpGet(
-							String.format("%s/get/files/%s/?format=json", base_url, current_article.getId()));
-					// settingCheck.setEntity(new
-					// StringEntity(obj.toJSONString()));
-					article_files.addHeader("Authorization", "Basic " + credentials);
-					article_files.setHeader("Accept", "application/json");
-					article_files.addHeader("Content-type", "application/json");
-
-					response = null;
+				if (current_article.isDeleted()) {
+					delete_article(current_article.getId());
+				} else {
 					try {
-						response = httpClient.execute(article_files);
-					} catch (ClientProtocolException e2) {
+						update_article_intersect_less_requests(current_article, credentials);
+						sync_authors_intersect_article(current_article, credentials, false);
+					} catch (Exception es) {
 
-						e2.printStackTrace();
-					} catch (IOException e2) {
+						issue_countdown_storage.put((long) issue.getId(), true);
+						JOptionPane.showMessageDialog(null, "Lost connection to server.");
 
-						e2.printStackTrace();
+						return;
 					}
-					new JsonFactory();
-					InputStream result = response.getEntity().getContent();
-					org.json.simple.parser.JSONParser jsonParser = new JSONParser();
+					current_article.setSync(false);
+					allarticles.replace((long) current_article.getId(), current_article);
+					article_storage.put((long) current_article.getId(), current_article);
 
-					new JSONObject();
+					ConcurrentHashMap<Long, ArticleFile> files = file_storage.get((long) current_article.getId());
+					// null
+					if (files != null) {
+						Set<Long> file_keys = files.keySet();
+						HttpGet article_files = new HttpGet(
+								String.format("%s/get/files/%s/?format=json", base_url, current_article.getId()));
+						// settingCheck.setEntity(new
+						// StringEntity(obj.toJSONString()));
+						article_files.addHeader("Authorization", "Basic " + credentials);
+						article_files.setHeader("Accept", "application/json");
+						article_files.addHeader("Content-type", "application/json");
 
-					JSONObject setting;
-					try {
-						setting = (JSONObject) jsonParser.parse(IOUtils.toString(result));
-
+						response = null;
 						try {
-							InputStream is = response.getEntity().getContent();
-							is.close();
-						} catch (IOException exc) {
+							response = httpClient.execute(article_files);
+						} catch (ClientProtocolException e2) {
 
-							exc.printStackTrace();
+							e2.printStackTrace();
+						} catch (IOException e2) {
+
+							e2.printStackTrace();
 						}
-						System.out.println(setting);
-						if (setting == null) {
-						} else {
-							String[] file_ids = null;
-							String ids = ((String) setting.get("files"));
-							if (ids.contains(",")) {
-								file_ids = ((String) setting.get("files")).split(",");
+						new JsonFactory();
+						InputStream result = response.getEntity().getContent();
+						org.json.simple.parser.JSONParser jsonParser = new JSONParser();
+
+						new JSONObject();
+
+						JSONObject setting;
+						try {
+							setting = (JSONObject) jsonParser.parse(IOUtils.toString(result));
+
+							try {
+								InputStream is = response.getEntity().getContent();
+								is.close();
+							} catch (IOException exc) {
+
+								exc.printStackTrace();
 							}
-							if (file_ids != null) {
-								for (String file_id : file_ids) {
-									if (!files.containsKey((long) Long.parseLong(file_id))) {
-										delete_file((long) Long.parseLong(file_id));
+							System.out.println(setting);
+							if (setting == null) {
+							} else {
+								String[] file_ids = null;
+								String ids = ((String) setting.get("files"));
+								if (ids.contains(",")) {
+									file_ids = ((String) setting.get("files")).split(",");
+								}
+								if (file_ids != null) {
+									for (String file_id : file_ids) {
+										if (!files.containsKey((long) Long.parseLong(file_id))) {
+											delete_file((long) Long.parseLong(file_id));
+										}
 									}
 								}
 							}
+						} catch (ParseException e) {
+
+							e.printStackTrace();
 						}
-					} catch (ParseException e) {
 
-						e.printStackTrace();
-					}
+						System.out.println("FILES TO UPLOAD: " + file_keys.size());
+						if (file_keys.size() > 0) {
+							for (long f_key : file_keys) {
 
-					System.out.println("FILES TO UPLOAD: " + file_keys.size());
-					if (file_keys.size() > 0) {
-						for (long f_key : file_keys) {
-
-							System.out.println("FILE TO UPLOAD: " + f_key);
-							ArticleFile current_file = files.get((long) f_key);
-							file_upload_intersect(current_article.getId(), current_file);
+								System.out.println("FILE TO UPLOAD: " + f_key);
+								ArticleFile current_file = files.get((long) f_key);
+								file_upload_intersect(current_article.getId(), current_file);
+							}
 						}
 					}
 				}
@@ -12029,6 +12061,84 @@ public class Main {
 		}
 	}
 
+	public static void delete_article(long article_id) throws IOException {
+		boolean status = status_online();
+
+		if (!status) {
+			return;
+		}
+		HttpDelete deleteArticle = new HttpDelete(String.format("%s/delete/article/%s/", base_url, article_id));
+
+		deleteArticle.addHeader("Authorization", "Basic " + encoding);
+
+		// : attachment; filename=upload.jpg.
+
+		HttpResponse response = null;
+		try {
+			response = httpClient.execute(deleteArticle);
+		} catch (ClientProtocolException e2) {
+
+			e2.printStackTrace();
+		} catch (IOException e2) {
+
+			e2.printStackTrace();
+		}
+		new JsonFactory();
+		System.out.println(response.getStatusLine().getStatusCode());
+		if (response.getStatusLine().getStatusCode() != 204) {
+			InputStream result = response.getEntity().getContent();
+			System.out.println(IOUtils.toString(result));
+		}
+		if (response.getStatusLine().getStatusCode() == 204) {
+			Article current_article = article_storage.get((long)article_id);
+			long issue_id = current_article.getIssue_fk().getId();
+			Issue current_issue = issue_storage.get((long)issue_id);
+			current_issue.remove_article((long)article_id);
+			issue_storage.put((long)issue_id,current_issue);
+			article_storage.remove((long)article_id);
+			
+		}
+	}
+	public static void delete_issue(long issue_id) throws IOException {
+		boolean status = status_online();
+
+		if (!status) {
+			return;
+		}
+		HttpDelete deleteArticle = new HttpDelete(String.format("%s/delete/issue/%s/", base_url, issue_id));
+
+		deleteArticle.addHeader("Authorization", "Basic " + encoding);
+
+		// : attachment; filename=upload.jpg.
+
+		HttpResponse response = null;
+		try {
+			response = httpClient.execute(deleteArticle);
+		} catch (ClientProtocolException e2) {
+
+			e2.printStackTrace();
+		} catch (IOException e2) {
+
+			e2.printStackTrace();
+		}
+		new JsonFactory();
+		System.out.println(response.getStatusLine().getStatusCode());
+		if (response.getStatusLine().getStatusCode() != 204) {
+			InputStream result = response.getEntity().getContent();
+			System.out.println(IOUtils.toString(result));
+		} 
+		if (response.getStatusLine().getStatusCode() == 204){
+			Issue current_issue = issue_storage.get((long)issue_id);
+			ConcurrentHashMap<Long,Article> articles = current_issue.getArticles_list();
+			Set<Long> art_keys = articles.keySet();
+			for (long key:art_keys){
+				if (article_storage.containsKey((long)key)){
+					article_storage.remove((long)key);
+				}
+			}
+			issue_storage.remove((long)issue_id);
+		}
+	}
 	public static void file_download(long article_id, long file_id) throws IllegalStateException, IOException {
 		boolean status = status_online();
 

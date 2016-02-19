@@ -13,6 +13,7 @@ public class Author {
 	private String country="";
 	private String url="";
 
+	private boolean deleted=false;
 	private long user_group=1;
 	private long id;
 	private long article_id;
@@ -182,6 +183,12 @@ public class Author {
 		this.article_id = article_id;
 		this.primary_contact = primary_contact;
 		this.seq = seq;
+	}
+	public boolean isDeleted() {
+		return deleted;
+	}
+	public void setDeleted(boolean deleted) {
+		this.deleted = deleted;
 	}
 	
 

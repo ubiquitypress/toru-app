@@ -7,6 +7,7 @@ public class Article {
 	private long id;
 	private String title;
 	private boolean sync=false;
+	private boolean deleted=false;
 	private String doi;
 	private long section_id;
 	private String pages;
@@ -314,6 +315,12 @@ public class Article {
 	}
 	public void setSync(boolean updated) {
 		this.sync = updated;
+	}
+	public boolean isDeleted() {
+		return deleted;
+	}
+	public void setDeleted(boolean deleted) {
+		this.deleted = deleted;
 	}
 	
 	

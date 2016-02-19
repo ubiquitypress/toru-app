@@ -14,6 +14,7 @@ public class Issue {
 	private int number;
 	private int year;
 	private boolean sync=false;
+	private boolean deleted=false;
 	private int show_title;
 	private int show_volume;
 	private int show_number;
@@ -292,6 +293,12 @@ public class Issue {
 	}
 	public void setSync(boolean updated) {
 		this.sync = updated;
+	}
+	public boolean isDeleted() {
+		return deleted;
+	}
+	public void setDeleted(boolean deleted) {
+		this.deleted = deleted;
 	}
 	
 
