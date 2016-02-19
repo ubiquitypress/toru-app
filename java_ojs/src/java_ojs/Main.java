@@ -138,7 +138,7 @@ import models.Section;
 import sun.misc.BASE64Encoder;
 
 public class Main {
-	JFrame login, api, issues, settings, section_screen;
+	JFrame login, api, issues, settings, section_screen,unpublished_articles_screen;
 	private JTextField access_key, username;
 	private JXTable issues_table;
 	private static int delay = 5000; // milliseconds
@@ -158,6 +158,8 @@ public class Main {
 	private static ConcurrentHashMap<Long, Journal> journal_storage;
 	private static ConcurrentHashMap<Long, Author> author_storage;
 	private static ConcurrentHashMap<Long, Article> article_storage;
+
+	private static ConcurrentHashMap<Long, Article> unpublished_article_storage;
 	private static ConcurrentHashMap<Long, ArrayList<Author>> article_author_storage;
 	private static String journal_url = "";
 	private static String user_url = "";
@@ -175,6 +177,8 @@ public class Main {
 	private static String section_insert_or_replace_statement = "INSERT OR REPLACE INTO SECTION(id,title,seq, editor_restricted, meta_indexed, meta_reviewed, abstracts_not_required, hide_title, hide_author, hide_about, disable_comments, abstract_word_count,sync,deleted) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
 	private static String author_insert_or_replace_statement = "INSERT OR REPLACE INTO AUTHOR(id,first_name,middle_name,last_name,email,affiliation,bio,orcid,department,country,twitter,deleted) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)";
 	private static String article_insert_or_replace_statement = "INSERT OR REPLACE INTO ARTICLE(id,title,section_id,pages,abstract,date_published,date_accepted,date_submitted,locale,language,status,submission_progress,current_round,fast_tracked,hide_author,comments_status,user_id,doi,published_pk,sync,deleted) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+	private static String unpublished_article_insert_or_replace_statement = "INSERT OR REPLACE INTO UNPUBLISHED_ARTICLE(id,title,section_id,pages,abstract,date_accepted,date_submitted,locale,language,status,submission_progress,current_round,fast_tracked,hide_author,comments_status,user_id,doi,sync,deleted) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+	
 	private static String article_author_insert_or_replace_statement = "INSERT OR REPLACE INTO ARTICLE_AUTHOR(article_id,author_id,primary_author) VALUES (?,?,?)";
 	private static String issue_journal_insert_or_replace_statement = "INSERT OR REPLACE INTO ISSUE_JOURNAL(id,journal_id,issue_id) VALUES (?,?,?)";
 	private static String issue_article_insert_or_replace_statement = "INSERT OR REPLACE INTO ISSUE_ARTICLE(article_id,issue_id) VALUES (?,?)";
@@ -219,6 +223,7 @@ public class Main {
 			stmt.executeUpdate("DELETE FROM ARTICLE_AUTHOR");
 			stmt.executeUpdate("DELETE FROM AUTHOR");
 			stmt.executeUpdate("DELETE FROM ARTICLE");
+			stmt.executeUpdate("DELETE FROM UNPUBLISHED_ARTICLE");
 			stmt.executeUpdate("DELETE FROM SECTION");
 			stmt.executeUpdate("DELETE FROM ISSUE_JOURNAL");
 			stmt.executeUpdate("DELETE FROM ISSUE");
@@ -226,6 +231,7 @@ public class Main {
 			stmt.executeUpdate("DELETE FROM API");
 			stmt.executeUpdate("DELETE FROM FILE");
 			stmt.executeUpdate("DELETE FROM METADATA");
+			
 
 			PreparedStatement prep = c.prepareStatement(api_insert_or_replace_statement);
 			prep.setFloat(1, Long.parseLong(app_settings.get("journal_id")));
@@ -339,6 +345,58 @@ public class Main {
 				journal_prep.setFloat(5, current_journal.getEnabled());
 				journal_prep.setString(6, current_journal.getTitle());
 				journal_prep.executeUpdate();
+			}
+			
+			Set<Long> unpublished_article_keys = unpublished_article_storage.keySet();
+			for (long art_key : unpublished_article_keys) {
+				Article save_article = unpublished_article_storage.get(art_key);
+				PreparedStatement article_prep = c.prepareStatement(unpublished_article_insert_or_replace_statement);
+				article_prep.setInt(1, (int) (long) save_article.getId());
+				article_prep.setString(2, save_article.getTitle()==null?"": save_article.getTitle());
+				article_prep.setInt(3, (int) (long) save_article.getSection_id());
+				article_prep.setString(4, save_article.getPages());
+				article_prep.setString(5, save_article.getAbstract_text() == null ? ""
+						: Jsoup.parse((String) save_article.getAbstract_text()).text());
+
+				article_prep.setString(6, save_article.getDate_accepted() == null ? "/"
+						: sdf.format(save_article.getDate_accepted()));
+				article_prep.setString(7, save_article.getDate_submitted() == null ? "/"
+						: sdf.format(save_article.getDate_submitted()));
+				article_prep.setString(8, save_article.getLocale());
+				article_prep.setString(9, save_article.getLanguage());
+				article_prep.setInt(10, save_article.getStatus());
+				article_prep.setInt(11, save_article.getSubmission_progress());
+				article_prep.setInt(12, save_article.getCurrent_round());
+				article_prep.setInt(13, save_article.getFast_tracked());
+				article_prep.setInt(14, save_article.getHide_author());
+				article_prep.setInt(15, save_article.getComments_status());
+				article_prep.setInt(16, (int) (long) save_article.getUser_id());
+				article_prep.setString(17, save_article.getDoi());
+				article_prep.setBoolean(18, save_article.shouldBeSynced());
+				article_prep.setBoolean(19, save_article.isDeleted());
+				article_prep.executeUpdate();
+			
+				// System.out.println(
+				// "ISSUE ARTICLE: ISSUE: " + save_issue.getId() + "
+				// ARTICLE: " + save_article.getId());
+				ArrayList<Author> authors = save_article.getAuthors();
+				for (int b = 0; b < authors.size(); b++) {
+					Author author = authors.get(b);
+					PreparedStatement article_author_prep = c
+							.prepareStatement(article_author_insert_or_replace_statement);
+
+					article_author_prep.setInt(1, (int) (long) save_article.getId());
+					article_author_prep.setInt(2, (int) (long) author.getId());
+					article_author_prep.setBoolean(3,
+							author_primary_storage.get(save_article.getId()).get(author.getId()));
+
+					// System.out.println("Author: " + author.getId() + "
+					// Primary: "
+					// +
+					// author_primary_storage.get(save_article.getId()).get(author.getId()));
+					article_author_prep.executeUpdate();
+					
+				}
 			}
 			int journal_issue_count = 0;
 			Set<Long> issue_keys = issue_storage.keySet();
@@ -532,6 +590,7 @@ public class Main {
 		journal_storage = new ConcurrentHashMap<Long, Journal>();
 		article_author_storage = new ConcurrentHashMap<Long, ArrayList<Author>>();
 		article_storage = new ConcurrentHashMap<Long, Article>();
+		unpublished_article_storage = new ConcurrentHashMap<Long, Article>();
 		// Journal test_journal = new Journal(1, "up", (float) 2.0, "en_US", 0);
 		// journal_storage.put((long)1, test_journal);
 		try {
@@ -735,9 +794,11 @@ public class Main {
 					Date test_date = sdf.parse(date);
 					article.setDate_published(test_date);
 				} catch (Exception e) {
+					
 				}
 
 				article_storage.put(id, article);
+
 				if (articles_id <= id) {
 					articles_id = id;
 				}
@@ -752,7 +813,59 @@ public class Main {
 			}
 
 			art_s.close();
+			
+			System.out.println("Loading Article data....");
+			art_s = c.createStatement().executeQuery("SELECT * FROM UNPUBLISHED_ARTICLE ORDER BY id ASC;");
+			rsmd = art_s.getMetaData();
+			System.out.println(rsmd.getColumnName(2));
 
+			while (art_s.next()) {
+				long id = art_s.getInt("id");
+				String title = art_s.getString("title");
+				int section_id = art_s.getInt("section_id");
+				author_primary_storage.put(id, new ConcurrentHashMap<Long, Boolean>());
+
+				ConcurrentHashMap<Long, ArticleFile> files = new ConcurrentHashMap<Long, ArticleFile>();
+				file_storage.put((long) id, files);
+				String pages = art_s.getString(rsmd.getColumnName(4));
+				String abstract_text = art_s.getString(rsmd.getColumnName(5));
+
+				String date = art_s.getString(rsmd.getColumnName(6));
+				String date_accepted = art_s.getString("date_accepted");
+				String date_submitted = art_s.getString("date_submitted");
+				String doi = art_s.getString("doi");
+				Boolean sync = art_s.getBoolean("sync");
+				Boolean deleted = art_s.getBoolean("deleted");
+				Article article = null;
+
+				article = new Article(id, title, section_id, pages, abstract_text, sdf.parse(date_submitted),
+						journal_storage.get(Long.parseLong(app_settings.get("journal_id"))));
+		
+				try {
+					article.setDate_accepted(sdf.parse(date_accepted));
+				} catch (Exception e) {
+
+				}
+				article.setDoi(doi);
+				article.setSync(sync == null ? false : sync);
+				article.setDeleted(deleted == null ? false : deleted);
+				
+
+				unpublished_article_storage.put(id, article);
+
+				if (articles_id <= id) {
+					articles_id = id;
+				}
+			
+				// JOptionPane.showMessageDialog(null, "Deleted");
+
+				ArrayList<Author> new_authors = new ArrayList<Author>();
+				article_author_storage.put(id, new_authors);
+
+			}
+
+			art_s.close();
+			
 			System.out.println("Loading File data....");
 			ResultSet rs_files = c.createStatement().executeQuery("SELECT id,article_id,path FROM FILE");
 			while (rs_files.next()) {
@@ -1313,6 +1426,15 @@ public class Main {
 					+ "published_pk INTEGER," + "sync BOOLEAN DEFAULT FALSE," + "deleted BOOLEAN DEFAULT FALSE,"
 					+ "FOREIGN KEY (section_id) REFERENCES SECTION(id)" + ")";
 			stmt.executeUpdate(sql);
+			sql = "CREATE TABLE IF NOT EXISTS UNPUBLISHED_ARTICLE" + "(id INTEGER PRIMARY KEY," + " title CHAR(500) NOT NULL,"
+					+ "section_id INTEGER," + "pages CHAR(255)," + " abstract CHAR(2000)," 
+					+ "date_accepted CHAR(50)," + "date_submitted CHAR(50)," + "status INTEGER,"
+					+ "submission_progress INTEGER," + "current_round INTEGER," + "fast_tracked INTEGER,"
+					+ "hide_author INTEGER," + "comments_status INTEGER," + " language CHAR(50) NOT NULL,"
+					+ "locale CHAR(50) NOT NULL," + "user_id REAL NOT NULL, " + " doi CHAR(1000),"
+					+ "sync BOOLEAN DEFAULT FALSE," + "deleted BOOLEAN DEFAULT FALSE,"
+					+ "FOREIGN KEY (section_id) REFERENCES SECTION(id)" + ")";
+			stmt.executeUpdate(sql);
 			sql = "CREATE TABLE IF NOT EXISTS FILE" + "(id INTEGER PRIMARY KEY," + " article_id INTEGER,"
 					+ "path CHAR(1000) NOT NULL," + "FOREIGN KEY (article_id) REFERENCES ARTICLE(id)" + ")";
 			stmt.executeUpdate(sql);
@@ -1322,7 +1444,6 @@ public class Main {
 			stmt.executeUpdate(sql);
 			sql = "CREATE TABLE IF NOT EXISTS ARTICLE_AUTHOR" + "(id INTEGER PRIMARY KEY," + " article_id INTEGER,"
 					+ " author_id INTEGER," + "primary_author BOOLEAN DEFAULT FALSE,"
-					+ "FOREIGN KEY (article_id) REFERENCES ARTICLE(id),"
 					+ "FOREIGN KEY (author_id) REFERENCES AUTHOR(id)" + ")";
 			stmt.executeUpdate(sql);
 			sql = "CREATE TABLE IF NOT EXISTS METADATA" + "(id INTEGER PRIMARY KEY," + " article_id INTEGER,"
@@ -2278,6 +2399,14 @@ public class Main {
 						sections();
 					}
 				});
+				final JButton btnUnpublished= new JButton("Unpublished Articles");
+				btnUnpublished.setBounds(238, 20, 120, 29);
+
+				btnUnpublished.addActionListener(new ActionListener() {
+					public void actionPerformed(ActionEvent e) {
+						unpublished_articles();
+					}
+				});
 				btnSync.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
 
@@ -2756,6 +2885,7 @@ public class Main {
 
 				issues.getContentPane().add(btnSync);
 				issues.getContentPane().add(btnSection);
+				issues.getContentPane().add(btnUnpublished);
 				Set<Long> author_keys = author_storage.keySet();
 				ArrayList<Long> author_list = new ArrayList<Long>();
 				String listData[] = new String[author_keys.size()];
@@ -4877,6 +5007,702 @@ public class Main {
 		}
 	}
 
+	public void unpublished_articles() {
+		if (logged_in) {
+			if (unpublished_articles_screen==null || !unpublished_articles_screen.isVisible()) {
+
+				unpublished_articles_screen = new JFrame();
+				unpublished_articles_screen.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+				if (height >= 640 && width >= 960) {
+					unpublished_articles_screen.setSize(width, height);
+				} else {
+					width = 960;
+					height = 640;
+					unpublished_articles_screen.setSize(960, 640);
+				}
+				ConcurrentHashMap<Long, JFrame> issue_articles = new ConcurrentHashMap<Long, JFrame>();
+				unpublished_articles_screen.getContentPane().setBackground(new Color(128, 128, 128));
+
+				unpublished_articles_screen.setLocationRelativeTo(null);
+				unpublished_articles_screen.setTitle("Unpublished Articles");
+				unpublished_articles_screen.addWindowListener(new WindowAdapter() {
+					@Override
+					public void windowClosing(WindowEvent e) {
+						// database_save();
+					}
+				});
+				Date current = new Date();
+
+				Set<Long> art_keys = unpublished_article_storage.keySet();
+				ArrayList<List<Object>> rowData = new ArrayList<List<Object>>();
+				Object[][] rows = new Object[art_keys.size()][7];
+				int i = 0;
+				for (long id : art_keys) {
+					if (!unpublished_article_storage.get(id).isDeleted()) {
+						ArrayList<Object> data = new ArrayList<Object>();
+						issue_articles.put(id, new JFrame());
+						System.out.println("Article: " + unpublished_article_storage.get(id).getId());
+						data.add(Long.toString(unpublished_article_storage.get(id).getId()));
+				
+						data.add(Long.toString((unpublished_article_storage.get(id).getSection_id())));
+						data.add(unpublished_article_storage.get(id).getTitle());
+						data.add(unpublished_article_storage.get(id).getPages() == null
+								? unpublished_article_storage.get(id).getPages() == null : "/");
+						data.add(unpublished_article_storage.get(id).getAbstract_text());
+						data.add(sdf.format(current));
+						data.add("View");
+						data.add("Edit");
+						data.add("Delete");
+						Date date_submitted = unpublished_article_storage.get(id).getDate_submitted();
+						String date_submit = "";
+						if (date_submitted == null) {
+							date_submit = "/";
+						} else {
+							date_submit = sdf.format(unpublished_article_storage.get(id).getDate_submitted());
+						}
+					
+						Object[] row = { unpublished_article_storage.get(id).getId(),
+								unpublished_article_storage.get(id).getSection_id(), unpublished_article_storage.get(id).getTitle(),
+								unpublished_article_storage.get(id).getPages(), unpublished_article_storage.get(id).getAbstract_text(),
+								date_submit, "Move to" };
+						rows[i] = row;
+						i++;
+						rowData.add(data);
+					}
+				}
+
+				Object columnNames[] = { "ID", "Section", "Title", "Pages", "Abstract", "Date Accepted",
+					"" };
+
+				unpublished_articles_screen.getContentPane().setLayout(null);
+
+				DefaultTableModel dtm = new DefaultTableModel(rows, columnNames);
+
+				final JXTable article_table = new JXTable(dtm) {
+					/**
+					 * 
+					 */
+					private static final long serialVersionUID = 1L;
+
+					// **** Source:
+					// http://stackoverflow.com/questions/9467093/how-to-add-a-tooltip-to-a-cell-in-a-jtable
+					// ****//
+					// Implement table cell tool tips.
+					public String getToolTipText(MouseEvent e) {
+						String tip = null;
+						java.awt.Point p = e.getPoint();
+						int rowIndex = rowAtPoint(p);
+						int colIndex = columnAtPoint(p);
+
+						try {
+							tip = getValueAt(rowIndex, colIndex).toString();
+						} catch (RuntimeException e1) {
+							// catch null pointer exception if mouse is over an
+							// empty line
+						}
+
+						return tip;
+					}
+				};
+				article_table.setAutoResizeMode(JTable.AUTO_RESIZE_SUBSEQUENT_COLUMNS);
+
+				final JButton btnSync = new JButton("Sync");
+				btnSync.setBounds(width - 155, 21, 70, 24);
+				btnSync.addActionListener(new ActionListener() {
+					public void actionPerformed(ActionEvent e) {
+						JProgressBar progressBar = new JProgressBar();
+						Executor article_progress_executor = Executors.newSingleThreadExecutor();
+						ExecutorService exec = Executors.newSingleThreadExecutor();
+
+						progressBar.setValue(0);
+						progressBar.setStringPainted(true);
+
+						progressBar.setIndeterminate(true);
+						progressBar.setBounds(width / 2 - 50, height - 117, 150, 40);
+						JLabel progress_msg = new JLabel("Estimated progress per Issue:");
+
+						progress_msg.setBounds(width / 2 - 75, height - 150, 200, 40);
+
+						unpublished_articles_screen.add(progress_msg);
+						unpublished_articles_screen.add(progressBar);
+						unpublished_articles_screen.repaint();
+						List<Future<?>> futures = new ArrayList<Future<?>>();
+						issue_countdown_storage.put((long) -1,false);
+						boolean update_table = false;
+
+						if (!(unpublished_article_storage.keySet().size()==0)) {
+
+							issue_countdown_storage.put((long) -1, false);
+							int dialogResult2 = JOptionPane.showConfirmDialog(null,
+									"Would You Like to replace local Section data (Yes) or update remote Secton data (No)",
+									"Warning", 1);
+
+							if (dialogResult2 == JOptionPane.YES_OPTION) {
+								Future<?> f = exec.submit(new Runnable() {
+									public void run() {
+
+										try {
+											get_sections(Long.parseLong(app_settings.get("journal_id")), encoding,
+													false);
+
+										} catch (NumberFormatException e) {
+
+											e.printStackTrace();
+										} catch (IllegalStateException e) {
+
+											e.printStackTrace();
+										} catch (IOException e) {
+
+											e.printStackTrace();
+										}
+									}
+								});
+								futures.add(f);
+							} else if (dialogResult2 == JOptionPane.NO_OPTION) {
+								Future<?> f = exec.submit(new Runnable() {
+									public void run() {
+										try {
+											update_sections(Long.parseLong(app_settings.get("journal_id")), encoding,
+													false);
+										} catch (NumberFormatException e1) {
+
+											e1.printStackTrace();
+										} catch (IllegalStateException e1) {
+
+											e1.printStackTrace();
+										} catch (IOException e1) {
+
+											e1.printStackTrace();
+										}
+									}
+								});
+								futures.add(f);
+							}
+							int dialogResult = JOptionPane.showConfirmDialog(null,
+									"Would You Like to replace local data (Yes) or update remote data (No)", "Warning",
+									1);
+							if (dialogResult == JOptionPane.CANCEL_OPTION) {
+								issue_countdown_storage.put((long) -1, true);
+							}
+							if (dialogResult == JOptionPane.NO_OPTION) {
+					
+							} else if (dialogResult == JOptionPane.YES_OPTION) {
+								System.out.println("update local");
+								article_progress_executor.execute(new Runnable() {
+									public void run() {
+										int countdown = 300;
+										// System.out.println("countdown " +
+										// countdown);
+										double decimal = 3;
+										// System.out.println(decimal);
+										for (int i = 0; i < countdown; i++) {
+											final int percent = i;
+											// System.out.println("countdown:
+											// "+issue_countdown_storage.get((long)
+											// current_issue.getId()));
+
+											if (issue_countdown_storage.get((long)-1) == true) {
+												progressBar.setValue(100);
+												progressBar.repaint();
+												break;
+											}
+											SwingUtilities.invokeLater(new Runnable() {
+												public void run() {
+													// System.out.println("countdown:
+													// "+issue_countdown_storage.get((long)
+													// current_issue.getId()));
+
+													if (issue_countdown_storage
+															.get((long)-1) == true) {
+														progressBar.setValue(100);
+														progressBar.repaint();
+													} else {
+														progressBar.setValue(percent == 0 ? 0
+																: (int) Double.parseDouble(
+																		String.format("%s", percent / decimal)));
+														progressBar.repaint();
+													}
+												}
+											});
+
+											try {
+												Thread.sleep(100);
+											} catch (InterruptedException e) {
+											}
+										}
+									}
+								});
+								update_table = true;
+								
+								Future<?> f = exec.submit(new Runnable() {
+
+									public void run() {
+
+										try {
+											update_unpublished_articles_local_single_request(encoding);
+										} catch (IllegalStateException | IOException e1) {
+
+											e1.printStackTrace();
+										}
+									}
+								});
+								futures.add(f);
+
+							}
+						} else {
+
+							System.out.println("Local");
+
+							article_progress_executor.execute(new Runnable() {
+								public void run() {
+									int countdown = 300;
+									// System.out.println("countdown " +
+									// countdown);
+									double decimal = 300 / 100;
+									System.out.println(decimal);
+									for (int i = 0; i < countdown; i++) {
+										final int percent = i;
+										// System.out.println("countdown:
+										// "+issue_countdown_storage.get((long)
+										// current_issue.getId()));
+
+										if (issue_countdown_storage.get((long) -1) == true) {
+											progressBar.setValue(100);
+											progressBar.repaint();
+											break;
+										}
+										SwingUtilities.invokeLater(new Runnable() {
+											public void run() {
+												// System.out.println("countdown:
+												// "+issue_countdown_storage.get((long)
+												// current_issue.getId()));
+
+												if (issue_countdown_storage.get((long) -1) == true) {
+													progressBar.setValue(100);
+													progressBar.repaint();
+												} else {
+													progressBar.setValue(percent == 0 ? 0
+															: (int) Double.parseDouble(
+																	String.format("%s", percent / decimal)));
+													progressBar.repaint();
+												}
+											}
+										});
+
+										try {
+											Thread.sleep(100);
+										} catch (InterruptedException e) {
+										}
+									}
+								}
+							});
+							unpublished_articles_screen.add(progress_msg);
+							unpublished_articles_screen.add(progressBar);
+							unpublished_articles_screen.repaint();
+
+							exec.submit(new Runnable() {
+
+								public void run() {
+									try {
+										//get_sections(Long.parseLong(app_settings.get("journal_id")), encoding, false);
+										update_unpublished_articles_local_single_request(encoding);
+
+									} catch (IllegalStateException e1) {
+
+										e1.printStackTrace();
+									} catch (IOException e1) {
+
+										e1.printStackTrace();
+									}
+								}
+							});
+						}
+
+						boolean update_q = update_table;
+						article_progress_executor.execute(new Runnable() {
+							public void run() {
+								for (Future<?> f : futures) {
+									try {
+										f.get();
+									} catch (InterruptedException e) {
+
+										e.printStackTrace();
+									} catch (ExecutionException e) {
+
+										e.printStackTrace();
+									}
+
+								}
+							}
+						});
+
+						if (status_online()) {
+							dialogResult = JOptionPane.showConfirmDialog(null,
+									"Would You Like to replace local Author data (Yes) or update remote Author data (No)",
+									"Warning", 1);
+
+							if (dialogResult == JOptionPane.NO_OPTION) {
+								/*
+								 * Future<?> f = exec.submit(new Runnable() {
+								 * 
+								 * public void run() {
+								 * 
+								 * try { sync_authors_intersect(issue_id,
+								 * encoding, false); } catch
+								 * (IllegalStateException e2) {
+								 * 
+								 * e2.printStackTrace(); } catch (IOException
+								 * e2) {
+								 * 
+								 * e2.printStackTrace(); } } });
+								 * 
+								 * futures.add(f);
+								 */
+							} else if (dialogResult == JOptionPane.YES_OPTION) {
+								/*	Future<?> f = exec.submit(new Runnable() {
+
+									public void run() {
+
+										try {
+											get_authors_remote_single_request(issue_id, encoding, false);
+										} catch (IllegalStateException e1) {
+
+											e1.printStackTrace();
+										} catch (IOException e1) {
+
+											e1.printStackTrace();
+										}
+									}
+								});
+								futures.add(f);*/
+							}
+						}
+
+						article_progress_executor.execute(new Runnable() {
+							public void run() {
+								for (Future<?> f : futures) {
+									try {
+										f.get();
+									} catch (InterruptedException e) {
+
+										e.printStackTrace();
+									} catch (ExecutionException e) {
+
+										e.printStackTrace();
+									}
+
+								}
+							}
+						});
+						article_progress_executor.execute(new Runnable() {
+							public void run() {
+								unpublished_articles_screen.dispose();
+								unpublished_articles();
+
+								int dialogResult = JOptionPane.showConfirmDialog(null,
+										"Save changes to local database?", "Warning", 1);
+
+								if (dialogResult == JOptionPane.YES_OPTION) {
+									database_save();
+								}
+								System.out.println("updatet able" + update_q);
+								// change
+								if (update_q) {
+									Set<Long> keys = unpublished_article_storage.keySet();
+									ArrayList<List<Object>> rowData = new ArrayList<List<Object>>();
+									Object[][] rows = new Object[unpublished_article_storage.size()][7];
+									int num_rows = 0;
+									try {
+										num_rows = article_table.getRowCount();
+									} catch (NullPointerException n_e) {
+									}
+									if (num_rows != 0) {
+										for (int i = num_rows - 1; i >= 0; i--) {
+											System.out.println(num_rows);
+											((DefaultTableModel) article_table.getModel()).removeRow(i);
+
+											System.out.println("--"
+													+ ((DefaultTableModel) article_table.getModel()).getRowCount());
+										}
+									}
+									int i = 0;
+				
+									for (long id : keys) {
+										
+										ArrayList<Object> data = new ArrayList<Object>();
+										issue_articles.put(id, new JFrame());
+
+										data.add(Long.toString(unpublished_article_storage.get(id).getId()));
+											data.add(Long.toString((unpublished_article_storage.get(id).getSection_id())));
+										data.add(unpublished_article_storage.get(id).getTitle());
+										data.add(unpublished_article_storage.get(id).getPages() == null ? "/"
+												: unpublished_article_storage.get(id).getPages());
+										data.add(unpublished_article_storage.get(id).getAbstract_text());
+										data.add(sdf.format(current));
+										data.add("Move to");
+										Date date_submitted = unpublished_article_storage.get(id).getDate_submitted();
+										String date_submit = "";
+										if (date_submitted == null) {
+											date_submit = "/";
+										} else {
+											date_submit = sdf.format(unpublished_article_storage.get(id).getDate_submitted());
+										}
+										
+										Object[] row = { unpublished_article_storage.get(id).getId(),
+												unpublished_article_storage.get(id).getSection_id(),
+												unpublished_article_storage.get(id).getTitle(), unpublished_article_storage.get(id).getPages(),
+												unpublished_article_storage.get(id).getAbstract_text(), date_submit, "Move to" };
+										rows[i] = row;
+										rowData.add(data);
+										((DefaultTableModel) article_table.getModel()).insertRow(0, row);
+										i++;
+										System.out.println(
+												"++" + ((DefaultTableModel) article_table.getModel()).getRowCount());
+
+									}
+									System.out.println(num_rows);
+									try {
+										num_rows = ((DefaultTableModel) article_table.getModel()).getRowCount();
+									} catch (NullPointerException n_e) {
+									}
+									System.out.println(":::" + num_rows);
+									if (num_rows != 0) {
+										((DefaultTableModel) article_table.getModel()).fireTableRowsUpdated(0,
+												num_rows - 1);
+									}
+
+								}
+
+								article_table.repaint();
+								unpublished_articles_screen.getContentPane().repaint();
+								unpublished_articles_screen.remove(progress_msg);
+								unpublished_articles_screen.remove(progressBar);
+								unpublished_articles_screen.repaint();
+							}
+						});
+
+					}
+
+				});
+				unpublished_articles_screen.getContentPane().add(btnSync);
+
+				JScrollPane scrollPane = new JScrollPane();
+				scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+				scrollPane.setBounds(15, height / 16 * 7, width - 30, (height - 130) - (height / 16 * 7) - 10);
+				unpublished_articles_screen.getContentPane().add(scrollPane);
+				// reference:
+				// https://svn.java.net/svn/swinglabs-demos~svn/trunk/src/java/org/jdesktop/demo/sample/
+				final JTextField filter = new JTextField("");
+				filter.setBounds(150, height / 16 * 7 - 27, 117, 25);
+
+				final JButton search = new JButton("Search");
+				final JButton clear = new JButton("Clear");
+				search.setBounds(268, height / 16 * 7 - 27, 90, 25);
+
+				clear.setBounds(355, height / 16 * 7 - 27, 90, 25);
+				;
+				unpublished_articles_screen.getContentPane().add(filter);
+				unpublished_articles_screen.getContentPane().add(search);
+				unpublished_articles_screen.getContentPane().add(clear);
+				filter.setAction(new AbstractAction("Search") {
+					/**
+					 * 
+					 */
+					private static final long serialVersionUID = 1L;
+
+					public void actionPerformed(ActionEvent e) {
+
+						String searchString = filter.getText().trim();
+						if (searchString.length() > 0) {
+							article_table.setRowFilter(RowFilters.regexFilter(0, searchString));
+						} else {
+							article_table.setRowFilter(null);
+						}
+					}
+				});
+				search.setAction(new AbstractAction("Search") {
+					/**
+					 * 
+					 */
+					private static final long serialVersionUID = 1L;
+
+					public void actionPerformed(ActionEvent e) {
+
+						String searchString = filter.getText().trim();
+						if (searchString.length() > 0) {
+							article_table.setRowFilter(RowFilters.regexFilter(0, searchString));
+						}
+					}
+				});
+				clear.setAction(new AbstractAction("Clear") {
+					/**
+					 * 
+					 */
+					private static final long serialVersionUID = 1L;
+
+					public void actionPerformed(ActionEvent e) {
+						article_table.setRowFilter(null);
+					}
+				});
+				article_table.setAutoCreateRowSorter(true);
+				scrollPane.setViewportView(article_table);
+				article_table.getColumnModel().getColumn(6).setMinWidth(50);
+				article_table.setColumnSelectionAllowed(true);
+				article_table.setBorder(new BevelBorder(BevelBorder.RAISED, null, null, null, null));
+				article_table.setCellSelectionEnabled(true);
+				article_table.setRowHeight(23);
+				final Label internetCheck = new Label("  ONLINE");
+				internetCheck.setFont(new Font("Dialog", Font.BOLD | Font.ITALIC, 12));
+				internetCheck.setBackground(Color.GREEN);
+				internetCheck.setAlignment(1);
+				internetCheck.setForeground(new Color(255, 255, 255));
+				internetCheck.setBounds(width - 85, 22, 65, 22);
+				unpublished_articles_screen.getContentPane().add(internetCheck);
+
+				ActionListener taskPerformer1 = new ActionListener() {
+					public void actionPerformed(ActionEvent evt) {
+						if (status_online()) {
+							internetCheck.setBackground(Color.GREEN);
+							internetCheck.setText("ONLINE");
+							btnSync.setEnabled(true);
+
+						} else {
+							internetCheck.setBackground(Color.RED);
+							internetCheck.setText("OFFLINE");
+							btnSync.setEnabled(false);
+						}
+					}
+				};
+				new Timer(delay * 2, taskPerformer1).start();
+				new DefaultTableModel(rows, columnNames);
+	
+				Action move_to = new AbstractAction() {
+					/**
+					 * 
+					 */
+					private static final long serialVersionUID = 1L;
+
+					public void actionPerformed(ActionEvent e) {
+						JTable table = (JTable) e.getSource();
+						unpublished_articles_screen.dispose();
+						Integer.valueOf(e.getActionCommand());
+						int article_row = table.getSelectedRow();
+						long selected_article = (long) table.getModel()
+								.getValueAt(table.convertRowIndexToModel(article_row), 0);
+						if (unpublished_articles_screen.isVisible()) {
+							unpublished_articles_screen.dispose();
+						}
+					//	edit_article(issue_id, selected_article);
+						// /
+						// ((DefaultTableModel)table.getModel()).removeRow(modelRow);
+					}
+				};
+				ButtonColumn buttonColumn3 = new ButtonColumn(article_table, move_to, 6);
+
+				JLabel lblArticles = new JLabel("Articles");
+				lblArticles.setBackground(new Color(128, 128, 128));
+				lblArticles.setFont(new Font("Dialog", Font.BOLD, 26));
+				lblArticles.setForeground(new Color(240, 255, 255));
+				lblArticles.setBounds(25, height / 16 * 7 - 32, 180, 30);
+				lblArticles.setOpaque(true);
+				unpublished_articles_screen.getContentPane().add(lblArticles);
+
+				JLabel lblIssue = new JLabel("Unpublished Articles");
+				lblIssue.setBackground(new Color(0, 139, 139));
+				lblIssue.setForeground(new Color(240, 255, 255));
+				lblIssue.setFont(new Font("Dialog", Font.BOLD, 28));
+				lblIssue.setBounds(40, 60, 250, 30);
+				lblIssue.setOpaque(true);
+				unpublished_articles_screen.getContentPane().add(lblIssue);
+
+				JButton btnClose = new JButton("Close");
+				btnClose.addActionListener(new ActionListener() {
+					public void actionPerformed(ActionEvent arg0) {
+						unpublished_articles_screen.setVisible(false);
+						if (issues == null) {
+							unpublished_articles_screen.dispose();
+							dashboard();
+						} else if (!issues.isVisible()) {
+							unpublished_articles_screen.dispose();
+							issues.setVisible(true);
+						} else {
+							unpublished_articles_screen.dispose();
+						}
+					}
+				});
+				btnClose.setBounds(15, 20, 100, 29);
+				unpublished_articles_screen.getContentPane().add(btnClose);
+				buttonColumn3.setMnemonic(KeyEvent.VK_D);
+				ImageIcon db_icon = new ImageIcon("src/lib/db_xxs.png");
+				JButton btnSaveData = new JButton(db_icon);
+				btnSaveData.setFont(new Font("Dialog", Font.BOLD, 24));
+				btnSaveData.addActionListener(new ActionListener() {
+					public void actionPerformed(ActionEvent e) {
+						database_save();
+					}
+				});
+				btnSaveData.setBounds(26, height - 117, 70, 40);
+				unpublished_articles_screen.getContentPane().add(btnSaveData);
+				JLabel lblUpdateDb = new JLabel("Update");
+				lblUpdateDb.setForeground(Color.WHITE);
+				lblUpdateDb.setHorizontalAlignment(SwingConstants.CENTER);
+				lblUpdateDb.setBounds(26, height - 132, 70, 15);
+				unpublished_articles_screen.getContentPane().add(lblUpdateDb);
+				Panel footer_border = new Panel();
+				footer_border.setBackground(new Color(0, 139, 139));
+				footer_border.setBounds(0, height - 74, width, 10);
+				unpublished_articles_screen.getContentPane().add(footer_border);
+
+				Panel footer = new Panel();
+				footer.setBackground(new Color(0, 128, 128));
+				footer.setBounds(0, height - 74, width, 120);
+				unpublished_articles_screen.getContentPane().add(footer);
+
+				Panel panel = new Panel();
+				panel.setBackground(new Color(0, 139, 139));
+				panel.setBounds(0, 55, width, 40);
+				unpublished_articles_screen.getContentPane().add(panel);
+
+				Panel panel_1 = new Panel();
+				panel_1.setBackground(new Color(47, 79, 79));
+				panel_1.setBounds(0, 95, width, 5);
+				unpublished_articles_screen.getContentPane().add(panel_1);
+			
+				JPanel panel3 = new JPanel();
+				panel3.setBackground(SystemColor.window);
+				panel3.setBounds(20, 108, width - 40, (height / 16) * 2);
+				unpublished_articles_screen.getContentPane().add(panel3);
+				panel3.setLayout(null);
+				panel3.setAutoscrolls(true);
+				panel3.setPreferredSize(new Dimension(width, height / 8));
+				JScrollPane abstractSection = new JScrollPane(panel3);
+				panel3.setAutoscrolls(true);
+				new Date();
+				
+					abstractSection.setPreferredSize(new Dimension(320, 205));
+				// (int)((height/32)*5.5)
+				abstractSection.setBounds(20, height / 16 * 7 - 106, width - 40, 50);
+				// scrollSettings.setViewportView(scrollFrame);
+				unpublished_articles_screen.getContentPane().add(abstractSection);
+
+				JLabel lblIssueDetails = new JLabel("Details");
+				lblIssueDetails.setBackground(new Color(128, 128, 128));
+				lblIssueDetails.setFont(new Font("Dialog", Font.BOLD, 26));
+				lblIssueDetails.setForeground(new Color(240, 255, 255));
+				lblIssueDetails.setBounds((width - 95) / 2, 118, 125, 30);
+				lblIssueDetails.setOpaque(true);
+				unpublished_articles_screen.getContentPane().add(lblIssueDetails);
+				unpublished_articles_screen.setVisible(true);
+				unpublished_articles_screen.repaint();
+			}
+
+		} else {
+			login("dashboard");
+		}
+	}
+	
+	
+	
 	public void issue(final long issue_id) {
 		if (logged_in) {
 			if (issue_screens.containsKey(issue_id) && !issue_screens.get(issue_id).isVisible()) {
@@ -6334,7 +7160,8 @@ public class Main {
 				panel.add(titleSection);
 
 				JLabel lblSectionId;
-				if (section_storage.containsKey((long) current_article.getSection_id()) && !section_storage.get((long) current_article.getSection_id()).isDeleted()) {
+				if (section_storage.containsKey((long) current_article.getSection_id())
+						&& !section_storage.get((long) current_article.getSection_id()).isDeleted()) {
 					lblSectionId = new JLabel(
 							section_storage.get((long) current_article.getSection_id()).getTitle().compareTo("") == 0
 									? Long.toString(section_storage.get((long) current_article.getSection_id()).getId())
@@ -7403,7 +8230,7 @@ public class Main {
 				int selected_section = -1;
 				int count = 0;
 				for (long key : section_keys) {
-					if (!section_storage.get((long)key).isDeleted()) {
+					if (!section_storage.get((long) key).isDeleted()) {
 						lblSectionId.addItem(section_storage.get(key).getTitle());
 						sections.add(section_storage.get(key));
 						System.out.println("Count: " + count + " Section: " + current_article.getSection_id());
@@ -7417,7 +8244,7 @@ public class Main {
 				if (selected_section != -1) {
 					lblSectionId.setSelectedIndex(selected_section);
 				}
-				
+
 				// final JTextField lblSectionId = new
 				// JTextField(Integer.toString(current_article.getSection_id()));
 				lblSectionId.setForeground(Color.BLACK);
@@ -7833,8 +8660,9 @@ public class Main {
 					article_screens.put(issue_id, issue_articles);
 				}
 				if (selected_section == -1) {
-					JOptionPane.showMessageDialog(null, "Section has been removed or does not exist. Please select one.");
-					
+					JOptionPane.showMessageDialog(null,
+							"Section has been removed or does not exist. Please select one.");
+
 				}
 			}
 
@@ -9461,6 +10289,225 @@ public class Main {
 		System.out.println("method - countdown: " + issue_countdown_storage.get((long) issue.getId()));
 
 		System.out.println("END METHD: " + issue.getArticles_list().size());
+	}
+
+	public static void update_unpublished_articles_local_single_request(String credentials)
+			throws IllegalStateException, IOException {
+
+		boolean status = status_online();
+		if (!status) {
+			return;
+		}
+		System.out.println("Getting Articles");
+
+		ArrayList<Article> articles_list = new ArrayList<Article>();
+		try {
+			HttpGet published_articles = new HttpGet(
+					String.format("%s/get/articles/?format=json", base_url));
+			// settingCheck.setEntity(new StringEntity(obj.toJSONString()));
+			published_articles.addHeader("Authorization", "Basic " + credentials);
+			published_articles.setHeader("Accept", "application/json");
+			published_articles.addHeader("Content-type", "application/json");
+
+			HttpResponse response = null;
+
+			response = httpClient.execute(published_articles);
+
+			new JsonFactory();
+			InputStream result = response.getEntity().getContent();
+			org.json.simple.parser.JSONParser jsonParser = new JSONParser();
+			new JSONObject();
+
+			JSONObject setting = (JSONObject) jsonParser.parse(IOUtils.toString(result));
+			try {
+				InputStream is = response.getEntity().getContent();
+				is.close();
+			} catch (IOException exc) {
+
+				exc.printStackTrace();
+			}
+			System.out.println(setting);
+			if (setting == null) {
+			} else {
+				String[] article_ids = null;
+				String ids = ((String) setting.get("unpublished_articles"));
+				System.out.println(ids);
+				System.out.println(setting);
+				if (ids.contains(",")) {
+					article_ids = ((String) setting.get("unpublished_articles")).split(",");
+				}
+				if (article_ids != null) {
+					for (String id : article_ids) {
+
+						System.out.println(id);
+						HttpGet single_article = new HttpGet(
+								String.format("%s/app/article-settings/%s/?format=json", base_url, id));
+						// settingCheck.setEntity(new
+						// StringEntity(obj.toJSONString()));
+						single_article.addHeader("Authorization", "Basic " + credentials);
+						single_article.setHeader("Accept", "application/json");
+						single_article.addHeader("Content-type", "application/json");
+
+						response = null;
+
+						response = httpClient.execute(single_article);
+						if (response.getStatusLine().getStatusCode() == 200) {
+							result = response.getEntity().getContent();
+
+							jsonParser = new JSONParser();
+							new JSONObject();
+
+							setting = (JSONObject) jsonParser.parse(IOUtils.toString(result));
+							System.out.println((JSONObject) setting.get("article"));
+							System.out.println((JSONArray) setting.get("settings"));
+							try {
+								InputStream is = response.getEntity().getContent();
+								is.close();
+							} catch (IOException exc) {
+
+								exc.printStackTrace();
+							}
+							JSONArray all_settings = (JSONArray) setting.get("settings");
+
+							Article new_article = JSONToArticle_single_request((JSONObject) setting.get("article"));
+							System.out.println(all_settings.toJSONString());
+							String funding = null;
+							String ci = null;
+							for (Object set : all_settings.toArray()) {
+								JSONObject current_setting = (JSONObject) set;
+								System.out.println(current_setting);
+
+								System.out.println("SETTING: " + current_setting.get("setting_name"));
+								switch ((String) current_setting.get("setting_name")) {
+								case "title":
+									new_article.setTitle((String) current_setting.get("setting_value"));
+									continue;
+								case "abstract":
+									String abstract_text = (String) current_setting.get("setting_value");
+									String new_abs = "";
+									if (abstract_text != null) {
+										if (abstract_text.compareTo("") != 0 || abstract_text.isEmpty() == true) {
+											String abs = Jsoup.parse((String) current_setting.get("setting_value"))
+													.text();
+											String[] words = abs.split(" ");
+
+											int j = 0;
+											for (String word : words) {
+												new_abs = new_abs + " " + word;
+												if (j % 8 == 0 && j != 0) {
+													new_abs = new_abs + "\r\n";
+												}
+												j++;
+											}
+										}
+									}
+									new_article.setAbstract_text(new_abs);
+									System.out.println("ABSTRACT--- " + new_abs);
+									System.out.println(abstract_text);
+									continue;
+								case "funding":
+									funding = (String) current_setting.get("setting_value");
+									continue;
+								case "competingInterests":
+									ci = (String) current_setting.get("setting_value");
+									continue;
+								case "pub-id::doi":
+									new_article.setDoi((String) current_setting.get("setting_value"));
+									continue;
+
+								default:
+
+									System.out.println("Invalid setting " + current_setting.get("setting_name"));
+								}
+
+							}
+							if (ci != null || funding != null) {
+								if (metadata_storage.containsKey((long) new_article.getId())) {
+									Metadata meta = metadata_storage.get((long) new_article.getId());
+									meta.setCompeting_interests(ci);
+									meta.setFunding(funding);
+									metadata_storage.put((long) new_article.getId(), meta);
+								} else {
+									metadata_id++;
+									Metadata meta = new Metadata(metadata_id, (long) new_article.getId(), ci, funding);
+									metadata_storage.put((long) new_article.getId(), meta);
+								}
+
+							}
+
+							System.out.println(new_article);
+							article_author_storage.put(new_article.getId(), new ArrayList<Author>());
+							articles_list.add(new_article);
+						}
+					}
+				}
+			}
+
+			for (Article a : articles_list) {
+
+				HttpGet article_files = new HttpGet(String.format("%s/get/files/%s/?format=json", base_url, a.getId()));
+				// settingCheck.setEntity(new
+				// StringEntity(obj.toJSONString()));
+				article_files.addHeader("Authorization", "Basic " + credentials);
+				article_files.setHeader("Accept", "application/json");
+				article_files.addHeader("Content-type", "application/json");
+
+				response = null;
+				response = httpClient.execute(article_files);
+
+				new JsonFactory();
+				result = response.getEntity().getContent();
+				jsonParser = new JSONParser();
+
+				new JSONObject();
+
+				setting = new JSONObject();
+				try {
+					setting = (JSONObject) jsonParser.parse(IOUtils.toString(result));
+					try {
+						InputStream is = response.getEntity().getContent();
+						is.close();
+					} catch (IOException exc) {
+
+						exc.printStackTrace();
+					}
+
+					System.out.println(setting);
+					if (setting == null) {
+					} else {
+						String[] file_ids = null;
+						String ids = ((String) setting.get("files"));
+						if (ids.contains(",")) {
+							file_ids = ((String) setting.get("files")).split(",");
+						}
+						if (file_ids != null) {
+							for (String file_id : file_ids) {
+								file_download(a.getId(), Long.parseLong(file_id));
+							}
+						}
+					}
+				} catch (ParseException e) {
+
+					e.printStackTrace();
+				}
+				unpublished_article_storage.put(a.getId(), a);
+				author_primary_storage.put(a.getId(), new ConcurrentHashMap<Long, Boolean>());
+			
+
+			}
+
+		} catch (ClientProtocolException e2) {
+
+			JOptionPane.showMessageDialog(null, "Lost connection to server.");
+			return;
+		} catch (IOException e2) {
+
+			JOptionPane.showMessageDialog(null, "Lost connection to server.");
+			return;
+		} catch (ParseException e) {
+
+			e.printStackTrace();
+		}
 	}
 
 	public static void update_articles_local_single_request(Issue issue, String credentials)
@@ -11630,7 +12677,37 @@ public class Main {
 		}
 		return new_article;
 	}
+	public static Article JSONToArticle_single_request(JSONObject obj) {
+		String date_p = (String) obj.get("date_submitted");
+		Long user_id = (Long) obj.get("user");
+		System.out.println(user_id);
+		String date_published = ((String) obj.get("date_published"));
 
+		Article new_article = new Article((long) obj.get("id"), (long) obj.get("section_id"), (String) obj.get("pages"),
+				user_id, (String) obj.get("locale"), (String) obj.get("language"), (int) (long) obj.get("status"),
+				(int) (long) obj.get("submission_progress"), (int) (long) obj.get("current_round"),
+				(int) (long) obj.get("fast_tracked"), (int) (long) obj.get("hide_author"),
+				(int) (long) obj.get("comments_status"));
+		if (date_published != null && date_p.compareTo("") != 0 && date_published.isEmpty() != true) {
+			new_article.setPublished_pk((long) obj.get("published_pk"));
+			try {
+				new_article.setDate_published((Date) sdf.parse(date_published.substring(0, 10).replace('-', '/')));
+			} catch (java.text.ParseException e) {
+
+				e.printStackTrace();
+			}
+		}
+		if (date_p != null && date_p.compareTo("") != 0 && date_p.length()>10) {
+
+			try {
+				new_article.setDate_submitted((Date) sdf.parse(date_p.substring(0, 10).replace('-', '/')));
+			} catch (java.text.ParseException e) {
+
+				e.printStackTrace();
+			}
+		}
+		return new_article;
+	}
 	public static Author JSONToAuthor(JSONObject obj, Author author) {
 
 		obj.get("id");
@@ -12330,6 +13407,7 @@ public class Main {
 		//
 		// database_save();
 		new Main();
+		//update_unpublished_articles_local_single_request(encoding);
 		// update_sections((long) 1, encoding,false);
 		// file_upload_intersect((long)125,"/home/ioannis/code/toru-app/java_ojs/miglayout-src.zip",25);
 		// file_download(125,16);
