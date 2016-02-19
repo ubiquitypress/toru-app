@@ -652,7 +652,7 @@ public class Main {
 				new_section.setDisable_comments(sect_s.getInt("disable_comments"));
 				new_section.setAbstract_word_count(sect_s.getInt("abstract_word_count"));
 				new_section.setSync(sect_s.getBoolean("sync"));
-				
+
 				section_storage.put(id, new_section);
 				section_screens.put(id, new JFrame());
 				section_db_id = id;
@@ -2508,44 +2508,45 @@ public class Main {
 									futures.add(f);
 
 								}
-								if (dialogResult == JOptionPane.NO_OPTION) {
+								if (!current_issue.isDeleted()) {
+									if (dialogResult == JOptionPane.NO_OPTION) {
 
-									Future<?> f = exec.submit(new Runnable() {
+										Future<?> f = exec.submit(new Runnable() {
 
-										public void run() {
-											try {
-												update_articles_intersect(current_issue, encoding);
-												// sync_authors_intersect(issue_id,
-												// encoding, false);
+											public void run() {
+												try {
+													update_articles_intersect(current_issue, encoding);
+													// sync_authors_intersect(issue_id,
+													// encoding, false);
 
-											} catch (IllegalStateException | IOException e1) {
+												} catch (IllegalStateException | IOException e1) {
 
-												e1.printStackTrace();
+													e1.printStackTrace();
+												}
 											}
-										}
-									});
+										});
 
-									futures.add(f);
-								} else if (dialogResult == JOptionPane.YES_OPTION) {
-									System.out.println("update local");
-									Future<?> f = exec.submit(new Runnable() {
+										futures.add(f);
+									} else if (dialogResult == JOptionPane.YES_OPTION) {
+										System.out.println("update local");
+										Future<?> f = exec.submit(new Runnable() {
 
-										public void run() {
-											try {
-												update_articles_local_single_request(current_issue, encoding);
-												get_authors_remote_single_request(issue_id, encoding, false);
-											} catch (IllegalStateException | IOException e1) {
+											public void run() {
+												try {
+													update_articles_local_single_request(current_issue, encoding);
+													get_authors_remote_single_request(issue_id, encoding, false);
+												} catch (IllegalStateException | IOException e1) {
 
-												e1.printStackTrace();
+													e1.printStackTrace();
+												}
 											}
-										}
-									});
-									futures.add(f);
+										});
+										futures.add(f);
+									}
+
 								}
-
+								issues.repaint();
 							}
-							issues.repaint();
-
 							progress_executor.execute(new Runnable() {
 								public void run() {
 									synchronized (futures) {
@@ -2926,6 +2927,7 @@ public class Main {
 								}
 								Issue current_issue = issue_storage.get((long) selected_issue);
 								current_issue.setDeleted(true);
+								current_issue.setSync(true);
 								ConcurrentHashMap<Long, Article> articles = current_issue.getArticles_list();
 								Set<Long> art_keys = articles.keySet();
 								for (long art : art_keys) {
@@ -4183,7 +4185,7 @@ public class Main {
 					validation = false;
 				}
 				section.setTitle(title);
-				section.setAbstract_word_count((int)(double) txtAbstractCount.getValue());
+				section.setAbstract_word_count((int) (double) txtAbstractCount.getValue());
 				section.setSeq((Double) txtSeq.getValue());
 				section.setHide_about(hide_about.isSelected() == true ? 1 : 0);
 				section.setHide_author(hide_author.isSelected() == true ? 1 : 0);
@@ -8826,6 +8828,11 @@ public class Main {
 			issue_countdown_storage.put((long) issue.getId(), true);
 			return;
 		}
+		if (issue.shouldBeSynced() && issue.isDeleted()) {
+			delete_issue((long) issue.getId());
+			issue_countdown_storage.put((long) issue.getId(), true);
+			return;
+		}
 		JSONObject obj = IssueToJSON(issue);
 		try {
 			HttpGet issue_exists = new HttpGet(String.format("%s/issues/%s/", base_url, issue.getId()));
@@ -8890,6 +8897,10 @@ public class Main {
 			boolean exists = true;
 			if (response.getStatusLine().getStatusCode() != 200) {
 				exists = false;
+			}
+			if (exists && issue.isDeleted()) {
+				delete_issue((long)issue.getId());
+				return;
 			}
 			JSONObject setting_json = new JSONObject();
 			try {
@@ -9309,7 +9320,8 @@ public class Main {
 			update_issue_intersect(issue, credentials);
 		}
 		if (issue.isDeleted()) {
-			delete_issue(issue.getId());
+			delete_issue((long)issue.getId());
+			return;
 		} else {
 			ConcurrentHashMap<Long, Article> allarticles = issue.getArticles_list();
 			ConcurrentHashMap<Long, Article> articles = issue.getSyncArticles_list();
@@ -12116,7 +12128,7 @@ public class Main {
 
 	public static void delete_issue(long issue_id) throws IOException {
 		boolean status = status_online();
-
+		System.out.println("Deleting Issue: "+issue_id);
 		if (!status) {
 			return;
 		}
