@@ -2920,18 +2920,18 @@ public class Main {
 										art_window.dispose();
 									}
 								}
-								Issue current_issue = issue_storage.get((long)selected_issue);
+								Issue current_issue = issue_storage.get((long) selected_issue);
 								current_issue.setDeleted(true);
 								ConcurrentHashMap<Long, Article> articles = current_issue.getArticles_list();
 								Set<Long> art_keys = articles.keySet();
-								for (long art:art_keys){
-									Article current_article = articles.get((long)art);
+								for (long art : art_keys) {
+									Article current_article = articles.get((long) art);
 									current_article.setDeleted(true);
 									current_article.setSync(true);
-									articles.put((long)art, current_article);
+									articles.put((long) art, current_article);
 								}
 								current_issue.setArticles_list(articles);
-								issue_storage.put((long)selected_issue,current_issue);
+								issue_storage.put((long) selected_issue, current_issue);
 								article_screens.remove(selected_issue);
 								issue_screens.get(selected_issue).dispose();
 								System.out.println(issue_screens.get(selected_issue) == null);
@@ -5563,10 +5563,10 @@ public class Main {
 							long selected_article = (long) table.getModel()
 									.getValueAt(table.convertRowIndexToModel(article_row), 0);
 							Issue current_issue = issue_storage.get(issue_id);
-							Article current_article = current_issue.getArticles_list().get((long)selected_article);
+							Article current_article = current_issue.getArticles_list().get((long) selected_article);
 							current_article.setDeleted(true);
 							current_article.setSync(true);
-							current_issue.add_article((long)selected_article,current_article);
+							current_issue.add_article((long) selected_article, current_article);
 							issue_storage.put(issue_id, current_issue);
 							System.out.println("Article ID: " + selected_article + " "
 									+ article_screens.get(issue_id).containsKey(selected_article));
@@ -9299,111 +9299,114 @@ public class Main {
 		if (!issue_created) {
 			update_issue_intersect(issue, credentials);
 		}
+		if (issue.isDeleted()) {
+			delete_issue(issue.getId());
+		} else {
+			ConcurrentHashMap<Long, Article> allarticles = issue.getArticles_list();
+			ConcurrentHashMap<Long, Article> articles = issue.getSyncArticles_list();
 
-		ConcurrentHashMap<Long, Article> allarticles = issue.getArticles_list();
-		ConcurrentHashMap<Long, Article> articles = issue.getSyncArticles_list();
+			Set<Long> article_keys = articles.keySet();
 
-		Set<Long> article_keys = articles.keySet();
+			System.out.println("articles to sync : " + articles.size());
+			for (Long key : article_keys) {
+				Article current_article = articles.get(key);
 
-		System.out.println("articles to sync : " + articles.size());
-		for (Long key : article_keys) {
-			Article current_article = articles.get(key);
-
-			System.out.println("sync: " + current_article.shouldBeSynced());
-			if (current_article.shouldBeSynced()) {
-				if (current_article.isDeleted()) {
-					delete_article(current_article.getId());
-				} else {
-					try {
-						update_article_intersect_less_requests(current_article, credentials);
-						sync_authors_intersect_article(current_article, credentials, false);
-					} catch (Exception es) {
-
-						issue_countdown_storage.put((long) issue.getId(), true);
-						JOptionPane.showMessageDialog(null, "Lost connection to server.");
-
-						return;
-					}
-					current_article.setSync(false);
-					allarticles.replace((long) current_article.getId(), current_article);
-					article_storage.put((long) current_article.getId(), current_article);
-
-					ConcurrentHashMap<Long, ArticleFile> files = file_storage.get((long) current_article.getId());
-					// null
-					if (files != null) {
-						Set<Long> file_keys = files.keySet();
-						HttpGet article_files = new HttpGet(
-								String.format("%s/get/files/%s/?format=json", base_url, current_article.getId()));
-						// settingCheck.setEntity(new
-						// StringEntity(obj.toJSONString()));
-						article_files.addHeader("Authorization", "Basic " + credentials);
-						article_files.setHeader("Accept", "application/json");
-						article_files.addHeader("Content-type", "application/json");
-
-						response = null;
+				System.out.println("sync: " + current_article.shouldBeSynced());
+				if (current_article.shouldBeSynced()) {
+					if (current_article.isDeleted()) {
+						delete_article(current_article.getId());
+					} else {
 						try {
-							response = httpClient.execute(article_files);
-						} catch (ClientProtocolException e2) {
+							update_article_intersect_less_requests(current_article, credentials);
+							sync_authors_intersect_article(current_article, credentials, false);
+						} catch (Exception es) {
 
-							e2.printStackTrace();
-						} catch (IOException e2) {
+							issue_countdown_storage.put((long) issue.getId(), true);
+							JOptionPane.showMessageDialog(null, "Lost connection to server.");
 
-							e2.printStackTrace();
+							return;
 						}
-						new JsonFactory();
-						InputStream result = response.getEntity().getContent();
-						org.json.simple.parser.JSONParser jsonParser = new JSONParser();
+						current_article.setSync(false);
+						allarticles.replace((long) current_article.getId(), current_article);
+						article_storage.put((long) current_article.getId(), current_article);
 
-						new JSONObject();
+						ConcurrentHashMap<Long, ArticleFile> files = file_storage.get((long) current_article.getId());
+						// null
+						if (files != null) {
+							Set<Long> file_keys = files.keySet();
+							HttpGet article_files = new HttpGet(
+									String.format("%s/get/files/%s/?format=json", base_url, current_article.getId()));
+							// settingCheck.setEntity(new
+							// StringEntity(obj.toJSONString()));
+							article_files.addHeader("Authorization", "Basic " + credentials);
+							article_files.setHeader("Accept", "application/json");
+							article_files.addHeader("Content-type", "application/json");
 
-						JSONObject setting;
-						try {
-							setting = (JSONObject) jsonParser.parse(IOUtils.toString(result));
-
+							response = null;
 							try {
-								InputStream is = response.getEntity().getContent();
-								is.close();
-							} catch (IOException exc) {
+								response = httpClient.execute(article_files);
+							} catch (ClientProtocolException e2) {
 
-								exc.printStackTrace();
+								e2.printStackTrace();
+							} catch (IOException e2) {
+
+								e2.printStackTrace();
 							}
-							System.out.println(setting);
-							if (setting == null) {
-							} else {
-								String[] file_ids = null;
-								String ids = ((String) setting.get("files"));
-								if (ids.contains(",")) {
-									file_ids = ((String) setting.get("files")).split(",");
+							new JsonFactory();
+							InputStream result = response.getEntity().getContent();
+							org.json.simple.parser.JSONParser jsonParser = new JSONParser();
+
+							new JSONObject();
+
+							JSONObject setting;
+							try {
+								setting = (JSONObject) jsonParser.parse(IOUtils.toString(result));
+
+								try {
+									InputStream is = response.getEntity().getContent();
+									is.close();
+								} catch (IOException exc) {
+
+									exc.printStackTrace();
 								}
-								if (file_ids != null) {
-									for (String file_id : file_ids) {
-										if (!files.containsKey((long) Long.parseLong(file_id))) {
-											delete_file((long) Long.parseLong(file_id));
+								System.out.println(setting);
+								if (setting == null) {
+								} else {
+									String[] file_ids = null;
+									String ids = ((String) setting.get("files"));
+									if (ids.contains(",")) {
+										file_ids = ((String) setting.get("files")).split(",");
+									}
+									if (file_ids != null) {
+										for (String file_id : file_ids) {
+											if (!files.containsKey((long) Long.parseLong(file_id))) {
+												delete_file((long) Long.parseLong(file_id));
+											}
 										}
 									}
 								}
+							} catch (ParseException e) {
+
+								e.printStackTrace();
 							}
-						} catch (ParseException e) {
 
-							e.printStackTrace();
-						}
+							System.out.println("FILES TO UPLOAD: " + file_keys.size());
+							if (file_keys.size() > 0) {
+								for (long f_key : file_keys) {
 
-						System.out.println("FILES TO UPLOAD: " + file_keys.size());
-						if (file_keys.size() > 0) {
-							for (long f_key : file_keys) {
-
-								System.out.println("FILE TO UPLOAD: " + f_key);
-								ArticleFile current_file = files.get((long) f_key);
-								file_upload_intersect(current_article.getId(), current_file);
+									System.out.println("FILE TO UPLOAD: " + f_key);
+									ArticleFile current_file = files.get((long) f_key);
+									file_upload_intersect(current_article.getId(), current_file);
+								}
 							}
 						}
 					}
 				}
 			}
+			issue.setArticles_list(allarticles);
+			issue.setSync(false);
+			issue_storage.put((long) issue.getId(), issue);
 		}
-		issue.setArticles_list(allarticles);
-		issue.setSync(false);
-		issue_storage.put((long) issue.getId(), issue);
 		issue_countdown_storage.put((long) issue.getId(), true);
 		System.out.println("method - countdown: " + issue_countdown_storage.get((long) issue.getId()));
 
@@ -12090,15 +12093,16 @@ public class Main {
 			System.out.println(IOUtils.toString(result));
 		}
 		if (response.getStatusLine().getStatusCode() == 204) {
-			Article current_article = article_storage.get((long)article_id);
+			Article current_article = article_storage.get((long) article_id);
 			long issue_id = current_article.getIssue_fk().getId();
-			Issue current_issue = issue_storage.get((long)issue_id);
-			current_issue.remove_article((long)article_id);
-			issue_storage.put((long)issue_id,current_issue);
-			article_storage.remove((long)article_id);
-			
+			Issue current_issue = issue_storage.get((long) issue_id);
+			current_issue.remove_article((long) article_id);
+			issue_storage.put((long) issue_id, current_issue);
+			article_storage.remove((long) article_id);
+
 		}
 	}
+
 	public static void delete_issue(long issue_id) throws IOException {
 		boolean status = status_online();
 
@@ -12126,19 +12130,20 @@ public class Main {
 		if (response.getStatusLine().getStatusCode() != 204) {
 			InputStream result = response.getEntity().getContent();
 			System.out.println(IOUtils.toString(result));
-		} 
-		if (response.getStatusLine().getStatusCode() == 204){
-			Issue current_issue = issue_storage.get((long)issue_id);
-			ConcurrentHashMap<Long,Article> articles = current_issue.getArticles_list();
+		}
+		if (response.getStatusLine().getStatusCode() == 204) {
+			Issue current_issue = issue_storage.get((long) issue_id);
+			ConcurrentHashMap<Long, Article> articles = current_issue.getArticles_list();
 			Set<Long> art_keys = articles.keySet();
-			for (long key:art_keys){
-				if (article_storage.containsKey((long)key)){
-					article_storage.remove((long)key);
+			for (long key : art_keys) {
+				if (article_storage.containsKey((long) key)) {
+					article_storage.remove((long) key);
 				}
 			}
-			issue_storage.remove((long)issue_id);
+			issue_storage.remove((long) issue_id);
 		}
 	}
+
 	public static void file_download(long article_id, long file_id) throws IllegalStateException, IOException {
 		boolean status = status_online();
 
