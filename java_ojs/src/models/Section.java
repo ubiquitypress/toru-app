@@ -5,6 +5,7 @@ public class Section {
 	private String title;
 	private double seq=0.0;
 	private boolean sync=false;
+	private boolean deleted=false;
 	private int editor_restricted = 0;
 	private int meta_indexed = 0;
 	private int meta_reviewed = 0;
@@ -145,6 +146,14 @@ public class Section {
 				+ abstracts_not_required + ", hide_title=" + hide_title + ", hide_author=" + hide_author
 				+ ", hide_about=" + hide_about + ", disable_comments=" + disable_comments + ", abstract_word_count="
 				+ abstract_word_count + "]";
+	}
+
+	public boolean isDeleted() {
+		return deleted;
+	}
+
+	public void setDeleted(boolean deleted) {
+		this.deleted = deleted;
 	}
 
 }
