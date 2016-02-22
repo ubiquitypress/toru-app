@@ -5334,18 +5334,18 @@ public class Main {
 
 				JScrollPane scrollPane = new JScrollPane();
 				scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
-				scrollPane.setBounds(15, height / 16 * 7, width - 30, (height - 130) - (height / 16 * 7) - 10);
+				scrollPane.setBounds(15, height / 16 * 7-100, width - 30, (height - 30) - (height / 16 * 7) - 10);
 				unpublished_articles_screen.getContentPane().add(scrollPane);
 				// reference:
 				// https://svn.java.net/svn/swinglabs-demos~svn/trunk/src/java/org/jdesktop/demo/sample/
 				final JTextField filter = new JTextField("");
-				filter.setBounds(150, height / 16 * 7 - 27, 117, 25);
+				filter.setBounds(150, height / 16 * 7 - 127, 117, 25);
 
 				final JButton search = new JButton("Search");
 				final JButton clear = new JButton("Clear");
-				search.setBounds(268, height / 16 * 7 - 27, 90, 25);
+				search.setBounds(268, height / 16 * 7 - 127, 90, 25);
 
-				clear.setBounds(355, height / 16 * 7 - 27, 90, 25);
+				clear.setBounds(355, height / 16 * 7 - 127, 90, 25);
 				;
 				unpublished_articles_screen.getContentPane().add(filter);
 				unpublished_articles_screen.getContentPane().add(search);
@@ -5422,23 +5422,23 @@ public class Main {
 				new Timer(delay * 2, taskPerformer1).start();
 				new DefaultTableModel(rows, columnNames);
 				JPanel panelIssue = new JPanel();
-				panelIssue.setBounds(0, 0, 200, 80);
-				panelIssue.setPreferredSize(new Dimension(200, 80));
+				panelIssue.setBounds(0, 0, 280, 60);
+				panelIssue.setPreferredSize(new Dimension(280, 60));
 				panelIssue.setLayout(null);
 
 				JLabel title_move_to = new JLabel("Move to Issue:");
 				title_move_to.setBounds(0, 5, 100, 26);
-				final JComboBox<Long> lblIssueId = new JComboBox<Long>();
+				final JComboBox<String> lblIssueId = new JComboBox<String>();
 				Set<Long> issue_keys = issue_storage.keySet();
 				ArrayList<Issue> issue_list = new ArrayList<Issue>();
 				for (long key : issue_keys) {
-					lblIssueId.addItem(issue_storage.get(key).getId());
+					lblIssueId.addItem(String.format("Issue <%s> - Volume: %s Year: %s ",issue_storage.get(key).getId(),issue_storage.get(key).getVolume(),issue_storage.get(key).getYear()));
 					issue_list.add(issue_storage.get(key));
 				}
 
 				lblIssueId.setForeground(Color.BLACK);
 				lblIssueId.setFont(new Font("Dialog", Font.BOLD, 12));
-				lblIssueId.setBounds(0, 30, 185, 26);
+				lblIssueId.setBounds(0, 30, 280, 26);
 				panelIssue.add(title_move_to);
 				panelIssue.add(lblIssueId);
 				panelIssue.repaint();
@@ -5503,14 +5503,14 @@ public class Main {
 				JLabel lblArticles = new JLabel("Articles");
 				lblArticles.setBackground(new Color(128, 128, 128));
 				lblArticles.setFont(new Font("Dialog", Font.BOLD, 26));
-				lblArticles.setForeground(new Color(240, 255, 255));
-				lblArticles.setBounds(25, height / 16 * 7 - 32, 180, 30);
+				lblArticles.setForeground(new Color(255, 255, 255));
+				lblArticles.setBounds(25, height / 16 * 7 - 132, 180, 30);
 				lblArticles.setOpaque(true);
 				unpublished_articles_screen.getContentPane().add(lblArticles);
 
 				JLabel lblIssue = new JLabel("Unpublished Articles");
-				lblIssue.setBackground(new Color(0, 139, 139));
-				lblIssue.setForeground(new Color(240, 255, 255));
+				lblIssue.setBackground(new Color(155, 155, 155));
+				lblIssue.setForeground(new Color(255, 255, 255));
 				lblIssue.setFont(new Font("Dialog", Font.BOLD, 28));
 				lblIssue.setBounds(40, 60, 400, 30);
 				lblIssue.setOpaque(true);
@@ -5550,49 +5550,25 @@ public class Main {
 				lblUpdateDb.setBounds(26, height - 132, 70, 15);
 				unpublished_articles_screen.getContentPane().add(lblUpdateDb);
 				Panel footer_border = new Panel();
-				footer_border.setBackground(new Color(0, 139, 139));
+				footer_border.setBackground(new Color(205, 205, 205));
 				footer_border.setBounds(0, height - 74, width, 10);
 				unpublished_articles_screen.getContentPane().add(footer_border);
 
 				Panel footer = new Panel();
-				footer.setBackground(new Color(0, 128, 128));
+				footer.setBackground(new Color(180, 180, 180));
 				footer.setBounds(0, height - 74, width, 120);
 				unpublished_articles_screen.getContentPane().add(footer);
 
 				Panel panel = new Panel();
-				panel.setBackground(new Color(0, 139, 139));
+				panel.setBackground(new Color(155, 155, 155));
 				panel.setBounds(0, 55, width, 40);
 				unpublished_articles_screen.getContentPane().add(panel);
 
 				Panel panel_1 = new Panel();
-				panel_1.setBackground(new Color(47, 79, 79));
+				panel_1.setBackground(new Color(197, 197, 197));
 				panel_1.setBounds(0, 95, width, 5);
 				unpublished_articles_screen.getContentPane().add(panel_1);
 
-				JPanel panel3 = new JPanel();
-				panel3.setBackground(SystemColor.window);
-				panel3.setBounds(20, 108, width - 40, (height / 16) * 2);
-				unpublished_articles_screen.getContentPane().add(panel3);
-				panel3.setLayout(null);
-				panel3.setAutoscrolls(true);
-				panel3.setPreferredSize(new Dimension(width, height / 8));
-				JScrollPane abstractSection = new JScrollPane(panel3);
-				panel3.setAutoscrolls(true);
-				new Date();
-
-				abstractSection.setPreferredSize(new Dimension(320, 205));
-				// (int)((height/32)*5.5)
-				abstractSection.setBounds(20, height / 16 * 7 - 106, width - 40, 50);
-				// scrollSettings.setViewportView(scrollFrame);
-				unpublished_articles_screen.getContentPane().add(abstractSection);
-
-				JLabel lblIssueDetails = new JLabel("Details");
-				lblIssueDetails.setBackground(new Color(128, 128, 128));
-				lblIssueDetails.setFont(new Font("Dialog", Font.BOLD, 26));
-				lblIssueDetails.setForeground(new Color(240, 255, 255));
-				lblIssueDetails.setBounds((width - 95) / 2, 118, 125, 30);
-				lblIssueDetails.setOpaque(true);
-				unpublished_articles_screen.getContentPane().add(lblIssueDetails);
 				unpublished_articles_screen.setVisible(true);
 				unpublished_articles_screen.repaint();
 			}
