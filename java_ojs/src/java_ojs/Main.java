@@ -5476,7 +5476,8 @@ public class Main {
 								current_issue.add_article(current_article.getId(), current_article);
 								current_issue.setSync(true);
 								issue_storage.put((long) current_issue.getId(), current_issue);
-								unpublished_article_storage.remove(selected_article);
+								unpublished_article_storage.remove((long)selected_article);
+								article_storage.put((long)selected_article,current_article);
 
 								((DefaultTableModel) table.getModel())
 										.removeRow(table.convertColumnIndexToModel(article_row));
@@ -10285,7 +10286,7 @@ public class Main {
 									String ids = ((String) setting.get("files"));
 									if (ids.contains(",")) {
 										file_ids = ((String) setting.get("files")).split(",");
-									}else {
+									} else {
 
 										String one_id = (String) setting.get("files");
 										try {
@@ -10374,7 +10375,7 @@ public class Main {
 				System.out.println(setting);
 				if (ids.contains(",")) {
 					article_ids = ((String) setting.get("unpublished_articles")).split(",");
-				}else {
+				} else {
 
 					String one_id = (String) setting.get("unpublished_articles");
 					try {
@@ -10394,113 +10395,114 @@ public class Main {
 						System.out.println(article_storage.containsKey((long) Long.parseLong(id)));
 						if (unpublished_article_storage.containsKey((long) Long.parseLong(id))
 								|| article_storage.containsKey((long) Long.parseLong(id))) {
-
 							continue;
-						}
-						System.out.println("NEW ARTICLE");
-						return_articles.add(Long.parseLong(id));
-						System.out.println(id);
-						HttpGet single_article = new HttpGet(
-								String.format("%s/app/article-settings/%s/?format=json", base_url, id));
-						// settingCheck.setEntity(new
-						// StringEntity(obj.toJSONString()));
-						single_article.addHeader("Authorization", "Basic " + credentials);
-						single_article.setHeader("Accept", "application/json");
-						single_article.addHeader("Content-type", "application/json");
+						} else {
+							System.out.println("NEW ARTICLE");
+							return_articles.add(Long.parseLong(id));
+							System.out.println(id);
+							HttpGet single_article = new HttpGet(
+									String.format("%s/app/article-settings/%s/?format=json", base_url, id));
+							// settingCheck.setEntity(new
+							// StringEntity(obj.toJSONString()));
+							single_article.addHeader("Authorization", "Basic " + credentials);
+							single_article.setHeader("Accept", "application/json");
+							single_article.addHeader("Content-type", "application/json");
 
-						response = null;
+							response = null;
 
-						response = httpClient.execute(single_article);
-						if (response.getStatusLine().getStatusCode() == 200) {
-							result = response.getEntity().getContent();
+							response = httpClient.execute(single_article);
+							if (response.getStatusLine().getStatusCode() == 200) {
+								result = response.getEntity().getContent();
 
-							jsonParser = new JSONParser();
-							new JSONObject();
+								jsonParser = new JSONParser();
+								new JSONObject();
 
-							setting = (JSONObject) jsonParser.parse(IOUtils.toString(result));
-							System.out.println((JSONObject) setting.get("article"));
-							System.out.println((JSONArray) setting.get("settings"));
-							try {
-								InputStream is = response.getEntity().getContent();
-								is.close();
-							} catch (IOException exc) {
+								setting = (JSONObject) jsonParser.parse(IOUtils.toString(result));
+								System.out.println((JSONObject) setting.get("article"));
+								System.out.println((JSONArray) setting.get("settings"));
+								try {
+									InputStream is = response.getEntity().getContent();
+									is.close();
+								} catch (IOException exc) {
 
-								exc.printStackTrace();
-							}
-							JSONArray all_settings = (JSONArray) setting.get("settings");
+									exc.printStackTrace();
+								}
+								JSONArray all_settings = (JSONArray) setting.get("settings");
 
-							Article new_article = JSONToArticle_single_request((JSONObject) setting.get("article"));
-							System.out.println(all_settings.toJSONString());
-							String funding = null;
-							String ci = null;
-							for (Object set : all_settings.toArray()) {
-								JSONObject current_setting = (JSONObject) set;
-								System.out.println(current_setting);
+								Article new_article = JSONToArticle_single_request((JSONObject) setting.get("article"));
+								System.out.println(all_settings.toJSONString());
+								String funding = null;
+								String ci = null;
+								for (Object set : all_settings.toArray()) {
+									JSONObject current_setting = (JSONObject) set;
+									System.out.println(current_setting);
 
-								System.out.println("SETTING: " + current_setting.get("setting_name"));
-								switch ((String) current_setting.get("setting_name")) {
-								case "title":
-									new_article.setTitle((String) current_setting.get("setting_value"));
-									continue;
-								case "abstract":
-									String abstract_text = (String) current_setting.get("setting_value");
-									String new_abs = "";
-									if (abstract_text != null) {
-										if (abstract_text.compareTo("") != 0 || abstract_text.isEmpty() == true) {
-											String abs = Jsoup.parse((String) current_setting.get("setting_value"))
-													.text();
-											String[] words = abs.split(" ");
+									System.out.println("SETTING: " + current_setting.get("setting_name"));
+									switch ((String) current_setting.get("setting_name")) {
+									case "title":
+										new_article.setTitle((String) current_setting.get("setting_value"));
+										continue;
+									case "abstract":
+										String abstract_text = (String) current_setting.get("setting_value");
+										String new_abs = "";
+										if (abstract_text != null) {
+											if (abstract_text.compareTo("") != 0 || abstract_text.isEmpty() == true) {
+												String abs = Jsoup.parse((String) current_setting.get("setting_value"))
+														.text();
+												String[] words = abs.split(" ");
 
-											int j = 0;
-											for (String word : words) {
-												new_abs = new_abs + " " + word;
-												if (j % 8 == 0 && j != 0) {
-													new_abs = new_abs + "\r\n";
+												int j = 0;
+												for (String word : words) {
+													new_abs = new_abs + " " + word;
+													if (j % 8 == 0 && j != 0) {
+														new_abs = new_abs + "\r\n";
+													}
+													j++;
 												}
-												j++;
 											}
 										}
+										new_article.setAbstract_text(new_abs);
+										System.out.println("ABSTRACT--- " + new_abs);
+										System.out.println(abstract_text);
+										continue;
+									case "funding":
+										funding = (String) current_setting.get("setting_value");
+										continue;
+									case "competingInterests":
+										ci = (String) current_setting.get("setting_value");
+										continue;
+									case "pub-id::doi":
+										new_article.setDoi((String) current_setting.get("setting_value"));
+										continue;
+
+									default:
+
+										System.out.println("Invalid setting " + current_setting.get("setting_name"));
 									}
-									new_article.setAbstract_text(new_abs);
-									System.out.println("ABSTRACT--- " + new_abs);
-									System.out.println(abstract_text);
-									continue;
-								case "funding":
-									funding = (String) current_setting.get("setting_value");
-									continue;
-								case "competingInterests":
-									ci = (String) current_setting.get("setting_value");
-									continue;
-								case "pub-id::doi":
-									new_article.setDoi((String) current_setting.get("setting_value"));
-									continue;
 
-								default:
+								}
+								if (ci != null || funding != null) {
+									if (metadata_storage.containsKey((long) new_article.getId())) {
+										Metadata meta = metadata_storage.get((long) new_article.getId());
+										meta.setCompeting_interests(ci);
+										meta.setFunding(funding);
+										metadata_storage.put((long) new_article.getId(), meta);
+									} else {
+										metadata_id++;
+										Metadata meta = new Metadata(metadata_id, (long) new_article.getId(), ci,
+												funding);
+										metadata_storage.put((long) new_article.getId(), meta);
+									}
 
-									System.out.println("Invalid setting " + current_setting.get("setting_name"));
 								}
 
+								System.out.println(new_article);
+								article_author_storage.put((long)new_article.getId(), new ArrayList<Author>());
+								articles_list.add(new_article);
+
+								unpublished_article_storage.put((long)new_article.getId(), new_article);
+								author_primary_storage.put((long)new_article.getId(), new ConcurrentHashMap<Long, Boolean>());
 							}
-							if (ci != null || funding != null) {
-								if (metadata_storage.containsKey((long) new_article.getId())) {
-									Metadata meta = metadata_storage.get((long) new_article.getId());
-									meta.setCompeting_interests(ci);
-									meta.setFunding(funding);
-									metadata_storage.put((long) new_article.getId(), meta);
-								} else {
-									metadata_id++;
-									Metadata meta = new Metadata(metadata_id, (long) new_article.getId(), ci, funding);
-									metadata_storage.put((long) new_article.getId(), meta);
-								}
-
-							}
-
-							System.out.println(new_article);
-							article_author_storage.put(new_article.getId(), new ArrayList<Author>());
-							articles_list.add(new_article);
-
-							unpublished_article_storage.put(new_article.getId(), new_article);
-							author_primary_storage.put(new_article.getId(), new ConcurrentHashMap<Long, Boolean>());
 						}
 					}
 				}
@@ -10542,7 +10544,7 @@ public class Main {
 						String ids = ((String) setting.get("files"));
 						if (ids.contains(",")) {
 							file_ids = ((String) setting.get("files")).split(",");
-						}else {
+						} else {
 
 							String one_id = (String) setting.get("files");
 							try {
@@ -10650,7 +10652,7 @@ public class Main {
 				String ids = ((String) setting.get("articles"));
 				if (ids.contains(",")) {
 					article_ids = ((String) setting.get("articles")).split(",");
-				}else {
+				} else {
 
 					String one_id = (String) setting.get("articles");
 					try {
@@ -10925,7 +10927,7 @@ public class Main {
 						String ids = ((String) setting.get("files"));
 						if (ids.contains(",")) {
 							file_ids = ((String) setting.get("files")).split(",");
-						}else {
+						} else {
 
 							String one_id = (String) setting.get("files");
 							try {
@@ -11050,7 +11052,7 @@ public class Main {
 			String ids = ((String) issues_json.get("issues"));
 			if (ids.contains(",")) {
 				issue_ids = ((String) issues_json.get("issues")).split(",");
-			}else {
+			} else {
 
 				String one_id = (String) issues_json.get("issues");
 				try {
