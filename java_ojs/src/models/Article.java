@@ -22,6 +22,7 @@ public class Article {
 	private int fast_tracked;
 	private int hide_author;
 	private long published_pk;
+	private long unpublished_pk;
 	private int comments_status;
 	private Date date_submitted;
 	private Date date_accepted;
@@ -52,6 +53,8 @@ public class Article {
 		this.comments_status = 0;
 		this.date_submitted = date_submitted;
 		this.published_pk=-1;
+
+		this.unpublished_pk=-1;
 	}
 	public Article(long id, String title, long section_id, String pages, String abstract_text, Date date_submitted, Journal journal) {
 
@@ -74,6 +77,8 @@ public class Article {
 		this.comments_status = 0;
 		this.date_submitted = date_submitted;
 		this.published_pk=-1;
+
+		this.unpublished_pk=-1;
 	}
 
 	public long getId() {
@@ -246,6 +251,7 @@ public class Article {
 		this.issue_fk = issue_fk;
 		this.authors = authors;
 		this.published_pk=-1;
+		this.unpublished_pk=-1;
 	}
 	public Article(long id, long section_id, String pages, long user_id, String locale, String language,
 			int status, int submission_progress, int current_round, int fast_tracked, int hide_author,
@@ -266,6 +272,7 @@ public class Article {
 		this.issue_fk = issue_fk;
 		this.authors = new ArrayList<Author>();
 		this.published_pk=-1;
+		this.unpublished_pk=-1;
 	}
 	public Article(long id, long section_id, String pages, long user_id, String locale, String language,
 			int status, int submission_progress, int current_round, int fast_tracked, int hide_author,
@@ -285,6 +292,7 @@ public class Article {
 		this.comments_status = comments_status;
 		this.authors = new ArrayList<Author>();
 		this.published_pk=-1;
+		this.unpublished_pk=-1;
 	}
 	@Override
 	public String toString() {
@@ -322,6 +330,8 @@ public class Article {
 		this.issue_fk = issue_fk;
 		this.authors = authors;
 		this.published_pk=-1;
+
+		this.unpublished_pk=-1;
 	}
 	public long getPublished_pk() {
 		return published_pk;
@@ -340,6 +350,12 @@ public class Article {
 	}
 	public void setDeleted(boolean deleted) {
 		this.deleted = deleted;
+	}
+	public long getUnpublished_pk() {
+		return unpublished_pk;
+	}
+	public void setUnpublished_pk(long unpublished_pk) {
+		this.unpublished_pk = unpublished_pk;
 	}
 	
 	
