@@ -1478,6 +1478,7 @@ public class Main {
 				height_small = (int) (480 - (480 * (5 / 100)));
 
 				login = new JFrame();
+				login.setResizable(false);
 				login.setTitle("TORU - Log In");
 				login.addWindowListener(new WindowAdapter() {
 					@Override
@@ -1713,6 +1714,7 @@ public class Main {
 				int width_small = (int) (width - (width * (37.5 / 100)));
 				int height_small = (int) (height - (height * (5 / 100)));
 				settings = new JFrame();
+				settings.setResizable(false);
 				settings.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 				settings.getContentPane().setBackground(new Color(128, 128, 128));
 				settings.setTitle("Settings");
@@ -2002,6 +2004,7 @@ public class Main {
 
 					height_small = (int) (480 - (480 * (5 / 100)));
 					api = new JFrame();
+					api.setResizable(false);
 					api.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 					api.getContentPane().setBackground(new Color(128, 128, 128));
 					api.setTitle("API Information");
@@ -2170,6 +2173,7 @@ public class Main {
 
 					height_small = (int) (480 - (480 * (5 / 100)));
 					api = new JFrame();
+					api.setResizable(false);
 					api.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 					api.getContentPane().setBackground(new Color(128, 128, 128));
 					api.setTitle("API Information");
@@ -2329,6 +2333,7 @@ public class Main {
 				// show_volume,
 				// show_number, show_year, date_published]
 				issues = new JFrame();
+				issues.setResizable(false);
 				issues.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 				if (height >= 640 && width >= 900) {
 					issues.setSize(width, height);
@@ -3244,6 +3249,7 @@ public class Main {
 			}
 			height_small = (int) (680 - (680 * (5 / 100)));
 			final JFrame edit_issue = new JFrame();
+			edit_issue.setResizable(false);
 			issue_screens.put(i_id, edit_issue);
 			edit_issue.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 			edit_issue.getContentPane().setBackground(new Color(128, 128, 128));
@@ -3577,6 +3583,7 @@ public class Main {
 				}
 				height_small = (int) (680 - (680 * (5 / 100)));
 				final JFrame edit_issue = new JFrame();
+				edit_issue.setResizable(false);
 				issue_screens.put(issue_id, edit_issue);
 				edit_issue.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 				edit_issue.getContentPane().setBackground(new Color(128, 128, 128));
@@ -4369,6 +4376,7 @@ public class Main {
 
 				final JFrame section_screen = new JFrame();
 				section_screen.setVisible(true);
+				section_screen.setResizable(false);
 				section_screen.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 				width = 640;
 				height = 480;
@@ -5014,6 +5022,7 @@ public class Main {
 			if (unpublished_articles_screen == null || !unpublished_articles_screen.isVisible()) {
 
 				unpublished_articles_screen = new JFrame();
+				unpublished_articles_screen.setResizable(false);
 				unpublished_articles_screen.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 				if (height >= 640 && width >= 960) {
 					unpublished_articles_screen.setSize(width, height);
@@ -5583,6 +5592,7 @@ public class Main {
 			if (issue_screens.containsKey(issue_id) && !issue_screens.get(issue_id).isVisible()) {
 
 				final JFrame articles = new JFrame();
+				articles.setResizable(false);
 				articles.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 				if (height >= 640 && width >= 960) {
 					articles.setSize(width, height);
@@ -6541,6 +6551,7 @@ public class Main {
 					height_small = (int) (768 - (768 * (5 / 100)));
 				}
 				final JFrame article = new JFrame();
+				article.setResizable(false);
 				String setting_meta = list_settings.get("Metadata");
 				Metadata meta = null;
 				if (metadata_storage.containsKey(article_id)) {
@@ -7281,6 +7292,7 @@ public class Main {
 					height_small = (int) (768 - (768 * (5 / 100)));
 				}
 				final JFrame article = new JFrame();
+				article.setResizable(false);
 				Metadata meta = null;
 				if (metadata_storage.containsKey(article_id)) {
 					meta = metadata_storage.get(article_id);
@@ -8564,6 +8576,7 @@ public class Main {
 
 			long initial_file_num = file_id;
 			final JFrame article = new JFrame();
+			article.setResizable(false);
 			article.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 			// article.setSize(width_small, height_small);
 			article.setSize(width_small, height_small);
@@ -13248,6 +13261,7 @@ public class Main {
 	public void add_author() {
 
 		api = new JFrame();
+		api.setResizable(false);
 		api.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		api.getContentPane().setBackground(new Color(128, 128, 128));
 		api.setTitle("API Information");
