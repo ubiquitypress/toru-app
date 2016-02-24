@@ -3,18 +3,21 @@ package java_ojs;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.Graphics2D;
 import java.awt.HeadlessException;
 import java.awt.Insets;
 import java.awt.Label;
 import java.awt.Panel;
 import java.awt.SystemColor;
 import java.awt.Toolkit;
+import java.awt.color.ColorSpace;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -23,6 +26,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.ConnectException;
@@ -40,6 +44,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -51,6 +56,11 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
+import javax.imageio.IIOImage;
+import javax.imageio.ImageIO;
+import javax.imageio.ImageWriteParam;
+import javax.imageio.ImageWriter;
+import javax.imageio.stream.ImageOutputStream;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.DefaultListModel;
@@ -100,6 +110,7 @@ import javax.xml.validation.Validator;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.codec.binary.StringUtils;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpResponse;
@@ -7251,9 +7262,11 @@ public class Main {
 							String label_text = "";
 							String label_tooltip = "";
 							for (File f : files) {
-								if (Boolean.parseBoolean(list_settings.get("Validate XML (JATS)"))) {
-									String type = FilenameUtils.getExtension(f.getPath());
-									if (type.toLowerCase().compareTo("xml") == 0) {
+								String type = FilenameUtils.getExtension(f.getPath());
+								if (type.toLowerCase().compareTo("xml") == 0) {
+									if (list_settings.containsKey("Validate XML (JATS)")
+											&& Boolean.parseBoolean(list_settings.get("Validate XML (JATS)"))) {
+
 										try {
 											boolean valid = false;
 											valid = validate_xml(f);
@@ -7281,6 +7294,21 @@ public class Main {
 									} else {
 										uploaded_files.add(f);
 										label_text = label_text + f.getName() + "\n";
+									}
+								} else if (type.toLowerCase().compareTo("png") == 0
+										|| type.toLowerCase().compareTo("jpg") == 0
+										|| type.toLowerCase().compareTo("jpeg") == 0) {
+									if (list_settings.containsKey("Optimize Images")
+											&& Boolean.parseBoolean(list_settings.get("Optimize Images"))) {
+										try {
+											uploaded_files.add(optimize_image(f));
+
+											label_text = label_text + f.getName() + "\n";
+										} catch (IOException e1) {
+											uploaded_files.add(f);
+											label_text = label_text + f.getName() + "\n";
+
+										}
 									}
 								} else {
 									uploaded_files.add(f);
@@ -7327,6 +7355,59 @@ public class Main {
 			login("dashboard");
 		}
 	}
+	// reference:
+	// http://www.tutorialspoint.com/java_dip/image_compression_technique.htm
+
+	public File optimize_image(File f) throws IOException {
+		BufferedImage image = ImageIO.read(f);
+		File compressed = null;
+		String filename = f.getPath().toString().substring(f.getPath().toString().lastIndexOf("/") + 1);
+		String type = filename.substring(filename.lastIndexOf(".") + 1);
+
+		File directory = new File(String.format("src/lib/images/"));
+		directory.mkdirs();
+		if (type.compareTo("jpg") == 0 || type.compareTo("jpeg") == 0) {
+			compressed = new File(String.format("src/lib/images/%s", filename));
+			OutputStream os = new FileOutputStream(compressed);
+			System.out.println(filename.substring(filename.lastIndexOf(".") + 1));
+			Iterator<ImageWriter> writers = ImageIO.getImageWritersByFormatName("jpg");
+			ImageWriter writer = (ImageWriter) writers.next();
+
+			ImageOutputStream ios = ImageIO.createImageOutputStream(os);
+			writer.setOutput(ios);
+
+			ImageWriteParam param = writer.getDefaultWriteParam();
+
+			param.setCompressionMode(ImageWriteParam.MODE_EXPLICIT);
+			param.setCompressionQuality(0.7f);
+			writer.write(null, new IIOImage(image, null, null), param);
+
+			os.close();
+			ios.close();
+			writer.dispose();
+		} else if (type.compareTo("png") == 0) {
+			//source: http://www.mkyong.com/java/convert-png-to-jpeg-image-file-in-java/ 
+			// read image file
+			BufferedImage bufferedImage = ImageIO.read(f);
+
+			// create a blank, RGB, same width and height, and a white
+			// background
+			BufferedImage newBufferedImage = new BufferedImage(bufferedImage.getWidth(), bufferedImage.getHeight(),
+					BufferedImage.TYPE_INT_RGB);
+			newBufferedImage.createGraphics().drawImage(bufferedImage, 0, 0, Color.WHITE, null);
+			compressed = new File(
+					String.format("src/lib/images/%s.jpg", filename.substring(0, filename.lastIndexOf('.'))));
+
+			// write to jpeg file
+			ImageIO.write(newBufferedImage, "jpg", compressed);
+
+		}
+		if (compressed == null) {
+			return f;
+		}
+		return compressed;
+
+	}
 
 	public boolean validate_xml(File f) throws IOException, ParserConfigurationException, org.xml.sax.SAXException {
 		boolean validation = false;
@@ -7336,39 +7417,38 @@ public class Main {
 
 			// create a SchemaFactory capable of understanding WXS schemas
 			SchemaFactory factory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
-			
+
 			File schema_file = new File("src/lib/xml/JATS-journalpublishing1.xsd");
 			// load a WXS schema, represented by a Schema instance
 			Source schemaFile = new StreamSource(schema_file);
 			Schema schema = factory.newSchema(schemaFile);
-			
+
 			// create a Validator instance, which can be used to validate an
 			// instance document
 			Validator validator = schema.newValidator();
-			
+
 			String filename = f.getPath().toString().substring(f.getPath().toString().lastIndexOf("/") + 1);
 			System.out.print(String.format("src/lib/xml/%s", filename));
 			File dir = new File(String.format("src/lib/xml/"));
+			dir.mkdirs();
 			Files.copy(Paths.get(f.getPath().toString()), Paths.get(String.format("src/lib/xml/%s", filename)),
 					StandardCopyOption.REPLACE_EXISTING);
 			File temp = new File(String.format("src/lib/xml/%s", filename));
 			Document document = parser.parse(temp);
 
 			try {
-				validator.validate(new StreamSource(new File(temp.getPath()
-						)));
+				validator.validate(new StreamSource(new File(temp.getPath())));
 				validation = true;
 			} catch (org.xml.sax.SAXException e) {
 				// instance document is invalid!
-				//e.printStackTrace();
-				JOptionPane.showMessageDialog(null,
-						String.format("XML error: %s",e.getMessage()));
+				// e.printStackTrace();
+				JOptionPane.showMessageDialog(null, String.format("XML error: %s", e.getMessage()));
 				validation = false;
 			}
 			temp.delete();
 		} catch (FileNotFoundException e) {
-			JOptionPane.showMessageDialog(null,"File not found");
-	
+			JOptionPane.showMessageDialog(null, "File not found");
+
 			validation = false;
 		}
 
@@ -8553,9 +8633,11 @@ public class Main {
 							label_text = label_text + lblFile.getText() + "----Not Uploaded-----[\n";
 							String label_tooltip = "";
 							for (File f : files) {
-								if (Boolean.parseBoolean(list_settings.get("Validate XML (JATS)"))) {
-									String type = FilenameUtils.getExtension(f.getPath());
-									if (type.toLowerCase().compareTo("xml") == 0) {
+								String type = FilenameUtils.getExtension(f.getPath());
+								if (type.toLowerCase().compareTo("xml") == 0) {
+									if (list_settings.containsKey("Validate XML (JATS)")
+											&& Boolean.parseBoolean(list_settings.get("Validate XML (JATS)"))) {
+
 										try {
 											boolean valid = false;
 											valid = validate_xml(f);
@@ -8583,6 +8665,21 @@ public class Main {
 									} else {
 										uploaded_files.add(f);
 										label_text = label_text + f.getName() + "\n";
+									}
+								} else if (type.toLowerCase().compareTo("png") == 0
+										|| type.toLowerCase().compareTo("jpg") == 0
+										|| type.toLowerCase().compareTo("jpeg") == 0) {
+									if (list_settings.containsKey("Optimize Images")
+											&& Boolean.parseBoolean(list_settings.get("Optimize Images"))) {
+										try {
+											uploaded_files.add(optimize_image(f));
+
+											label_text = label_text + f.getName() + "\n";
+										} catch (IOException e1) {
+											uploaded_files.add(f);
+											label_text = label_text + f.getName() + "\n";
+
+										}
 									}
 								} else {
 									uploaded_files.add(f);
@@ -8783,9 +8880,19 @@ public class Main {
 							}
 							File folder = new File(String.format("src/files/%d/", current_id));
 							folder.delete();
+							
 							file_storage.remove(current_id);
 						}
 					}
+					File folder = new File(String.format("src/lib/images/"));
+					folder.delete();
+					try {
+						FileUtils.deleteDirectory(folder);
+					} catch (IOException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
+					System.out.println("deleted files");
 					// database_save();
 					if (issue_screens.get(issue_id) == null) {
 						article.dispose();
@@ -9570,9 +9677,11 @@ public class Main {
 						label_text = label_text + lblFile.getText() + "----Not Uploaded-----[\n";
 						String label_tooltip = "";
 						for (File f : files) {
-							if (Boolean.parseBoolean(list_settings.get("Validate XML (JATS)"))) {
-								String type = FilenameUtils.getExtension(f.getPath());
-								if (type.toLowerCase().compareTo("xml") == 0) {
+							String type = FilenameUtils.getExtension(f.getPath());
+							if (type.toLowerCase().compareTo("xml") == 0) {
+								if (list_settings.containsKey("Validate XML (JATS)")
+										&& Boolean.parseBoolean(list_settings.get("Validate XML (JATS)"))) {
+
 									try {
 										boolean valid = false;
 										valid = validate_xml(f);
@@ -9600,6 +9709,21 @@ public class Main {
 								} else {
 									uploaded_files.add(f);
 									label_text = label_text + f.getName() + "\n";
+								}
+							} else if (type.toLowerCase().compareTo("png") == 0
+									|| type.toLowerCase().compareTo("jpg") == 0
+									|| type.toLowerCase().compareTo("jpeg") == 0) {
+								if (list_settings.containsKey("Optimize Images")
+										&& Boolean.parseBoolean(list_settings.get("Optimize Images"))) {
+									try {
+										uploaded_files.add(optimize_image(f));
+
+										label_text = label_text + f.getName() + "\n";
+									} catch (IOException e1) {
+										uploaded_files.add(f);
+										label_text = label_text + f.getName() + "\n";
+
+									}
 								}
 							} else {
 								uploaded_files.add(f);
@@ -9656,9 +9780,19 @@ public class Main {
 							}
 							File folder = new File(String.format("src/files/%d/", current_id));
 							folder.delete();
+							
 							file_storage.remove(current_id);
 						}
 					}
+					File folder = new File(String.format("src/lib/images/"));
+					folder.delete();
+					try {
+						FileUtils.deleteDirectory(folder);
+					} catch (IOException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
+					System.out.println("deleted files");
 					select.setEnabled(true);
 					upload.setEnabled(false);
 					btnClear.setEnabled(false);
@@ -9687,10 +9821,20 @@ public class Main {
 							}
 							File folder = new File(String.format("src/files/%d/", current_id));
 							folder.delete();
+							
 							file_storage.remove(current_id);
 							metadata_storage.remove(current_id);
 						}
 					}
+					File folder = new File(String.format("src/lib/images/"));
+					folder.delete();
+					try {
+						FileUtils.deleteDirectory(folder);
+					} catch (IOException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
+					System.out.println("deleted files");
 					issue(issue_id);
 					// database_save();
 				}
@@ -9709,10 +9853,19 @@ public class Main {
 						metadata_storage.remove(current_id);
 						File folder = new File(String.format("src/files/%d/", current_id));
 						folder.delete();
+					
 						metadata_storage.remove(current_id);
 						file_storage.remove(current_id);
 					}
-
+					File folder = new File(String.format("src/lib/images/"));
+					folder.delete();
+					try {
+						FileUtils.deleteDirectory(folder);
+					} catch (IOException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
+					System.out.println("deleted files");
 					issue(issue_id);
 					// database_save();
 				}
@@ -13953,6 +14106,15 @@ public class Main {
 		System.out.println("ioannis:root".hashCode());
 		database_setup();
 		populate_variables();
+		File folder = new File(String.format("src/lib/images/"));
+		folder.delete();
+		try {
+			FileUtils.deleteDirectory(folder);
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		System.out.println("deleted files");
 		// update_get_issues_from_remote(encoding, false);
 		// update_articles_intersect(issue_storage.get((long) 5),encoding);
 		// get_issue_from_remote(encoding, (long) 5, false);
