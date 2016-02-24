@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- ============================================================= -->
 <!-- MODULE:    Common (Shared) Elements Module -->
-<!-- VERSION:   ANSI/NISO JATS Version 1.0 (Z39.96-2012) -->
-<!-- DATE:      March 2012 -->
+<!-- VERSION:   ANSI/NISO JATS Version 1.1 (Z39.96-2015) -->
+<!-- DATE:      December 2015 -->
 <!---->
 <!-- ============================================================= -->
 <!-- ============================================================= -->
 <!-- PUBLIC DOCUMENT TYPE DEFINITION -->
 <!-- TYPICAL INVOCATION -->
 <!--
-  "-//NLM//DTD JATS (Z39.96) JATS DTD Suite Common (Shared) Elements Module v1.0 20120330//EN"
+  "-//NLM//DTD JATS (Z39.96) JATS DTD Suite Common (Shared) Elements Module v1.1 20151215//EN"
   Delivered as file "JATS-common1.ent"
 -->
 <!-- ============================================================= -->
@@ -105,21 +105,204 @@
 <!-- DTD VERSION/CHANGE HISTORY -->
 <!-- ============================================================= -->
 <!--
-  
   Version  Reason/Occasion                   (who) vx.x (yyyy-mm-dd)
+       =============================================================
+       JATS Version 1.1                (DAL/BTU) v1.1  (2015-12-15)
+  
+       JATS is a continuing maintenance NISO Standard, which
+       requires voting by the ANSI and NISO memberships to be changed. 
+       JATS 1.1 was approved in late 2015, so the formal public 
+       identifiers were changed in the modules and the catalogs.
+       No model or attribute changes were made at this time. 
+  
+   51. JATS became version "1.1" and "v1.1 20151215"
+  
+       =============================================================
+       JATS Version 1.1d3             (DAL/BTU) v1.1d3  (2015-03-01)
+  
+       The changes in this release are in response to NISO 
+       License and Indicators Recommended Practice.
+  
+       NISO JATS is a continuing maintenance NISO Standard, which 
+       requires voting by the NISO membership to be changed. This
+       Committee Draft 1.1d3 will be sent to the NISO voting
+       membership, to become (if approved) NISO JATS 1.1.
+  
+       This draft DTD represents an interim version of the
+       non-normative JATS DTD Suite, as an indication to JATS users
+       the decisions that have been made by the JATS Standing
+       Committee.
+  
+   50. ALI (NISO Access and License Indicators)
+       - Added <ali:license_ref> to license-p.class, as 
+         alternatives inside <license>
+       - Use the new class: license.class to hold the new ALI
+         element <ali:free_to_read>, as an alternative to
+         <license> inside <permissions>.
+       - Created new parameter entity 'anyURI' to act as 
+         documentation concerning the content of any element whose
+         content is intended to be a URI.  
+  
+   49. JATS became version "1.1d3" and "v1.1d3 20150301"
+  
+       =============================================================
+       JATS Version 1.1d2              (DAL/BTU) v1.1d2 (2014-09-30)
+  
+       NISO JATS is a continuing maintenance NISO Standard, which 
+       requires voting by the NISO membership to be changed. This
+       Committee Draft 1.1d2 will be sent to the NISO voting
+       membership, to become (if approved) NISO JATS 1.1.
+  
+       This catalog represents an interim version of the
+       non-normative JATS DTD Suite, as an indication to JATS users
+       the decisions that have been made by the JATS Standing
+  
+   48. VOLUME ISSUE GROUPING
+     - Added new optional element <volume-issue-group> inside 
+       <article-meta), following all volume and issue elements,
+       to hold volume-issue pairs (or n-tuples) when a second
+       and subsequent <volume> has its own related issue
+       information.
+  
+   47. NEW ATTRIBUTE VALUES FOR @PUB-ID-TYPE
+       Added three new values to @pub-id-types:
+        - accession
+        - arc
+        - handle
+  
+   46. NEW ATTRIBUTE FOR EXT-LINK
+       Added the CDATA attribute @assigning-authority to <ext-link>
+       to the authority (such as CrossRef) responsible for the
+       link
+  
+   45. NEW ATTRIBUTE FOR CONTRIB-ID
+       Added the boolean attribute @authenticated to <contrib-id> to 
+       record whether the agency that assigned the <contrib-id>
+       says the identifier is authenticated. The default value
+       is "false"
+  
+   44. MORE LINKING POSSIBILITIES
+       Added the might-link-atts to:
+        - volume-id
+        - issue-id
+       so that these potentially external identifiers can link,
+       for example to a DOI.
+  
+   43. JATS became version "1.1d2" and "v1.1d2 20140930//EN"
+  
+   42. NEW ADDRESS ELEMENTS
+        - Added 3 new elements: <city>, <state>, <postal-code>
+        - Therefore introduced new PEs: city-element, state-elements,
+          and postal-code-elements, all set initially to null strings.
+        - Therefore introduced new PEs: city-atts, state-atts,
+          and postal-code-atts.
+        - Added the elements (in the default classes module) to:
+            - address.class
+            - addrress-line.class
+          which adds then to: address, addr-line, aff, collab, 
+          conf-loc, corresp, publisher-loc
+  
+   41. CHANGES TO <collab>
+       Added @symbol attribute.
+  
+       =============================================================
+       NISO JATS Version 1.1d1           (DAL/BTU) v1.1 (2013-11-15)
+  
+       ANSI/NISO Z39.96-2012 (pre-release for V1.0 BITS; Version 1.1d1) 
+  
+       NISO JATS Standing Committee met and answered the requests and
+       suggestions from the NISO request forms.
+  
+       Details concerning ANSI/NISO Z39.96-2012 JATS-based DTDs,  
+       XSDs, RNGs and supporting documentation are available at
+             http://jats.nlm.nih.gov/1.0/
+  
+   40. CHANGES TO <on-behalf-of>
+       Added <institution>, <institution-wrap>, and <xref>
+  
+   39. NEW <contrib> ATTRIBUTE
+       Added @xml:lang as requested with <institution-id>
+  
+   38. NEW <era> ELEMENT
+       Added <era> through date-parts.class to:
+        - <string-date>
+  
+   37. NEW ELEMENT <era>
+       Added to the model of <date>, optional following year,
+       through date-model.
+  
+   36. XML Base
+       Added the attribute @xml:base to the Global (common)
+       attributes used on all elements.
+  
+   35. INSTITUTION WRAP ADDED
+       Added the elements <institution-wrap> to the following elements
+       through the institution-wrap.class:
+        - <copyright-holder>
+        - <on-behalf-of>
+        - <publisher-name>
+        - <std-organization>
+  
+   34. GLOBAL ATTRIBUTES - Added the new parameter entity 
+           %jats-common-atts;
+       to every element in this module. This PE adds (for now) the
+       @id attribute and the @xml:base attribute to every element,
+       whether metadata or narrative.
+       Since the @id in this parameter entity is optional, a second
+       parameter entity jats-common-atts-id-required was also added.
+       The two are kept in sync with the jats-base-atts parameter 
+       entity.
+       This added a new attribute list to:
+        - aff-alternatives
+        - alternatives
+        - citation-alternatives
+        - collab-alternatives
+        - custom-meta-group
+        - institution-wrap
+        - meta-name
+        - meta-value
+        - name-alternatives
+        - permissions                          
+  
+   33. INSTITUTIONAL IDENTIFIERS
+       - Added <institution-id> to hold institutional identifiers
+         whether publisher specific ("AIP") or from an established 
+         authorities ("Ringgold" and "ISNI").
+  
+       - Added <institution-wrap> to hold both the name of an
+         institution <institution> and all of its institutional 
+         identifiers <institution-id>. This element will be allowed
+         everywhere institution is allowed.
+  
+  
+   32. ABSTRACTS AND KEYWORDS ON NEW STRUCTURES
+       - Added <abstract> (through %abstract.class;) and <kwd-group> 
+         (through %kwd-group.class;) to the following elements:
+          - sec-meta (through %sec-meta-model;)
+  
+   31. ATTRIBUTE ALIGNMENT
+       - Added @publication-format and @content-type to <issn>
+         through %issn-atts The idea is to make the attributes
+         for <issn> and <isbn> as similar as possible.
+  
+       - Added @publication-format to <isbn> through %isbn-atts 
+  
+       The idea is to make the attributes for <issn> and <isbn> as 
+       similar as possible. <issn> retains @pub-type for historical
+       reasons. <issn-l> attributes do not change.
   
        =============================================================
        NISO JATS Version 1.0             (DAL/BTU) v1.0 (2012-xx-xx)
   
        ANSI/NISO Z39.96-2012 (Version 1.0) 
   
-       Details concerning ANSI/NISO Z39.96-2012 JATS-based DTDs, XSDs, 
-       RNGs and supporting documentation are available at
+       Details concerning ANSI/NISO Z39.96-2012 JATS-based DTDs,  
+       XSDs, RNGs and supporting documentation are available at
              http://jats.nlm.nih.gov/1.0/
   
    30. CONTRIB-GROUP AND CONTRIB MODULE SHIFT - Moved <contrib>
        and <contrib-group> to common.ent from the module
-       article-meta.ent, since they are now used
+       articlemeta.ent, since they are now used
        in both article metadata and journal metadata.
   
    29. CONTRIB ID - Added new element <contrib-id> using new PE 
@@ -169,25 +352,25 @@
        to handle both.
   
    25. ISSN Linking - Added new element <issn-l> with the usual
-       %issn-elements; and %issn-l-atts;.
+       %issn-l-elements; and %issn-l-atts;.
   
    24. MODULE MOVEMENT (from increased reference content)
   
        a) Element <degrees> - Moved <degrees> and its parameter
-          entities into this module from JATS-article-meta.ent.
+          entities into this module from JATS-articlemeta.ent.
   
        b) Element <supplement> - Moved <supplement> and its parameter
-          entities into this module from JATS-article-meta.ent.
+          entities into this module from JATS-articlemeta.ent.
   
        c) Element <conf-sponsor> - Moved <conf-sponsor> and its parameter
-          entities into this module from JATS-article-meta.ent.
+          entities into this module from JATS-articlemeta.ent.
   
        d) Element <on-behalf-of> - Moved <on-behalf-of> and its parameter
-          entities into this module from JATS-article-meta.ent.
+          entities into this module from JATS-articlemeta.ent.
   
    23. Element <license-p> - Added @content-type, which can hold
        values such as "open-access", "CCC-statement",
-       "non-commerical-use".
+       "non-commercial-use".
   
    22. Updated the DTD-version attribute to "1.0" and the formal
        public identifier to the date: "v1.0 20120330//EN".
@@ -253,7 +436,7 @@
          - textual-form through textual-form-atts (both)
          - trans-subtitle through trans-subtitle-atts
             (@xml:lang only) NEW PE
-         - x-name through x-name-atts (both)
+         - x through x-atts (both)
   
    13. AFFILIATION ALTERNATIVES - Created new the element
        <aff-alternatives> to hold multiple <aff>s that are
@@ -287,7 +470,7 @@
        repeat (as an unnamed-parenthetical) inside <publisher>.
        This will allow co-publishers and publisher names and locations
        in more than one language. Added to facilitate multiple
-       languages. Also added @specific-use and @xml-lang to
+       languages. Also added @specific-use and @xml:lang to
        both publisher-name and publisher-loc.
   
     8. ATTLIST PARAMETER ENTITIES - Changed the attribute lists
@@ -319,7 +502,7 @@
          - @xml:lang
   
     3. PERSON'S NAME STYLE
-         - Added the value "given-only" to the @namestyle on <name>
+         - Added the value "given-only" to the @name-style on <name>
   
     2. PERSON'S NAME - Allowed <given-names> as an alternative
        to <surname, given-names?) to accommodate the Indian
@@ -341,32 +524,56 @@
     1. Updated public identifier to "v3.0 20080202//EN"
 -->
 <!-- ============================================================= -->
-<!-- PARAMETER ENTITIES FOR ATTRIBUTE VALUES -->
-<!-- ============================================================= -->
-<!-- ARTICLE/PUBLICATION IDENTIFIER TYPES -->
 <!--
-  Values for the @pub-id attribute. Used:
-  1) Within citations with the <pub-id> and 
-  <object-id> elements to name the type of
-  identifier (such as DOI) or the organization 
-  or system that defined the identifier for the 
-  identifier of the journal article or a cited 
-  publication, such as a book or standard.
-  2) Within article metadata with the
-  <article-id>, <issue-id>, and <volume-id>
-  elements to name the type of identifier or 
-  identifying agency.
-  4) Within many body elements to perform a 
-  similar function for the <object-id> element.
+  Details concerning 
+  ANSI/NISO Z39.96-2015 JATS-based DTDs, XSDs, 
+  RNGs and supporting documentation are available at
+        http://jats.nlm.nih.gov/1.1/
 -->
-<grammar xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0" xmlns="http://relaxng.org/ns/structure/1.0" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
+<!-- ============================================================= -->
+<!-- PARAMETER ENTITIES FOR CONTENT MODELS -->
+<!-- ============================================================= -->
+<!-- ANY URI SCHEMA TYPE (as documentation) -->
+<!--
+  Indicates that in an XSD or RNG Schema, this
+  element would be typed as the simple type
+  'anyURI". This has no enforcement power in a 
+  DTD, it is intended for human guidance.
+  but is only for human guidance in a DTD
+-->
+<grammar xmlns:ali="http://www.niso.org/schemas/ali/1.0/" xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0" xmlns="http://relaxng.org/ns/structure/1.0" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
+  <define name="anyURI">
+    <text/>
+  </define>
+  <!-- ============================================================= -->
+  <!-- PARAMETER ENTITIES FOR ATTRIBUTE VALUES -->
+  <!-- ============================================================= -->
+  <!-- ARTICLE/PUBLICATION IDENTIFIER TYPES -->
+  <!--
+    Values for the @pub-id attribute. Used:
+    1) Within citations with the <pub-id> and 
+    <object-id> elements to name the type of
+    identifier (such as DOI) or the organization 
+    or system that defined the identifier for the 
+    identifier of the journal article or a cited 
+    publication, such as a book or standard.
+    2) Within article metadata with the
+    <article-id>, <issue-id>, and <volume-id>
+    elements to name the type of identifier or 
+    identifying agency.
+    4) Within many body elements to perform a 
+    similar function for the <object-id> element.
+  -->
   <define name="pub-id-types">
     <choice>
+      <value>accession</value>
+      <value>ark</value>
       <value>art-access-id</value>
       <value>arxiv</value>
       <value>coden</value>
       <value>doaj</value>
       <value>doi</value>
+      <value>handle</value>
       <value>isbn</value>
       <value>manuscript</value>
       <value>medline</value>
@@ -408,7 +615,10 @@
       <ref name="contrib-group.class"/>
     </zeroOrMore>
     <zeroOrMore>
-      <ref name="kwd-group"/>
+      <ref name="abstract.class"/>
+    </zeroOrMore>
+    <zeroOrMore>
+      <ref name="kwd-group.class"/>
     </zeroOrMore>
     <optional>
       <ref name="permissions"/>
@@ -554,6 +764,44 @@
   <!-- PARAMETER ENTITIES FOR LINKING ATTRIBUTES -->
   <!-- THE FOLLOWING FEW ARE SHARED ATTRIBUTES -->
   <!-- ============================================================= -->
+  <!-- COMMON ATTRIBUTES -->
+  <!--
+    These lists of attributes will be added to 
+    nearly every element, in both the document 
+    metadata and the document body, of the entire 
+    Tag Set:
+      - including table elements for both the 
+          XHTML-inspired and OASIS-inspired
+          table model elements
+      - excluding only <mml:math> and 
+          <xi:include> (whose namespaces JATS
+          does not control).
+       Great care should be taken to use these
+    attributes judiciously, not as a shortcut to
+    thinking through where an attribute should be
+    used. Potential use cases include adding
+    @xml:lang or some RDFa attribute to every 
+    elements.
+  -->
+  <!-- BASE ATTRIBUTES -->
+  <!--
+    Holds all the common attributes except @id.
+    Used to keep the two common attribute lists 
+    in sync. To add a global attribute, modify
+    this list.
+  -->
+  <!-- JATS COMMON ATTRIBUTES -->
+  <!--
+    Holds all the common attributes, as defined in
+    the base attribute parameter entity, plus an
+    optional @id.
+  -->
+  <!-- JATS COMMON ATTRIBUTES (ID REQUIRED) -->
+  <!--
+    Holds all the common attributes, as defined in
+    the base attribute parameter entity, plus a 
+    required @id.
+  -->
   <!-- XLINK LINK ATTRIBUTES -->
   <!--
     Used for elements that are a link by
@@ -570,15 +818,11 @@
   -->
   <!-- CITATION ATTRIBUTES -->
   <!--
-    Attributes for all three kinds of citations:
+    Attributes for all two kinds of citations:
     <element-citation> and <mixed-citation>
   -->
   <define name="citation-atts">
-    <optional>
-      <attribute name="id">
-        <data type="ID"/>
-      </attribute>
-    </optional>
+    <ref name="jats-common-atts"/>
     <optional>
       <attribute name="publication-type"/>
     </optional>
@@ -605,11 +849,7 @@
   <!-- AFFILIATION ATTRIBUTES -->
   <!-- Attributes for the <ack> element -->
   <define name="ack-atts">
-    <optional>
-      <attribute name="id">
-        <data type="ID"/>
-      </attribute>
-    </optional>
+    <ref name="jats-common-atts"/>
     <optional>
       <attribute name="specific-use"/>
     </optional>
@@ -625,11 +865,7 @@
   <!-- ADDRESS ATTRIBUTES -->
   <!-- Attributes for the <address> element -->
   <define name="address-atts">
-    <optional>
-      <attribute name="id">
-        <data type="ID"/>
-      </attribute>
-    </optional>
+    <ref name="jats-common-atts"/>
     <optional>
       <attribute name="content-type"/>
     </optional>
@@ -645,6 +881,7 @@
   <!-- ADDRESS LINE ATTRIBUTES -->
   <!-- Attributes for the <addr-line> element -->
   <define name="addr-line-atts">
+    <ref name="jats-common-atts"/>
     <optional>
       <attribute name="content-type"/>
     </optional>
@@ -663,11 +900,7 @@
     element
   -->
   <define name="aff-atts">
-    <optional>
-      <attribute name="id">
-        <data type="ID"/>
-      </attribute>
-    </optional>
+    <ref name="jats-common-atts"/>
     <optional>
       <attribute name="content-type"/>
     </optional>
@@ -691,20 +924,12 @@
     element
   -->
   <define name="aff-alternatives-atts">
-    <optional>
-      <attribute name="id">
-        <data type="ID"/>
-      </attribute>
-    </optional>
+    <ref name="jats-common-atts"/>
   </define>
   <!-- ALTERNATE TEXT ATTRIBUTES -->
   <!-- Attributes for the <alt-text> element -->
   <define name="alt-text-atts">
-    <optional>
-      <attribute name="id">
-        <data type="ID"/>
-      </attribute>
-    </optional>
+    <ref name="jats-common-atts"/>
     <optional>
       <attribute name="content-type"/>
     </optional>
@@ -717,11 +942,10 @@
       </attribute>
     </optional>
   </define>
-  <!-- ALTERNATE TEXT ATTRIBUTES -->
-  <!-- Attributes for the <alt-text> element -->
   <!-- ANONYMOUS ATTRIBUTES -->
   <!-- Attributes for the <anonymous> element -->
   <define name="anonymous-atts">
+    <ref name="jats-common-atts"/>
     <optional>
       <attribute name="specific-use"/>
     </optional>
@@ -734,16 +958,12 @@
   <!-- ALTERNATIVES ATTRIBUTES -->
   <!-- Attributes for the <alternatives> element -->
   <define name="alternatives-atts">
-    <empty/>
+    <ref name="jats-common-atts"/>
   </define>
   <!-- ARTICLE TITLE ATTRIBUTES -->
   <!-- Attributes for the <article-title> element -->
   <define name="article-title-atts">
-    <optional>
-      <attribute name="id">
-        <data type="ID"/>
-      </attribute>
-    </optional>
+    <ref name="jats-common-atts"/>
     <optional>
       <attribute name="xml:lang">
         <data type="NMTOKEN"/>
@@ -753,11 +973,7 @@
   <!-- ATTRIBUTION ATTRIBUTES -->
   <!-- Attributes for the <attrib> element -->
   <define name="attrib-atts">
-    <optional>
-      <attribute name="id">
-        <data type="ID"/>
-      </attribute>
-    </optional>
+    <ref name="jats-common-atts"/>
     <optional>
       <attribute name="specific-use"/>
     </optional>
@@ -770,11 +986,7 @@
   <!-- BIOGRAPHY ATTRIBUTES -->
   <!-- Attributes for <bio> element -->
   <define name="bio-atts">
-    <optional>
-      <attribute name="id">
-        <data type="ID"/>
-      </attribute>
-    </optional>
+    <ref name="jats-common-atts"/>
     <optional>
       <attribute name="rid">
         <data type="IDREFS"/>
@@ -793,16 +1005,39 @@
     </optional>
     <ref name="might-link-atts"/>
   </define>
+  <!-- CITATION ALTERNATIVES ATTRIBUTES -->
+  <!--
+    Attributes for the <citation-alternatives>
+    element
+  -->
+  <define name="citation-alternatives-atts">
+    <ref name="jats-common-atts"/>
+  </define>
+  <!-- CITY ATTRIBUTES -->
+  <!-- Attributes for the <city> element -->
+  <define name="city-atts">
+    <ref name="jats-common-atts"/>
+    <optional>
+      <attribute name="content-type"/>
+    </optional>
+    <optional>
+      <attribute name="specific-use"/>
+    </optional>
+    <optional>
+      <attribute name="xml:lang">
+        <data type="NMTOKEN"/>
+      </attribute>
+    </optional>
+  </define>
   <!-- COLLABORATION ATTRIBUTES -->
   <!-- Attributes for <collab> -->
   <define name="collab-atts">
+    <ref name="jats-common-atts"/>
     <optional>
       <attribute name="collab-type"/>
     </optional>
     <optional>
-      <attribute name="id">
-        <data type="ID"/>
-      </attribute>
+      <attribute name="symbol"/>
     </optional>
     <optional>
       <attribute name="specific-use"/>
@@ -814,9 +1049,18 @@
     </optional>
     <ref name="might-link-atts"/>
   </define>
+  <!-- COLLABORATION ALTERNATIVES ATTRIBUTES -->
+  <!--
+    Attributes for the <collab-alternatives>
+    element
+  -->
+  <define name="collab-alternatives-atts">
+    <ref name="jats-common-atts"/>
+  </define>
   <!-- CONFERENCE DATE ATTRIBUTES -->
   <!-- Attributes for the <conf-date> element -->
   <define name="conf-date-atts">
+    <ref name="jats-common-atts"/>
     <optional>
       <attribute name="iso-8601-date"/>
     </optional>
@@ -838,6 +1082,7 @@
   <!-- CONFERENCE LOCATION ATTRIBUTES -->
   <!-- Attributes for the <conf-loc> element -->
   <define name="conf-loc-atts">
+    <ref name="jats-common-atts"/>
     <optional>
       <attribute name="content-type"/>
     </optional>
@@ -853,6 +1098,7 @@
   <!-- CONFERENCE NAME ATTRIBUTES -->
   <!-- Attributes for the <conf-name> element. -->
   <define name="conf-name-atts">
+    <ref name="jats-common-atts"/>
     <optional>
       <attribute name="content-type"/>
     </optional>
@@ -868,6 +1114,7 @@
   <!-- CONFERENCE SPONSOR ATTRIBUTES -->
   <!-- Attributes for the <conf-sponsor> element. -->
   <define name="conf-sponsor-atts">
+    <ref name="jats-common-atts"/>
     <optional>
       <attribute name="content-type"/>
     </optional>
@@ -883,13 +1130,9 @@
   <!-- CONTRIBUTOR ATTRIBUTES -->
   <!-- Attributes for the <contrib> element -->
   <define name="contrib-atts">
+    <ref name="jats-common-atts"/>
     <optional>
       <attribute name="contrib-type"/>
-    </optional>
-    <optional>
-      <attribute name="id">
-        <data type="ID"/>
-      </attribute>
     </optional>
     <optional>
       <attribute name="corresp">
@@ -928,11 +1171,7 @@
   <!-- CONTRIBUTOR GROUP ATTRIBUTES -->
   <!-- Attributes for the <contrib-group> element -->
   <define name="contrib-group-atts">
-    <optional>
-      <attribute name="id">
-        <data type="ID"/>
-      </attribute>
-    </optional>
+    <ref name="jats-common-atts"/>
     <optional>
       <attribute name="content-type"/>
     </optional>
@@ -942,10 +1181,22 @@
   </define>
   <!-- CONTRIBUTOR IDENTIFIER ATTRIBUTES -->
   <!--
-    Attributes for the <contrib-id-atts> 
+    Attributes for the <contrib-id> 
     element.
   -->
   <define name="contrib-id-atts">
+    <ref name="jats-common-atts"/>
+    <optional>
+      <attribute name="contrib-id-type"/>
+    </optional>
+    <optional>
+      <attribute name="authenticated" a:defaultValue="false">
+        <choice>
+          <value>true</value>
+          <value>false</value>
+        </choice>
+      </attribute>
+    </optional>
     <optional>
       <attribute name="content-type"/>
     </optional>
@@ -953,7 +1204,9 @@
       <attribute name="specific-use"/>
     </optional>
     <optional>
-      <attribute name="contrib-id-type"/>
+      <attribute name="xml:lang">
+        <data type="NMTOKEN"/>
+      </attribute>
     </optional>
   </define>
   <!-- COPYRIGHT HOLDER ATTRIBUTES -->
@@ -962,6 +1215,7 @@
     element.
   -->
   <define name="copyright-holder-atts">
+    <ref name="jats-common-atts"/>
     <optional>
       <attribute name="content-type"/>
     </optional>
@@ -980,6 +1234,7 @@
     element.
   -->
   <define name="copyright-statement-atts">
+    <ref name="jats-common-atts"/>
     <optional>
       <attribute name="content-type"/>
     </optional>
@@ -998,6 +1253,7 @@
     element
   -->
   <define name="copyright-year-atts">
+    <ref name="jats-common-atts"/>
     <optional>
       <attribute name="content-type"/>
     </optional>
@@ -1008,6 +1264,7 @@
   <!-- COUNTRY ATTRIBUTES -->
   <!-- Attributes for the <country> element -->
   <define name="country-atts">
+    <ref name="jats-common-atts"/>
     <optional>
       <attribute name="content-type"/>
     </optional>
@@ -1026,11 +1283,7 @@
   <!-- CUSTOM METADATA ATTRIBUTES -->
   <!-- Attributes for the <custom-meta> element -->
   <define name="custom-meta-atts">
-    <optional>
-      <attribute name="id">
-        <data type="ID"/>
-      </attribute>
-    </optional>
+    <ref name="jats-common-atts"/>
     <optional>
       <attribute name="specific-use"/>
     </optional>
@@ -1041,9 +1294,18 @@
     </optional>
     <ref name="might-link-atts"/>
   </define>
+  <!-- CUSTOM METADATA GROUP ATTRIBUTES -->
+  <!--
+    Attributes for the <custom-meta-group>
+    element
+  -->
+  <define name="custom-meta-group-atts">
+    <ref name="jats-common-atts"/>
+  </define>
   <!-- DATE (HISTORICAL) ATTRIBUTES -->
   <!-- Attributes for the <date> element -->
   <define name="date-atts">
+    <ref name="jats-common-atts"/>
     <optional>
       <attribute name="date-type"/>
     </optional>
@@ -1063,6 +1325,7 @@
   <!-- DAY ATTRIBUTES -->
   <!-- Attributes for the <day> element -->
   <define name="day-atts">
+    <ref name="jats-common-atts"/>
     <optional>
       <attribute name="content-type"/>
     </optional>
@@ -1078,14 +1341,10 @@
   <!-- DEFINITION LIST: DEFINITION ATTRIBUTES -->
   <!-- Attribute list for the <def> element -->
   <define name="def-atts">
+    <ref name="jats-common-atts"/>
     <optional>
       <attribute name="rid">
         <data type="IDREFS"/>
-      </attribute>
-    </optional>
-    <optional>
-      <attribute name="id">
-        <data type="ID"/>
       </attribute>
     </optional>
     <optional>
@@ -1100,6 +1359,7 @@
   <!-- DEGREES ATTRIBUTES -->
   <!-- Attributes for the <degrees> element -->
   <define name="degrees-atts">
+    <ref name="jats-common-atts"/>
     <optional>
       <attribute name="content-type"/>
     </optional>
@@ -1113,10 +1373,7 @@
     </optional>
   </define>
   <!-- ELEMENT CITATION ATTRIBUTES -->
-  <!--
-    Attributes for <element-citation> and
-    <nlm-citation>)
-  -->
+  <!-- Attributes for <element-citation> -->
   <define name="element-citation-atts">
     <ref name="citation-atts"/>
   </define>
@@ -1126,6 +1383,7 @@
     element
   -->
   <define name="elocation-id-atts">
+    <ref name="jats-common-atts"/>
     <optional>
       <attribute name="content-type"/>
     </optional>
@@ -1139,6 +1397,7 @@
   <!-- EMAIL ATTRIBUTES -->
   <!-- Attribute list for the <email> element -->
   <define name="email-atts">
+    <ref name="jats-common-atts"/>
     <optional>
       <attribute name="content-type"/>
     </optional>
@@ -1152,9 +1411,26 @@
     </optional>
     <ref name="might-link-atts"/>
   </define>
+  <!-- ERA ATTRIBUTES -->
+  <!-- Attributes for the <era> element -->
+  <define name="era-atts">
+    <ref name="jats-common-atts"/>
+    <optional>
+      <attribute name="content-type"/>
+    </optional>
+    <optional>
+      <attribute name="specific-use"/>
+    </optional>
+    <optional>
+      <attribute name="xml:lang">
+        <data type="NMTOKEN"/>
+      </attribute>
+    </optional>
+  </define>
   <!-- ET AL. ATTRIBUTES -->
   <!-- Attribute list for the <etal> element -->
   <define name="etal-atts">
+    <ref name="jats-common-atts"/>
     <optional>
       <attribute name="specific-use"/>
     </optional>
@@ -1170,13 +1446,12 @@
     <ext-link>
   -->
   <define name="ext-link-atts">
-    <optional>
-      <attribute name="id">
-        <data type="ID"/>
-      </attribute>
-    </optional>
+    <ref name="jats-common-atts"/>
     <optional>
       <attribute name="ext-link-type"/>
+    </optional>
+    <optional>
+      <attribute name="assigning-authority"/>
     </optional>
     <optional>
       <attribute name="specific-use"/>
@@ -1191,6 +1466,7 @@
   <!-- FAX ATTRIBUTES -->
   <!-- Attribute list for the <fax> element -->
   <define name="fax-atts">
+    <ref name="jats-common-atts"/>
     <optional>
       <attribute name="content-type"/>
     </optional>
@@ -1201,6 +1477,7 @@
   <!-- FIRST PAGE ATTRIBUTES -->
   <!-- Attribute list for the <fpage> element -->
   <define name="fpage-atts">
+    <ref name="jats-common-atts"/>
     <optional>
       <attribute name="content-type"/>
     </optional>
@@ -1216,9 +1493,31 @@
       </attribute>
     </optional>
   </define>
+  <!-- FREE TO READ ATTRIBUTES -->
+  <!--
+    Attributes for the ALI namespaced
+    <ali:free_to_read> element
+  -->
+  <define name="free-to-read-atts">
+    <ref name="jats-common-atts"/>
+    <optional>
+      <attribute name="content-type"/>
+    </optional>
+    <optional>
+      <attribute name="specific-use"/>
+    </optional>
+    <optional>
+      <attribute name="end_date"/>
+    </optional>
+    <optional>
+      <attribute name="start_date"/>
+    </optional>
+    <ref name="ali.xmlns.attrib"/>
+  </define>
   <!-- GIVEN NAMES ATTRIBUTES -->
   <!-- Attribute list for the <given-names> element -->
   <define name="given-names-atts">
+    <ref name="jats-common-atts"/>
     <optional>
       <attribute name="initials"/>
     </optional>
@@ -1226,11 +1525,7 @@
   <!-- INSTITUTION ATTRIBUTES -->
   <!-- Attribute list for <institution> -->
   <define name="institution-atts">
-    <optional>
-      <attribute name="id">
-        <data type="ID"/>
-      </attribute>
-    </optional>
+    <ref name="jats-common-atts"/>
     <optional>
       <attribute name="content-type"/>
     </optional>
@@ -1244,9 +1539,40 @@
     </optional>
     <ref name="might-link-atts"/>
   </define>
+  <!-- INSTITUTION IDENTIFIER ATTRIBUTES -->
+  <!-- Attribute list for <institution-id> -->
+  <define name="institution-id-atts">
+    <ref name="jats-common-atts"/>
+    <optional>
+      <attribute name="institution-id-type"/>
+    </optional>
+    <optional>
+      <attribute name="content-type"/>
+    </optional>
+    <optional>
+      <attribute name="specific-use"/>
+    </optional>
+    <optional>
+      <attribute name="xml:lang">
+        <data type="NMTOKEN"/>
+      </attribute>
+    </optional>
+  </define>
+  <!-- INSTITUTION WRAPPER ATTRIBUTES -->
+  <!--
+    Attributes for the <institution-wrap>
+    element
+  -->
+  <define name="institution-wrap-atts">
+    <ref name="jats-common-atts"/>
+  </define>
   <!-- ISBN ATTRIBUTES -->
   <!-- Attributes for the <isbn> element -->
   <define name="isbn-atts">
+    <ref name="jats-common-atts"/>
+    <optional>
+      <attribute name="publication-format"/>
+    </optional>
     <optional>
       <attribute name="content-type"/>
     </optional>
@@ -1257,8 +1583,15 @@
   <!-- ISSN ATTRIBUTES -->
   <!-- Attribute list for the <issn> element -->
   <define name="issn-atts">
+    <ref name="jats-common-atts"/>
     <optional>
       <attribute name="pub-type"/>
+    </optional>
+    <optional>
+      <attribute name="publication-format"/>
+    </optional>
+    <optional>
+      <attribute name="content-type"/>
     </optional>
     <optional>
       <attribute name="specific-use"/>
@@ -1267,6 +1600,7 @@
   <!-- ISSN-L (INKING ISSN) ATTRIBUTES -->
   <!-- Attribute list for the <issn-l> element -->
   <define name="issn-l-atts">
+    <ref name="jats-common-atts"/>
     <optional>
       <attribute name="specific-use"/>
     </optional>
@@ -1274,6 +1608,7 @@
   <!-- ISSUE ATTRIBUTES -->
   <!-- Attribute list for the <issue> element -->
   <define name="issue-atts">
+    <ref name="jats-common-atts"/>
     <optional>
       <attribute name="content-type"/>
     </optional>
@@ -1292,6 +1627,7 @@
   <!-- ISSUE IDENTIFIER ATTRIBUTES -->
   <!-- Attributes for the <issue-id> element -->
   <define name="issue-id-atts">
+    <ref name="jats-common-atts"/>
     <optional>
       <attribute name="pub-id-type"/>
     </optional>
@@ -1306,10 +1642,12 @@
         <data type="NMTOKEN"/>
       </attribute>
     </optional>
+    <ref name="might-link-atts"/>
   </define>
   <!-- ISSUE PART ATTRIBUTES -->
   <!-- Attribute list for <issue-part> element -->
   <define name="issue-part-atts">
+    <ref name="jats-common-atts"/>
     <optional>
       <attribute name="content-type"/>
     </optional>
@@ -1325,6 +1663,7 @@
   <!-- ISSUE SPONSOR ATTRIBUTES -->
   <!-- Attribute list for <issue-sponsor> element -->
   <define name="issue-sponsor-atts">
+    <ref name="jats-common-atts"/>
     <optional>
       <attribute name="content-type"/>
     </optional>
@@ -1340,6 +1679,7 @@
   <!-- ISSUE TITLE ATTRIBUTES -->
   <!-- Attribute list for <issue-title> element -->
   <define name="issue-title-atts">
+    <ref name="jats-common-atts"/>
     <optional>
       <attribute name="content-type"/>
     </optional>
@@ -1358,6 +1698,7 @@
     <journal-id> element
   -->
   <define name="journal-id-atts">
+    <ref name="jats-common-atts"/>
     <optional>
       <attribute name="journal-id-type"/>
     </optional>
@@ -1373,6 +1714,7 @@
   <!-- LABEL ATTRIBUTES -->
   <!-- Attributes for the <label> element -->
   <define name="label-atts">
+    <ref name="jats-common-atts"/>
     <optional>
       <attribute name="alt"/>
     </optional>
@@ -1385,6 +1727,7 @@
   <!-- LICENSE ATTRIBUTES -->
   <!-- Attributes for the <license> element -->
   <define name="license-atts">
+    <ref name="jats-common-atts"/>
     <optional>
       <attribute name="license-type"/>
     </optional>
@@ -1401,6 +1744,7 @@
   <!-- LICENSE PARAGRAPH ATTRIBUTES -->
   <!-- Attributes for the <license> element -->
   <define name="license-p-atts">
+    <ref name="jats-common-atts"/>
     <optional>
       <attribute name="content-type"/>
     </optional>
@@ -1408,14 +1752,28 @@
       <attribute name="specific-use"/>
     </optional>
   </define>
+  <!-- LICENSE REFERENCE ATTRIBUTES -->
+  <!--
+    Attributes for the ALI namespaced
+    <ali:license_ref> element
+  -->
+  <define name="license-ref-atts">
+    <ref name="jats-common-atts"/>
+    <optional>
+      <attribute name="content-type"/>
+    </optional>
+    <optional>
+      <attribute name="specific-use"/>
+    </optional>
+    <optional>
+      <attribute name="start_date"/>
+    </optional>
+    <ref name="ali.xmlns.attrib"/>
+  </define>
   <!-- LONG DESCRIPTION ATTRIBUTES -->
   <!-- Attributes for the <long-desc> element -->
   <define name="long-desc-atts">
-    <optional>
-      <attribute name="id">
-        <data type="ID"/>
-      </attribute>
-    </optional>
+    <ref name="jats-common-atts"/>
     <optional>
       <attribute name="content-type"/>
     </optional>
@@ -1432,6 +1790,7 @@
   <!-- LPAGE ATTRIBUTES -->
   <!-- Attributes for the <lpage> element -->
   <define name="lpage-atts">
+    <ref name="jats-common-atts"/>
     <optional>
       <attribute name="content-type"/>
     </optional>
@@ -1447,12 +1806,12 @@
   <!-- METADATA NAME (CUSTOM) ATTRIBUTES -->
   <!-- Attributes for <meta-name> element -->
   <define name="meta-name-atts">
-    <empty/>
+    <ref name="jats-common-atts"/>
   </define>
   <!-- METADATA VALUE (CUSTOM) ATTRIBUTES -->
   <!-- Attributes for <meta-value> element -->
   <define name="meta-value-atts">
-    <empty/>
+    <ref name="jats-common-atts"/>
   </define>
   <!-- MIXED CITATION ATTRIBUTES -->
   <!-- Attributes for <mixed-citation> element -->
@@ -1462,6 +1821,7 @@
   <!-- MONTH ATTRIBUTES -->
   <!-- Attributes for the <month> element -->
   <define name="month-atts">
+    <ref name="jats-common-atts"/>
     <optional>
       <attribute name="content-type"/>
     </optional>
@@ -1477,6 +1837,7 @@
   <!-- NAME ATTRIBUTES -->
   <!-- Attribute list for the <name> element -->
   <define name="name-atts">
+    <ref name="jats-common-atts"/>
     <optional>
       <attribute name="content-type"/>
     </optional>
@@ -1505,16 +1866,12 @@
     element
   -->
   <define name="name-alternatives-atts">
-    <empty/>
+    <ref name="jats-common-atts"/>
   </define>
   <!-- NOTES ATTRIBUTES -->
   <!-- Attribute list for the <note> element -->
   <define name="notes-atts">
-    <optional>
-      <attribute name="id">
-        <data type="ID"/>
-      </attribute>
-    </optional>
+    <ref name="jats-common-atts"/>
     <optional>
       <attribute name="notes-type"/>
     </optional>
@@ -1530,6 +1887,7 @@
   <!-- OBJECT IDENTIFIER ATTRIBUTES -->
   <!-- Attributes for the <object-id> element -->
   <define name="object-id-atts">
+    <ref name="jats-common-atts"/>
     <optional>
       <attribute name="pub-id-type"/>
     </optional>
@@ -1543,6 +1901,7 @@
   <!-- ON BEHALF OF ATTRIBUTES -->
   <!-- Attributes for the <on-behalf-of> element -->
   <define name="on-behalf-of-atts">
+    <ref name="jats-common-atts"/>
     <optional>
       <attribute name="specific-use"/>
     </optional>
@@ -1555,6 +1914,7 @@
   <!-- PAGE RANGE ATTRIBUTES -->
   <!-- Attributes for the <page-range> element -->
   <define name="page-range-atts">
+    <ref name="jats-common-atts"/>
     <optional>
       <attribute name="content-type"/>
     </optional>
@@ -1567,9 +1927,15 @@
       </attribute>
     </optional>
   </define>
+  <!-- PERMISSIONS ATTRIBUTES -->
+  <!-- Attributes for the <permission> element -->
+  <define name="permissions-atts">
+    <ref name="jats-common-atts"/>
+  </define>
   <!-- PHONE ATTRIBUTES -->
   <!-- Attributes for the <phone> element -->
   <define name="phone-atts">
+    <ref name="jats-common-atts"/>
     <optional>
       <attribute name="content-type"/>
     </optional>
@@ -1577,9 +1943,26 @@
       <attribute name="specific-use"/>
     </optional>
   </define>
+  <!-- POSTAL CODE ATTRIBUTES -->
+  <!-- Attributes for the <postal-code> element -->
+  <define name="postal-code-atts">
+    <ref name="jats-common-atts"/>
+    <optional>
+      <attribute name="content-type"/>
+    </optional>
+    <optional>
+      <attribute name="specific-use"/>
+    </optional>
+    <optional>
+      <attribute name="xml:lang">
+        <data type="NMTOKEN"/>
+      </attribute>
+    </optional>
+  </define>
   <!-- PREFIX ATTRIBUTES -->
   <!-- Attributes for the <prefix> element -->
   <define name="prefix-atts">
+    <ref name="jats-common-atts"/>
     <optional>
       <attribute name="content-type"/>
     </optional>
@@ -1595,6 +1978,7 @@
   <!-- PRICE ATTRIBUTES -->
   <!-- Attributes for the <price> element -->
   <define name="price-atts">
+    <ref name="jats-common-atts"/>
     <optional>
       <attribute name="currency"/>
     </optional>
@@ -1613,6 +1997,7 @@
   <!-- PUBLISHER ATTRIBUTES -->
   <!-- Attributes for the <publisher> element -->
   <define name="publisher-atts">
+    <ref name="jats-common-atts"/>
     <optional>
       <attribute name="content-type"/>
     </optional>
@@ -1620,6 +2005,7 @@
   <!-- PUBLISHER LOCATION ATTRIBUTES -->
   <!-- Attributes for the <publisher-loc> element -->
   <define name="publisher-loc-atts">
+    <ref name="jats-common-atts"/>
     <optional>
       <attribute name="specific-use"/>
     </optional>
@@ -1632,6 +2018,7 @@
   <!-- PUBLISHER NAME ATTRIBUTES -->
   <!--                     Attributes for the <publisher-name> element -->
   <define name="publisher-name-atts">
+    <ref name="jats-common-atts"/>
     <optional>
       <attribute name="specific-use"/>
     </optional>
@@ -1644,11 +2031,7 @@
   <!-- RELATED ARTICLE ATTRIBUTES -->
   <!-- Attributes for <related-article> -->
   <define name="related-article-atts">
-    <optional>
-      <attribute name="id">
-        <data type="ID"/>
-      </attribute>
-    </optional>
+    <ref name="jats-common-atts"/>
     <attribute name="related-article-type"/>
     <optional>
       <attribute name="ext-link-type"/>
@@ -1684,6 +2067,7 @@
   <!-- ROLE ATTRIBUTES -->
   <!-- Attributes for the <role> element -->
   <define name="role-atts">
+    <ref name="jats-common-atts"/>
     <optional>
       <attribute name="content-type"/>
     </optional>
@@ -1699,6 +2083,7 @@
   <!-- SEASON ATTRIBUTES -->
   <!-- Attributes for the <season> element -->
   <define name="season-atts">
+    <ref name="jats-common-atts"/>
     <optional>
       <attribute name="content-type"/>
     </optional>
@@ -1714,11 +2099,7 @@
   <!-- SIGNATURE ATTRIBUTES -->
   <!-- Attributes for the <sig> element -->
   <define name="sig-atts">
-    <optional>
-      <attribute name="id">
-        <data type="ID"/>
-      </attribute>
-    </optional>
+    <ref name="jats-common-atts"/>
     <optional>
       <attribute name="rid">
         <data type="IDREFS"/>
@@ -1739,11 +2120,7 @@
   <!-- SIGNATURE BLOCK ATTRIBUTES -->
   <!-- Attributes for the <sig-block> element -->
   <define name="sig-block-atts">
-    <optional>
-      <attribute name="id">
-        <data type="ID"/>
-      </attribute>
-    </optional>
+    <ref name="jats-common-atts"/>
     <optional>
       <attribute name="rid">
         <data type="IDREFS"/>
@@ -1759,7 +2136,24 @@
   <!-- SIZE ATTRIBUTES -->
   <!-- Attribute list for the <size> element -->
   <define name="size-atts">
+    <ref name="jats-common-atts"/>
     <attribute name="units"/>
+    <optional>
+      <attribute name="specific-use"/>
+    </optional>
+    <optional>
+      <attribute name="xml:lang">
+        <data type="NMTOKEN"/>
+      </attribute>
+    </optional>
+  </define>
+  <!-- STATE ATTRIBUTES -->
+  <!-- Attributes for the <state> element -->
+  <define name="state-atts">
+    <ref name="jats-common-atts"/>
+    <optional>
+      <attribute name="content-type"/>
+    </optional>
     <optional>
       <attribute name="specific-use"/>
     </optional>
@@ -1772,6 +2166,7 @@
   <!-- STRING DATE ATTRIBUTES -->
   <!-- Attributes for the <string-date> element -->
   <define name="string-date-atts">
+    <ref name="jats-common-atts"/>
     <optional>
       <attribute name="iso-8601-date"/>
     </optional>
@@ -1793,6 +2188,7 @@
   <!-- STRING NAME ATTRIBUTES -->
   <!-- Attribute list for the <string-name> element -->
   <define name="string-name-atts">
+    <ref name="jats-common-atts"/>
     <optional>
       <attribute name="content-type"/>
     </optional>
@@ -1818,6 +2214,7 @@
   <!-- SUFFIX ATTRIBUTES -->
   <!-- Attributes for the <suffix> element -->
   <define name="suffix-atts">
+    <ref name="jats-common-atts"/>
     <optional>
       <attribute name="content-type"/>
     </optional>
@@ -1833,6 +2230,7 @@
   <!-- SUPPLEMENT ATTRIBUTES -->
   <!-- Attributes for the <supplement> element -->
   <define name="supplement-atts">
+    <ref name="jats-common-atts"/>
     <optional>
       <attribute name="supplement-type"/>
     </optional>
@@ -1848,6 +2246,7 @@
   <!-- SURNAME ATTRIBUTES -->
   <!-- Attribute list for the <surname> element -->
   <define name="surname-atts">
+    <ref name="jats-common-atts"/>
     <optional>
       <attribute name="initials"/>
     </optional>
@@ -1855,6 +2254,7 @@
   <!-- TEXTUAL FORM ATTRIBUTES -->
   <!-- Attributes for the <textual-form> element -->
   <define name="textual-form-atts">
+    <ref name="jats-common-atts"/>
     <optional>
       <attribute name="specific-use"/>
     </optional>
@@ -1867,11 +2267,7 @@
   <!-- TITLE ATTRIBUTES -->
   <!-- Attributes for the <title> element -->
   <define name="title-atts">
-    <optional>
-      <attribute name="id">
-        <data type="ID"/>
-      </attribute>
-    </optional>
+    <ref name="jats-common-atts"/>
     <optional>
       <attribute name="content-type"/>
     </optional>
@@ -1885,6 +2281,7 @@
     element
   -->
   <define name="trans-subtitle-atts">
+    <ref name="jats-common-atts"/>
     <optional>
       <attribute name="specific-use"/>
     </optional>
@@ -1897,11 +2294,7 @@
   <!-- TRANSLATED TITLE ATTRIBUTES -->
   <!-- Attribute list for the <trans-title> -->
   <define name="trans-title-atts">
-    <optional>
-      <attribute name="id">
-        <data type="ID"/>
-      </attribute>
-    </optional>
+    <ref name="jats-common-atts"/>
     <optional>
       <attribute name="content-type"/>
     </optional>
@@ -1917,11 +2310,7 @@
   <!-- TRANSLATED TITLE GROUP ATTRIBUTES -->
   <!-- Attribute list for the <trans-title-group> -->
   <define name="trans-title-group-atts">
-    <optional>
-      <attribute name="id">
-        <data type="ID"/>
-      </attribute>
-    </optional>
+    <ref name="jats-common-atts"/>
     <optional>
       <attribute name="content-type"/>
     </optional>
@@ -1937,6 +2326,7 @@
   <!-- URI ATTRIBUTES -->
   <!-- Attributes for the <uri> element -->
   <define name="uri-atts">
+    <ref name="jats-common-atts"/>
     <optional>
       <attribute name="content-type"/>
     </optional>
@@ -1953,6 +2343,7 @@
   <!-- VOLUME NUMBER ATTRIBUTES -->
   <!-- Attribute list for the <volume> element -->
   <define name="volume-atts">
+    <ref name="jats-common-atts"/>
     <optional>
       <attribute name="seq"/>
     </optional>
@@ -1971,9 +2362,30 @@
   <!-- VOLUME IDENTIFIER ATTRIBUTES -->
   <!-- Attributes for the <volume-id> element -->
   <define name="volume-id-atts">
+    <ref name="jats-common-atts"/>
     <optional>
       <attribute name="pub-id-type"/>
     </optional>
+    <optional>
+      <attribute name="content-type"/>
+    </optional>
+    <optional>
+      <attribute name="specific-use"/>
+    </optional>
+    <optional>
+      <attribute name="xml:lang">
+        <data type="NMTOKEN"/>
+      </attribute>
+    </optional>
+    <ref name="might-link-atts"/>
+  </define>
+  <!-- VOLUME ISSUE GROUPING ATTRIBUTES -->
+  <!--
+    Attribute list for the <volume-issue-group>
+    element
+  -->
+  <define name="volume-issue-group-atts">
+    <ref name="jats-common-atts"/>
     <optional>
       <attribute name="content-type"/>
     </optional>
@@ -1992,6 +2404,7 @@
     element
   -->
   <define name="volume-series-atts">
+    <ref name="jats-common-atts"/>
     <optional>
       <attribute name="content-type"/>
     </optional>
@@ -2007,6 +2420,7 @@
   <!-- YEAR ATTRIBUTES -->
   <!-- Attributes for the <year> element -->
   <define name="year-atts">
+    <ref name="jats-common-atts"/>
     <optional>
       <attribute name="content-type"/>
     </optional>
@@ -2029,6 +2443,67 @@
   <!-- METADATA USED BY MORE THAN ONE CLASS -->
   <!-- ============================================================= -->
   <!-- ============================================================= -->
+  <!-- NISO ACCESS AND INDICATOR ELEMENTS -->
+  <!-- ============================================================= -->
+  <!-- FREE TO READ (NISO ALI) MODEL -->
+  <!--
+    Content model for the ALI namespaced  
+    <ali:free_to_read> element.
+  -->
+  <define name="free-to-read-model">
+    <empty/>
+  </define>
+  <!-- FREE TO READ (NISO ALI) -->
+  <!--
+    An EMPTY element whose presence indicates 
+    that a document or portion of a document 
+    is free to be read. 
+    Remarks: Defined in "NISO Access License and 
+    Indicators (ALI) NISO RP-22-2015".    
+    Details at:
+    http://jats.nlm.nih.gov/archiving/tag-library/1.1/index.html?elem=ali:free_to_read
+    http://jats.nlm.nih.gov/publishing/tag-library/1.1/index.html?elem=ali:free_to_read
+    http://jats.nlm.nih.gov/articleauthoring/tag-library/1.1/index.html?elem=ali:free_to_read
+  -->
+  <define name="ali.free_to_read">
+    <element name="ali:free_to_read">
+      <ref name="ali.free_to_read-attlist"/>
+      <ref name="free-to-read-model"/>
+    </element>
+  </define>
+  <define name="ali.free_to_read-attlist" combine="interleave">
+    <ref name="free-to-read-atts"/>
+  </define>
+  <!-- LICENSE REFERENCE (NISO ALI) MODEL -->
+  <!--
+    Content model for the ALI namespaced  
+    <ali:license_ref> element.
+  -->
+  <define name="license-ref-model">
+    <ref name="anyURI"/>
+  </define>
+  <!-- LICENSE REFERENCE (NISO ALI) -->
+  <!--
+    A URI that is a pointer to a public license
+    or waiver. If the element has content, it 
+    must be a URI.
+    Remarks: Defined in "NISO Access License and 
+    Indicators (ALI) NISO RP-22-2015".    
+    Details at:
+    http://jats.nlm.nih.gov/archiving/tag-library/1.1/index.html?elem=ali:license_ref
+    http://jats.nlm.nih.gov/publishing/tag-library/1.1/index.html?elem=ali:license_ref
+    http://jats.nlm.nih.gov/articleauthoring/tag-library/1.1/index.html?elem=ali:license_ref
+  -->
+  <define name="ali.license_ref">
+    <element name="ali:license_ref">
+      <ref name="ali.license_ref-attlist"/>
+      <ref name="license-ref-model"/>
+    </element>
+  </define>
+  <define name="ali.license_ref-attlist" combine="interleave">
+    <ref name="license-ref-atts"/>
+  </define>
+  <!-- ============================================================= -->
   <!-- CONTRIBUTOR GROUP (AUTHOR/EDITOR) ELEMENTS -->
   <!-- ============================================================= -->
   <!-- CONTRIBUTOR GROUP MODEL -->
@@ -2050,9 +2525,9 @@
     a grouping of contributors, such as the
     primary authors
     Details at:
-    http://jats.nlm.nih.gov/archiving/tag-library/1.0/index.html?elem=contrib-group
-    http://jats.nlm.nih.gov/publishing/tag-library/1.0/index.html?elem=contrib-group
-    http://jats.nlm.nih.gov/articleauthoring/tag-library/1.0/index.html?elem=contrib-group
+    http://jats.nlm.nih.gov/archiving/tag-library/1.1/index.html?elem=contrib-group
+    http://jats.nlm.nih.gov/publishing/tag-library/1.1/index.html?elem=contrib-group
+    http://jats.nlm.nih.gov/articleauthoring/tag-library/1.1/index.html?elem=contrib-group
   -->
   <define name="contrib-group">
     <element name="contrib-group">
@@ -2071,9 +2546,9 @@
     about a single contributor, for example an
     author or editor.
     Details at:
-    http://jats.nlm.nih.gov/archiving/tag-library/1.0/index.html?elem=contrib
-    http://jats.nlm.nih.gov/publishing/tag-library/1.0/index.html?elem=contrib
-    http://jats.nlm.nih.gov/articleauthoring/tag-library/1.0/index.html?elem=contrib
+    http://jats.nlm.nih.gov/archiving/tag-library/1.1/index.html?elem=contrib
+    http://jats.nlm.nih.gov/publishing/tag-library/1.1/index.html?elem=contrib
+    http://jats.nlm.nih.gov/articleauthoring/tag-library/1.1/index.html?elem=contrib
   -->
   <define name="contrib">
     <element name="contrib">
@@ -2094,16 +2569,19 @@
     <copyright-holder> element.
   -->
   <define name="copyright-holder-elements">
-    <ref name="subsup.class"/>
+    <choice>
+      <ref name="institution-wrap.class"/>
+      <ref name="subsup.class"/>
+    </choice>
   </define>
   <!-- COPYRIGHT HOLDER -->
   <!--
     Name of the organizational or personal
     entity that holds the copyright.
     Details at:
-    http://jats.nlm.nih.gov/archiving/tag-library/1.0/index.html?elem=copyright-holder
-    http://jats.nlm.nih.gov/publishing/tag-library/1.0/index.html?elem=copyright-holder
-    http://jats.nlm.nih.gov/articleauthoring/tag-library/1.0/index.html?elem=copyright-holder
+    http://jats.nlm.nih.gov/archiving/tag-library/1.1/index.html?elem=copyright-holder
+    http://jats.nlm.nih.gov/publishing/tag-library/1.1/index.html?elem=copyright-holder
+    http://jats.nlm.nih.gov/articleauthoring/tag-library/1.1/index.html?elem=copyright-holder
   -->
   <define name="copyright-holder">
     <element name="copyright-holder">
@@ -2136,9 +2614,9 @@
     copyright year should be identified, if
     expected to be displayed.
     Details at:
-    http://jats.nlm.nih.gov/archiving/tag-library/1.0/index.html?elem=copyright-statement
-    http://jats.nlm.nih.gov/publishing/tag-library/1.0/index.html?elem=copyright-statement
-    http://jats.nlm.nih.gov/articleauthoring/tag-library/1.0/index.html?elem=copyright-statement
+    http://jats.nlm.nih.gov/archiving/tag-library/1.1/index.html?elem=copyright-statement
+    http://jats.nlm.nih.gov/publishing/tag-library/1.1/index.html?elem=copyright-statement
+    http://jats.nlm.nih.gov/articleauthoring/tag-library/1.1/index.html?elem=copyright-statement
   -->
   <define name="copyright-statement">
     <element name="copyright-statement">
@@ -2160,9 +2638,9 @@
     for example, having the year as part of the
     copyright statement is sufficient.
     Details at:
-    http://jats.nlm.nih.gov/archiving/tag-library/1.0/index.html?elem=copyright-year
-    http://jats.nlm.nih.gov/publishing/tag-library/1.0/index.html?elem=copyright-year
-    http://jats.nlm.nih.gov/articleauthoring/tag-library/1.0/index.html?elem=copyright-year
+    http://jats.nlm.nih.gov/archiving/tag-library/1.1/index.html?elem=copyright-year
+    http://jats.nlm.nih.gov/publishing/tag-library/1.1/index.html?elem=copyright-year
+    http://jats.nlm.nih.gov/articleauthoring/tag-library/1.1/index.html?elem=copyright-year
   -->
   <define name="copyright-year">
     <element name="copyright-year">
@@ -2186,9 +2664,9 @@
     allowed to use this article or other
     license-related information or restrictions.
     Details at:
-    http://jats.nlm.nih.gov/archiving/tag-library/1.0/index.html?elem=license
-    http://jats.nlm.nih.gov/publishing/tag-library/1.0/index.html?elem=license
-    http://jats.nlm.nih.gov/articleauthoring/tag-library/1.0/index.html?elem=license
+    http://jats.nlm.nih.gov/archiving/tag-library/1.1/index.html?elem=license
+    http://jats.nlm.nih.gov/publishing/tag-library/1.1/index.html?elem=license
+    http://jats.nlm.nih.gov/articleauthoring/tag-library/1.1/index.html?elem=license
   -->
   <define name="license">
     <element name="license">
@@ -2220,9 +2698,9 @@
     paragraph, so that it can have special
     content.
     Details at:
-    http://jats.nlm.nih.gov/archiving/tag-library/1.0/index.html?elem=license-p
-    http://jats.nlm.nih.gov/publishing/tag-library/1.0/index.html?elem=license-p
-    http://jats.nlm.nih.gov/articleauthoring/tag-library/1.0/index.html?elem=license-p
+    http://jats.nlm.nih.gov/archiving/tag-library/1.1/index.html?elem=license-p
+    http://jats.nlm.nih.gov/publishing/tag-library/1.1/index.html?elem=license-p
+    http://jats.nlm.nih.gov/articleauthoring/tag-library/1.1/index.html?elem=license-p
   -->
   <define name="license-p">
     <element name="license-p">
@@ -2251,7 +2729,7 @@
       <ref name="copyright-holder"/>
     </zeroOrMore>
     <zeroOrMore>
-      <ref name="license"/>
+      <ref name="license.class"/>
     </zeroOrMore>
   </define>
   <!-- PERMISSIONS -->
@@ -2260,9 +2738,9 @@
     information, license material, and any
     future similar metadata.
     Details at:
-    http://jats.nlm.nih.gov/archiving/tag-library/1.0/index.html?elem=permissions
-    http://jats.nlm.nih.gov/publishing/tag-library/1.0/index.html?elem=permissions
-    http://jats.nlm.nih.gov/articleauthoring/tag-library/1.0/index.html?elem=permissions
+    http://jats.nlm.nih.gov/archiving/tag-library/1.1/index.html?elem=permissions
+    http://jats.nlm.nih.gov/publishing/tag-library/1.1/index.html?elem=permissions
+    http://jats.nlm.nih.gov/articleauthoring/tag-library/1.1/index.html?elem=permissions
   -->
   <define name="permissions">
     <element name="permissions">
@@ -2271,7 +2749,7 @@
     </element>
   </define>
   <define name="permissions-attlist" combine="interleave">
-    <empty/>
+    <ref name="permissions-atts"/>
   </define>
   <!-- ============================================================= -->
   <!-- COMMON METADATA/BIBLIOGRAPHIC ELEMENTS -->
@@ -2296,9 +2774,9 @@
     in which the article was originally
     published
     Details at:
-    http://jats.nlm.nih.gov/archiving/tag-library/1.0/index.html?elem=article-title
-    http://jats.nlm.nih.gov/publishing/tag-library/1.0/index.html?elem=article-title
-    http://jats.nlm.nih.gov/articleauthoring/tag-library/1.0/index.html?elem=article-title
+    http://jats.nlm.nih.gov/archiving/tag-library/1.1/index.html?elem=article-title
+    http://jats.nlm.nih.gov/publishing/tag-library/1.1/index.html?elem=article-title
+    http://jats.nlm.nih.gov/articleauthoring/tag-library/1.1/index.html?elem=article-title
   -->
   <define name="article-title">
     <element name="article-title">
@@ -2333,9 +2811,9 @@
     Name of a institution or organization such as
     a university or corporation.
     Details at:
-    http://jats.nlm.nih.gov/archiving/tag-library/1.0/index.html?elem=aff
-    http://jats.nlm.nih.gov/publishing/tag-library/1.0/index.html?elem=aff
-    http://jats.nlm.nih.gov/articleauthoring/tag-library/1.0/index.html?elem=aff
+    http://jats.nlm.nih.gov/archiving/tag-library/1.1/index.html?elem=aff
+    http://jats.nlm.nih.gov/publishing/tag-library/1.1/index.html?elem=aff
+    http://jats.nlm.nih.gov/articleauthoring/tag-library/1.1/index.html?elem=aff
   -->
   <define name="aff">
     <element name="aff">
@@ -2368,9 +2846,9 @@
     example the name of an institution in two
     languages or two scripts.
     Details at:
-    http://jats.nlm.nih.gov/archiving/tag-library/1.0/index.html?elem=aff-alternatives
-    http://jats.nlm.nih.gov/publishing/tag-library/1.0/index.html?elem=aff-alternatives
-    http://jats.nlm.nih.gov/articleauthoring/tag-library/1.0/index.html?elem=aff-alternatives
+    http://jats.nlm.nih.gov/archiving/tag-library/1.1/index.html?elem=aff-alternatives
+    http://jats.nlm.nih.gov/publishing/tag-library/1.1/index.html?elem=aff-alternatives
+    http://jats.nlm.nih.gov/articleauthoring/tag-library/1.1/index.html?elem=aff-alternatives
   -->
   <define name="aff-alternatives">
     <element name="aff-alternatives">
@@ -2390,9 +2868,9 @@
   <!--
     The date(s) on which the conference was held.
     Details at:
-    http://jats.nlm.nih.gov/archiving/tag-library/1.0/index.html?elem=conf-date
-    http://jats.nlm.nih.gov/publishing/tag-library/1.0/index.html?elem=conf-date
-    http://jats.nlm.nih.gov/articleauthoring/tag-library/1.0/index.html?elem=conf-date
+    http://jats.nlm.nih.gov/archiving/tag-library/1.1/index.html?elem=conf-date
+    http://jats.nlm.nih.gov/publishing/tag-library/1.1/index.html?elem=conf-date
+    http://jats.nlm.nih.gov/articleauthoring/tag-library/1.1/index.html?elem=conf-date
   -->
   <define name="conf-date">
     <element name="conf-date">
@@ -2422,9 +2900,9 @@
     campus or organization location if that is
     the only location available.
     Details at:
-    http://jats.nlm.nih.gov/archiving/tag-library/1.0/index.html?elem=conf-loc
-    http://jats.nlm.nih.gov/publishing/tag-library/1.0/index.html?elem=conf-loc
-    http://jats.nlm.nih.gov/articleauthoring/tag-library/1.0/index.html?elem=conf-loc
+    http://jats.nlm.nih.gov/archiving/tag-library/1.1/index.html?elem=conf-loc
+    http://jats.nlm.nih.gov/publishing/tag-library/1.1/index.html?elem=conf-loc
+    http://jats.nlm.nih.gov/articleauthoring/tag-library/1.1/index.html?elem=conf-loc
   -->
   <define name="conf-loc">
     <element name="conf-loc">
@@ -2452,9 +2930,9 @@
     The full name of the conference, including any
     qualifiers such as "43rd Annual".
     Details at:
-    http://jats.nlm.nih.gov/archiving/tag-library/1.0/index.html?elem=conf-name
-    http://jats.nlm.nih.gov/publishing/tag-library/1.0/index.html?elem=conf-name
-    http://jats.nlm.nih.gov/articleauthoring/tag-library/1.0/index.html?elem=conf-name
+    http://jats.nlm.nih.gov/archiving/tag-library/1.1/index.html?elem=conf-name
+    http://jats.nlm.nih.gov/publishing/tag-library/1.1/index.html?elem=conf-name
+    http://jats.nlm.nih.gov/articleauthoring/tag-library/1.1/index.html?elem=conf-name
   -->
   <define name="conf-name">
     <element name="conf-name">
@@ -2486,9 +2964,9 @@
     sponsored the conference, multiple
     <conf-sponsor> elements should be used.
     Details at:
-    http://jats.nlm.nih.gov/archiving/tag-library/1.0/index.html?elem=conf-sponsor
-    http://jats.nlm.nih.gov/publishing/tag-library/1.0/index.html?elem=conf-sponsor
-    http://jats.nlm.nih.gov/articleauthoring/tag-library/1.0/index.html?elem=conf-sponsor
+    http://jats.nlm.nih.gov/archiving/tag-library/1.1/index.html?elem=conf-sponsor
+    http://jats.nlm.nih.gov/publishing/tag-library/1.1/index.html?elem=conf-sponsor
+    http://jats.nlm.nih.gov/articleauthoring/tag-library/1.1/index.html?elem=conf-sponsor
   -->
   <define name="conf-sponsor">
     <element name="conf-sponsor">
@@ -2510,9 +2988,9 @@
     for an interior element such as an <abstract>
     or <figure>.
     Details at:
-    http://jats.nlm.nih.gov/archiving/tag-library/1.0/index.html?elem=object-id
-    http://jats.nlm.nih.gov/publishing/tag-library/1.0/index.html?elem=object-id
-    http://jats.nlm.nih.gov/articleauthoring/tag-library/1.0/index.html?elem=object-id
+    http://jats.nlm.nih.gov/archiving/tag-library/1.1/index.html?elem=object-id
+    http://jats.nlm.nih.gov/publishing/tag-library/1.1/index.html?elem=object-id
+    http://jats.nlm.nih.gov/articleauthoring/tag-library/1.1/index.html?elem=object-id
   -->
   <define name="object-id">
     <element name="object-id">
@@ -2535,9 +3013,9 @@
   <!--
     International Standard Book Number
     Details at:
-    http://jats.nlm.nih.gov/archiving/tag-library/1.0/index.html?elem=isbn
-    http://jats.nlm.nih.gov/publishing/tag-library/1.0/index.html?elem=isbn
-    http://jats.nlm.nih.gov/articleauthoring/tag-library/1.0/index.html?elem=isbn
+    http://jats.nlm.nih.gov/archiving/tag-library/1.1/index.html?elem=isbn
+    http://jats.nlm.nih.gov/publishing/tag-library/1.1/index.html?elem=isbn
+    http://jats.nlm.nih.gov/articleauthoring/tag-library/1.1/index.html?elem=isbn
   -->
   <define name="isbn">
     <element name="isbn">
@@ -2565,9 +3043,9 @@
   <!--
     International Standard Serial Number
     Details at:
-    http://jats.nlm.nih.gov/archiving/tag-library/1.0/index.html?elem=issn
-    http://jats.nlm.nih.gov/publishing/tag-library/1.0/index.html?elem=issn
-    http://jats.nlm.nih.gov/articleauthoring/tag-library/1.0/index.html?elem=issn
+    http://jats.nlm.nih.gov/archiving/tag-library/1.1/index.html?elem=issn
+    http://jats.nlm.nih.gov/publishing/tag-library/1.1/index.html?elem=issn
+    http://jats.nlm.nih.gov/articleauthoring/tag-library/1.1/index.html?elem=issn
   -->
   <define name="issn">
     <element name="issn">
@@ -2595,9 +3073,9 @@
   <!--
     International Standard Linking Serial Number
     Details at:
-    http://jats.nlm.nih.gov/archiving/tag-library/1.0/index.html?elem=issn-l
-    http://jats.nlm.nih.gov/publishing/tag-library/1.0/index.html?elem=issn-l
-    http://jats.nlm.nih.gov/articleauthoring/tag-library/1.0/index.html?elem=issn-l
+    http://jats.nlm.nih.gov/archiving/tag-library/1.1/index.html?elem=issn-l
+    http://jats.nlm.nih.gov/publishing/tag-library/1.1/index.html?elem=issn-l
+    http://jats.nlm.nih.gov/articleauthoring/tag-library/1.1/index.html?elem=issn-l
   -->
   <define name="issn-l">
     <element name="issn-l">
@@ -2624,9 +3102,9 @@
     identifier of an issue of a journal that
     is displayed or printed with the issue.
     Details at:
-    http://jats.nlm.nih.gov/archiving/tag-library/1.0/index.html?elem=issue
-    http://jats.nlm.nih.gov/publishing/tag-library/1.0/index.html?elem=issue
-    http://jats.nlm.nih.gov/articleauthoring/tag-library/1.0/index.html?elem=issue
+    http://jats.nlm.nih.gov/archiving/tag-library/1.1/index.html?elem=issue
+    http://jats.nlm.nih.gov/publishing/tag-library/1.1/index.html?elem=issue
+    http://jats.nlm.nih.gov/articleauthoring/tag-library/1.1/index.html?elem=issue
   -->
   <define name="issue">
     <element name="issue">
@@ -2648,9 +3126,9 @@
     that describes an entire issue of a
     journal
     Details at:
-    http://jats.nlm.nih.gov/archiving/tag-library/1.0/index.html?elem=issue-id
-    http://jats.nlm.nih.gov/publishing/tag-library/1.0/index.html?elem=issue-id
-    http://jats.nlm.nih.gov/articleauthoring/tag-library/1.0/index.html?elem=issue-id
+    http://jats.nlm.nih.gov/archiving/tag-library/1.1/index.html?elem=issue-id
+    http://jats.nlm.nih.gov/publishing/tag-library/1.1/index.html?elem=issue-id
+    http://jats.nlm.nih.gov/articleauthoring/tag-library/1.1/index.html?elem=issue-id
   -->
   <define name="issue-id">
     <element name="issue-id">
@@ -2674,9 +3152,9 @@
     (titles, part numbers, etc.) for those
     publishing components.
     Details at:
-    http://jats.nlm.nih.gov/archiving/tag-library/1.0/index.html?elem=issue-part
-    http://jats.nlm.nih.gov/publishing/tag-library/1.0/index.html?elem=issue-part
-    http://jats.nlm.nih.gov/articleauthoring/tag-library/1.0/index.html?elem=issue-part
+    http://jats.nlm.nih.gov/archiving/tag-library/1.1/index.html?elem=issue-part
+    http://jats.nlm.nih.gov/publishing/tag-library/1.1/index.html?elem=issue-part
+    http://jats.nlm.nih.gov/articleauthoring/tag-library/1.1/index.html?elem=issue-part
   -->
   <define name="issue-part">
     <element name="issue-part">
@@ -2702,8 +3180,8 @@
     Used to record the sponsor for an issue of
     the journal
     Details at:
-    http://jats.nlm.nih.gov/archiving/tag-library/1.0/index.html?elem=issue-sponsor
-    http://jats.nlm.nih.gov/publishing/tag-library/1.0/index.html?elem=issue-sponsor
+    http://jats.nlm.nih.gov/archiving/tag-library/1.1/index.html?elem=issue-sponsor
+    http://jats.nlm.nih.gov/publishing/tag-library/1.1/index.html?elem=issue-sponsor
   -->
   <define name="issue-sponsor">
     <element name="issue-sponsor">
@@ -2726,9 +3204,9 @@
     Used to record the theme or special issue
     title for an issue of the journal
     Details at:
-    http://jats.nlm.nih.gov/archiving/tag-library/1.0/index.html?elem=issue-title
-    http://jats.nlm.nih.gov/publishing/tag-library/1.0/index.html?elem=issue-title
-    http://jats.nlm.nih.gov/articleauthoring/tag-library/1.0/index.html?elem=issue-title
+    http://jats.nlm.nih.gov/archiving/tag-library/1.1/index.html?elem=issue-title
+    http://jats.nlm.nih.gov/publishing/tag-library/1.1/index.html?elem=issue-title
+    http://jats.nlm.nih.gov/articleauthoring/tag-library/1.1/index.html?elem=issue-title
   -->
   <define name="issue-title">
     <element name="issue-title">
@@ -2751,9 +3229,9 @@
     journal title; used for identification of
     the journal domain.
     Details at:
-    http://jats.nlm.nih.gov/archiving/tag-library/1.0/index.html?elem=journal-id
-    http://jats.nlm.nih.gov/publishing/tag-library/1.0/index.html?elem=journal-id
-    http://jats.nlm.nih.gov/articleauthoring/tag-library/1.0/index.html?elem=journal-id
+    http://jats.nlm.nih.gov/archiving/tag-library/1.1/index.html?elem=journal-id
+    http://jats.nlm.nih.gov/publishing/tag-library/1.1/index.html?elem=journal-id
+    http://jats.nlm.nih.gov/articleauthoring/tag-library/1.1/index.html?elem=journal-id
   -->
   <define name="journal-id">
     <element name="journal-id">
@@ -2784,9 +3262,9 @@
     Scientist, Photographer, Research Associate,
     etc.
     Details at:
-    http://jats.nlm.nih.gov/archiving/tag-library/1.0/index.html?elem=role
-    http://jats.nlm.nih.gov/publishing/tag-library/1.0/index.html?elem=role
-    http://jats.nlm.nih.gov/articleauthoring/tag-library/1.0/index.html?elem=role
+    http://jats.nlm.nih.gov/archiving/tag-library/1.1/index.html?elem=role
+    http://jats.nlm.nih.gov/publishing/tag-library/1.1/index.html?elem=role
+    http://jats.nlm.nih.gov/articleauthoring/tag-library/1.1/index.html?elem=role
   -->
   <define name="role">
     <element name="role">
@@ -2818,8 +3296,8 @@
     Container element for all translated, and
     transliterated journal titles.
     Details at:
-    http://jats.nlm.nih.gov/archiving/tag-library/1.0/index.html?elem=trans-title-group
-    http://jats.nlm.nih.gov/publishing/tag-library/1.0/index.html?elem=trans-title-group
+    http://jats.nlm.nih.gov/archiving/tag-library/1.1/index.html?elem=trans-title-group
+    http://jats.nlm.nih.gov/publishing/tag-library/1.1/index.html?elem=trans-title-group
   -->
   <define name="trans-title-group">
     <element name="trans-title-group">
@@ -2836,8 +3314,8 @@
     that has been translated out of the original
     language of the article subtitle <subtitle>
     Details at:
-    http://jats.nlm.nih.gov/archiving/tag-library/1.0/index.html?elem=trans-subtitle
-    http://jats.nlm.nih.gov/publishing/tag-library/1.0/index.html?elem=trans-subtitle
+    http://jats.nlm.nih.gov/archiving/tag-library/1.1/index.html?elem=trans-subtitle
+    http://jats.nlm.nih.gov/publishing/tag-library/1.1/index.html?elem=trans-subtitle
   -->
   <define name="trans-subtitle">
     <element name="trans-subtitle">
@@ -2860,9 +3338,9 @@
     that of the original article title
     <article-title>
     Details at:
-    http://jats.nlm.nih.gov/archiving/tag-library/1.0/index.html?elem=trans-title
-    http://jats.nlm.nih.gov/publishing/tag-library/1.0/index.html?elem=trans-title
-    http://jats.nlm.nih.gov/articleauthoring/tag-library/1.0/index.html?elem=trans-title
+    http://jats.nlm.nih.gov/archiving/tag-library/1.1/index.html?elem=trans-title
+    http://jats.nlm.nih.gov/publishing/tag-library/1.1/index.html?elem=trans-title
+    http://jats.nlm.nih.gov/articleauthoring/tag-library/1.1/index.html?elem=trans-title
   -->
   <define name="trans-title">
     <element name="trans-title">
@@ -2891,9 +3369,9 @@
     identifier of an volume of a journal that
     is displayed or printed with the volume.
     Details at:
-    http://jats.nlm.nih.gov/archiving/tag-library/1.0/index.html?elem=volume
-    http://jats.nlm.nih.gov/publishing/tag-library/1.0/index.html?elem=volume
-    http://jats.nlm.nih.gov/articleauthoring/tag-library/1.0/index.html?elem=volume
+    http://jats.nlm.nih.gov/archiving/tag-library/1.1/index.html?elem=volume
+    http://jats.nlm.nih.gov/publishing/tag-library/1.1/index.html?elem=volume
+    http://jats.nlm.nih.gov/articleauthoring/tag-library/1.1/index.html?elem=volume
   -->
   <define name="volume">
     <element name="volume">
@@ -2921,9 +3399,9 @@
     that describes an entire volume of a
     journal.
     Details at:
-    http://jats.nlm.nih.gov/archiving/tag-library/1.0/index.html?elem=volume-id
-    http://jats.nlm.nih.gov/publishing/tag-library/1.0/index.html?elem=volume-id
-    http://jats.nlm.nih.gov/articleauthoring/tag-library/1.0/index.html?elem=volume-id
+    http://jats.nlm.nih.gov/archiving/tag-library/1.1/index.html?elem=volume-id
+    http://jats.nlm.nih.gov/publishing/tag-library/1.1/index.html?elem=volume-id
+    http://jats.nlm.nih.gov/articleauthoring/tag-library/1.1/index.html?elem=volume-id
   -->
   <define name="volume-id">
     <element name="volume-id">
@@ -2954,13 +3432,13 @@
     with "1", so duplicate volume numbers
     would exist and need to be differentiated.
     Such a publisher typically adds a series
-    series number to their volume numbers, and
+    number to their volume numbers, and
     this element has been created to hold such
     a series number.
     Details at:
-    http://jats.nlm.nih.gov/archiving/tag-library/1.0/index.html?elem=volume-series
-    http://jats.nlm.nih.gov/publishing/tag-library/1.0/index.html?elem=volume-series
-    http://jats.nlm.nih.gov/articleauthoring/tag-library/1.0/index.html?elem=volume-series
+    http://jats.nlm.nih.gov/archiving/tag-library/1.1/index.html?elem=volume-series
+    http://jats.nlm.nih.gov/publishing/tag-library/1.1/index.html?elem=volume-series
+    http://jats.nlm.nih.gov/articleauthoring/tag-library/1.1/index.html?elem=volume-series
   -->
   <define name="volume-series">
     <element name="volume-series">
@@ -2976,6 +3454,54 @@
   <define name="volume-series-attlist" combine="interleave">
     <ref name="volume-series-atts"/>
   </define>
+  <!-- VOLUME ISSUE GROUP -->
+  <!--
+    Content model for the element
+    <volume-issue-group>.
+  -->
+  <define name="volume-issue-group-model">
+    <zeroOrMore>
+      <ref name="volume"/>
+    </zeroOrMore>
+    <zeroOrMore>
+      <ref name="volume-id"/>
+    </zeroOrMore>
+    <optional>
+      <ref name="volume-series"/>
+    </optional>
+    <zeroOrMore>
+      <ref name="issue"/>
+    </zeroOrMore>
+    <zeroOrMore>
+      <ref name="issue-id"/>
+    </zeroOrMore>
+    <zeroOrMore>
+      <ref name="issue-title"/>
+    </zeroOrMore>
+    <zeroOrMore>
+      <ref name="issue-sponsor"/>
+    </zeroOrMore>
+    <optional>
+      <ref name="issue-part"/>
+    </optional>
+  </define>
+  <!-- TRANSLATED TITLE GROUP -->
+  <!--
+    Container element to hold together related
+    volume and issue elements.
+    Details at:
+    http://jats.nlm.nih.gov/archiving/tag-library/1.1/index.html?elem=volume-issue-group
+    http://jats.nlm.nih.gov/publishing/tag-library/1.1/index.html?elem=volume-issue-group
+  -->
+  <define name="volume-issue-group">
+    <element name="volume-issue-group">
+      <ref name="volume-issue-group-attlist"/>
+      <ref name="volume-issue-group-model"/>
+    </element>
+  </define>
+  <define name="volume-issue-group-attlist" combine="interleave">
+    <ref name="volume-issue-group-atts"/>
+  </define>
   <!-- ============================================================= -->
   <!-- COMMON ARTICLE METADATA/BIBLIOGRAPHIC -->
   <!-- CONTRIBUTOR IDENTIFICATION ELEMENTS -->
@@ -2987,15 +3513,18 @@
     an <anonymous> element
   -->
   <!-- ANONYMOUS CONTENT MODEL -->
-  <!-- The content model for the <etal> element -->
+  <!--
+    The content model for the <anonymous> 
+    element
+  -->
   <!-- ANONYMOUS -->
   <!--
     Place holder for the name of a contributor
     whose name is unknown or not disclosed.
     Details at:
-    http://jats.nlm.nih.gov/archiving/tag-library/1.0/index.html?elem=anonymous
-    http://jats.nlm.nih.gov/publishing/tag-library/1.0/index.html?elem=anonymous
-    http://jats.nlm.nih.gov/articleauthoring/tag-library/1.0/index.html?elem=anonymous
+    http://jats.nlm.nih.gov/archiving/tag-library/1.1/index.html?elem=anonymous
+    http://jats.nlm.nih.gov/publishing/tag-library/1.1/index.html?elem=anonymous
+    http://jats.nlm.nih.gov/articleauthoring/tag-library/1.1/index.html?elem=anonymous
   -->
   <define name="anonymous">
     <element name="anonymous">
@@ -3031,9 +3560,9 @@
     content for this element, with such text as
     "Associates, coworkers, and colleagues".
     Details at:
-    http://jats.nlm.nih.gov/archiving/tag-library/1.0/index.html?elem=etal
-    http://jats.nlm.nih.gov/publishing/tag-library/1.0/index.html?elem=etal
-    http://jats.nlm.nih.gov/articleauthoring/tag-library/1.0/index.html?elem=etal
+    http://jats.nlm.nih.gov/archiving/tag-library/1.1/index.html?elem=etal
+    http://jats.nlm.nih.gov/publishing/tag-library/1.1/index.html?elem=etal
+    http://jats.nlm.nih.gov/articleauthoring/tag-library/1.1/index.html?elem=etal
   -->
   <define name="etal">
     <element name="etal">
@@ -3057,9 +3586,6 @@
     an OR bar, so this inline mix beguines with
     an OR bar.
   -->
-  <define name="on-behalf-of-elements">
-    <ref name="rendition-plus"/>
-  </define>
   <!-- ON BEHALF OF -->
   <!--
     When a contributor has written or edited
@@ -3068,9 +3594,9 @@
     representative of the organization, which
     may or may not be his/her usual affiliation.
     Details at:
-    http://jats.nlm.nih.gov/archiving/tag-library/1.0/index.html?elem=on-behalf-of
-    http://jats.nlm.nih.gov/publishing/tag-library/1.0/index.html?elem=on-behalf-of
-    http://jats.nlm.nih.gov/articleauthoring/tag-library/1.0/index.html?elem=on-behalf-of
+    http://jats.nlm.nih.gov/archiving/tag-library/1.1/index.html?elem=on-behalf-of
+    http://jats.nlm.nih.gov/publishing/tag-library/1.1/index.html?elem=on-behalf-of
+    http://jats.nlm.nih.gov/articleauthoring/tag-library/1.1/index.html?elem=on-behalf-of
   -->
   <define name="on-behalf-of">
     <element name="on-behalf-of">
@@ -3103,8 +3629,8 @@
   <!--
     Who published the work
     Details at:
-    http://jats.nlm.nih.gov/archiving/tag-library/1.0/index.html?elem=publisher
-    http://jats.nlm.nih.gov/publishing/tag-library/1.0/index.html?elem=publisher
+    http://jats.nlm.nih.gov/archiving/tag-library/1.1/index.html?elem=publisher
+    http://jats.nlm.nih.gov/publishing/tag-library/1.1/index.html?elem=publisher
   -->
   <define name="publisher">
     <element name="publisher">
@@ -3128,9 +3654,9 @@
   <!--
     Name of the publisher of the work
     Details at:
-    http://jats.nlm.nih.gov/archiving/tag-library/1.0/index.html?elem=publisher-name
-    http://jats.nlm.nih.gov/publishing/tag-library/1.0/index.html?elem=publisher-name
-    http://jats.nlm.nih.gov/articleauthoring/tag-library/1.0/index.html?elem=publisher-name
+    http://jats.nlm.nih.gov/archiving/tag-library/1.1/index.html?elem=publisher-name
+    http://jats.nlm.nih.gov/publishing/tag-library/1.1/index.html?elem=publisher-name
+    http://jats.nlm.nih.gov/articleauthoring/tag-library/1.1/index.html?elem=publisher-name
   -->
   <define name="publisher-name">
     <element name="publisher-name">
@@ -3156,9 +3682,9 @@
     Place of publication, usually a city such
     as New York or London
     Details at:
-    http://jats.nlm.nih.gov/archiving/tag-library/1.0/index.html?elem=publisher-loc
-    http://jats.nlm.nih.gov/publishing/tag-library/1.0/index.html?elem=publisher-loc
-    http://jats.nlm.nih.gov/articleauthoring/tag-library/1.0/index.html?elem=publisher-loc
+    http://jats.nlm.nih.gov/archiving/tag-library/1.1/index.html?elem=publisher-loc
+    http://jats.nlm.nih.gov/publishing/tag-library/1.1/index.html?elem=publisher-loc
+    http://jats.nlm.nih.gov/articleauthoring/tag-library/1.1/index.html?elem=publisher-loc
   -->
   <define name="publisher-loc">
     <element name="publisher-loc">
@@ -3183,9 +3709,9 @@
     The page number on which the article starts,
     for print journals that have page numbers
     Details at:
-    http://jats.nlm.nih.gov/archiving/tag-library/1.0/index.html?elem=fpage
-    http://jats.nlm.nih.gov/publishing/tag-library/1.0/index.html?elem=fpage
-    http://jats.nlm.nih.gov/articleauthoring/tag-library/1.0/index.html?elem=fpage
+    http://jats.nlm.nih.gov/archiving/tag-library/1.1/index.html?elem=fpage
+    http://jats.nlm.nih.gov/publishing/tag-library/1.1/index.html?elem=fpage
+    http://jats.nlm.nih.gov/articleauthoring/tag-library/1.1/index.html?elem=fpage
   -->
   <define name="fpage">
     <element name="fpage">
@@ -3201,9 +3727,9 @@
     The page number on which the article ends,
     for print journals that have page numbers
     Details at:
-    http://jats.nlm.nih.gov/archiving/tag-library/1.0/index.html?elem=lpage
-    http://jats.nlm.nih.gov/publishing/tag-library/1.0/index.html?elem=lpage
-    http://jats.nlm.nih.gov/articleauthoring/tag-library/1.0/index.html?elem=lpage
+    http://jats.nlm.nih.gov/archiving/tag-library/1.1/index.html?elem=lpage
+    http://jats.nlm.nih.gov/publishing/tag-library/1.1/index.html?elem=lpage
+    http://jats.nlm.nih.gov/articleauthoring/tag-library/1.1/index.html?elem=lpage
   -->
   <define name="lpage">
     <element name="lpage">
@@ -3225,9 +3751,9 @@
     8, runs 8 through 11, skips to pages 14
     through 19, and concludes on page 40.
     Details at:
-    http://jats.nlm.nih.gov/archiving/tag-library/1.0/index.html?elem=page-range
-    http://jats.nlm.nih.gov/publishing/tag-library/1.0/index.html?elem=page-range
-    http://jats.nlm.nih.gov/articleauthoring/tag-library/1.0/index.html?elem=page-range
+    http://jats.nlm.nih.gov/archiving/tag-library/1.1/index.html?elem=page-range
+    http://jats.nlm.nih.gov/publishing/tag-library/1.1/index.html?elem=page-range
+    http://jats.nlm.nih.gov/articleauthoring/tag-library/1.1/index.html?elem=page-range
   -->
   <define name="page-range">
     <element name="page-range">
@@ -3256,9 +3782,9 @@
     the unit of measure (pages, minutes, hours,
     linear feet, etc.).
     Details at:
-    http://jats.nlm.nih.gov/archiving/tag-library/1.0/index.html?elem=size
-    http://jats.nlm.nih.gov/publishing/tag-library/1.0/index.html?elem=size
-    http://jats.nlm.nih.gov/articleauthoring/tag-library/1.0/index.html?elem=size
+    http://jats.nlm.nih.gov/archiving/tag-library/1.1/index.html?elem=size
+    http://jats.nlm.nih.gov/publishing/tag-library/1.1/index.html?elem=size
+    http://jats.nlm.nih.gov/articleauthoring/tag-library/1.1/index.html?elem=size
   -->
   <define name="size">
     <element name="size">
@@ -3279,9 +3805,9 @@
     Used to identify an article that
     does not have traditional page numbers.
     Details at:
-    http://jats.nlm.nih.gov/archiving/tag-library/1.0/index.html?elem=elocation-id
-    http://jats.nlm.nih.gov/publishing/tag-library/1.0/index.html?elem=elocation-id
-    http://jats.nlm.nih.gov/articleauthoring/tag-library/1.0/index.html?elem=elocation-id
+    http://jats.nlm.nih.gov/archiving/tag-library/1.1/index.html?elem=elocation-id
+    http://jats.nlm.nih.gov/publishing/tag-library/1.1/index.html?elem=elocation-id
+    http://jats.nlm.nih.gov/articleauthoring/tag-library/1.1/index.html?elem=elocation-id
   -->
   <define name="elocation-id">
     <element name="elocation-id">
@@ -3315,9 +3841,9 @@
     <element-citation> with punctuation and 
     spacing removed.
     Details at:
-    http://jats.nlm.nih.gov/archiving/tag-library/1.0/index.html?elem=citation-alternativesv
-    http://jats.nlm.nih.gov/publishing/tag-library/1.0/index.html?elem=citation-alternatives
-    http://jats.nlm.nih.gov/articleauthoring/tag-library/1.0/index.html?elem=citation-alternatives
+    http://jats.nlm.nih.gov/archiving/tag-library/1.1/index.html?elem=citation-alternativesv
+    http://jats.nlm.nih.gov/publishing/tag-library/1.1/index.html?elem=citation-alternatives
+    http://jats.nlm.nih.gov/articleauthoring/tag-library/1.1/index.html?elem=citation-alternatives
   -->
   <define name="citation-alternatives">
     <element name="citation-alternatives">
@@ -3326,7 +3852,7 @@
     </element>
   </define>
   <define name="citation-alternatives-attlist" combine="interleave">
-    <empty/>
+    <ref name="citation-alternatives-atts"/>
   </define>
   <!-- CITATION ELEMENTS -->
   <!--
@@ -3341,17 +3867,6 @@
     Design Note: All inline mixes begin with an
     OR bar.
   -->
-  <define name="citation-elements">
-    <choice>
-      <ref name="emphasis.class"/>
-      <ref name="inline-display.class"/>
-      <ref name="inline-math.class"/>
-      <ref name="label.class"/>
-      <ref name="phrase.class"/>
-      <ref name="references.class"/>
-      <ref name="subsup.class"/>
-    </choice>
-  </define>
   <!-- MIXED CITATION -->
   <!--
     A citation is a description of a work, such
@@ -3362,9 +3877,9 @@
     spacing, and any of the citation elements
     in any order.
     Details at:
-    http://jats.nlm.nih.gov/archiving/tag-library/1.0/index.html?elem=mixed-citation
-    http://jats.nlm.nih.gov/publishing/tag-library/1.0/index.html?elem=mixed-citation
-    http://jats.nlm.nih.gov/articleauthoring/tag-library/1.0/index.html?elem=mixed-citation
+    http://jats.nlm.nih.gov/archiving/tag-library/1.1/index.html?elem=mixed-citation
+    http://jats.nlm.nih.gov/publishing/tag-library/1.1/index.html?elem=mixed-citation
+    http://jats.nlm.nih.gov/articleauthoring/tag-library/1.1/index.html?elem=mixed-citation
   -->
   <define name="mixed-citation">
     <element name="mixed-citation">
@@ -3391,9 +3906,9 @@
     citation is intended for use in capturing
     a publisher's specific element order.
     Details at:
-    http://jats.nlm.nih.gov/archiving/tag-library/1.0/index.html?elem=element-citation
-    http://jats.nlm.nih.gov/publishing/tag-library/1.0/index.html?elem=element-citation
-    http://jats.nlm.nih.gov/articleauthoring/tag-library/1.0/index.html?elem=element-citation
+    http://jats.nlm.nih.gov/archiving/tag-library/1.1/index.html?elem=element-citation
+    http://jats.nlm.nih.gov/publishing/tag-library/1.1/index.html?elem=element-citation
+    http://jats.nlm.nih.gov/articleauthoring/tag-library/1.1/index.html?elem=element-citation
   -->
   <define name="element-citation">
     <element name="element-citation">
@@ -3407,7 +3922,7 @@
     <ref name="element-citation-atts"/>
   </define>
   <!-- ============================================================= -->
-  <!-- ADDRESS ELEMENTS (BIBLIOGRAPHIC) -->
+  <!-- ADDRESS ELEMENTS -->
   <!-- ============================================================= -->
   <!-- ADDRESS MODEL -->
   <!-- Content model for the <address> element -->
@@ -3425,9 +3940,9 @@
     as address, phone, fax, email, url, country,
     etc.
     Details at:
-    http://jats.nlm.nih.gov/archiving/tag-library/1.0/index.html?elem=address
-    http://jats.nlm.nih.gov/publishing/tag-library/1.0/index.html?elem=address
-    http://jats.nlm.nih.gov/articleauthoring/tag-library/1.0/index.html?elem=address
+    http://jats.nlm.nih.gov/archiving/tag-library/1.1/index.html?elem=address
+    http://jats.nlm.nih.gov/publishing/tag-library/1.1/index.html?elem=address
+    http://jats.nlm.nih.gov/articleauthoring/tag-library/1.1/index.html?elem=address
   -->
   <define name="address">
     <element name="address">
@@ -3453,9 +3968,9 @@
     undifferentiated data characters, the entire
     address may be inside one of these elements.
     Details at:
-    http://jats.nlm.nih.gov/archiving/tag-library/1.0/index.html?elem=addr-line
-    http://jats.nlm.nih.gov/publishing/tag-library/1.0/index.html?elem=addr-line
-    http://jats.nlm.nih.gov/articleauthoring/tag-library/1.0/index.html?elem=addr-line
+    http://jats.nlm.nih.gov/archiving/tag-library/1.1/index.html?elem=addr-line
+    http://jats.nlm.nih.gov/publishing/tag-library/1.1/index.html?elem=addr-line
+    http://jats.nlm.nih.gov/articleauthoring/tag-library/1.1/index.html?elem=addr-line
   -->
   <define name="addr-line">
     <element name="addr-line">
@@ -3471,6 +3986,37 @@
   <define name="addr-line-attlist" combine="interleave">
     <ref name="addr-line-atts"/>
   </define>
+  <!-- CITY ELEMENTS -->
+  <!--
+    The elements that can be included along with
+    data characters inside the content model of
+    the city element.
+  -->
+  <define name="city-elements">
+    <notAllowed/>
+  </define>
+  <!-- CITY: IN AN ADDRESS -->
+  <!--
+    The name of a city.                   
+    Details at:
+    http://jats.nlm.nih.gov/archiving/tag-library/1.1/index.html?elem=city
+    http://jats.nlm.nih.gov/publishing/tag-library/1.1/index.html?elem=city
+    http://jats.nlm.nih.gov/articleauthoring/tag-library/1.1/index.html?elem=city
+  -->
+  <define name="city">
+    <element name="city">
+      <ref name="city-attlist"/>
+      <zeroOrMore>
+        <choice>
+          <text/>
+          <ref name="city-elements"/>
+        </choice>
+      </zeroOrMore>
+    </element>
+  </define>
+  <define name="city-attlist" combine="interleave">
+    <ref name="city-atts"/>
+  </define>
   <!-- COUNTRY ELEMENTS -->
   <!--
     The elements that can be included along with
@@ -3482,10 +4028,11 @@
   </define>
   <!-- COUNTRY: IN AN ADDRESS -->
   <!--
+    The name of a country.                    
     Details at:
-    http://jats.nlm.nih.gov/archiving/tag-library/1.0/index.html?elem=country
-    http://jats.nlm.nih.gov/publishing/tag-library/1.0/index.html?elem=country
-    http://jats.nlm.nih.gov/articleauthoring/tag-library/1.0/index.html?elem=country
+    http://jats.nlm.nih.gov/archiving/tag-library/1.1/index.html?elem=country
+    http://jats.nlm.nih.gov/publishing/tag-library/1.1/index.html?elem=country
+    http://jats.nlm.nih.gov/articleauthoring/tag-library/1.1/index.html?elem=country
   -->
   <define name="country">
     <element name="country">
@@ -3511,10 +4058,11 @@
   </define>
   <!-- EMAIL ADDRESS -->
   <!--
+    The email address of a person or institution.
     Details at:
-    http://jats.nlm.nih.gov/archiving/tag-library/1.0/index.html?elem=email
-    http://jats.nlm.nih.gov/publishing/tag-library/1.0/index.html?elem=email
-    http://jats.nlm.nih.gov/articleauthoring/tag-library/1.0/index.html?elem=email
+    http://jats.nlm.nih.gov/archiving/tag-library/1.1/index.html?elem=email
+    http://jats.nlm.nih.gov/publishing/tag-library/1.1/index.html?elem=email
+    http://jats.nlm.nih.gov/articleauthoring/tag-library/1.1/index.html?elem=email
   -->
   <define name="email">
     <element name="email">
@@ -3538,10 +4086,11 @@
   -->
   <!-- FAX NUMBER: IN AN ADDRESS -->
   <!--
+    The number used to send faxes.
     Details at:
-    http://jats.nlm.nih.gov/archiving/tag-library/1.0/index.html?elem=fax
-    http://jats.nlm.nih.gov/publishing/tag-library/1.0/index.html?elem=fax
-    http://jats.nlm.nih.gov/articleauthoring/tag-library/1.0/index.html?elem=fax
+    http://jats.nlm.nih.gov/archiving/tag-library/1.1/index.html?elem=fax
+    http://jats.nlm.nih.gov/publishing/tag-library/1.1/index.html?elem=fax
+    http://jats.nlm.nih.gov/articleauthoring/tag-library/1.1/index.html?elem=fax
   -->
   <define name="fax">
     <element name="fax">
@@ -3567,11 +4116,11 @@
     Name of a institution or organization such as
     a university or corporation used in an
     address or within a citation (such as a
-    <mixed-citation> or an <element-citation>
+    <mixed-citation> or an <element-citation>)
     Details at:
-    http://jats.nlm.nih.gov/archiving/tag-library/1.0/index.html?elem=institution
-    http://jats.nlm.nih.gov/publishing/tag-library/1.0/index.html?elem=institution
-    http://jats.nlm.nih.gov/articleauthoring/tag-library/1.0/index.html?elem=institution
+    http://jats.nlm.nih.gov/archiving/tag-library/1.1/index.html?elem=institution
+    http://jats.nlm.nih.gov/publishing/tag-library/1.1/index.html?elem=institution
+    http://jats.nlm.nih.gov/articleauthoring/tag-library/1.1/index.html?elem=institution
   -->
   <define name="institution">
     <element name="institution">
@@ -3587,6 +4136,65 @@
   <define name="institution-attlist" combine="interleave">
     <ref name="institution-atts"/>
   </define>
+  <!-- INSTITUTION IDENTIFIER MODEL -->
+  <!--
+    Content model for the <institution-id>
+    element
+  -->
+  <define name="institution-id-model">
+    <text/>
+  </define>
+  <!-- INSTITUTION IDENTIFIER -->
+  <!--
+    Contains an institutional identifier,
+    whether publisher-specific (for example,  
+    "AIP") or from an established identifying
+    authority (for example,"Ringgold" or "ISNI").
+    Details at:
+    http://jats.nlm.nih.gov/archiving/tag-library/1.1/index.html?elem=institution-id
+    http://jats.nlm.nih.gov/publishing/tag-library/1.1/index.html?elem=institution-id
+    http://jats.nlm.nih.gov/articleauthoring/tag-library/1.1/index.html?elem=institution-id
+  -->
+  <define name="institution-id">
+    <element name="institution-id">
+      <ref name="institution-id-attlist"/>
+      <ref name="institution-id-model"/>
+    </element>
+  </define>
+  <define name="institution-id-attlist" combine="interleave">
+    <ref name="institution-id-atts"/>
+  </define>
+  <!-- INSTITUTION WRAPPER MODEL -->
+  <!--
+    Content model for the <institution-wrap>
+    element
+  -->
+  <define name="institution-wrap-model">
+    <zeroOrMore>
+      <ref name="institution.class"/>
+    </zeroOrMore>
+  </define>
+  <!-- INSTITUTION WRAPPER -->
+  <!--
+    A container element to hold the name of an
+    institution <institution> and any formal
+    identifiers for that institution 
+    <institution-id>), for example, a INSI or
+    Ringgold ID.
+    Details at:
+    http://jats.nlm.nih.gov/archiving/tag-library/1.1/index.html?elem=institution-wrap
+    http://jats.nlm.nih.gov/publishing/tag-library/1.1/index.html?elem=institution-wrap
+    http://jats.nlm.nih.gov/articleauthoring/tag-library/1.1/index.html?elem=institution-wrap
+  -->
+  <define name="institution-wrap">
+    <element name="institution-wrap">
+      <ref name="institution-wrap-attlist"/>
+      <ref name="institution-wrap-model"/>
+    </element>
+  </define>
+  <define name="institution-wrap-attlist" combine="interleave">
+    <ref name="institution-wrap-atts"/>
+  </define>
   <!-- PHONE NUMBER ELEMENTS -->
   <!--
     The elements that can be included along with
@@ -3601,9 +4209,9 @@
     A callable phone number in some telephone or
     wireless system somewhere in the world.
     Details at:
-    http://jats.nlm.nih.gov/archiving/tag-library/1.0/index.html?elem=phone
-    http://jats.nlm.nih.gov/publishing/tag-library/1.0/index.html?elem=phone
-    http://jats.nlm.nih.gov/articleauthoring/tag-library/1.0/index.html?elem=phone
+    http://jats.nlm.nih.gov/archiving/tag-library/1.1/index.html?elem=phone
+    http://jats.nlm.nih.gov/publishing/tag-library/1.1/index.html?elem=phone
+    http://jats.nlm.nih.gov/articleauthoring/tag-library/1.1/index.html?elem=phone
   -->
   <define name="phone">
     <element name="phone">
@@ -3619,6 +4227,73 @@
   <define name="phone-attlist" combine="interleave">
     <ref name="phone-atts"/>
   </define>
+  <!-- POSTAL CODE ELEMENTS -->
+  <!--
+    The elements that can be included along with
+    data characters inside the content model of
+    the postal-code element.
+  -->
+  <define name="postal-code-elements">
+    <notAllowed/>
+  </define>
+  <!-- POSTAL CODE: IN AN ADDRESS -->
+  <!--
+    A postal number such as a zip-code or postal
+    code used to address physical mail.
+    Details at:
+    http://jats.nlm.nih.gov/archiving/tag-library/1.1/index.html?elem=postal-code
+    http://jats.nlm.nih.gov/publishing/tag-library/1.1/index.html?elem=postal-code
+    http://jats.nlm.nih.gov/articleauthoring/tag-library/1.1/index.html?elem=postal-code
+  -->
+  <define name="postal-code">
+    <element name="postal-code">
+      <ref name="postal-code-attlist"/>
+      <zeroOrMore>
+        <choice>
+          <text/>
+          <ref name="postal-code-elements"/>
+        </choice>
+      </zeroOrMore>
+    </element>
+  </define>
+  <define name="postal-code-attlist" combine="interleave">
+    <ref name="postal-code-atts"/>
+  </define>
+  <!-- STATE ELEMENTS -->
+  <!--
+    The elements that can be included along with
+    data characters inside the content model of
+    the state element.
+  -->
+  <define name="state-elements">
+    <notAllowed/>
+  </define>
+  <!-- STATE or PROVINCE: IN AN ADDRESS -->
+  <!--
+    The name of a state, province, territory or
+    other political unit used in an address. This
+    is a lower level subdivision than a country,
+    but higher than a city, county, or parish. 
+    The names for such a unit vary geopolitically.
+    Details at:
+    http://jats.nlm.nih.gov/archiving/tag-library/1.1/index.html?elem=state
+    http://jats.nlm.nih.gov/publishing/tag-library/1.1/index.html?elem=state
+    http://jats.nlm.nih.gov/articleauthoring/tag-library/1.1/index.html?elem=state
+  -->
+  <define name="state">
+    <element name="state">
+      <ref name="state-attlist"/>
+      <zeroOrMore>
+        <choice>
+          <text/>
+          <ref name="state-elements"/>
+        </choice>
+      </zeroOrMore>
+    </element>
+  </define>
+  <define name="state-attlist" combine="interleave">
+    <ref name="state-atts"/>
+  </define>
   <!-- URI ELEMENTS -->
   <!--
     The elements that can be included along with
@@ -3631,7 +4306,7 @@
   <!-- URI -->
   <!--
     URI such as a URL that may be used as a
-    live link, typically naming a website, such
+    live link, typically naming a web site, such
     as:
        <url>http://www.mulberrytech.com</url>
     Alternatively the element content may name
@@ -3641,9 +4316,9 @@
        <url xlink:href="http://www.mulberrytech.
        com">Mulberry's Website</url>
     Details at:
-    http://jats.nlm.nih.gov/archiving/tag-library/1.0/index.html?elem=uri
-    http://jats.nlm.nih.gov/publishing/tag-library/1.0/index.html?elem=uri
-    http://jats.nlm.nih.gov/articleauthoring/tag-library/1.0/index.html?elem=uri
+    http://jats.nlm.nih.gov/archiving/tag-library/1.1/index.html?elem=uri
+    http://jats.nlm.nih.gov/publishing/tag-library/1.1/index.html?elem=uri
+    http://jats.nlm.nih.gov/articleauthoring/tag-library/1.1/index.html?elem=uri
   -->
   <define name="uri">
     <element name="uri">
@@ -3684,9 +4359,9 @@
     identification numbers, titles, authors, and
     supplement series information.
     Details at:
-    http://jats.nlm.nih.gov/archiving/tag-library/1.0/index.html?elem=supplement
-    http://jats.nlm.nih.gov/publishing/tag-library/1.0/index.html?elem=supplement
-    http://jats.nlm.nih.gov/articleauthoring/tag-library/1.0/index.html?elem=supplement
+    http://jats.nlm.nih.gov/archiving/tag-library/1.1/index.html?elem=supplement
+    http://jats.nlm.nih.gov/publishing/tag-library/1.1/index.html?elem=supplement
+    http://jats.nlm.nih.gov/articleauthoring/tag-library/1.1/index.html?elem=supplement
   -->
   <define name="supplement">
     <element name="supplement">
@@ -3713,8 +4388,8 @@
     the numeric values should be present whenever
     possible.
     Details at:
-    http://jats.nlm.nih.gov/archiving/tag-library/1.0/index.html?elem=date
-    http://jats.nlm.nih.gov/publishing/tag-library/1.0/index.html?elem=date
+    http://jats.nlm.nih.gov/archiving/tag-library/1.1/index.html?elem=date
+    http://jats.nlm.nih.gov/publishing/tag-library/1.1/index.html?elem=date
   -->
   <define name="date">
     <element name="date">
@@ -3733,9 +4408,9 @@
     in an international date format YYYY-MM-DD, for
     example "03", "25".
     Details at:
-    http://jats.nlm.nih.gov/archiving/tag-library/1.0/index.html?elem=day
-    http://jats.nlm.nih.gov/publishing/tag-library/1.0/index.html?elem=day
-    http://jats.nlm.nih.gov/articleauthoring/tag-library/1.0/index.html?elem=day
+    http://jats.nlm.nih.gov/archiving/tag-library/1.1/index.html?elem=day
+    http://jats.nlm.nih.gov/publishing/tag-library/1.1/index.html?elem=day
+    http://jats.nlm.nih.gov/articleauthoring/tag-library/1.1/index.html?elem=day
   -->
   <define name="day">
     <element name="day">
@@ -3754,9 +4429,9 @@
     "December", an abbreviation "Dec", or,
     preferably, a numeric month such as "12".
     Details at:
-    http://jats.nlm.nih.gov/archiving/tag-library/1.0/index.html?elem=month
-    http://jats.nlm.nih.gov/publishing/tag-library/1.0/index.html?elem=month
-    http://jats.nlm.nih.gov/articleauthoring/tag-library/1.0/index.html?elem=month
+    http://jats.nlm.nih.gov/archiving/tag-library/1.1/index.html?elem=month
+    http://jats.nlm.nih.gov/publishing/tag-library/1.1/index.html?elem=month
+    http://jats.nlm.nih.gov/articleauthoring/tag-library/1.1/index.html?elem=month
   -->
   <define name="month">
     <element name="month">
@@ -3772,11 +4447,11 @@
     Season of publication, such as "Spring".
     Used in both article metadata and inside a
     citation (such as a <mixed-citation> or an
-    <element-citation>
+    <element-citation>)
     Details at:
-    http://jats.nlm.nih.gov/archiving/tag-library/1.0/index.html?elem=season
-    http://jats.nlm.nih.gov/publishing/tag-library/1.0/index.html?elem=season
-    http://jats.nlm.nih.gov/articleauthoring/tag-library/1.0/index.html?elem=season
+    http://jats.nlm.nih.gov/archiving/tag-library/1.1/index.html?elem=season
+    http://jats.nlm.nih.gov/publishing/tag-library/1.1/index.html?elem=season
+    http://jats.nlm.nih.gov/articleauthoring/tag-library/1.1/index.html?elem=season
   -->
   <define name="season">
     <element name="season">
@@ -3787,14 +4462,32 @@
   <define name="season-attlist" combine="interleave">
     <ref name="season-atts"/>
   </define>
+  <!-- ERA -->
+  <!--
+    Era of publication. Used in certain Japanese
+    and Korean dates.
+    Details at:
+    http://jats.nlm.nih.gov/archiving/tag-library/1.1/index.html?elem=era
+    http://jats.nlm.nih.gov/publishing/tag-library/1.1/index.html?elem=era
+    http://jats.nlm.nih.gov/articleauthoring/tag-library/1.1/index.html?elem=era
+  -->
+  <define name="era">
+    <element name="era">
+      <ref name="era-attlist"/>
+      <text/>
+    </element>
+  </define>
+  <define name="era-attlist" combine="interleave">
+    <ref name="era-atts"/>
+  </define>
   <!-- YEAR -->
   <!--
     Year of publication, which should be expressed
     as a 4-digit number: "1776" or "1924"
     Details at:
-    http://jats.nlm.nih.gov/archiving/tag-library/1.0/index.html?elem=year
-    http://jats.nlm.nih.gov/publishing/tag-library/1.0/index.html?elem=year
-    http://jats.nlm.nih.gov/articleauthoring/tag-library/1.0/index.html?elem=year
+    http://jats.nlm.nih.gov/archiving/tag-library/1.1/index.html?elem=year
+    http://jats.nlm.nih.gov/publishing/tag-library/1.1/index.html?elem=year
+    http://jats.nlm.nih.gov/articleauthoring/tag-library/1.1/index.html?elem=year
   -->
   <define name="year">
     <element name="year">
@@ -3820,9 +4513,9 @@
     string; usually used for dates for which
     months and years are not given, but may be
     used for any date as a string (i.e., "January,
-    2001" "Fall 2001" "March 11, 2001".
+    2001" "Fall 2001" "March 11, 2001").
     Details at:
-    http://jats.nlm.nih.gov/archiving/tag-library/1.0/index.html?elem=string-date
+    http://jats.nlm.nih.gov/archiving/tag-library/1.1/index.html?elem=string-date
   -->
   <define name="string-date">
     <element name="string-date">
@@ -3860,9 +4553,9 @@
     a transliterated form of the lab name in Latin 
     alphabet.
     Details at:
-    http://jats.nlm.nih.gov/archiving/tag-library/1.0/index.html?elem=collab-alternatives
-    http://jats.nlm.nih.gov/publishing/tag-library/1.0/index.html?elem=collab-alternatives
-    http://jats.nlm.nih.gov/articleauthoring/tag-library/1.0/index.html?elem=collab-alternatives
+    http://jats.nlm.nih.gov/archiving/tag-library/1.1/index.html?elem=collab-alternatives
+    http://jats.nlm.nih.gov/publishing/tag-library/1.1/index.html?elem=collab-alternatives
+    http://jats.nlm.nih.gov/articleauthoring/tag-library/1.1/index.html?elem=collab-alternatives
   -->
   <define name="collab-alternatives">
     <element name="collab-alternatives">
@@ -3871,7 +4564,7 @@
     </element>
   </define>
   <define name="collab-alternatives-attlist" combine="interleave">
-    <empty/>
+    <ref name="collab-alternatives-atts"/>
   </define>
   <!-- COLLABORATIVE (GROUP) AUTHOR ELEMENTS -->
   <!--
@@ -3896,9 +4589,9 @@
     strictest sense, or when an organization,
     institution, or corporation is the group.
     Details at:
-    http://jats.nlm.nih.gov/archiving/tag-library/1.0/index.html?elem=collab
-    http://jats.nlm.nih.gov/publishing/tag-library/1.0/index.html?elem=collab
-    http://jats.nlm.nih.gov/articleauthoring/tag-library/1.0/index.html?elem=collab
+    http://jats.nlm.nih.gov/archiving/tag-library/1.1/index.html?elem=collab
+    http://jats.nlm.nih.gov/publishing/tag-library/1.1/index.html?elem=collab
+    http://jats.nlm.nih.gov/articleauthoring/tag-library/1.1/index.html?elem=collab
   -->
   <define name="collab">
     <element name="collab">
@@ -3918,10 +4611,7 @@
   <!-- PERSON'S NAME ELEMENTS (BIBLIOGRAPHIC) -->
   <!-- ============================================================= -->
   <!-- CONTRIBUTOR IDENTIFIER MODEL -->
-  <!--
-    Content model for the <name-alternatives>
-    element
-  -->
+  <!-- Content model for the <contrib-id> element -->
   <define name="contrib-id-model">
     <text/>
   </define>
@@ -3933,9 +4623,9 @@
     publishers's identifier, or a JST or NII 
     identifier.
     Details at:
-    http://jats.nlm.nih.gov/archiving/tag-library/1.0/index.html?elem=contrib-id
-    http://jats.nlm.nih.gov/publishing/tag-library/1.0/index.html?elem=contrib-id
-    http://jats.nlm.nih.gov/articleauthoring/tag-library/1.0/index.html?elem=contrib-id
+    http://jats.nlm.nih.gov/archiving/tag-library/1.1/index.html?elem=contrib-id
+    http://jats.nlm.nih.gov/publishing/tag-library/1.1/index.html?elem=contrib-id
+    http://jats.nlm.nih.gov/articleauthoring/tag-library/1.1/index.html?elem=contrib-id
   -->
   <define name="contrib-id">
     <element name="contrib-id">
@@ -3963,9 +4653,9 @@
     Japanese kana characters and a transliterated
     form of the name in Latin alphabet.
     Details at:
-    http://jats.nlm.nih.gov/archiving/tag-library/1.0/index.html?elem=name-alternatives
-    http://jats.nlm.nih.gov/publishing/tag-library/1.0/index.html?elem=name-alternatives
-    http://jats.nlm.nih.gov/articleauthoring/tag-library/1.0/index.html?elem=name-alternatives
+    http://jats.nlm.nih.gov/archiving/tag-library/1.1/index.html?elem=name-alternatives
+    http://jats.nlm.nih.gov/publishing/tag-library/1.1/index.html?elem=name-alternatives
+    http://jats.nlm.nih.gov/articleauthoring/tag-library/1.1/index.html?elem=name-alternatives
   -->
   <define name="name-alternatives">
     <element name="name-alternatives">
@@ -3980,9 +4670,9 @@
   <!--
     Wrapper element for personal names.
     Details at:
-    http://jats.nlm.nih.gov/archiving/tag-library/1.0/index.html?elem=name
-    http://jats.nlm.nih.gov/publishing/tag-library/1.0/index.html?elem=name
-    http://jats.nlm.nih.gov/articleauthoring/tag-library/1.0/index.html?elem=name
+    http://jats.nlm.nih.gov/archiving/tag-library/1.1/index.html?elem=name
+    http://jats.nlm.nih.gov/publishing/tag-library/1.1/index.html?elem=name
+    http://jats.nlm.nih.gov/articleauthoring/tag-library/1.1/index.html?elem=name
   -->
   <define name="name">
     <element name="name">
@@ -4024,9 +4714,9 @@
     allowing data characters, generated text,
     and any or all of the naming elements.
     Details at:
-    http://jats.nlm.nih.gov/archiving/tag-library/1.0/index.html?elem=string-name
-    http://jats.nlm.nih.gov/publishing/tag-library/1.0/index.html?elem=string-name
-    http://jats.nlm.nih.gov/articleauthoring/tag-library/1.0/index.html?elem=string-name
+    http://jats.nlm.nih.gov/archiving/tag-library/1.1/index.html?elem=string-name
+    http://jats.nlm.nih.gov/publishing/tag-library/1.1/index.html?elem=string-name
+    http://jats.nlm.nih.gov/articleauthoring/tag-library/1.1/index.html?elem=string-name
   -->
   <define name="string-name">
     <element name="string-name">
@@ -4059,9 +4749,9 @@
     Academic degrees or professional
     certifications
     Details at:
-    http://jats.nlm.nih.gov/archiving/tag-library/1.0/index.html?elem=degrees
-    http://jats.nlm.nih.gov/publishing/tag-library/1.0/index.html?elem=degrees
-    http://jats.nlm.nih.gov/articleauthoring/tag-library/1.0/index.html?elem=degrees
+    http://jats.nlm.nih.gov/archiving/tag-library/1.1/index.html?elem=degrees
+    http://jats.nlm.nih.gov/publishing/tag-library/1.1/index.html?elem=degrees
+    http://jats.nlm.nih.gov/articleauthoring/tag-library/1.1/index.html?elem=degrees
   -->
   <define name="degrees">
     <element name="degrees">
@@ -4090,9 +4780,9 @@
     name if used as part of the married name,
     etc.)
     Details at:
-    http://jats.nlm.nih.gov/archiving/tag-library/1.0/index.html?elem=given-names
-    http://jats.nlm.nih.gov/publishing/tag-library/1.0/index.html?elem=given-names
-    http://jats.nlm.nih.gov/articleauthoring/tag-library/1.0/index.html?elem=given-names
+    http://jats.nlm.nih.gov/archiving/tag-library/1.1/index.html?elem=given-names
+    http://jats.nlm.nih.gov/publishing/tag-library/1.1/index.html?elem=given-names
+    http://jats.nlm.nih.gov/articleauthoring/tag-library/1.1/index.html?elem=given-names
   -->
   <define name="given-names">
     <element name="given-names">
@@ -4123,9 +4813,9 @@
     or the single name if there is only one
     name, for example, "Cher" or "Pele".
     Details at:
-    http://jats.nlm.nih.gov/archiving/tag-library/1.0/index.html?elem=surname
-    http://jats.nlm.nih.gov/publishing/tag-library/1.0/index.html?elem=surname
-    http://jats.nlm.nih.gov/articleauthoring/tag-library/1.0/index.html?elem=surname
+    http://jats.nlm.nih.gov/archiving/tag-library/1.1/index.html?elem=surname
+    http://jats.nlm.nih.gov/publishing/tag-library/1.1/index.html?elem=surname
+    http://jats.nlm.nih.gov/articleauthoring/tag-library/1.1/index.html?elem=surname
   -->
   <define name="surname">
     <element name="surname">
@@ -4157,9 +4847,9 @@
     Rev., President, Senator, Dr., Sir, The
     Honorable, et al.
     Details at:
-    http://jats.nlm.nih.gov/archiving/tag-library/1.0/index.html?elem=prefix
-    http://jats.nlm.nih.gov/publishing/tag-library/1.0/index.html?elem=prefix
-    http://jats.nlm.nih.gov/articleauthoring/tag-library/1.0/index.html?elem=prefix
+    http://jats.nlm.nih.gov/archiving/tag-library/1.1/index.html?elem=prefix
+    http://jats.nlm.nih.gov/publishing/tag-library/1.1/index.html?elem=prefix
+    http://jats.nlm.nih.gov/articleauthoring/tag-library/1.1/index.html?elem=prefix
   -->
   <define name="prefix">
     <element name="prefix">
@@ -4186,11 +4876,11 @@
   <!-- SUFFIX -->
   <!--
     Text used as a suffix to a person's name, for
-    example: Sr. Jr. III, 3rd
+    example: Sr., Jr., III, 3rd
     Details at:
-    http://jats.nlm.nih.gov/archiving/tag-library/1.0/index.html?elem=suffix
-    http://jats.nlm.nih.gov/publishing/tag-library/1.0/index.html?elem=suffix
-    http://jats.nlm.nih.gov/articleauthoring/tag-library/1.0/index.html?elem=suffix
+    http://jats.nlm.nih.gov/archiving/tag-library/1.1/index.html?elem=suffix
+    http://jats.nlm.nih.gov/publishing/tag-library/1.1/index.html?elem=suffix
+    http://jats.nlm.nih.gov/articleauthoring/tag-library/1.1/index.html?elem=suffix
   -->
   <define name="suffix">
     <element name="suffix">
@@ -4227,9 +4917,9 @@
     Genbank, etc.  Linking may be accomplished
     using the XLink linking attributes.
     Details at:
-    http://jats.nlm.nih.gov/archiving/tag-library/1.0/index.html?elem=ext-link
-    http://jats.nlm.nih.gov/publishing/tag-library/1.0/index.html?elem=ext-link
-    http://jats.nlm.nih.gov/articleauthoring/tag-library/1.0/index.html?elem=ext-link
+    http://jats.nlm.nih.gov/archiving/tag-library/1.1/index.html?elem=ext-link
+    http://jats.nlm.nih.gov/publishing/tag-library/1.1/index.html?elem=ext-link
+    http://jats.nlm.nih.gov/articleauthoring/tag-library/1.1/index.html?elem=ext-link
   -->
   <define name="ext-link">
     <element name="ext-link">
@@ -4267,9 +4957,9 @@
     concerning the origins of an extract, a poem
     <verse-group> or similar element.
     Details at:
-    http://jats.nlm.nih.gov/archiving/tag-library/1.0/index.html?elem=attrib
-    http://jats.nlm.nih.gov/publishing/tag-library/1.0/index.html?elem=attrib
-    http://jats.nlm.nih.gov/articleauthoring/tag-library/1.0/index.html?elem=attrib
+    http://jats.nlm.nih.gov/archiving/tag-library/1.1/index.html?elem=attrib
+    http://jats.nlm.nih.gov/publishing/tag-library/1.1/index.html?elem=attrib
+    http://jats.nlm.nih.gov/articleauthoring/tag-library/1.1/index.html?elem=attrib
   -->
   <define name="attrib">
     <element name="attrib">
@@ -4304,9 +4994,9 @@
     2) The definition or expansion of an
     abbreviation or acronym <abbrev>
     Details at:
-    http://jats.nlm.nih.gov/archiving/tag-library/1.0/index.html?elem=def
-    http://jats.nlm.nih.gov/publishing/tag-library/1.0/index.html?elem=def
-    http://jats.nlm.nih.gov/articleauthoring/tag-library/1.0/index.html?elem=def
+    http://jats.nlm.nih.gov/archiving/tag-library/1.1/index.html?elem=def
+    http://jats.nlm.nih.gov/publishing/tag-library/1.1/index.html?elem=def
+    http://jats.nlm.nih.gov/articleauthoring/tag-library/1.1/index.html?elem=def
   -->
   <define name="def">
     <element name="def">
@@ -4337,9 +5027,9 @@
     before, for example, the caption of a Figure,
     such as "Figure 3." or "Exhibit 2.".
     Details at:
-    http://jats.nlm.nih.gov/archiving/tag-library/1.0/index.html?elem=label
-    http://jats.nlm.nih.gov/publishing/tag-library/1.0/index.html?elem=label
-    http://jats.nlm.nih.gov/articleauthoring/tag-library/1.0/index.html?elem=label
+    http://jats.nlm.nih.gov/archiving/tag-library/1.1/index.html?elem=label
+    http://jats.nlm.nih.gov/publishing/tag-library/1.1/index.html?elem=label
+    http://jats.nlm.nih.gov/articleauthoring/tag-library/1.1/index.html?elem=label
   -->
   <define name="label">
     <element name="label">
@@ -4369,9 +5059,9 @@
     Sale price of a work, typically a book or
     software package that is being reviewed
     Details at:
-    http://jats.nlm.nih.gov/archiving/tag-library/1.0/index.html?elem=price
-    http://jats.nlm.nih.gov/publishing/tag-library/1.0/index.html?elem=price
-    http://jats.nlm.nih.gov/articleauthoring/tag-library/1.0/index.html?elem=price
+    http://jats.nlm.nih.gov/archiving/tag-library/1.1/index.html?elem=price
+    http://jats.nlm.nih.gov/publishing/tag-library/1.1/index.html?elem=price
+    http://jats.nlm.nih.gov/articleauthoring/tag-library/1.1/index.html?elem=price
   -->
   <define name="price">
     <element name="price">
@@ -4408,9 +5098,9 @@
     Heading or title for a structural element
     such as a Section, Figure, Boxed Text, etc.
     Details at:
-    http://jats.nlm.nih.gov/archiving/tag-library/1.0/index.html?elem=title
-    http://jats.nlm.nih.gov/publishing/tag-library/1.0/index.html?elem=title
-    http://jats.nlm.nih.gov/articleauthoring/tag-library/1.0/index.html?elem=title
+    http://jats.nlm.nih.gov/archiving/tag-library/1.1/index.html?elem=title
+    http://jats.nlm.nih.gov/publishing/tag-library/1.1/index.html?elem=title
+    http://jats.nlm.nih.gov/articleauthoring/tag-library/1.1/index.html?elem=title
   -->
   <define name="title">
     <element name="title">
@@ -4448,9 +5138,9 @@
     accompanied by a very brief description
     such as "errata (correction)".
     Details at:
-    http://jats.nlm.nih.gov/archiving/tag-library/1.0/index.html?elem=related-article
-    http://jats.nlm.nih.gov/publishing/tag-library/1.0/index.html?elem=related-article
-    http://jats.nlm.nih.gov/articleauthoring/tag-library/1.0/index.html?elem=related-article
+    http://jats.nlm.nih.gov/archiving/tag-library/1.1/index.html?elem=related-article
+    http://jats.nlm.nih.gov/publishing/tag-library/1.1/index.html?elem=related-article
+    http://jats.nlm.nih.gov/articleauthoring/tag-library/1.1/index.html?elem=related-article
   -->
   <define name="related-article">
     <element name="related-article">
@@ -4494,8 +5184,8 @@
     of the person responsible for or attesting
     to the content.
     Details at:
-    http://jats.nlm.nih.gov/archiving/tag-library/1.0/index.html?elem=sig-block
-    http://jats.nlm.nih.gov/publishing/tag-library/1.0/index.html?elem=sig-block
+    http://jats.nlm.nih.gov/archiving/tag-library/1.1/index.html?elem=sig-block
+    http://jats.nlm.nih.gov/publishing/tag-library/1.1/index.html?elem=sig-block
   -->
   <define name="sig-block">
     <element name="sig-block">
@@ -4531,8 +5221,8 @@
     material (such as a text restatement of the
     affiliation) inside a signature block.
     Details at:
-    http://jats.nlm.nih.gov/archiving/tag-library/1.0/index.html?elem=sig
-    http://jats.nlm.nih.gov/publishing/tag-library/1.0/index.html?elem=sig
+    http://jats.nlm.nih.gov/archiving/tag-library/1.1/index.html?elem=sig
+    http://jats.nlm.nih.gov/publishing/tag-library/1.1/index.html?elem=sig
   -->
   <define name="sig">
     <element name="sig">
@@ -4556,9 +5246,9 @@
   <!-- ACKNOWLEDGMENTS -->
   <!--
     Details at:
-    http://jats.nlm.nih.gov/archiving/tag-library/1.0/index.html?elem=ack
-    http://jats.nlm.nih.gov/publishing/tag-library/1.0/index.html?elem=ack
-    http://jats.nlm.nih.gov/articleauthoring/tag-library/1.0/index.html?elem=ack
+    http://jats.nlm.nih.gov/archiving/tag-library/1.1/index.html?elem=ack
+    http://jats.nlm.nih.gov/publishing/tag-library/1.1/index.html?elem=ack
+    http://jats.nlm.nih.gov/articleauthoring/tag-library/1.1/index.html?elem=ack
   -->
   <define name="ack">
     <element name="ack">
@@ -4579,9 +5269,9 @@
     Short biography of a person, usually the
     author
     Details at:
-    http://jats.nlm.nih.gov/archiving/tag-library/1.0/index.html?elem=bio
-    http://jats.nlm.nih.gov/publishing/tag-library/1.0/index.html?elem=bio
-    http://jats.nlm.nih.gov/articleauthoring/tag-library/1.0/index.html?elem=bio
+    http://jats.nlm.nih.gov/archiving/tag-library/1.1/index.html?elem=bio
+    http://jats.nlm.nih.gov/publishing/tag-library/1.1/index.html?elem=bio
+    http://jats.nlm.nih.gov/articleauthoring/tag-library/1.1/index.html?elem=bio
   -->
   <define name="bio">
     <element name="bio">
@@ -4604,8 +5294,8 @@
     end of a Table, for example, a typical
     end-of-article note is a "Note in Proof".
     Details at:
-    http://jats.nlm.nih.gov/archiving/tag-library/1.0/index.html?elem=notes
-    http://jats.nlm.nih.gov/publishing/tag-library/1.0/index.html?elem=notes
+    http://jats.nlm.nih.gov/archiving/tag-library/1.1/index.html?elem=notes
+    http://jats.nlm.nih.gov/publishing/tag-library/1.1/index.html?elem=notes
   -->
   <define name="notes">
     <element name="notes">
@@ -4624,13 +5314,13 @@
     Short phrase used to display or pronounce
     as an alternative to providing the full
     graphic for accessibility display or
-    graphic-limited websites or devices. For
+    graphic-limited web sites or devices. For
     example, <alt-text> may be used to display
     "behind" a figure or graphic.
     Details at:
-    http://jats.nlm.nih.gov/archiving/tag-library/1.0/index.html?elem=alt-text
-    http://jats.nlm.nih.gov/publishing/tag-library/1.0/index.html?elem=alt-text
-    http://jats.nlm.nih.gov/articleauthoring/tag-library/1.0/index.html?elem=alt-text
+    http://jats.nlm.nih.gov/archiving/tag-library/1.1/index.html?elem=alt-text
+    http://jats.nlm.nih.gov/publishing/tag-library/1.1/index.html?elem=alt-text
+    http://jats.nlm.nih.gov/articleauthoring/tag-library/1.1/index.html?elem=alt-text
   -->
   <define name="alt-text">
     <element name="alt-text">
@@ -4658,9 +5348,9 @@
     or systems that cannot read/see/display the
     object.
     Details at:
-    http://jats.nlm.nih.gov/archiving/tag-library/1.0/index.html?elem=long-desc
-    http://jats.nlm.nih.gov/publishing/tag-library/1.0/index.html?elem=long-desc
-    http://jats.nlm.nih.gov/articleauthoring/tag-library/1.0/index.html?elem=long-desc
+    http://jats.nlm.nih.gov/archiving/tag-library/1.1/index.html?elem=long-desc
+    http://jats.nlm.nih.gov/publishing/tag-library/1.1/index.html?elem=long-desc
+    http://jats.nlm.nih.gov/articleauthoring/tag-library/1.1/index.html?elem=long-desc
   -->
   <define name="long-desc">
     <element name="long-desc">
@@ -4697,8 +5387,8 @@
     element used to contain all these additional
     metadata elements.
     Details at:
-    http://jats.nlm.nih.gov/archiving/tag-library/1.0/index.html?elem=custom-meta-group
-    http://jats.nlm.nih.gov/publishing/tag-library/1.0/index.html?elem=custom-meta-group
+    http://jats.nlm.nih.gov/archiving/tag-library/1.1/index.html?elem=custom-meta-group
+    http://jats.nlm.nih.gov/publishing/tag-library/1.1/index.html?elem=custom-meta-group
   -->
   <define name="custom-meta-group">
     <element name="custom-meta-group">
@@ -4707,7 +5397,7 @@
     </element>
   </define>
   <define name="custom-meta-group-attlist" combine="interleave">
-    <empty/>
+    <ref name="custom-meta-group-atts"/>
   </define>
   <!-- CUSTOM METADATA MODEL -->
   <!--                     Content model for the <custom-meta> element -->
@@ -4724,8 +5414,8 @@
     explicitly in the models for this DTD, so
     that the intellectual content will not be lost.
     Details at:
-    http://jats.nlm.nih.gov/archiving/tag-library/1.0/index.html?elem=custom-meta
-    http://jats.nlm.nih.gov/publishing/tag-library/1.0/index.html?elem=custom-meta
+    http://jats.nlm.nih.gov/archiving/tag-library/1.1/index.html?elem=custom-meta
+    http://jats.nlm.nih.gov/publishing/tag-library/1.1/index.html?elem=custom-meta
   -->
   <define name="custom-meta">
     <element name="custom-meta">
@@ -4755,8 +5445,8 @@
     content of the value. This element contains
     the name of the metadata field.
     Details at:
-    http://jats.nlm.nih.gov/archiving/tag-library/1.0/index.html?elem=meta-name
-    http://jats.nlm.nih.gov/publishing/tag-library/1.0/index.html?elem=meta-name
+    http://jats.nlm.nih.gov/archiving/tag-library/1.1/index.html?elem=meta-name
+    http://jats.nlm.nih.gov/publishing/tag-library/1.1/index.html?elem=meta-name
   -->
   <define name="meta-name">
     <element name="meta-name">
@@ -4792,8 +5482,8 @@
     the value of the metadata field that is named
     by the <meta-name> element.
     Details at:
-    http://jats.nlm.nih.gov/archiving/tag-library/1.0/index.html?elem=meta-value
-    http://jats.nlm.nih.gov/publishing/tag-library/1.0/index.html?elem=meta-value
+    http://jats.nlm.nih.gov/archiving/tag-library/1.1/index.html?elem=meta-value
+    http://jats.nlm.nih.gov/publishing/tag-library/1.1/index.html?elem=meta-value
   -->
   <define name="meta-value">
     <element name="meta-value">
@@ -4836,9 +5526,9 @@
     logically equivalent (substitutable) versions
     of the same information object.
     Details at:
-    http://jats.nlm.nih.gov/archiving/tag-library/1.0/index.html?elem=alternatives
-    http://jats.nlm.nih.gov/publishing/tag-library/1.0/index.html?elem=alternatives
-    http://jats.nlm.nih.gov/articleauthoring/tag-library/1.0/index.html?elem=alternatives
+    http://jats.nlm.nih.gov/archiving/tag-library/1.1/index.html?elem=alternatives
+    http://jats.nlm.nih.gov/publishing/tag-library/1.1/index.html?elem=alternatives
+    http://jats.nlm.nih.gov/articleauthoring/tag-library/1.1/index.html?elem=alternatives
   -->
   <define name="alternatives">
     <element name="alternatives">
@@ -4867,9 +5557,9 @@
     mixed content objects that act as alternatives
     to, for example, graphics.
     Details at:
-    http://jats.nlm.nih.gov/archiving/tag-library/1.0/index.html?elem=textual-form
-    http://jats.nlm.nih.gov/publishing/tag-library/1.0/index.html?elem=textual-form
-    http://jats.nlm.nih.gov/articleauthoring/tag-library/1.0/index.html?elem=textual-form
+    http://jats.nlm.nih.gov/archiving/tag-library/1.1/index.html?elem=textual-form
+    http://jats.nlm.nih.gov/publishing/tag-library/1.1/index.html?elem=textual-form
+    http://jats.nlm.nih.gov/articleauthoring/tag-library/1.1/index.html?elem=textual-form
   -->
   <define name="textual-form">
     <element name="textual-form">
@@ -4891,6 +5581,7 @@
   <!-- X TEXT ATTRIBUTES -->
   <!-- Attributes for the element <x> -->
   <define name="x-atts">
+    <ref name="jats-common-atts"/>
     <optional>
       <attribute name="content-type"/>
     </optional>
@@ -4924,7 +5615,7 @@
     with <x> tags embedded and wishes to retain
     them.
     Details at:
-    http://jats.nlm.nih.gov/archiving/tag-library/1.0/index.html?elem=x
+    http://jats.nlm.nih.gov/archiving/tag-library/1.1/index.html?elem=x
   -->
   <define name="x">
     <element name="x">

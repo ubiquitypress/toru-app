@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <grammar xmlns="http://relaxng.org/ns/structure/1.0" xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
+  <include href="JATS-ali-namespace1.ent.rng"/>
+  <include href="JATS-common-atts1.ent.rng"/>
   <include href="JATS-journalpubcustom-classes1.ent.rng"/>
   <include href="JATS-default-classes1.ent.rng"/>
   <include href="JATS-journalpubcustom-mixes1.ent.rng"/>
@@ -26,12 +28,13 @@
   <include href="JATS-chars1.ent.rng"/>
   <define name="dtd-version">
     <optional>
-      <attribute name="dtd-version" a:defaultValue="1.0">
-        <value type="string" datatypeLibrary="">1.0</value>
+      <attribute name="dtd-version" a:defaultValue="1.1">
+        <value type="string" datatypeLibrary="">1.1</value>
       </attribute>
     </optional>
   </define>
   <define name="article-atts">
+    <ref name="jats-common-atts"/>
     <optional>
       <attribute name="article-type"/>
     </optional>
@@ -46,21 +49,28 @@
     </optional>
     <ref name="XLINK.xmlns.attrib"/>
     <ref name="MATHML.xmlns.attrib"/>
+    <ref name="ali.xmlns.attrib"/>
     <ref name="Schema.xmlns.attrib"/>
   </define>
+  <define name="back-atts">
+    <ref name="jats-common-atts"/>
+  </define>
   <define name="body-atts">
+    <ref name="jats-common-atts"/>
     <optional>
       <attribute name="specific-use"/>
     </optional>
   </define>
+  <define name="front-atts">
+    <ref name="jats-common-atts"/>
+  </define>
+  <define name="front-stub-atts">
+    <ref name="jats-common-atts"/>
+  </define>
   <define name="sub-article-atts">
+    <ref name="jats-common-atts"/>
     <optional>
       <attribute name="article-type"/>
-    </optional>
-    <optional>
-      <attribute name="id">
-        <data type="ID"/>
-      </attribute>
     </optional>
     <optional>
       <attribute name="specific-use"/>
@@ -72,13 +82,9 @@
     </optional>
   </define>
   <define name="response-atts">
+    <ref name="jats-common-atts"/>
     <optional>
       <attribute name="response-type"/>
-    </optional>
-    <optional>
-      <attribute name="id">
-        <data type="ID"/>
-      </attribute>
     </optional>
     <optional>
       <attribute name="specific-use"/>
@@ -147,7 +153,7 @@
     </element>
   </define>
   <define name="front-attlist" combine="interleave">
-    <empty/>
+    <ref name="front-atts"/>
   </define>
   <define name="body-model">
     <zeroOrMore>
@@ -187,7 +193,7 @@
     </element>
   </define>
   <define name="back-attlist" combine="interleave">
-    <empty/>
+    <ref name="back-atts"/>
   </define>
   <define name="sub-article-model">
     <choice>
@@ -243,18 +249,18 @@
     <zeroOrMore>
       <ref name="pub-date"/>
     </zeroOrMore>
-    <optional>
+    <zeroOrMore>
       <ref name="volume"/>
-    </optional>
+    </zeroOrMore>
     <zeroOrMore>
       <ref name="volume-id"/>
     </zeroOrMore>
     <optional>
       <ref name="volume-series"/>
     </optional>
-    <optional>
+    <zeroOrMore>
       <ref name="issue"/>
-    </optional>
+    </zeroOrMore>
     <zeroOrMore>
       <ref name="issue-id"/>
     </zeroOrMore>
@@ -267,6 +273,9 @@
     <optional>
       <ref name="issue-part"/>
     </optional>
+    <zeroOrMore>
+      <ref name="volume-issue-group"/>
+    </zeroOrMore>
     <zeroOrMore>
       <ref name="isbn"/>
     </zeroOrMore>
@@ -307,13 +316,13 @@
       <ref name="related-article.class"/>
     </zeroOrMore>
     <zeroOrMore>
-      <ref name="abstract"/>
+      <ref name="abstract.class"/>
     </zeroOrMore>
     <zeroOrMore>
       <ref name="trans-abstract"/>
     </zeroOrMore>
     <zeroOrMore>
-      <ref name="kwd-group"/>
+      <ref name="kwd-group.class"/>
     </zeroOrMore>
     <zeroOrMore>
       <ref name="funding-group"/>
@@ -335,7 +344,7 @@
     </element>
   </define>
   <define name="front-stub-attlist" combine="interleave">
-    <empty/>
+    <ref name="front-stub-atts"/>
   </define>
   <define name="response">
     <element name="response">
@@ -349,10 +358,10 @@
   <start>
     <choice>
       <ref name="article"/>
+      <ref name="rp"/>
       <ref name="overline-start"/>
       <ref name="unstructured-kwd-group"/>
       <ref name="underline-end"/>
-      <ref name="string-date"/>
       <ref name="underline-start"/>
       <ref name="x"/>
       <ref name="overline-end"/>

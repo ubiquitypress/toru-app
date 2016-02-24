@@ -160,10 +160,6 @@
   </define>
   <!-- end of table.attlist -->
   <!-- caption: Table Caption ............................ -->
-  <define name="caption-attlist" combine="interleave">
-    <ref name="Common.attrib"/>
-  </define>
-  <!-- end of caption.attlist -->
   <!-- thead: Table Header ............................... -->
   <!--
     Use thead to duplicate headers when breaking table

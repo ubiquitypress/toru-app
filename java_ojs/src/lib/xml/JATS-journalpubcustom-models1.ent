@@ -1,8 +1,8 @@
 <!-- ============================================================= -->
 <!--  MODULE:    Journal Publishing DTD Customize Content and      -->
 <!--             Attributes Module                                 -->
-<!--  VERSION:   ANSI/NISO JATS Version 1.0 (Z39.96-2012)          -->
-<!--  DATE:      March 2012                                        -->
+<!--  VERSION:   ANSI/NISO JATS Version 1.1 (Z39.96-2015)          -->
+<!--  DATE:      December 2015                                     -->
 <!--                                                               -->
 <!-- ============================================================= -->
 
@@ -10,7 +10,7 @@
 <!--                    PUBLIC DOCUMENT TYPE DEFINITION            -->
 <!--                        TYPICAL INVOCATION                     -->
 <!--
-"-//NLM//DTD JATS (Z39.96) Journal Publishing DTD Customize Content and Attributes Module v1.0 20120330//EN"
+"-//NLM//DTD JATS (Z39.96) Journal Publishing DTD Customize Content and Attributes Module v1.1 20151215//EN"
 Delivered as file "JATS-journalpubcustom-models1.ent"              -->
 <!-- ============================================================= -->
 
@@ -96,16 +96,148 @@ Delivered as file "JATS-journalpubcustom-models1.ent"              -->
 <!--                    DTD VERSION/CHANGE HISTORY                 -->
 <!-- ============================================================= -->
 <!--
-
 Version  Reason/Occasion                   (who) vx.x (yyyy-mm-dd)
+     =============================================================
+     JATS Version 1.1                (DAL/BTU) v1.1  (2015-12-15)
+
+     JATS is a continuing maintenance NISO Standard, which
+     requires voting by the ANSI and NISO memberships to be changed. 
+     JATS 1.1 was approved in late 2015, so the formal public 
+     identifiers were changed in the modules and the catalogs.
+     No model or attribute changes were made at this time. 
+ 
+ 25. JATS became version "1.1" and "v1.1 20151215"
+
+     =============================================================
+     JATS Version 1.1d3             (DAL/BTU) v1.1d3  (2015-03-01)
+   
+     The changes in this release are in response to NISO 
+     License and Indicators Recommended Practice.
+
+     NISO JATS is a continuing maintenance NISO Standard, which 
+     requires voting by the NISO membership to be changed. This
+     Committee Draft 1.1d3 will be sent to the NISO voting
+     membership, to become (if approved) NISO JATS 1.1.
+     
+     This draft DTD represents an interim version of the
+     non-normative JATS DTD Suite, as an indication to JATS users
+     the decisions that have been made by the JATS Standing
+     Committee.
+
+ 24. JATS became version "1.1d3" and "v1.1d3 20150301"
+
+     =============================================================
+     JATS Version 1.1d2              (DAL/BTU) v1.1d2 (2014-09-30)
+   
+     NISO JATS is a continuing maintenance NISO Standard, which 
+     requires voting by the NISO membership to be changed. This
+     Committee Draft 1.1d2 will be sent to the NISO voting
+     membership, to become (if approved) NISO JATS 1.1.
+     
+     This catalog represents an interim version of the
+     non-normative JATS DTD Suite, as an indication to JATS users
+     the decisions that have been made by the JATS Standing
+     Committee.
+ 
+ 23. <VOLUME> INSIDE <ARTICLE-META>
+   - Allowed <volume> to repeat inside <article-meta>, the types to 
+     be distinguished using @content-type
+   - Added new optional element <volume-issue-group> inside 
+     <article-meta) following all volume and issue elements
+     to hold volume-issue pairs (or n-tuples) when a second
+     and subsequent <volume> has its own related issue
+     information.
+   - Made <issue> repeatable, for those who choose not to use
+     the new wrapper element.
+ 
+ 32. VERSION ELEMENTS
+     The new element <version> uses the PE %-just-rendition,
+     but Authoring has set that PE to null, so the <version>
+     element added <sup> and <sub> to be like the content
+     of <edition>.
+ 
+ 31. VALUE LIST FOR PERSON-GROUP-TYPE
+     Added "curator" to the list of preson-group role values.
+
+ 30. EDITION ELEMENTS - Added <sub> and <sup> to the model of
+     edition. These were needed now that the "Edition" element
+     has been renamed and repurposed as "Edition Statement".
+
+ 29. JATS became version "1.1d2" and "v1.1d2 20140930//EN"
+
+ 28. CONFERENCE LOCATION ELEMENTS AND PUBLISHER LOCATION ELEMENTS
+      - Added 3 new OPTIONAL elements: <city>, <state>, 
+        and <postal-code> by adding address.class
+   
+     =============================================================
+     NISO JATS Version 1.1d1           (DAL/BTU) v1.1 (2013-11-15)
+   
+     ANSI/NISO Z39.96-2012 (pre-release for V1.0 BITS; Version 1.1d1) 
+
+     NISO JATS Standing Committee met and answered the requests and
+     suggestions from the NISO request forms.
+
+     Details concerning ANSI/NISO Z39.96-2012 JATS-based DTDs,  
+     XSDs, RNGs and supporting documentation are available at
+           http://jats.nlm.nih.gov/1.0/
+
+ 27. ON-BEHALF-OF NEW CONTENT
+     Added <xref>, <fn>, and <target> (the simple links) to 
+     <on-behalf-of>.
+
+ 26. ADDED <string-date> to <mixed-citation> and <element-citation>
+     through citation-elements.
+
+ 25. NEW ELEMENT <era>
+     Added to the model of <date>, optional following year,
+     through date-model.
+
+ 24. XML Base
+     Added the attribute @xml:base to the Global (common)
+     attributes used on all elements.
+
+ 23. INSTITUTION-WRAP ADDED
+     Added the element <institution-wrap> to the following elements
+     through the institution-wrap.class:
+      - <conf-sponsor>
+      - <publisher-name>
+      - <std-organization>
+
+ 22.  GLOBAL ATTRIBUTES - Added the new parameter entity 
+         %jats-common-atts;
+     to every element in this module. This PE adds (for now) the
+     @id attribute and the @xml:base attribute to every element,
+     whether metadata or narrative.
+     Since the @id in this parameter entity is optional, a second
+     parameter entity jats-common-atts-id-required was also added.
+     The two are kept in sync with the jats-base-atts parameter 
+     entity.
+     All attribute lists in this module changed.
+
+ 21. ABSTRACTS AND KEYWORDS ON NEW STRUCTURES
+     - Added <abstract> (through %abstract.class;) and <kwd-group> 
+       (through %kwd-group.class;) to the following elements:
+        - ack (through %ack-model;)
+        - fig (through %fig-model;)
+        - fig-group (through %fig-group-model;)
+
+     - Changed "abstract*" to "(%abstract.class;)*"
+       and "kwd-group*" to "(%kwd-group.class;)*" since those
+       classes now exist. Elements should have a limited number of
+       ways to be invoked.
+        - article-meta (through %article-meta-model;)
+
+ 20. ACKNOWLEDGEMENT MODEL
+     - Added optional, repeatable <kwd-group> to the beginning of 
+       <ack> (through %ack-model;).
    
      =============================================================
      NISO JATS Version 1.0             (DAL/BTU) v1.0 (2012-xx-xx)
    
      ANSI/NISO Z39.96-2012 (Version 1.0) 
 
-     Details concerning ANSI/NISO Z39.96-2012 JATS-based DTDs, XSDs, 
-     RNGs and supporting documentation are available at
+     Details concerning ANSI/NISO Z39.96-2012 JATS-based DTDs,  
+     XSDs, RNGs and supporting documentation are available at
            http://jats.nlm.nih.gov/1.0/
    
  19. RELATED OBJECT - Added <related-object> everywhere
@@ -128,7 +260,7 @@ Version  Reason/Occasion                   (who) vx.x (yyyy-mm-dd)
    
  15. JOURNAL METADATA MODEL
       
- 14. PARAGRPH PARAMETER ENTITY SYNTAX CHANGE (no models changed)
+ 14. PARAGRAPH PARAMETER ENTITY SYNTAX CHANGE (no models changed)
      Fixed content models that were stated as "p*" and "sec*"
      to use the %just-para.class;, %sec.class, and %ref-list.class; 
      classes. Element models that were changed include:
@@ -214,6 +346,11 @@ Version  Reason/Occasion                   (who) vx.x (yyyy-mm-dd)
 
   1. Updated public identifier to "v3.0 20080202//EN"              -->
 
+<!-- ============================================================= -->
+<!-- Details concerning 
+     ANSI/NISO Z39.96-2015 JATS-based DTDs, XSDs, 
+     RNGs and supporting documentation are available at
+           http://jats.nlm.nih.gov/1.1/                            -->
 
 <!-- ============================================================= -->
 <!--                    INLINE MIXES TO OVER-RIDE CONTENT MODELS   -->
@@ -230,6 +367,25 @@ Version  Reason/Occasion                   (who) vx.x (yyyy-mm-dd)
                         ""                                           >
 
 
+<!--                    CITATION ELEMENTS                          -->
+<!--                    Content for both types of citation. These
+                        elements may be mixed with #PCDATA in the
+                        <mixed-citation> element (in which all
+                        punctuation and spacing are left intact), and
+                        they also constitute the choices that can be
+                        used to form the all-element-content of the
+                        <element-citation> element (in which
+                        punctuation and spacing are removed).
+                        Design Note: All inline mixes begin with an
+                        OR bar.                                    -->
+<!ENTITY % citation-elements
+                        "%citation-additions.class; |
+                         %emphasis.class; | %inline-display.class; |
+                         %inline-math.class; | %label.class; |
+                         %phrase.class; | %references.class; |
+                         %subsup.class;"                             >
+
+
 <!--                    CONFERENCE ACRONYM ELEMENTS                -->
 <!--                    The elements that can be included along with
                         data characters inside the content model of
@@ -243,7 +399,7 @@ Version  Reason/Occasion                   (who) vx.x (yyyy-mm-dd)
 <!--                    Elements for use in the <conf-loc> element
                         Removed %simple-text;                      -->
 <!ENTITY % conf-loc-elements
-                        ""                                           >
+                        "| %address.class;"                          >
 
 
 <!--                    CONFERENCE NAME ELEMENTS                   -->
@@ -268,7 +424,7 @@ Version  Reason/Occasion                   (who) vx.x (yyyy-mm-dd)
                         the conference sponsor.
                         Removed %simple-text;                      -->
 <!ENTITY % conf-sponsor-elements
-                        ""                                           >
+                        "| %institution-wrap.class;"                 >
 
 
 <!--                    DEGREE(S) ELEMENTS                         -->
@@ -285,7 +441,7 @@ Version  Reason/Occasion                   (who) vx.x (yyyy-mm-dd)
                         data characters inside the content model of
                         Removed %just-rendition;                   -->
 <!ENTITY % edition-elements
-                        ""                                           >
+                        "| %subsup.class;"                           >
 
 
 <!--                    FAX NUMBER ELEMENTS                        -->
@@ -378,7 +534,7 @@ Version  Reason/Occasion                   (who) vx.x (yyyy-mm-dd)
 <!--                    PREFORMATTED TEXT ELEMENTS                 -->
 <!--                    Elements that may be used, along with data
                         characters, inside the content model for the
-                        <preformat> element, in which white space,
+                        <preformat> element, in which whitespace,
                         such as tabs, line feeds, and spaces will
                         be preserved                               -->
 <!ENTITY % preformat-elements
@@ -391,10 +547,9 @@ Version  Reason/Occasion                   (who) vx.x (yyyy-mm-dd)
 <!--                    PUBLISHER'S LOCATION ELEMENTS              -->
 <!--                    Elements for use in the Publisher Location
                         <publisher-loc> element
-                        Removed %address.class;, %address-link.class;,
-                        %emphasis.class;, and %subsup.class;       -->
+                        Removed emphasis.class;, and %subsup.class;-->
 <!ENTITY % publisher-loc-elements
-                        "| %address-link.class;"                     >
+                        "| %address.class; | %address-link.class;"   >
 
 
 <!--                    PUBLISHER'S NAME ELEMENTS                  -->
@@ -403,7 +558,7 @@ Version  Reason/Occasion                   (who) vx.x (yyyy-mm-dd)
                         a <publisher-name>
                         Removed %just-rendition;                   -->
 <!ENTITY % publisher-name-elements
-                        ""                                           >
+                        "| %institution-wrap.class;"                 >
 
 
 <!--                    STANDARDS ORGANIZATION ELEMENTS            -->
@@ -412,7 +567,7 @@ Version  Reason/Occasion                   (who) vx.x (yyyy-mm-dd)
                         <std-organization>.
                         Removed emphasis.class.                    -->
 <!ENTITY % std-organization-elements
-                        "| %subsup.class;"                           >
+                        "| %institution-wrap.class; | %subsup.class;">
 
 
 <!--                    SUFFIX ELEMENTS                            -->
@@ -440,6 +595,14 @@ Version  Reason/Occasion                   (who) vx.x (yyyy-mm-dd)
                         Removed %just-rendition;                   -->
 <!ENTITY % uri-elements
                         ""                                           >
+
+
+<!--                    VERSION ELEMENTS                           -->
+<!--                    The elements that can be included along with
+                        data characters inside the content model of
+                        <version>                                  -->
+<!ENTITY % version-elements
+                        "| %subsup.class;"                           >
 
 
 <!--                    VOLUME NUMBER ELEMENTS                     -->
@@ -471,7 +634,9 @@ Version  Reason/Occasion                   (who) vx.x (yyyy-mm-dd)
 
 <!--                    ACKNOWLEDGMENTS MODEL                      -->
 <!--                    Content model for the <ack> element        -->
-<!ENTITY % ack-model    "(label?, title?, (%just-para.class;)*, 
+<!ENTITY % ack-model    "(label?, title?,
+                          (%abstract.class;)*, (%kwd-group.class;)*,
+                          (%just-para.class;)*, 
                           (%sec.class;)*, (%ref-list.class;)* )"     >
 
 
@@ -500,22 +665,24 @@ Version  Reason/Occasion                   (who) vx.x (yyyy-mm-dd)
                         Unlike in Archive DTD, some of the metadata
                         is required here.                          -->
 <!ENTITY % article-meta-model
-                        "(article-id*, article-categories?,
+                       "(article-id*, article-categories?,
                          title-group,
-                         (%contrib-group.class; |
-                          %aff-alternatives.class;)*,
+                         ( %contrib-group.class; |
+                           %aff-alternatives.class;)*,
                          author-notes?, pub-date+,
-                         volume?, volume-id*, volume-series?,
-                         issue?, issue-id*, issue-title*,
-                         issue-sponsor*, issue-part?, isbn*,
+                         volume*, volume-id*, volume-series?,
+                         issue*, issue-id*, issue-title*,
+                         issue-sponsor*, issue-part?, 
+                         volume-issue-group*, isbn*,
                          supplement?,
-                         ((fpage, lpage?, page-range?) |
-                           elocation-id)?,
+                         ( (fpage, lpage?, page-range?) |
+                            elocation-id)?,
                          (%address-link.class; | product |
-                         supplementary-material)*, history?,
-                         permissions?, self-uri*, 
+                          supplementary-material)*, 
+                         history?, permissions?, self-uri*, 
                          (%related-article.class;)*, 
-                         abstract*, trans-abstract*, kwd-group*,
+                         (%abstract.class;)*, trans-abstract*, 
+                         (%kwd-group.class;)*,
                          funding-group*, conference*, counts?,
                          custom-meta-group?)"                        >
 
@@ -547,7 +714,7 @@ Version  Reason/Occasion                   (who) vx.x (yyyy-mm-dd)
                         Unlike the base DTD Suite, this <date>
                         requires a <year> and may not take a string
                         date as an alternative.                    -->
-<!ENTITY % date-model   "(((day?, month?) | season)?, year)"         >
+<!ENTITY % date-model   "(((day?, month?) | season)?, year, era?)"   >
 
 
 <!--                    DEFINITION LIST: DEFINITION ITEM ELEMENTS  -->
@@ -561,6 +728,7 @@ Version  Reason/Occasion                   (who) vx.x (yyyy-mm-dd)
                         similarly structured elements
                         Made <label> and <caption> non-repeatable. -->
 <!ENTITY % fig-model    "((%id.class;)*, label?, (%caption.class;)?,
+                          (%abstract.class;)*, (%kwd-group.class;)*,
                           (%access.class; | %address-link.class;)*,
                           (%block-math.class; |
                            %chem-struct-wrap.class; |
@@ -574,6 +742,7 @@ Version  Reason/Occasion                   (who) vx.x (yyyy-mm-dd)
 <!--                    Content model for a <fig-group>            -->
 <!ENTITY % fig-group-model
                         "(label?, (%caption.class;)?,
+                          (%abstract.class;)*, (%kwd-group.class;)*,
                           (%access.class; | %address-link.class;)*,
                           (%fig-display.class; |
                            %just-base-display.class;)* )"            >
@@ -592,7 +761,19 @@ Version  Reason/Occasion                   (who) vx.x (yyyy-mm-dd)
 
 <!--                    LIST MODEL                                 -->
 <!--                    Content model for the <list> element       -->
-<!ENTITY % list-model   "(label?, title?, list-item+)"               >
+<!ENTITY % list-model   "(label?, title?, (%list-item.class;)+)"     >
+
+
+<!--                    ON BEHALF OF CONTENT ELEMENTS              -->
+<!--                    The elements that can be included along with
+                        data characters inside the content model of
+                        <on-behalf-of>
+                        Design Note: -%rendition-plus; begins with
+                        an OR bar, so this inline mix beguines with
+                        an OR bar.                                 -->
+<!ENTITY % on-behalf-of-elements
+                        "%rendition-plus; | %institution-wrap.class; |
+                         %simple-link.class;"                        >
 
 
 <!--                    REFERENCE ITEM MODEL                       -->
@@ -627,6 +808,52 @@ Version  Reason/Occasion                   (who) vx.x (yyyy-mm-dd)
 <!--                    (These are unchanged from the base Suite,  -->
 <!--                    but are used in attribute over-rides below)-->
 <!-- ============================================================= -->
+
+
+<!--                    COMMON ATTRIBUTES                          -->
+<!--                    These lists of attributes will be added to 
+                        nearly every element, in both the document 
+                        metadata and the document body, of the entire 
+                        Tag Set:
+                          - including table elements for both the 
+                              XHTML-inspired and OASIS-inspired
+                              table model elements
+                          - excluding only <mml:math> and 
+                              <xi:include> (whose namespaces JATS
+                              does not control).
+                           Great care should be taken to use these
+                        attributes judiciously, not as a shortcut to
+                        thinking through where an attribute should be
+                        used. Potential use cases include adding
+                        @xml:lang or some RDFa attribute to every 
+                        elements.                                  -->
+
+
+<!--                    JATS BASE ATTRIBUTES                       -->
+<!--                    Holds all the common attributes except @id.
+                        Used to keep the two common attribute lists 
+                        in sync. To add a global attribute, modify
+                        this list.                                 -->
+<!ENTITY % jats-base-atts
+            "xml:base   CDATA                             #IMPLIED"  >
+
+
+<!--                    JATS COMMON ATTRIBUTES                     -->
+<!--                    Holds all the common attributes, as defined in
+                        the base attribute parameter entity, plus an
+                        optional @id.                              -->
+<!ENTITY % jats-common-atts
+            "id         ID                                #IMPLIED 
+             %jats-base-atts;"                                       >
+
+
+<!--                    JATS COMMON ATTRIBUTES (ID REQUIRED)       -->
+<!--                    Holds all the common attributes, as defined in
+                        the base attribute parameter entity, plus a 
+                        required @id.                              -->
+<!ENTITY % jats-common-atts-id-required
+            "id         ID                                #REQUIRED
+             %jats-base-atts;"                                       >
 
 
 <!--                    DISPLAY ATTRIBUTES                         -->
@@ -700,7 +927,7 @@ Version  Reason/Occasion                   (who) vx.x (yyyy-mm-dd)
                         Unlike base, "fn-type" values have been made
                         explicit and removed the symbol attribute  -->
 <!ENTITY % fn-atts
-            "id         ID                                #IMPLIED
+            "%jats-common-atts;                                       
              fn-type    (%fn-types;)                      #IMPLIED
              specific-use
                         CDATA                             #IMPLIED
@@ -712,7 +939,7 @@ Version  Reason/Occasion                   (who) vx.x (yyyy-mm-dd)
 <!--                    Attributes for Inline Graphic
                         <inline-graphic>                           -->
 <!ENTITY % inline-graphic-atts
-            "id        ID                                 #IMPLIED
+            "%jats-common-atts;                                       
              content-type
                        CDATA                              #IMPLIED
              baseline-shift
@@ -729,11 +956,11 @@ Version  Reason/Occasion                   (who) vx.x (yyyy-mm-dd)
 <!--                    PERSON GROUP ATTRIBUTES                    -->
 <!--                    Attributes for the <person-group> element  -->
 <!ENTITY % person-group-atts
-            "id        ID                                 #IMPLIED
+            "%jats-common-atts;                                       
              person-group-type
                         (allauthors | assignee | author | compiler |
-                         director | editor | guest-editor | inventor |
-                         translator | transed)            #IMPLIED
+                         curator | director | editor | guest-editor |
+                         inventor | translator | transed) #IMPLIED
              specific-use
                         CDATA                             #IMPLIED
              xml:lang   NMTOKEN                           #IMPLIED" >
@@ -742,7 +969,7 @@ Version  Reason/Occasion                   (who) vx.x (yyyy-mm-dd)
 <!--                    SECTION ATTRIBUTES                         -->
 <!--                    Attribute list for Section element         -->
 <!ENTITY % sec-atts
-            "id         ID                                 #IMPLIED
+            "%jats-common-atts;                                       
              xml:lang   NMTOKEN                            #IMPLIED
              sec-type   CDATA                              #IMPLIED
              specific-use
