@@ -3,6 +3,7 @@ package java_ojs;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.HeadlessException;
 import java.awt.Insets;
 import java.awt.Label;
 import java.awt.Panel;
@@ -86,9 +87,20 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.table.DefaultTableModel;
+import javax.xml.XMLConstants;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.Source;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamSource;
+import javax.xml.validation.Schema;
+import javax.xml.validation.SchemaFactory;
+import javax.xml.validation.Validator;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.codec.binary.StringUtils;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpVersion;
@@ -127,7 +139,9 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 import org.jsoup.Jsoup;
+import org.w3c.dom.Document;
 
+import jdk.internal.org.xml.sax.SAXException;
 import models.Article;
 import models.ArticleFile;
 import models.Author;
@@ -5343,7 +5357,7 @@ public class Main {
 
 				JScrollPane scrollPane = new JScrollPane();
 				scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
-				scrollPane.setBounds(15, height / 16 * 7-100, width - 30, (height - 30) - (height / 16 * 7) - 10);
+				scrollPane.setBounds(15, height / 16 * 7 - 100, width - 30, (height - 30) - (height / 16 * 7) - 10);
 				unpublished_articles_screen.getContentPane().add(scrollPane);
 				// reference:
 				// https://svn.java.net/svn/swinglabs-demos~svn/trunk/src/java/org/jdesktop/demo/sample/
@@ -5441,7 +5455,9 @@ public class Main {
 				Set<Long> issue_keys = issue_storage.keySet();
 				ArrayList<Issue> issue_list = new ArrayList<Issue>();
 				for (long key : issue_keys) {
-					lblIssueId.addItem(String.format("Issue <%s> - Volume: %s Year: %s ",issue_storage.get(key).getId(),issue_storage.get(key).getVolume(),issue_storage.get(key).getYear()));
+					lblIssueId
+							.addItem(String.format("Issue <%s> - Volume: %s Year: %s ", issue_storage.get(key).getId(),
+									issue_storage.get(key).getVolume(), issue_storage.get(key).getYear()));
 					issue_list.add(issue_storage.get(key));
 				}
 
@@ -5485,8 +5501,8 @@ public class Main {
 								current_issue.add_article(current_article.getId(), current_article);
 								current_issue.setSync(true);
 								issue_storage.put((long) current_issue.getId(), current_issue);
-								unpublished_article_storage.remove((long)selected_article);
-								article_storage.put((long)selected_article,current_article);
+								unpublished_article_storage.remove((long) selected_article);
+								article_storage.put((long) selected_article, current_article);
 
 								((DefaultTableModel) table.getModel())
 										.removeRow(table.convertColumnIndexToModel(article_row));
@@ -7235,8 +7251,42 @@ public class Main {
 							String label_text = "";
 							String label_tooltip = "";
 							for (File f : files) {
-								uploaded_files.add(f);
-								label_text = label_text + f.getName() + "\n";
+								if (Boolean.parseBoolean(list_settings.get("Validate XML (JATS)"))) {
+									String type = FilenameUtils.getExtension(f.getPath());
+									if (type.toLowerCase().compareTo("xml") == 0) {
+										try {
+											boolean valid = false;
+											valid = validate_xml(f);
+											if (!valid) {
+												JOptionPane.showMessageDialog(null,
+														"Invalid XML file. Please try again.");
+											} else {
+												uploaded_files.add(f);
+												label_text = label_text + f.getName() + "\n";
+											}
+										} catch (HeadlessException e1) {
+											// TODO Auto-generated catch block
+											e1.printStackTrace();
+										} catch (org.xml.sax.SAXException e1) {
+											// TODO Auto-generated catch block
+											e1.printStackTrace();
+										} catch (IOException e1) {
+											// TODO Auto-generated catch block
+											e1.printStackTrace();
+										} catch (ParserConfigurationException e1) {
+											// TODO Auto-generated catch block
+											e1.printStackTrace();
+										}
+
+									} else {
+										uploaded_files.add(f);
+										label_text = label_text + f.getName() + "\n";
+									}
+								} else {
+									uploaded_files.add(f);
+									label_text = label_text + f.getName() + "\n";
+
+								}
 							}
 
 							label_tooltip = files.length + " files";
@@ -7275,6 +7325,33 @@ public class Main {
 		} else {
 			login("dashboard");
 		}
+	}
+
+	public boolean validate_xml(File f) throws IOException, ParserConfigurationException, org.xml.sax.SAXException {
+		boolean validation = false;
+		// parse an XML document into a DOM tree
+		DocumentBuilder parser = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+		Document document = parser.parse(f);
+
+		// create a SchemaFactory capable of understanding WXS schemas
+		SchemaFactory factory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
+		File schema_file = new File("src/lib/JATS-journalpublishing0.xsd");
+		// load a WXS schema, represented by a Schema instance
+		Source schemaFile = new StreamSource(schema_file);
+		Schema schema = factory.newSchema(schemaFile);
+
+		// create a Validator instance, which can be used to validate an
+		// instance document
+		Validator validator = schema.newValidator();
+
+		try {
+			validator.validate(new DOMSource(document));
+			validation = true;
+		} catch (org.xml.sax.SAXException e) {
+			// instance document is invalid!
+			validation = false;
+		}
+		return validation;
 	}
 
 	public void edit_article(final long issue_id, final long article_id) {
@@ -8455,8 +8532,42 @@ public class Main {
 							label_text = label_text + lblFile.getText() + "----Not Uploaded-----[\n";
 							String label_tooltip = "";
 							for (File f : files) {
-								uploaded_files.add(f);
-								label_text = label_text + f.getName() + "\n";
+								if (Boolean.parseBoolean(list_settings.get("Validate XML (JATS)"))) {
+									String type = FilenameUtils.getExtension(f.getPath());
+									if (type.toLowerCase().compareTo("xml") == 0) {
+										try {
+											boolean valid = false;
+											valid = validate_xml(f);
+											if (!valid) {
+												JOptionPane.showMessageDialog(null,
+														"Invalid XML file. Please try again.");
+											} else {
+												uploaded_files.add(f);
+												label_text = label_text + f.getName() + "\n";
+											}
+										} catch (HeadlessException e1) {
+											// TODO Auto-generated catch block
+											e1.printStackTrace();
+										} catch (org.xml.sax.SAXException e1) {
+											// TODO Auto-generated catch block
+											e1.printStackTrace();
+										} catch (IOException e1) {
+											// TODO Auto-generated catch block
+											e1.printStackTrace();
+										} catch (ParserConfigurationException e1) {
+											// TODO Auto-generated catch block
+											e1.printStackTrace();
+										}
+
+									} else {
+										uploaded_files.add(f);
+										label_text = label_text + f.getName() + "\n";
+									}
+								} else {
+									uploaded_files.add(f);
+									label_text = label_text + f.getName() + "\n";
+
+								}
 							}
 
 							System.out.println("Uploaded " + uploaded_files.size() + " files");
@@ -9437,8 +9548,42 @@ public class Main {
 						label_text = label_text + lblFile.getText() + "----Not Uploaded-----[\n";
 						String label_tooltip = "";
 						for (File f : files) {
-							uploaded_files.add(f);
-							label_text = label_text + f.getName() + "\n";
+							if (Boolean.parseBoolean(list_settings.get("Validate XML (JATS)"))) {
+								String type = FilenameUtils.getExtension(f.getPath());
+								if (type.toLowerCase().compareTo("xml") == 0) {
+									try {
+										boolean valid = false;
+										valid = validate_xml(f);
+										if (!valid) {
+											JOptionPane.showMessageDialog(null,
+													"Invalid XML file. Please try again.");
+										} else {
+											uploaded_files.add(f);
+											label_text = label_text + f.getName() + "\n";
+										}
+									} catch (HeadlessException e1) {
+										// TODO Auto-generated catch block
+										e1.printStackTrace();
+									} catch (org.xml.sax.SAXException e1) {
+										// TODO Auto-generated catch block
+										e1.printStackTrace();
+									} catch (IOException e1) {
+										// TODO Auto-generated catch block
+										e1.printStackTrace();
+									} catch (ParserConfigurationException e1) {
+										// TODO Auto-generated catch block
+										e1.printStackTrace();
+									}
+
+								} else {
+									uploaded_files.add(f);
+									label_text = label_text + f.getName() + "\n";
+								}
+							} else {
+								uploaded_files.add(f);
+								label_text = label_text + f.getName() + "\n";
+
+							}
 						}
 
 						label_text = label_text + "]----Not Uploaded-----";
@@ -10486,11 +10631,12 @@ public class Main {
 								}
 
 								System.out.println(new_article);
-								article_author_storage.put((long)new_article.getId(), new ArrayList<Author>());
+								article_author_storage.put((long) new_article.getId(), new ArrayList<Author>());
 								articles_list.add(new_article);
 
-								unpublished_article_storage.put((long)new_article.getId(), new_article);
-								author_primary_storage.put((long)new_article.getId(), new ConcurrentHashMap<Long, Boolean>());
+								unpublished_article_storage.put((long) new_article.getId(), new_article);
+								author_primary_storage.put((long) new_article.getId(),
+										new ConcurrentHashMap<Long, Boolean>());
 							}
 						}
 					}
@@ -13137,7 +13283,7 @@ public class Main {
 		int hide_author = (int) (long) obj.get("hide_author");
 		int hide_about = (int) (long) obj.get("hide_about");
 		int disable_comments = (int) (long) obj.get("disable_comments");
-		long abstract_word_count = (Integer) (obj.get("abstract_word_count") == null ? 0
+		long abstract_word_count = (int) (long) (obj.get("abstract_word_count") == null ? 0
 				: obj.get("abstract_word_count"));
 		Section new_section = new Section(id, title, editor_restricted, meta_indexed, meta_reviewed,
 				abstracts_not_required, hide_title, hide_author, hide_about, disable_comments, abstract_word_count);
