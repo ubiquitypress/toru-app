@@ -7288,10 +7288,11 @@ public class Main {
 
 								}
 							}
-
-							label_tooltip = files.length + " files";
-							lblFile.setText(label_text);
-							lblFile.setToolTipText(label_tooltip);
+							if (!uploaded_files.isEmpty()) {
+								label_tooltip = files.length + " files";
+								lblFile.setText(label_text);
+								lblFile.setToolTipText(label_tooltip);
+							}
 						}
 					}
 				});
@@ -7329,28 +7330,43 @@ public class Main {
 
 	public boolean validate_xml(File f) throws IOException, ParserConfigurationException, org.xml.sax.SAXException {
 		boolean validation = false;
-		// parse an XML document into a DOM tree
-		DocumentBuilder parser = DocumentBuilderFactory.newInstance().newDocumentBuilder();
-		Document document = parser.parse(f);
-
-		// create a SchemaFactory capable of understanding WXS schemas
-		SchemaFactory factory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
-		File schema_file = new File("src/lib/JATS-journalpublishing0.xsd");
-		// load a WXS schema, represented by a Schema instance
-		Source schemaFile = new StreamSource(schema_file);
-		Schema schema = factory.newSchema(schemaFile);
-
-		// create a Validator instance, which can be used to validate an
-		// instance document
-		Validator validator = schema.newValidator();
-
 		try {
-			validator.validate(new DOMSource(document));
-			validation = true;
-		} catch (org.xml.sax.SAXException e) {
-			// instance document is invalid!
+			// parse an XML document into a DOM tree
+			DocumentBuilder parser = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+
+			// create a SchemaFactory capable of understanding WXS schemas
+			SchemaFactory factory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
+			File schema_file = new File("src/lib/xml/JATS-journalpublishing1.xsd");
+			// load a WXS schema, represented by a Schema instance
+			Source schemaFile = new StreamSource(schema_file);
+			Schema schema = factory.newSchema(schemaFile);
+
+			// create a Validator instance, which can be used to validate an
+			// instance document
+			Validator validator = schema.newValidator();
+
+			String filename = f.getPath().toString().substring(f.getPath().toString().lastIndexOf("/") + 1);
+			System.out.print(String.format("src/lib/xml/%s", filename));
+			File dir = new File(String.format("src/lib/xml/"));
+			Files.copy(Paths.get(f.getPath().toString()), Paths.get(String.format("src/lib/xml/%s", filename)),
+					StandardCopyOption.REPLACE_EXISTING);
+			File temp = new File(String.format("src/lib/xml/%s", filename));
+			Document document = parser.parse(temp);
+
+			try {
+				validator.validate(new DOMSource(document));
+				validation = true;
+			} catch (org.xml.sax.SAXException e) {
+				// instance document is invalid!
+				e.printStackTrace();
+				validation = false;
+			}
+			temp.delete();
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
 			validation = false;
 		}
+
 		return validation;
 	}
 
@@ -8569,13 +8585,14 @@ public class Main {
 
 								}
 							}
+							if (!uploaded_files.isEmpty()) {
+								System.out.println("Uploaded " + uploaded_files.size() + " files");
+								label_text = label_text + "]----Not Uploaded-----";
+								label_tooltip = files.length + " files";
 
-							System.out.println("Uploaded " + uploaded_files.size() + " files");
-							label_text = label_text + "]----Not Uploaded-----";
-							label_tooltip = files.length + " files";
-
-							lblFile.setText(label_text);
-							lblFile.setToolTipText(label_tooltip);
+								lblFile.setText(label_text);
+								lblFile.setToolTipText(label_tooltip);
+							}
 						}
 					}
 				});
@@ -9555,8 +9572,7 @@ public class Main {
 										boolean valid = false;
 										valid = validate_xml(f);
 										if (!valid) {
-											JOptionPane.showMessageDialog(null,
-													"Invalid XML file. Please try again.");
+											JOptionPane.showMessageDialog(null, "Invalid XML file. Please try again.");
 										} else {
 											uploaded_files.add(f);
 											label_text = label_text + f.getName() + "\n";
@@ -9585,11 +9601,12 @@ public class Main {
 
 							}
 						}
-
-						label_text = label_text + "]----Not Uploaded-----";
-						label_tooltip = files.length + " files";
-						lblFile.setText(label_text);
-						lblFile.setToolTipText(label_tooltip);
+						if (!uploaded_files.isEmpty()) {
+							label_text = label_text + "]----Not Uploaded-----";
+							label_tooltip = files.length + " files";
+							lblFile.setText(label_text);
+							lblFile.setToolTipText(label_tooltip);
+						}
 					}
 				}
 			});
