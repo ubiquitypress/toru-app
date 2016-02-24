@@ -7259,7 +7259,7 @@ public class Main {
 											valid = validate_xml(f);
 											if (!valid) {
 												JOptionPane.showMessageDialog(null,
-														"Invalid XML file. Note: JATS version 1.0 is used for validation.");
+														"Invalid XML file. Note: JATS version 1.1 is used for validation.");
 											} else {
 												uploaded_files.add(f);
 												label_text = label_text + f.getName() + "\n";
@@ -7336,15 +7336,16 @@ public class Main {
 
 			// create a SchemaFactory capable of understanding WXS schemas
 			SchemaFactory factory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
+			
 			File schema_file = new File("src/lib/xml/JATS-journalpublishing1.xsd");
 			// load a WXS schema, represented by a Schema instance
 			Source schemaFile = new StreamSource(schema_file);
 			Schema schema = factory.newSchema(schemaFile);
-
+			
 			// create a Validator instance, which can be used to validate an
 			// instance document
 			Validator validator = schema.newValidator();
-
+			
 			String filename = f.getPath().toString().substring(f.getPath().toString().lastIndexOf("/") + 1);
 			System.out.print(String.format("src/lib/xml/%s", filename));
 			File dir = new File(String.format("src/lib/xml/"));
@@ -7354,16 +7355,20 @@ public class Main {
 			Document document = parser.parse(temp);
 
 			try {
-				validator.validate(new DOMSource(document));
+				validator.validate(new StreamSource(new File(temp.getPath()
+						)));
 				validation = true;
 			} catch (org.xml.sax.SAXException e) {
 				// instance document is invalid!
-				e.printStackTrace();
+				//e.printStackTrace();
+				JOptionPane.showMessageDialog(null,
+						String.format("XML error: %s",e.getMessage()));
 				validation = false;
 			}
 			temp.delete();
 		} catch (FileNotFoundException e) {
-			e.printStackTrace();
+			JOptionPane.showMessageDialog(null,"File not found");
+	
 			validation = false;
 		}
 
@@ -8556,7 +8561,7 @@ public class Main {
 											valid = validate_xml(f);
 											if (!valid) {
 												JOptionPane.showMessageDialog(null,
-														"Invalid XML file. Note: JATS version 1.0 is used for validation.");
+														"Invalid XML file. Note: JATS version 1.1 is used for validation.");
 											} else {
 												uploaded_files.add(f);
 												label_text = label_text + f.getName() + "\n";
@@ -9573,7 +9578,7 @@ public class Main {
 										valid = validate_xml(f);
 										if (!valid) {
 											JOptionPane.showMessageDialog(null,
-													"Invalid XML file. Note: JATS version 1.0 is used for validation.");
+													"Invalid XML file. Note: JATS version 1.1 is used for validation.");
 										} else {
 											uploaded_files.add(f);
 											label_text = label_text + f.getName() + "\n";
