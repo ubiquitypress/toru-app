@@ -7259,7 +7259,7 @@ public class Main {
 											valid = validate_xml(f);
 											if (!valid) {
 												JOptionPane.showMessageDialog(null,
-														"Invalid XML file. Please try again.");
+														"Invalid XML file. Note: JATS version 1.0 is used for validation.");
 											} else {
 												uploaded_files.add(f);
 												label_text = label_text + f.getName() + "\n";
@@ -8556,7 +8556,7 @@ public class Main {
 											valid = validate_xml(f);
 											if (!valid) {
 												JOptionPane.showMessageDialog(null,
-														"Invalid XML file. Please try again.");
+														"Invalid XML file. Note: JATS version 1.0 is used for validation.");
 											} else {
 												uploaded_files.add(f);
 												label_text = label_text + f.getName() + "\n";
@@ -9572,7 +9572,8 @@ public class Main {
 										boolean valid = false;
 										valid = validate_xml(f);
 										if (!valid) {
-											JOptionPane.showMessageDialog(null, "Invalid XML file. Please try again.");
+											JOptionPane.showMessageDialog(null,
+													"Invalid XML file. Note: JATS version 1.0 is used for validation.");
 										} else {
 											uploaded_files.add(f);
 											label_text = label_text + f.getName() + "\n";
