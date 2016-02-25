@@ -7301,10 +7301,10 @@ public class Main {
 									if (list_settings.containsKey("Optimize Images")
 											&& Boolean.parseBoolean(list_settings.get("Optimize Images"))) {
 										try {
-											uploaded_files.add(optimize_image(f));
-
-											label_text = label_text + f.getName() + "\n";
-										} catch (IOException e1) {
+											File optimized = optimize_image(f);
+											uploaded_files.add(optimized);
+											label_text = label_text + optimized.getName() + "\n";
+									} catch (IOException e1) {
 											uploaded_files.add(f);
 											label_text = label_text + f.getName() + "\n";
 
@@ -7387,19 +7387,14 @@ public class Main {
 			writer.dispose();
 		} else if (type.compareTo("png") == 0) {
 			//source: http://www.mkyong.com/java/convert-png-to-jpeg-image-file-in-java/ 
-			// read image file
-			BufferedImage bufferedImage = ImageIO.read(f);
 
-			// create a blank, RGB, same width and height, and a white
-			// background
-			BufferedImage newBufferedImage = new BufferedImage(bufferedImage.getWidth(), bufferedImage.getHeight(),
+			BufferedImage jpgImage = new BufferedImage(image.getWidth(), image.getHeight(),
 					BufferedImage.TYPE_INT_RGB);
-			newBufferedImage.createGraphics().drawImage(bufferedImage, 0, 0, Color.WHITE, null);
+			jpgImage.createGraphics().drawImage(image, 0, 0, Color.WHITE, null);
 			compressed = new File(
 					String.format("src/lib/images/%s.jpg", filename.substring(0, filename.lastIndexOf('.'))));
 
-			// write to jpeg file
-			ImageIO.write(newBufferedImage, "jpg", compressed);
+			ImageIO.write(jpgImage, "jpg", compressed);
 
 		}
 		if (compressed == null) {
@@ -8672,9 +8667,9 @@ public class Main {
 									if (list_settings.containsKey("Optimize Images")
 											&& Boolean.parseBoolean(list_settings.get("Optimize Images"))) {
 										try {
-											uploaded_files.add(optimize_image(f));
-
-											label_text = label_text + f.getName() + "\n";
+											File optimized = optimize_image(f);
+											uploaded_files.add(optimized);
+											label_text = label_text + optimized.getName() + "\n";
 										} catch (IOException e1) {
 											uploaded_files.add(f);
 											label_text = label_text + f.getName() + "\n";
@@ -9716,9 +9711,9 @@ public class Main {
 								if (list_settings.containsKey("Optimize Images")
 										&& Boolean.parseBoolean(list_settings.get("Optimize Images"))) {
 									try {
-										uploaded_files.add(optimize_image(f));
-
-										label_text = label_text + f.getName() + "\n";
+										File optimized = optimize_image(f);
+										uploaded_files.add(optimized);
+										label_text = label_text + optimized.getName() + "\n";
 									} catch (IOException e1) {
 										uploaded_files.add(f);
 										label_text = label_text + f.getName() + "\n";
