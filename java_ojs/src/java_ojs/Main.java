@@ -141,6 +141,8 @@ import org.apache.http.params.HttpProtocolParams;
 import org.apache.http.protocol.BasicHttpContext;
 import org.apache.http.protocol.HttpContext;
 import org.codehaus.jackson.JsonFactory;
+import org.icepdf.ri.common.SwingController;
+import org.icepdf.ri.common.SwingViewBuilder;
 import org.jdesktop.swingx.JXDatePicker;
 import org.jdesktop.swingx.JXTable;
 import org.jdesktop.swingx.sort.RowFilters;
@@ -7170,14 +7172,45 @@ public class Main {
 										} catch (IOException es) {
 											es.printStackTrace();
 										}
-									}
+									}else if (type.toLowerCase().compareTo("pdf")==0){
+									     String filePath = f.getAbsolutePath();
+
+									        // build a component controller
+									        SwingController controller = new SwingController();
+
+									        SwingViewBuilder factory = new SwingViewBuilder(controller);
+
+									        JPanel viewerComponentPanel = factory.buildViewerPanel();
+
+									        // add interactive mouse link annotation support via callback
+									        controller.getDocumentViewController().setAnnotationCallback(
+									                new org.icepdf.ri.common.MyAnnotationCallback(
+									                        controller.getDocumentViewController()));
+
+									        JFrame applicationFrame = new JFrame();
+									        applicationFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+									        applicationFrame.getContentPane().add(viewerComponentPanel);
+
+									        // Now that the GUI is all in place, we can try openning a PDF
+									        controller.openDocument(filePath);
+
+									        // show the component
+									        applicationFrame.pack();
+									        applicationFrame.setVisible(true);
+											
+								
+									        // Now that the GUI is all in place, we can try openning a PDF
+									        controller.openDocument(filePath);
+
+									        // show the component
+											}
 
 								}
 							});
 							btnPreview.setIcon(previewicon);
 							panel11.add(btnPreview);
 							if (type.toLowerCase().compareTo("jpg") == 0 || type.toLowerCase().compareTo("jpeg") == 0
-									|| type.toLowerCase().compareTo("png") == 0) {
+									|| type.toLowerCase().compareTo("png") == 0 || type.toLowerCase().compareTo("pdf") == 0) {
 								btnPreview.setEnabled(true);
 							} else {
 								btnPreview.setEnabled(false);
