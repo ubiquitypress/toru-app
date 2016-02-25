@@ -7109,7 +7109,7 @@ public class Main {
 				panel11.setBounds(265, 285, 265, 190 + 100 * file_storage.keySet().size());
 				panel11.setLayout(null);
 				panel11.setAutoscrolls(true);
-				panel11.setPreferredSize(new Dimension(250, 190 + 280 * file_storage.keySet().size()));
+				panel11.setPreferredSize(new Dimension(340, 190 + 280 * file_storage.keySet().size()));
 				article.getContentPane().add(panel11);
 				String label_text = "";
 				System.out.println(file_storage.keySet().toString());
@@ -7125,21 +7125,72 @@ public class Main {
 						int y_f = 23;
 						for (long key : keys) {
 							ImageIcon deleteicon = new ImageIcon("src/lib/remove_xs.png");
+							ImageIcon previewicon = new ImageIcon("src/lib/preview_xs.png");
 							JButton btnDeleteFile = new JButton(deleteicon);
+
 							btnDeleteFile.setMargin(new Insets(0, 0, 0, 0));
 							btnDeleteFile.setBorder(null);
 							btnDeleteFile.setFont(new Font("Dialog", Font.BOLD, 12));
 
-							btnDeleteFile.setBounds(195, y_f, 40, 24);
+							btnDeleteFile.setBounds(240, y_f, 40, 24);
 							article.getContentPane().add(btnDeleteFile);
+							JButton btnPreview = new JButton(previewicon);
 
+							btnPreview.setMargin(new Insets(0, 0, 0, 0));
+							btnPreview.setBorder(null);
+							btnPreview.setFont(new Font("Dialog", Font.BOLD, 12));
+
+							btnPreview.setBounds(150, y_f, 40, 24);
+							article.getContentPane().add(btnPreview);
+							File f = new File(files.get((long) key).getPath());
+							String filename = f.getPath().toString()
+									.substring(f.getPath().toString().lastIndexOf("/") + 1);
+
+							String type = filename.substring(filename.lastIndexOf(".") + 1);
+						
+							btnPreview.setAction(new AbstractAction() {
+								/**
+								 * 
+								 */
+								private static final long serialVersionUID = 1L;
+
+								public void actionPerformed(ActionEvent e) {
+									if (type.toLowerCase().compareTo("jpg") == 0
+											|| type.toLowerCase().compareTo("jpeg") == 0
+											|| type.toLowerCase().compareTo("png") == 0) {
+
+										try {
+											BufferedImage img = ImageIO.read(f);
+											ImageIcon icon = new ImageIcon(img);
+											JLabel label = new JLabel(icon);
+
+											JOptionPane.showMessageDialog(null, label,
+													String.format("Preview of %s", filename),
+													JOptionPane.INFORMATION_MESSAGE);
+										} catch (IOException es) {
+											es.printStackTrace();
+										}
+									}
+
+								}
+							});
+							btnPreview.setIcon(previewicon);
+							panel11.add(btnPreview);
+							if (type.toLowerCase().compareTo("jpg") == 0 || type.toLowerCase().compareTo("jpeg") == 0
+									|| type.toLowerCase().compareTo("png") == 0) {
+								btnPreview.setEnabled(true);
+							} else {
+								btnPreview.setEnabled(false);
+								btnPreview.repaint();
+								panel11.repaint();
+							}
 							ImageIcon saveicon = new ImageIcon("src/lib/save_xs.png");
 							JButton btnSaveFile = new JButton(saveicon);
 							btnSaveFile.setMargin(new Insets(0, 0, 0, 0));
 							btnSaveFile.setBorder(null);
 							btnSaveFile.setFont(new Font("Dialog", Font.BOLD, 12));
 
-							btnSaveFile.setBounds(150, y_f, 40, 24);
+							btnSaveFile.setBounds(195, y_f, 40, 24);
 							article.getContentPane().add(btnSaveFile);
 							JLabel file_l = new JLabel(files.get((long) key).getPath()
 									.substring(files.get((long) key).getPath().lastIndexOf("/") + 1));
@@ -7249,7 +7300,7 @@ public class Main {
 				JScrollPane fileSection = new JScrollPane(panel11);
 
 				fileSection.setPreferredSize(new Dimension(300 * 2, 100 * file_storage.size()));
-				fileSection.setBounds(20, 346, 265, 160);
+				fileSection.setBounds(10, 346, 310, 160);
 				fileSection.add(panel10);
 				fileSection.createHorizontalScrollBar();
 				panel.add(fileSection);
@@ -7409,41 +7460,56 @@ public class Main {
 
 	// reference:
 	// http://developers.itextpdf.com/examples/itext-action-second-edition/chapter-6#253-concatenatestamp.java
-	public File insert_doi_pdf(File f, String doi) throws IOException, DocumentException {
+	public File insert_doi_pdf(File f, String doi) {
+		try {
+			File compressed = null;
+			String filename = f.getPath().toString().substring(f.getPath().toString().lastIndexOf("/") + 1);
 
-		File compressed = null;
-		String filename = f.getPath().toString().substring(f.getPath().toString().lastIndexOf("/") + 1);
+			File directory = new File(String.format("src/lib/pdf/"));
+			directory.mkdirs();
+			PdfReader reader = new PdfReader(new FileInputStream(f));
 
-		File directory = new File(String.format("src/lib/pdf/"));
-		directory.mkdirs();
-		PdfReader reader = new PdfReader(new FileInputStream(f));
+			com.itextpdf.text.Document document = new com.itextpdf.text.Document();
+			// com.itextpdf.text.Document document = new
+			// com.itextpdf.text.Document(f);
 
-		com.itextpdf.text.Document document = new com.itextpdf.text.Document();
-		// com.itextpdf.text.Document document = new
-		// com.itextpdf.text.Document(f);
+			PdfCopy copy = new PdfCopy(document, new FileOutputStream(String.format("src/lib/pdf/%s", filename)));
+			document.open();
+			PdfCopy.PageStamp stamp;
+			PdfImportedPage page;
+			int total = reader.getNumberOfPages();
+			if (total == 1) {
+				page = copy.getImportedPage(reader, 1);
+				stamp = copy.createPageStamp(page);
+				ColumnText.showTextAligned(stamp.getUnderContent(), Element.ALIGN_CENTER,
+						new Phrase(String.format("%s", doi)), 297.5f, 28, 0);
+				stamp.alterContents();
+				copy.addPage(page);
+			} else {
+				for (int i = 1; i < total;) {
+					page = copy.getImportedPage(reader, ++i);
+					stamp = copy.createPageStamp(page);
+					ColumnText.showTextAligned(stamp.getUnderContent(), Element.ALIGN_CENTER,
+							new Phrase(String.format("%s", doi)), 297.5f, 28, 0);
+					stamp.alterContents();
+					copy.addPage(page);
+				}
+			}
+			document.close();
+			reader.close();
+			if (list_settings.containsKey("Optimize PDFs")
+					&& Boolean.parseBoolean(list_settings.get("Optimize PDFs"))) {
+				copy.setFullCompression();
+			}
+			copy.close();
+			compressed = new File(String.format("src/lib/pdf/%s", filename));
+			return compressed;
+		} catch (IOException e) {
+			return f;
+		} catch (DocumentException es) {
+			return f;
 
-		PdfCopy copy = new PdfCopy(document, new FileOutputStream(String.format("src/lib/pdf/%s", filename)));
-		document.open();
-		PdfCopy.PageStamp stamp;
-		PdfImportedPage page;
-		int total = reader.getNumberOfPages();
-		for (int i = 1; i < total;) {
-			page = copy.getImportedPage(reader, ++i);
-			stamp = copy.createPageStamp(page);
-			ColumnText.showTextAligned(stamp.getUnderContent(), Element.ALIGN_CENTER,
-					new Phrase(String.format("%s", doi)), 297.5f, 28, 0);
-			stamp.alterContents();
-			copy.addPage(page);
 		}
-
-		document.close();
-		reader.close();
-		if (list_settings.containsKey("Optimize PDFs") && Boolean.parseBoolean(list_settings.get("Optimize PDFs"))) {
-			copy.setFullCompression();
-		}
-		copy.close();
-		compressed = new File(String.format("src/lib/pdf/%s", filename));
-		return compressed;
 	}
 
 	public File optimize_pdf(File f) throws IOException, DocumentException {
@@ -8791,20 +8857,11 @@ public class Main {
 											&& Boolean.parseBoolean(list_settings.get("Insert DOIs in PDFs"))) {
 
 										File optimized;
-										try {
-											optimized = insert_doi_pdf(f, current_article.getDoi());
-											uploaded_files.add(optimized);
-											label_text = label_text + optimized.getName() + "\n";
 
-										} catch (IOException e1) {
-											uploaded_files.add(f);
-											label_text = label_text + f.getName() + "\n";
+										optimized = insert_doi_pdf(f, current_article.getDoi());
+										uploaded_files.add(optimized);
+										label_text = label_text + optimized.getName() + "\n";
 
-										} catch (DocumentException e1) {
-											uploaded_files.add(f);
-											label_text = label_text + f.getName() + "\n";
-
-										}
 									} else if (list_settings.containsKey("Optimize PDFs")
 											&& Boolean.parseBoolean(list_settings.get("Optimize PDFs"))) {
 
@@ -9897,20 +9954,11 @@ public class Main {
 										&& Boolean.parseBoolean(list_settings.get("Insert DOIs in PDFs"))) {
 
 									File optimized;
-									try {
-										optimized = insert_doi_pdf(f, doi.getText());
-										uploaded_files.add(optimized);
-										label_text = label_text + optimized.getName() + "\n";
 
-									} catch (IOException e1) {
-										uploaded_files.add(f);
-										label_text = label_text + f.getName() + "\n";
+									optimized = insert_doi_pdf(f, doi.getText());
+									uploaded_files.add(optimized);
+									label_text = label_text + optimized.getName() + "\n";
 
-									} catch (DocumentException e1) {
-										uploaded_files.add(f);
-										label_text = label_text + f.getName() + "\n";
-
-									}
 								} else if (list_settings.containsKey("Optimize PDFs")
 										&& Boolean.parseBoolean(list_settings.get("Optimize PDFs"))) {
 
