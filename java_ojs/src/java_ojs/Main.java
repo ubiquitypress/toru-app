@@ -153,6 +153,11 @@ import org.jsoup.Jsoup;
 import org.w3c.dom.Document;
 
 import com.itextpdf.text.DocumentException;
+import com.itextpdf.text.Element;
+import com.itextpdf.text.Phrase;
+import com.itextpdf.text.pdf.ColumnText;
+import com.itextpdf.text.pdf.PdfCopy;
+import com.itextpdf.text.pdf.PdfImportedPage;
 import com.itextpdf.text.pdf.PdfReader;
 import com.itextpdf.text.pdf.PdfStamper;
 
@@ -7320,7 +7325,7 @@ public class Main {
 
 										File optimized;
 										try {
-											optimized = opmtimize_pdf(f);
+											optimized = optimize_pdf(f);
 											uploaded_files.add(optimized);
 											label_text = label_text + optimized.getName() + "\n";
 
@@ -7402,7 +7407,46 @@ public class Main {
 		}
 	}
 
-	public File opmtimize_pdf(File f) throws IOException, DocumentException {
+	// reference:
+	// http://developers.itextpdf.com/examples/itext-action-second-edition/chapter-6#253-concatenatestamp.java
+	public File insert_doi_pdf(File f, String doi) throws IOException, DocumentException {
+
+		File compressed = null;
+		String filename = f.getPath().toString().substring(f.getPath().toString().lastIndexOf("/") + 1);
+
+		File directory = new File(String.format("src/lib/pdf/"));
+		directory.mkdirs();
+		PdfReader reader = new PdfReader(new FileInputStream(f));
+
+		com.itextpdf.text.Document document = new com.itextpdf.text.Document();
+		// com.itextpdf.text.Document document = new
+		// com.itextpdf.text.Document(f);
+
+		PdfCopy copy = new PdfCopy(document, new FileOutputStream(String.format("src/lib/pdf/%s", filename)));
+		document.open();
+		PdfCopy.PageStamp stamp;
+		PdfImportedPage page;
+		int total = reader.getNumberOfPages();
+		for (int i = 1; i < total;) {
+			page = copy.getImportedPage(reader, ++i);
+			stamp = copy.createPageStamp(page);
+			ColumnText.showTextAligned(stamp.getUnderContent(), Element.ALIGN_CENTER,
+					new Phrase(String.format("%s", doi)), 297.5f, 28, 0);
+			stamp.alterContents();
+			copy.addPage(page);
+		}
+
+		document.close();
+		reader.close();
+		if (list_settings.containsKey("Optimize PDFs") && Boolean.parseBoolean(list_settings.get("Optimize PDFs"))) {
+			copy.setFullCompression();
+		}
+		copy.close();
+		compressed = new File(String.format("src/lib/pdf/%s", filename));
+		return compressed;
+	}
+
+	public File optimize_pdf(File f) throws IOException, DocumentException {
 
 		File compressed = null;
 		String filename = f.getPath().toString().substring(f.getPath().toString().lastIndexOf("/") + 1);
@@ -8743,12 +8787,30 @@ public class Main {
 										}
 									}
 								} else if (type.toLowerCase().compareTo("pdf") == 0) {
-									if (list_settings.containsKey("Optimize PDFs")
+									if (list_settings.containsKey("Insert DOIs in PDFs")
+											&& Boolean.parseBoolean(list_settings.get("Insert DOIs in PDFs"))) {
+
+										File optimized;
+										try {
+											optimized = insert_doi_pdf(f, current_article.getDoi());
+											uploaded_files.add(optimized);
+											label_text = label_text + optimized.getName() + "\n";
+
+										} catch (IOException e1) {
+											uploaded_files.add(f);
+											label_text = label_text + f.getName() + "\n";
+
+										} catch (DocumentException e1) {
+											uploaded_files.add(f);
+											label_text = label_text + f.getName() + "\n";
+
+										}
+									} else if (list_settings.containsKey("Optimize PDFs")
 											&& Boolean.parseBoolean(list_settings.get("Optimize PDFs"))) {
 
 										File optimized;
 										try {
-											optimized = opmtimize_pdf(f);
+											optimized = optimize_pdf(f);
 											uploaded_files.add(optimized);
 											label_text = label_text + optimized.getName() + "\n";
 
@@ -9829,12 +9891,32 @@ public class Main {
 									}
 								}
 							} else if (type.toLowerCase().compareTo("pdf") == 0) {
-								if (list_settings.containsKey("Optimize PDFs")
+								String doi_text = doi.getText();
+								if (doi_text != null && !doi_text.isEmpty() && doi_text.compareTo("") == 0
+										&& list_settings.containsKey("Insert DOIs in PDFs")
+										&& Boolean.parseBoolean(list_settings.get("Insert DOIs in PDFs"))) {
+
+									File optimized;
+									try {
+										optimized = insert_doi_pdf(f, doi.getText());
+										uploaded_files.add(optimized);
+										label_text = label_text + optimized.getName() + "\n";
+
+									} catch (IOException e1) {
+										uploaded_files.add(f);
+										label_text = label_text + f.getName() + "\n";
+
+									} catch (DocumentException e1) {
+										uploaded_files.add(f);
+										label_text = label_text + f.getName() + "\n";
+
+									}
+								} else if (list_settings.containsKey("Optimize PDFs")
 										&& Boolean.parseBoolean(list_settings.get("Optimize PDFs"))) {
 
 									File optimized;
 									try {
-										optimized = opmtimize_pdf(f);
+										optimized = optimize_pdf(f);
 										uploaded_files.add(optimized);
 										label_text = label_text + optimized.getName() + "\n";
 
