@@ -152,6 +152,10 @@ import org.json.simple.parser.ParseException;
 import org.jsoup.Jsoup;
 import org.w3c.dom.Document;
 
+import com.itextpdf.text.DocumentException;
+import com.itextpdf.text.pdf.PdfReader;
+import com.itextpdf.text.pdf.PdfStamper;
+
 import jdk.internal.org.xml.sax.SAXException;
 import models.Article;
 import models.ArticleFile;
@@ -7304,11 +7308,35 @@ public class Main {
 											File optimized = optimize_image(f);
 											uploaded_files.add(optimized);
 											label_text = label_text + optimized.getName() + "\n";
-									} catch (IOException e1) {
+										} catch (IOException e1) {
 											uploaded_files.add(f);
 											label_text = label_text + f.getName() + "\n";
 
 										}
+									}
+								} else if (type.toLowerCase().compareTo("pdf") == 0) {
+									if (list_settings.containsKey("Optimize PDFs")
+											&& Boolean.parseBoolean(list_settings.get("Optimize PDFs"))) {
+
+										File optimized;
+										try {
+											optimized = opmtimize_pdf(f);
+											uploaded_files.add(optimized);
+											label_text = label_text + optimized.getName() + "\n";
+
+										} catch (IOException e1) {
+											uploaded_files.add(f);
+											label_text = label_text + f.getName() + "\n";
+
+										} catch (DocumentException e1) {
+											uploaded_files.add(f);
+											label_text = label_text + f.getName() + "\n";
+
+										}
+									} else {
+										uploaded_files.add(f);
+										label_text = label_text + f.getName() + "\n";
+
 									}
 								} else {
 									uploaded_files.add(f);
@@ -7337,6 +7365,24 @@ public class Main {
 						if (!uploaded_files.isEmpty()) {
 							select.setEnabled(false);
 						}
+						File folder = new File(String.format("src/lib/images/"));
+						folder.delete();
+						try {
+							FileUtils.deleteDirectory(folder);
+						} catch (IOException e1) {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						}
+						System.out.println("deleted images");
+						folder = new File(String.format("src/lib/pdf/"));
+						folder.delete();
+						try {
+							FileUtils.deleteDirectory(folder);
+						} catch (IOException e1) {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						}
+						System.out.println("deleted pdf");
 					}
 				});
 				upload.setBounds(150, 310, 90, 30);
@@ -7355,6 +7401,26 @@ public class Main {
 			login("dashboard");
 		}
 	}
+
+	public File opmtimize_pdf(File f) throws IOException, DocumentException {
+
+		File compressed = null;
+		String filename = f.getPath().toString().substring(f.getPath().toString().lastIndexOf("/") + 1);
+
+		File directory = new File(String.format("src/lib/pdf/"));
+		directory.mkdirs();
+		PdfReader reader = new PdfReader(new FileInputStream(f));
+		PdfStamper stamper = new PdfStamper(reader, new FileOutputStream(String.format("src/lib/pdf/%s", filename)));
+		int total = reader.getNumberOfPages() + 1;
+		for (int i = 1; i < total; i++) {
+			reader.setPageContent(i + 1, reader.getPageContent(i + 1));
+		}
+		stamper.setFullCompression();
+		stamper.close();
+		compressed = new File(String.format("src/lib/pdf/%s", filename));
+		return compressed;
+	}
+
 	// reference:
 	// http://www.tutorialspoint.com/java_dip/image_compression_technique.htm
 
@@ -7386,10 +7452,10 @@ public class Main {
 			ios.close();
 			writer.dispose();
 		} else if (type.compareTo("png") == 0) {
-			//source: http://www.mkyong.com/java/convert-png-to-jpeg-image-file-in-java/ 
+			// source:
+			// http://www.mkyong.com/java/convert-png-to-jpeg-image-file-in-java/
 
-			BufferedImage jpgImage = new BufferedImage(image.getWidth(), image.getHeight(),
-					BufferedImage.TYPE_INT_RGB);
+			BufferedImage jpgImage = new BufferedImage(image.getWidth(), image.getHeight(), BufferedImage.TYPE_INT_RGB);
 			jpgImage.createGraphics().drawImage(image, 0, 0, Color.WHITE, null);
 			compressed = new File(
 					String.format("src/lib/images/%s.jpg", filename.substring(0, filename.lastIndexOf('.'))));
@@ -8676,6 +8742,30 @@ public class Main {
 
 										}
 									}
+								} else if (type.toLowerCase().compareTo("pdf") == 0) {
+									if (list_settings.containsKey("Optimize PDFs")
+											&& Boolean.parseBoolean(list_settings.get("Optimize PDFs"))) {
+
+										File optimized;
+										try {
+											optimized = opmtimize_pdf(f);
+											uploaded_files.add(optimized);
+											label_text = label_text + optimized.getName() + "\n";
+
+										} catch (IOException e1) {
+											uploaded_files.add(f);
+											label_text = label_text + f.getName() + "\n";
+
+										} catch (DocumentException e1) {
+											uploaded_files.add(f);
+											label_text = label_text + f.getName() + "\n";
+
+										}
+									} else {
+										uploaded_files.add(f);
+										label_text = label_text + f.getName() + "\n";
+
+									}
 								} else {
 									uploaded_files.add(f);
 									label_text = label_text + f.getName() + "\n";
@@ -8726,6 +8816,24 @@ public class Main {
 							}
 							lblFile.setText(label_text);
 						}
+						File folder = new File(String.format("src/lib/images/"));
+						folder.delete();
+						try {
+							FileUtils.deleteDirectory(folder);
+						} catch (IOException e1) {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						}
+						System.out.println("deleted images");
+						folder = new File(String.format("src/lib/pdf/"));
+						folder.delete();
+						try {
+							FileUtils.deleteDirectory(folder);
+						} catch (IOException e1) {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						}
+						System.out.println("deleted pdf");
 					}
 				});
 				btnClear.addActionListener(new ActionListener() {
@@ -8875,7 +8983,7 @@ public class Main {
 							}
 							File folder = new File(String.format("src/files/%d/", current_id));
 							folder.delete();
-							
+
 							file_storage.remove(current_id);
 						}
 					}
@@ -9720,6 +9828,30 @@ public class Main {
 
 									}
 								}
+							} else if (type.toLowerCase().compareTo("pdf") == 0) {
+								if (list_settings.containsKey("Optimize PDFs")
+										&& Boolean.parseBoolean(list_settings.get("Optimize PDFs"))) {
+
+									File optimized;
+									try {
+										optimized = opmtimize_pdf(f);
+										uploaded_files.add(optimized);
+										label_text = label_text + optimized.getName() + "\n";
+
+									} catch (IOException e1) {
+										uploaded_files.add(f);
+										label_text = label_text + f.getName() + "\n";
+
+									} catch (DocumentException e1) {
+										uploaded_files.add(f);
+										label_text = label_text + f.getName() + "\n";
+
+									}
+								} else {
+									uploaded_files.add(f);
+									label_text = label_text + f.getName() + "\n";
+
+								}
 							} else {
 								uploaded_files.add(f);
 								label_text = label_text + f.getName() + "\n";
@@ -9757,6 +9889,24 @@ public class Main {
 						}
 						lblFile.setText(label_text);
 					}
+					File folder = new File(String.format("src/lib/images/"));
+					folder.delete();
+					try {
+						FileUtils.deleteDirectory(folder);
+					} catch (IOException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
+					System.out.println("deleted images");
+					folder = new File(String.format("src/lib/pdf/"));
+					folder.delete();
+					try {
+						FileUtils.deleteDirectory(folder);
+					} catch (IOException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
+					System.out.println("deleted pdf");
 				}
 			});
 
@@ -9775,7 +9925,7 @@ public class Main {
 							}
 							File folder = new File(String.format("src/files/%d/", current_id));
 							folder.delete();
-							
+
 							file_storage.remove(current_id);
 						}
 					}
@@ -9816,7 +9966,7 @@ public class Main {
 							}
 							File folder = new File(String.format("src/files/%d/", current_id));
 							folder.delete();
-							
+
 							file_storage.remove(current_id);
 							metadata_storage.remove(current_id);
 						}
@@ -9848,7 +9998,7 @@ public class Main {
 						metadata_storage.remove(current_id);
 						File folder = new File(String.format("src/files/%d/", current_id));
 						folder.delete();
-					
+
 						metadata_storage.remove(current_id);
 						file_storage.remove(current_id);
 					}
@@ -14101,15 +14251,7 @@ public class Main {
 		System.out.println("ioannis:root".hashCode());
 		database_setup();
 		populate_variables();
-		File folder = new File(String.format("src/lib/images/"));
-		folder.delete();
-		try {
-			FileUtils.deleteDirectory(folder);
-		} catch (IOException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
-		System.out.println("deleted files");
+
 		// update_get_issues_from_remote(encoding, false);
 		// update_articles_intersect(issue_storage.get((long) 5),encoding);
 		// get_issue_from_remote(encoding, (long) 5, false);
