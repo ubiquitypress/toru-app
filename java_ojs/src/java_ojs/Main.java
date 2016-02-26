@@ -7149,7 +7149,7 @@ public class Main {
 									.substring(f.getPath().toString().lastIndexOf("/") + 1);
 
 							String type = filename.substring(filename.lastIndexOf(".") + 1);
-						
+
 							btnPreview.setAction(new AbstractAction() {
 								/**
 								 * 
@@ -7169,48 +7169,97 @@ public class Main {
 											JOptionPane.showMessageDialog(null, label,
 													String.format("Preview of %s", filename),
 													JOptionPane.INFORMATION_MESSAGE);
-										} catch (IOException es) {
-											es.printStackTrace();
-										}
-									}else if (type.toLowerCase().compareTo("pdf")==0){
-									     String filePath = f.getAbsolutePath();
+										} catch (IOException e1) {
 
-									        // build a component controller
-									        SwingController controller = new SwingController();
+											JOptionPane.showMessageDialog(null, String.format(
+													"File %s does not exist locally.",
+													files.get((long) key).getPath().substring(
+															files.get((long) key).getPath().lastIndexOf("/") + 1)));
+											boolean is_online = status_online();
+											if (is_online) {
+												int dialogResult = JOptionPane.showConfirmDialog(null,
+														"Would you like to download it ?",
 
-									        SwingViewBuilder factory = new SwingViewBuilder(controller);
+														"Warning", 1);
+												if (dialogResult == JOptionPane.YES_OPTION) {
+													try {
+														file_download(article_id, key, true);
+													} catch (IllegalStateException e2) {
 
-									        JPanel viewerComponentPanel = factory.buildViewerPanel();
+														e2.printStackTrace();
+													} catch (IOException e2) {
 
-									        // add interactive mouse link annotation support via callback
-									        controller.getDocumentViewController().setAnnotationCallback(
-									                new org.icepdf.ri.common.MyAnnotationCallback(
-									                        controller.getDocumentViewController()));
-
-									        JFrame applicationFrame = new JFrame();
-									        applicationFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-									        applicationFrame.getContentPane().add(viewerComponentPanel);
-
-									        // Now that the GUI is all in place, we can try openning a PDF
-									        controller.openDocument(filePath);
-
-									        // show the component
-									        applicationFrame.pack();
-									        applicationFrame.setVisible(true);
-											
-								
-									        // Now that the GUI is all in place, we can try openning a PDF
-									        controller.openDocument(filePath);
-
-									        // show the component
+														e2.printStackTrace();
+													}
+												}
 											}
+										} catch (NullPointerException ne) {
+
+											JOptionPane.showMessageDialog(null, String.format(
+													"File %s does not exist locally.",
+													files.get((long) key).getPath().substring(
+															files.get((long) key).getPath().lastIndexOf("/") + 1)));
+											boolean is_online = status_online();
+											if (is_online) {
+												int dialogResult = JOptionPane.showConfirmDialog(null,
+														"Would you like to download it ?",
+
+														"Warning", 1);
+												if (dialogResult == JOptionPane.YES_OPTION) {
+													try {
+														file_download(article_id, key, true);
+													} catch (IllegalStateException e2) {
+
+														e2.printStackTrace();
+													} catch (IOException e2) {
+
+														e2.printStackTrace();
+													}
+												}
+											}
+										}
+									} else if (type.toLowerCase().compareTo("pdf") == 0) {
+										String filePath = f.getAbsolutePath();
+
+										// build a component controller
+										SwingController controller = new SwingController();
+
+										SwingViewBuilder factory = new SwingViewBuilder(controller);
+
+										JPanel viewerComponentPanel = factory.buildViewerPanel();
+
+										// add interactive mouse link annotation
+										// support via callback
+										controller.getDocumentViewController()
+												.setAnnotationCallback(new org.icepdf.ri.common.MyAnnotationCallback(
+														controller.getDocumentViewController()));
+
+										JFrame applicationFrame = new JFrame();
+										applicationFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+										applicationFrame.getContentPane().add(viewerComponentPanel);
+
+										// Now that the GUI is all in place, we
+										// can try openning a PDF
+										controller.openDocument(filePath);
+
+										// show the component
+										applicationFrame.pack();
+										applicationFrame.setVisible(true);
+
+										// Now that the GUI is all in place, we
+										// can try openning a PDF
+										controller.openDocument(filePath);
+
+										// show the component
+									}
 
 								}
 							});
 							btnPreview.setIcon(previewicon);
 							panel11.add(btnPreview);
 							if (type.toLowerCase().compareTo("jpg") == 0 || type.toLowerCase().compareTo("jpeg") == 0
-									|| type.toLowerCase().compareTo("png") == 0 || type.toLowerCase().compareTo("pdf") == 0) {
+									|| type.toLowerCase().compareTo("png") == 0
+									|| type.toLowerCase().compareTo("pdf") == 0) {
 								btnPreview.setEnabled(true);
 							} else {
 								btnPreview.setEnabled(false);
@@ -7280,7 +7329,7 @@ public class Main {
 														"Warning", 1);
 												if (dialogResult == JOptionPane.YES_OPTION) {
 													try {
-														file_download(article_id, key);
+														file_download(article_id, key, true);
 													} catch (IllegalStateException e2) {
 
 														e2.printStackTrace();
@@ -11175,7 +11224,7 @@ public class Main {
 						}
 						if (file_ids != null) {
 							for (String file_id : file_ids) {
-								file_download(a.getId(), Long.parseLong(file_id));
+								file_download(a.getId(), Long.parseLong(file_id), false);
 							}
 						}
 					}
@@ -11558,7 +11607,7 @@ public class Main {
 						}
 						if (file_ids != null) {
 							for (String file_id : file_ids) {
-								file_download(a.getId(), Long.parseLong(file_id));
+								file_download(a.getId(), Long.parseLong(file_id), false);
 							}
 						}
 					}
@@ -13767,8 +13816,14 @@ public class Main {
 		int hide_author = (int) (long) obj.get("hide_author");
 		int hide_about = (int) (long) obj.get("hide_about");
 		int disable_comments = (int) (long) obj.get("disable_comments");
-		long abstract_word_count = (int) (long) (obj.get("abstract_word_count") == null ? 0
-				: obj.get("abstract_word_count"));
+		long abstract_word_count = -1;
+		if (obj.get("abstract_word_count") instanceof Integer) {
+			abstract_word_count = (Integer) (obj.get("abstract_word_count") == null ? 0
+					: obj.get("abstract_word_count"));
+		} else if (obj.get("abstract_word_count") instanceof Long) {
+			abstract_word_count = (long) (obj.get("abstract_word_count") == null ? 0 : obj.get("abstract_word_count"));
+		}
+
 		Section new_section = new Section(id, title, editor_restricted, meta_indexed, meta_reviewed,
 				abstracts_not_required, hide_title, hide_author, hide_about, disable_comments, abstract_word_count);
 		return new_section;
@@ -14331,7 +14386,8 @@ public class Main {
 		}
 	}
 
-	public static void file_download(long article_id, long file_id) throws IllegalStateException, IOException {
+	public static void file_download(long article_id, long file_id, boolean missing)
+			throws IllegalStateException, IOException {
 		boolean status = status_online();
 
 		if (!status) {
@@ -14379,6 +14435,11 @@ public class Main {
 		} catch (IOException e2) {
 
 			e2.printStackTrace();
+		}
+		if (response.getStatusLine().getStatusCode() == 404) {
+			if (missing) {
+				JOptionPane.showMessageDialog(null, "File does not exist remotely.");
+			}
 		}
 		InputStream is = response.getEntity().getContent();
 		String filePath = String.format("src/files/%s/%s/", article_id, filename);
