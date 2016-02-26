@@ -212,7 +212,7 @@ public class Main {
 	private static ArrayList<String> setting_keys = new ArrayList<String>();
 	private static Connection c = null;
 	private static Statement stmt = null;
-	private static String api_insert_or_replace_statement = "INSERT OR REPLACE INTO API(journal_id, intersect_user_id, user_id, key) VALUES (?,?,?,?)";
+	private static String api_insert_or_replace_statement = "INSERT OR REPLACE INTO API(journal_id, intersect_user_id, user_id, key,credentials) VALUES (?,?,?,?,?)";
 	private static String journal_insert_or_replace_statement = "INSERT OR REPLACE INTO JOURNAL(id,path,seq,primary_locale,enabled,title) VALUES (?,?,?,?,?,?)";
 	private static String issue_insert_or_replace_statement = "INSERT OR REPLACE INTO ISSUE(id,title,volume,number,year,show_title,show_volume,show_number,show_year,date_published,date_accepted, published, current, access_status,sync,deleted) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
 	private static String section_insert_or_replace_statement = "INSERT OR REPLACE INTO SECTION(id,title,seq, editor_restricted, meta_indexed, meta_reviewed, abstracts_not_required, hide_title, hide_author, hide_about, disable_comments, abstract_word_count,sync,deleted) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
@@ -278,6 +278,7 @@ public class Main {
 			prep.setFloat(2, Long.parseLong(app_settings.get("intersect_user_id")));
 			prep.setFloat(3, Long.parseLong(app_settings.get("user_id")));
 			prep.setString(4, app_settings.get("key"));
+			prep.setString(5, app_settings.get("credentials"));
 			prep.executeUpdate();
 
 			JSONObject json_file = new JSONObject();
@@ -580,7 +581,10 @@ public class Main {
 			app_settings.put("user_id", Long.toString((long) rs.getFloat("user_id")));
 			app_settings.put("intersect_user_id", Long.toString((long) rs.getFloat("intersect_user_id")));
 			app_settings.put("journal_id", Long.toString((long) rs.getFloat("journal_id")));
+			String credentials = rs.getString("credentials");
 			app_settings.put("key", rs.getString("key"));
+			encoding = credentials;
+			app_settings.put("credentials",credentials);
 			has = true;
 		}
 		has_app_settings = has;
@@ -1356,9 +1360,10 @@ public class Main {
 			JSONObject latest_json = new JSONObject();
 			try {
 				JSONObject latest_obj = (JSONObject) jsonParser.parse(IOUtils.toString(result));
-				String detail = (String) latest_obj.get("detail");
+				Long count = (Long) latest_obj.get("count");
 				System.out.println(latest_obj);
-				if (detail != null) {
+				if (count == null || count ==0) {
+					return latest;
 				} else {
 					JSONArray results = (JSONArray) latest_obj.get("results");
 					System.out.println(latest_obj);
@@ -1432,7 +1437,7 @@ public class Main {
 			stmt = c.createStatement();
 
 			String sql = "CREATE TABLE IF NOT EXISTS API"
-					+ "(journal_id REAL, intersect_user_id REAL NOT NULL, user_id REAL PRIMARY KEY,"
+					+ "(journal_id REAL, intersect_user_id REAL NOT NULL, user_id REAL PRIMARY KEY,"+"credentials CHAR(500),"
 					+ " key CHAR(256) NOT NULL)";
 			stmt.executeUpdate(sql);
 			sql = "CREATE TABLE IF NOT EXISTS JOURNAL" + "(id INTEGER PRIMARY KEY," + " path CHAR(32) UNIQUE,"
@@ -1592,6 +1597,7 @@ public class Main {
 							} else {
 								BASE64Encoder encoder = new BASE64Encoder();
 								encoding = encoder.encode(String.format("%s:%s", user, pass).getBytes());
+								app_settings.put("credentials",encoding);
 								long user_id = -1;
 								try {
 									user_id = get_intersect_id();
@@ -1654,6 +1660,7 @@ public class Main {
 							} else {
 								BASE64Encoder encoder = new BASE64Encoder();
 								encoding = encoder.encode(String.format("%s:%s", user, pass).getBytes());
+								app_settings.put("credentials",encoding);
 								long user_id = -1;
 								try {
 									user_id = get_intersect_id();
