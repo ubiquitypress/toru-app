@@ -14386,12 +14386,12 @@ public class Main {
 		}
 	}
 
-	public static void file_download(long article_id, long file_id, boolean missing)
+	public static boolean file_download(long article_id, long file_id, boolean missing)
 			throws IllegalStateException, IOException {
 		boolean status = status_online();
-
+		boolean exists_remotely = false;
 		if (!status) {
-			return;
+			return false;
 		}
 		String filename = "";
 		HttpGet fileDetails = new HttpGet(String.format("%s/files/%s/", base_url, file_id));
@@ -14440,31 +14440,37 @@ public class Main {
 			if (missing) {
 				JOptionPane.showMessageDialog(null, "File does not exist remotely.");
 			}
-		}
-		InputStream is = response.getEntity().getContent();
-		String filePath = String.format("src/files/%s/%s/", article_id, filename);
-		FileOutputStream fos = new FileOutputStream(new File(filePath));
-		int inByte;
-		while ((inByte = is.read()) != -1)
-			fos.write(inByte);
-		is.close();
-		fos.close();
-		ConcurrentHashMap<Long, ArticleFile> article_files = null;
-		if (!file_storage.containsKey((long) article_id)) {
-			article_files = new ConcurrentHashMap<Long, ArticleFile>();
 		} else {
-			article_files = file_storage.get((long) article_id);
-			if (article_files == null) {
-				article_files = new ConcurrentHashMap<Long, ArticleFile>();
-			}
+			exists_remotely = true;
 		}
-		article_files.put(file_id,
-				new ArticleFile(file_id, article_id, String.format("src/files/%d/%s", article_id, filename)));
 
-		file_storage.put((long) article_id, article_files);
-		System.out.println("Downloaded: " + article_files.size());
+		if (exists_remotely) {
+			InputStream is = response.getEntity().getContent();
+			String filePath = String.format("src/files/%s/%s/", article_id, filename);
+			FileOutputStream fos = new FileOutputStream(new File(filePath));
+			int inByte;
+			while ((inByte = is.read()) != -1)
+				fos.write(inByte);
+			is.close();
+			fos.close();
+			ConcurrentHashMap<Long, ArticleFile> article_files = null;
+			if (!file_storage.containsKey((long) article_id)) {
+				article_files = new ConcurrentHashMap<Long, ArticleFile>();
+			} else {
+				article_files = file_storage.get((long) article_id);
+				if (article_files == null) {
+					article_files = new ConcurrentHashMap<Long, ArticleFile>();
+				}
+			}
+			article_files.put(file_id,
+					new ArticleFile(file_id, article_id, String.format("src/files/%d/%s", article_id, filename)));
+
+			file_storage.put((long) article_id, article_files);
+			System.out.println("Downloaded: " + article_files.size());
+		}
 
 		// System.out.println(file_storage.get((long)125).get((long)5));
+		return exists_remotely;
 	}
 
 	public static void main(String[] args) throws ParseException, java.text.ParseException, IOException {
