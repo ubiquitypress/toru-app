@@ -5,6 +5,7 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.HeadlessException;
+import java.awt.Image;
 import java.awt.Insets;
 import java.awt.Label;
 import java.awt.Panel;
@@ -7165,7 +7166,12 @@ public class Main {
 
 										try {
 											BufferedImage img = ImageIO.read(f);
-											ImageIcon icon = new ImageIcon(img);
+											int scale_width = 640;
+											if(img.getWidth()<scale_width){
+												scale_width = img.getWidth();
+											}
+											ImageIcon icon = new ImageIcon(
+													img.getScaledInstance(scale_width, -1, Image.SCALE_SMOOTH));
 											JLabel label = new JLabel(icon);
 
 											JOptionPane.showMessageDialog(null, label,
