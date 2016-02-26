@@ -7259,7 +7259,67 @@ public class Main {
 										controller.openDocument(filePath);
 
 										// show the component
-									}
+									} else if (type.toLowerCase().compareTo("txt") == 0
+											|| type.toLowerCase().compareTo("html") == 0
+											|| type.toLowerCase().compareTo("xml") == 0) {
+
+										try {
+												JTextArea ta = new JTextArea(20, 60);
+												ta.read(new FileReader(f), null);
+												ta.setEditable(false);
+												JOptionPane.showMessageDialog(null, new JScrollPane(ta));
+												
+											
+										} catch (IOException e1) {
+
+											JOptionPane.showMessageDialog(null, String.format(
+													"File %s does not exist locally.",
+													files.get((long) key).getPath().substring(
+															files.get((long) key).getPath().lastIndexOf("/") + 1)));
+											boolean is_online = status_online();
+											if (is_online) {
+												int dialogResult = JOptionPane.showConfirmDialog(null,
+														"Would you like to download it ?",
+
+														"Warning", 1);
+												if (dialogResult == JOptionPane.YES_OPTION) {
+													try {
+														file_download(article_id, key, true);
+													} catch (IllegalStateException e2) {
+
+														e2.printStackTrace();
+													} catch (IOException e2) {
+
+														e2.printStackTrace();
+													}
+												}
+											}
+										} catch (NullPointerException ne) {
+
+											JOptionPane.showMessageDialog(null, String.format(
+													"File %s does not exist locally.",
+													files.get((long) key).getPath().substring(
+															files.get((long) key).getPath().lastIndexOf("/") + 1)));
+											boolean is_online = status_online();
+											if (is_online) {
+												int dialogResult = JOptionPane.showConfirmDialog(null,
+														"Would you like to download it ?",
+
+														"Warning", 1);
+												if (dialogResult == JOptionPane.YES_OPTION) {
+													try {
+														file_download(article_id, key, true);
+													} catch (IllegalStateException e2) {
+
+														e2.printStackTrace();
+													} catch (IOException e2) {
+
+														e2.printStackTrace();
+													}
+												}
+											}
+										}
+									} 
 
 								}
 							});
@@ -7267,7 +7327,9 @@ public class Main {
 							panel11.add(btnPreview);
 							if (type.toLowerCase().compareTo("jpg") == 0 || type.toLowerCase().compareTo("jpeg") == 0
 									|| type.toLowerCase().compareTo("png") == 0
-									|| type.toLowerCase().compareTo("pdf") == 0) {
+									|| type.toLowerCase().compareTo("pdf") == 0 || type.toLowerCase().compareTo("txt") == 0
+									|| type.toLowerCase().compareTo("html") == 0
+									|| type.toLowerCase().compareTo("xml") == 0) {
 								btnPreview.setEnabled(true);
 							} else {
 								btnPreview.setEnabled(false);
