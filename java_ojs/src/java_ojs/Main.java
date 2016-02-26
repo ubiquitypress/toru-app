@@ -605,10 +605,10 @@ public class Main {
 				e.printStackTrace();
 			}
 			if (!profile_exists) {
-				app_settings.put("user_id", null);
-				app_settings.put("intersect_user_id", null);
-				app_settings.put("journal_id", null);
-				app_settings.put("key", null);
+				app_settings.put("user_id", "");
+				app_settings.put("intersect_user_id", "");
+				app_settings.put("journal_id", "");
+				app_settings.put("key", "");
 			}
 
 		}
@@ -1105,19 +1105,26 @@ public class Main {
 			org.json.simple.parser.JSONParser jsonParser = new JSONParser();
 
 			new JSONObject();
-			journal_url = "";
-			user_url = "";
+			journal_url = null;
+			user_url = null;
 			try {
 				JSONObject latest_obj = (JSONObject) jsonParser.parse(IOUtils.toString(result));
 
-				journal_url = (String) latest_obj.get("journal");
-				user_url = (String) latest_obj.get("user");
+				journal_url = String.format("%s/journals/%s", base_url, latest_obj.get("journal"));
+				user_url = String.format("%s/users/%s", base_url, latest_obj.get("user"));
 				exists = true;
 			} catch (ParseException e) {
 
 				e.printStackTrace();
 			}
+			System.out.println(user_url);
+			System.out.println(journal_url);
+			if (user_url == null || user_url.compareTo(String.format("%s/users/null", base_url)) == 0
+					|| journal_url == null || journal_url.compareTo(String.format("%s/journals/null", base_url)) == 0) {
 
+				JOptionPane.showMessageDialog(null, "Profile missing or incomplete. Contact admin.");
+				return false;
+			}
 			try {
 				InputStream is = response.getEntity().getContent();
 				is.close();
@@ -1603,21 +1610,24 @@ public class Main {
 
 										e1.printStackTrace();
 									}
-									app_settings.put("intersect_user_id", Long.toString(user_id));
-									logged_in = true;
-									login.setVisible(false);
-									login.dispose();
-									System.out.println(app_settings);
-									if (app_settings.get("key") == null || app_settings.get("key").compareTo("") == 0) {
-										api(false);
-									} else {
-										System.out.println(returning_view);
-										if (returning_view.compareTo("api") == 0) {
-											api(true);
-										} else if (returning_view.compareTo("settings") == 0) {
-											settings();
+									if (app_settings.get("user_id").compareTo("") != 0) {
+										app_settings.put("intersect_user_id", Long.toString(user_id));
+										logged_in = true;
+										login.setVisible(false);
+										login.dispose();
+										System.out.println(app_settings);
+										if (app_settings.get("key") == null
+												|| app_settings.get("key").compareTo("") == 0) {
+											api(false);
 										} else {
-											dashboard();
+											System.out.println(returning_view);
+											if (returning_view.compareTo("api") == 0) {
+												api(true);
+											} else if (returning_view.compareTo("settings") == 0) {
+												settings();
+											} else {
+												dashboard();
+											}
 										}
 									}
 								} else {
@@ -1663,6 +1673,7 @@ public class Main {
 
 										e1.printStackTrace();
 									}
+									if (app_settings.get("user_id").compareTo("") != 0) {
 									app_settings.put("intersect_user_id", Long.toString(user_id));
 									login.setVisible(false);
 									if (app_settings.get("key") == null || app_settings.get("key").compareTo("") == 0) {
@@ -1677,7 +1688,7 @@ public class Main {
 											dashboard();
 										}
 									}
-
+									}
 								} else {
 									JOptionPane.showMessageDialog(null, "Wrong username or password");
 								}
@@ -7266,12 +7277,12 @@ public class Main {
 											|| type.toLowerCase().compareTo("xml") == 0) {
 
 										try {
-											
-											
+
 											JTextArea ta = new JTextArea(20, 60);
 											ta.read(new FileReader(f), null);
 											ta.setEditable(false);
-											JOptionPane.showMessageDialog(null, new JScrollPane(ta),String.format("Preview of %s", filename),
+											JOptionPane.showMessageDialog(null, new JScrollPane(ta),
+													String.format("Preview of %s", filename),
 													JOptionPane.INFORMATION_MESSAGE);
 
 										} catch (IOException e1) {
@@ -7323,74 +7334,76 @@ public class Main {
 												}
 											}
 										}
-									}else if (type.toLowerCase().compareTo("doc") == 0
-												|| type.toLowerCase().compareTo("docx") == 0) {
-									
+									} else if (type.toLowerCase().compareTo("doc") == 0
+											|| type.toLowerCase().compareTo("docx") == 0) {
+
+										try {
+											String extractedText = "Cannot render file.";
+											Tika tika = new Tika();
 											try {
-												String extractedText = "Cannot render file.";
-												Tika tika = new Tika();
-												try {
-													extractedText = tika.parseToString(f);
-												} catch (TikaException e1) {
-													// TODO Auto-generated catch block
-													e1.printStackTrace();
-												}
-												JTextArea ta = new JTextArea(20, 60);
-												ta.setText(extractedText);
-												ta.setEditable(false);
-												JOptionPane.showMessageDialog(null, new JScrollPane(ta),String.format("Preview of %s", filename),
-														JOptionPane.INFORMATION_MESSAGE);
+												extractedText = tika.parseToString(f);
+											} catch (TikaException e1) {
+												// TODO Auto-generated catch
+												// block
+												e1.printStackTrace();
+											}
+											JTextArea ta = new JTextArea(20, 60);
+											ta.setText(extractedText);
+											ta.setEditable(false);
+											JOptionPane.showMessageDialog(null, new JScrollPane(ta),
+													String.format("Preview of %s", filename),
+													JOptionPane.INFORMATION_MESSAGE);
 
-											} catch (IOException e1) {
+										} catch (IOException e1) {
 
-												JOptionPane.showMessageDialog(null, String.format(
-														"File %s does not exist locally.",
-														files.get((long) key).getPath().substring(
-																files.get((long) key).getPath().lastIndexOf("/") + 1)));
-												boolean is_online = status_online();
-												if (is_online) {
-													int dialogResult = JOptionPane.showConfirmDialog(null,
-															"Would you like to download it ?",
+											JOptionPane.showMessageDialog(null, String.format(
+													"File %s does not exist locally.",
+													files.get((long) key).getPath().substring(
+															files.get((long) key).getPath().lastIndexOf("/") + 1)));
+											boolean is_online = status_online();
+											if (is_online) {
+												int dialogResult = JOptionPane.showConfirmDialog(null,
+														"Would you like to download it ?",
 
-															"Warning", 1);
-													if (dialogResult == JOptionPane.YES_OPTION) {
-														try {
-															file_download(article_id, key, true);
-														} catch (IllegalStateException e2) {
+														"Warning", 1);
+												if (dialogResult == JOptionPane.YES_OPTION) {
+													try {
+														file_download(article_id, key, true);
+													} catch (IllegalStateException e2) {
 
-															e2.printStackTrace();
-														} catch (IOException e2) {
+														e2.printStackTrace();
+													} catch (IOException e2) {
 
-															e2.printStackTrace();
-														}
-													}
-												}
-											} catch (NullPointerException ne) {
-
-												JOptionPane.showMessageDialog(null, String.format(
-														"File %s does not exist locally.",
-														files.get((long) key).getPath().substring(
-																files.get((long) key).getPath().lastIndexOf("/") + 1)));
-												boolean is_online = status_online();
-												if (is_online) {
-													int dialogResult = JOptionPane.showConfirmDialog(null,
-															"Would you like to download it ?",
-
-															"Warning", 1);
-													if (dialogResult == JOptionPane.YES_OPTION) {
-														try {
-															file_download(article_id, key, true);
-														} catch (IllegalStateException e2) {
-
-															e2.printStackTrace();
-														} catch (IOException e2) {
-
-															e2.printStackTrace();
-														}
+														e2.printStackTrace();
 													}
 												}
 											}
-										
+										} catch (NullPointerException ne) {
+
+											JOptionPane.showMessageDialog(null, String.format(
+													"File %s does not exist locally.",
+													files.get((long) key).getPath().substring(
+															files.get((long) key).getPath().lastIndexOf("/") + 1)));
+											boolean is_online = status_online();
+											if (is_online) {
+												int dialogResult = JOptionPane.showConfirmDialog(null,
+														"Would you like to download it ?",
+
+														"Warning", 1);
+												if (dialogResult == JOptionPane.YES_OPTION) {
+													try {
+														file_download(article_id, key, true);
+													} catch (IllegalStateException e2) {
+
+														e2.printStackTrace();
+													} catch (IOException e2) {
+
+														e2.printStackTrace();
+													}
+												}
+											}
+										}
+
 									}
 
 								}
@@ -11868,6 +11881,7 @@ public class Main {
 		}
 		new JsonFactory();
 		InputStream result = response.getEntity().getContent();
+		System.out.println(response.getStatusLine().toString());
 		org.json.simple.parser.JSONParser jsonParser = new JSONParser();
 		jsonParser = new JSONParser();
 		new JSONObject();
@@ -14632,10 +14646,6 @@ public class Main {
 
 	public static void main(String[] args) throws ParseException, java.text.ParseException, IOException {
 		BASE64Encoder encoder = new BASE64Encoder();
-		encoding = encoder.encode("ioannis:root".getBytes());
-		String encodedpassword = encodeHash("ioannis:root");
-		System.out.println(decodeHash(encodedpassword));
-		System.out.println("ioannis:root".hashCode());
 		database_setup();
 		populate_variables();
 
