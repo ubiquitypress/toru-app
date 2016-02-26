@@ -60,6 +60,8 @@ import javax.imageio.IIOImage;
 import javax.imageio.ImageIO;
 import javax.imageio.ImageWriteParam;
 import javax.imageio.ImageWriter;
+import javax.imageio.plugins.jpeg.JPEGImageWriteParam;
+import javax.imageio.stream.FileImageOutputStream;
 import javax.imageio.stream.ImageOutputStream;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
@@ -7637,22 +7639,34 @@ public class Main {
 			ImageWriteParam param = writer.getDefaultWriteParam();
 
 			param.setCompressionMode(ImageWriteParam.MODE_EXPLICIT);
-			param.setCompressionQuality(0.7f);
+			param.setCompressionQuality(0.8f);
 			writer.write(null, new IIOImage(image, null, null), param);
 
 			os.close();
 			ios.close();
 			writer.dispose();
 		} else if (type.compareTo("png") == 0) {
-			// source:
+			// reference:
 			// http://www.mkyong.com/java/convert-png-to-jpeg-image-file-in-java/
+			// http://stackoverflow.com/questions/17108234/setting-jpg-compression-level-with-imageio-in-java
 
 			BufferedImage jpgImage = new BufferedImage(image.getWidth(), image.getHeight(), BufferedImage.TYPE_INT_RGB);
 			jpgImage.createGraphics().drawImage(image, 0, 0, Color.WHITE, null);
 			compressed = new File(
 					String.format("src/lib/images/%s.jpg", filename.substring(0, filename.lastIndexOf('.'))));
+			JPEGImageWriteParam jpegParams = new JPEGImageWriteParam(null);
+			jpegParams.setCompressionMode(ImageWriteParam.MODE_EXPLICIT);
+			jpegParams.setCompressionQuality(0.8f);
 
-			ImageIO.write(jpgImage, "jpg", compressed);
+			final ImageWriter writer = ImageIO.getImageWritersByFormatName("jpg").next();
+			// specifies where the jpg image has to be written
+			writer.setOutput(new FileImageOutputStream(compressed));
+
+			// writes the file with given compression level
+			// from your JPEGImageWriteParam instance
+			writer.write(null, new IIOImage(jpgImage, null, null), jpegParams);
+
+			// ImageIO.write(jpgImage, "jpg", compressed);
 
 		}
 		if (compressed == null) {
@@ -13818,8 +13832,8 @@ public class Main {
 		int disable_comments = (int) (long) obj.get("disable_comments");
 		long abstract_word_count = -1;
 		if (obj.get("abstract_word_count") instanceof Integer) {
-			abstract_word_count = (Integer) (obj.get("abstract_word_count") == null ? 0
-					: obj.get("abstract_word_count"));
+			Integer words = (Integer) (obj.get("abstract_word_count") == null ? 0 : obj.get("abstract_word_count"));
+			abstract_word_count = new Long(words);
 		} else if (obj.get("abstract_word_count") instanceof Long) {
 			abstract_word_count = (long) (obj.get("abstract_word_count") == null ? 0 : obj.get("abstract_word_count"));
 		}
