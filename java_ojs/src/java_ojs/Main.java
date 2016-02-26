@@ -143,6 +143,8 @@ import org.apache.http.params.HttpParams;
 import org.apache.http.params.HttpProtocolParams;
 import org.apache.http.protocol.BasicHttpContext;
 import org.apache.http.protocol.HttpContext;
+import org.apache.tika.Tika;
+import org.apache.tika.exception.TikaException;
 import org.codehaus.jackson.JsonFactory;
 import org.icepdf.ri.common.SwingController;
 import org.icepdf.ri.common.SwingViewBuilder;
@@ -7167,7 +7169,7 @@ public class Main {
 										try {
 											BufferedImage img = ImageIO.read(f);
 											int scale_width = 640;
-											if(img.getWidth()<scale_width){
+											if (img.getWidth() < scale_width) {
 												scale_width = img.getWidth();
 											}
 											ImageIcon icon = new ImageIcon(
@@ -7264,12 +7266,14 @@ public class Main {
 											|| type.toLowerCase().compareTo("xml") == 0) {
 
 										try {
-												JTextArea ta = new JTextArea(20, 60);
-												ta.read(new FileReader(f), null);
-												ta.setEditable(false);
-												JOptionPane.showMessageDialog(null, new JScrollPane(ta));
-												
 											
+											
+											JTextArea ta = new JTextArea(20, 60);
+											ta.read(new FileReader(f), null);
+											ta.setEditable(false);
+											JOptionPane.showMessageDialog(null, new JScrollPane(ta),String.format("Preview of %s", filename),
+													JOptionPane.INFORMATION_MESSAGE);
+
 										} catch (IOException e1) {
 
 											JOptionPane.showMessageDialog(null, String.format(
@@ -7319,7 +7323,75 @@ public class Main {
 												}
 											}
 										}
-									} 
+									}else if (type.toLowerCase().compareTo("doc") == 0
+												|| type.toLowerCase().compareTo("docx") == 0) {
+									
+											try {
+												String extractedText = "Cannot render file.";
+												Tika tika = new Tika();
+												try {
+													extractedText = tika.parseToString(f);
+												} catch (TikaException e1) {
+													// TODO Auto-generated catch block
+													e1.printStackTrace();
+												}
+												JTextArea ta = new JTextArea(20, 60);
+												ta.setText(extractedText);
+												ta.setEditable(false);
+												JOptionPane.showMessageDialog(null, new JScrollPane(ta),String.format("Preview of %s", filename),
+														JOptionPane.INFORMATION_MESSAGE);
+
+											} catch (IOException e1) {
+
+												JOptionPane.showMessageDialog(null, String.format(
+														"File %s does not exist locally.",
+														files.get((long) key).getPath().substring(
+																files.get((long) key).getPath().lastIndexOf("/") + 1)));
+												boolean is_online = status_online();
+												if (is_online) {
+													int dialogResult = JOptionPane.showConfirmDialog(null,
+															"Would you like to download it ?",
+
+															"Warning", 1);
+													if (dialogResult == JOptionPane.YES_OPTION) {
+														try {
+															file_download(article_id, key, true);
+														} catch (IllegalStateException e2) {
+
+															e2.printStackTrace();
+														} catch (IOException e2) {
+
+															e2.printStackTrace();
+														}
+													}
+												}
+											} catch (NullPointerException ne) {
+
+												JOptionPane.showMessageDialog(null, String.format(
+														"File %s does not exist locally.",
+														files.get((long) key).getPath().substring(
+																files.get((long) key).getPath().lastIndexOf("/") + 1)));
+												boolean is_online = status_online();
+												if (is_online) {
+													int dialogResult = JOptionPane.showConfirmDialog(null,
+															"Would you like to download it ?",
+
+															"Warning", 1);
+													if (dialogResult == JOptionPane.YES_OPTION) {
+														try {
+															file_download(article_id, key, true);
+														} catch (IllegalStateException e2) {
+
+															e2.printStackTrace();
+														} catch (IOException e2) {
+
+															e2.printStackTrace();
+														}
+													}
+												}
+											}
+										
+									}
 
 								}
 							});
@@ -7327,9 +7399,12 @@ public class Main {
 							panel11.add(btnPreview);
 							if (type.toLowerCase().compareTo("jpg") == 0 || type.toLowerCase().compareTo("jpeg") == 0
 									|| type.toLowerCase().compareTo("png") == 0
-									|| type.toLowerCase().compareTo("pdf") == 0 || type.toLowerCase().compareTo("txt") == 0
+									|| type.toLowerCase().compareTo("pdf") == 0
+									|| type.toLowerCase().compareTo("txt") == 0
 									|| type.toLowerCase().compareTo("html") == 0
-									|| type.toLowerCase().compareTo("xml") == 0) {
+									|| type.toLowerCase().compareTo("xml") == 0
+									|| type.toLowerCase().compareTo("doc") == 0
+									|| type.toLowerCase().compareTo("docx") == 0) {
 								btnPreview.setEnabled(true);
 							} else {
 								btnPreview.setEnabled(false);
