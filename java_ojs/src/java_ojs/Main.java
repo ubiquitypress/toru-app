@@ -205,6 +205,7 @@ public class Main {
 	private static ConcurrentHashMap<Long, ArrayList<Author>> article_author_storage;
 	private static String journal_url = "";
 	private static String user_url = "";
+	private static String directory = "";
 	private static ArrayList<Issue> new_issues = new ArrayList<Issue>();
 	private static ConcurrentHashMap<Long, ConcurrentHashMap<Long, Boolean>> author_primary_storage;
 	private static ConcurrentHashMap<Long, ConcurrentHashMap<Long, ArticleFile>> file_storage;
@@ -244,7 +245,7 @@ public class Main {
 	private static long section_db_id = 0;
 	private static long metadata_id = 0;
 	private static final int SOCKET_OPERATION_TIMEOUT = 10 * 1000;
-	private static String base_url = "http://cortana.ubiquity.press:8000";
+	private static String base_url = "http://intersect.ubiquity.press";
 	CookieStore cookieStore = new BasicCookieStore();
 	HttpContext httpContext = new BasicHttpContext();
 	static String encoding = "";
@@ -306,7 +307,7 @@ public class Main {
 			try {
 				json_file.writeJSONString(out);
 				json_file.toJSONString();
-				FileWriter new_jsn = new FileWriter("./settings.json");
+				FileWriter new_jsn = new FileWriter(String.format("%s/required_files/%s", directory, "settings.json"));
 				new_jsn.write(out.toString());
 				new_jsn.flush();
 				new_jsn.close();
@@ -656,7 +657,8 @@ public class Main {
 			try {
 				obj = null;
 				try {
-					obj = parser.parse(new FileReader("./settings.json"));
+					obj = parser
+							.parse(new FileReader(String.format("%s/required_files/%s", directory, "settings.json")));
 				} catch (FileNotFoundException e1) {
 
 					e1.printStackTrace();
@@ -2861,6 +2863,17 @@ public class Main {
 													}
 												}
 											});
+											try {
+												f.get();
+											} catch (InterruptedException e) {
+												// TODO Auto-generated catch
+												// block
+												e.printStackTrace();
+											} catch (ExecutionException e) {
+												// TODO Auto-generated catch
+												// block
+												e.printStackTrace();
+											}
 											futures.add(f);
 
 										}
@@ -3226,7 +3239,7 @@ public class Main {
 				 * btnApi.setBounds(103, 20, 90, 29);
 				 * issues.getContentPane().add(btnApi);
 				 */
-				ImageIcon db_icon = new ImageIcon("src/lib/db_xxs.png");
+				ImageIcon db_icon = new ImageIcon(String.format("%s/required_files/%s", directory, "db_xxs.png"));
 				JButton btnSaveData = new JButton(db_icon);
 				btnSaveData.setFont(new Font("Dialog", Font.BOLD, 24));
 				btnSaveData.addActionListener(new ActionListener() {
@@ -4885,7 +4898,7 @@ public class Main {
 				buttonColumn.setMnemonic(KeyEvent.VK_D);
 				buttonColumn2.setMnemonic(KeyEvent.VK_D);
 				buttonColumn3.setMnemonic(KeyEvent.VK_D);
-				ImageIcon db_icon = new ImageIcon("src/lib/db_xxs.png");
+				ImageIcon db_icon = new ImageIcon(String.format("%s/required_files/%s", directory, "db_xxs.png"));
 				JButton btnSaveData = new JButton(db_icon);
 				btnSaveData.setFont(new Font("Dialog", Font.BOLD, 24));
 				btnSaveData.addActionListener(new ActionListener() {
@@ -5611,7 +5624,7 @@ public class Main {
 				btnClose.setBounds(15, 20, 100, 29);
 				unpublished_articles_screen.getContentPane().add(btnClose);
 				buttonColumn3.setMnemonic(KeyEvent.VK_D);
-				ImageIcon db_icon = new ImageIcon("src/lib/db_xxs.png");
+				ImageIcon db_icon = new ImageIcon(String.format("%s/required_files/%s", directory, "db_xxs.png"));
 				JButton btnSaveData = new JButton(db_icon);
 				btnSaveData.setFont(new Font("Dialog", Font.BOLD, 24));
 				btnSaveData.addActionListener(new ActionListener() {
@@ -6480,7 +6493,7 @@ public class Main {
 				buttonColumn.setMnemonic(KeyEvent.VK_D);
 				buttonColumn2.setMnemonic(KeyEvent.VK_D);
 				buttonColumn3.setMnemonic(KeyEvent.VK_D);
-				ImageIcon db_icon = new ImageIcon("src/lib/db_xxs.png");
+				ImageIcon db_icon = new ImageIcon(String.format("%s/required_files/%s", directory, "db_xxs.png"));
 				JButton btnSaveData = new JButton(db_icon);
 				btnSaveData.setFont(new Font("Dialog", Font.BOLD, 24));
 				btnSaveData.addActionListener(new ActionListener() {
@@ -7156,8 +7169,10 @@ public class Main {
 						System.out.println("Files: " + keys.size());
 						int y_f = 23;
 						for (long key : keys) {
-							ImageIcon deleteicon = new ImageIcon("src/lib/remove_xs.png");
-							ImageIcon previewicon = new ImageIcon("src/lib/preview_xs.png");
+							ImageIcon deleteicon = new ImageIcon(
+									String.format("%s/required_files/%s", directory, "remove_xs.png"));
+							ImageIcon previewicon = new ImageIcon(
+									String.format("%s/required_files/%s", directory, "preview_xs.png"));
 							JButton btnDeleteFile = new JButton(deleteicon);
 
 							btnDeleteFile.setMargin(new Insets(0, 0, 0, 0));
@@ -7438,7 +7453,8 @@ public class Main {
 								btnPreview.repaint();
 								panel11.repaint();
 							}
-							ImageIcon saveicon = new ImageIcon("src/lib/save_xs.png");
+							ImageIcon saveicon = new ImageIcon(
+									String.format("%s/required_files/%s", directory, "save_xs.png"));
 							JButton btnSaveFile = new JButton(saveicon);
 							btnSaveFile.setMargin(new Insets(0, 0, 0, 0));
 							btnSaveFile.setBorder(null);
@@ -7675,7 +7691,8 @@ public class Main {
 						if (!uploaded_files.isEmpty()) {
 							select.setEnabled(false);
 						}
-						File folder = new File(String.format("src/lib/images/"));
+						File folder = new File(
+								String.format(String.format("%s/required_files/%s", directory, "images/")));
 						folder.delete();
 						try {
 							FileUtils.deleteDirectory(folder);
@@ -7684,7 +7701,7 @@ public class Main {
 							e1.printStackTrace();
 						}
 						System.out.println("deleted images");
-						folder = new File(String.format("src/lib/pdf/"));
+						folder = new File(String.format(String.format("%s/required_files/%s", directory, "pdf/")));
 						folder.delete();
 						try {
 							FileUtils.deleteDirectory(folder);
@@ -7719,15 +7736,16 @@ public class Main {
 			File compressed = null;
 			String filename = f.getPath().toString().substring(f.getPath().toString().lastIndexOf("/") + 1);
 
-			File directory = new File(String.format("src/lib/pdf/"));
-			directory.mkdirs();
+			File file_directory = new File(String.format("%s/required_files/pdf/", directory));
+			file_directory.mkdirs();
 			PdfReader reader = new PdfReader(new FileInputStream(f));
 
 			com.itextpdf.text.Document document = new com.itextpdf.text.Document();
 			// com.itextpdf.text.Document document = new
 			// com.itextpdf.text.Document(f);
 
-			PdfCopy copy = new PdfCopy(document, new FileOutputStream(String.format("src/lib/pdf/%s", filename)));
+			PdfCopy copy = new PdfCopy(document,
+					new FileOutputStream(String.format("%s/required_files/pdf/%s", directory, filename)));
 			document.open();
 			PdfCopy.PageStamp stamp;
 			PdfImportedPage page;
@@ -7756,7 +7774,7 @@ public class Main {
 				copy.setFullCompression();
 			}
 			copy.close();
-			compressed = new File(String.format("src/lib/pdf/%s", filename));
+			compressed = new File(String.format(String.format("%s/required_files/%s", directory, "pdf/%s", filename)));
 			return compressed;
 		} catch (IOException e) {
 			return f;
@@ -7771,17 +7789,18 @@ public class Main {
 		File compressed = null;
 		String filename = f.getPath().toString().substring(f.getPath().toString().lastIndexOf("/") + 1);
 
-		File directory = new File(String.format("src/lib/pdf/"));
-		directory.mkdirs();
+		File file_directory = new File(String.format("%s/required_files/pdf/", directory));
+		file_directory.mkdirs();
 		PdfReader reader = new PdfReader(new FileInputStream(f));
-		PdfStamper stamper = new PdfStamper(reader, new FileOutputStream(String.format("src/lib/pdf/%s", filename)));
+		PdfStamper stamper = new PdfStamper(reader,
+				new FileOutputStream(String.format("%s/required_files/pdf/%s", directory, filename)));
 		int total = reader.getNumberOfPages() + 1;
 		for (int i = 1; i < total; i++) {
 			reader.setPageContent(i + 1, reader.getPageContent(i + 1));
 		}
 		stamper.setFullCompression();
 		stamper.close();
-		compressed = new File(String.format("src/lib/pdf/%s", filename));
+		compressed = new File(String.format("%s/required_files/pdf/%s", directory, filename));
 		return compressed;
 	}
 
@@ -7794,10 +7813,10 @@ public class Main {
 		String filename = f.getPath().toString().substring(f.getPath().toString().lastIndexOf("/") + 1);
 		String type = filename.substring(filename.lastIndexOf(".") + 1);
 
-		File directory = new File(String.format("src/lib/images/"));
-		directory.mkdirs();
+		File file_directory = new File(String.format("%s/required_files/images/", directory));
+		file_directory.mkdirs();
 		if (type.compareTo("jpg") == 0 || type.compareTo("jpeg") == 0) {
-			compressed = new File(String.format("src/lib/images/%s", filename));
+			compressed = new File(String.format("%s/required_files/images/%s", directory, filename));
 			OutputStream os = new FileOutputStream(compressed);
 			System.out.println(filename.substring(filename.lastIndexOf(".") + 1));
 			Iterator<ImageWriter> writers = ImageIO.getImageWritersByFormatName("jpg");
@@ -7822,8 +7841,8 @@ public class Main {
 
 			BufferedImage jpgImage = new BufferedImage(image.getWidth(), image.getHeight(), BufferedImage.TYPE_INT_RGB);
 			jpgImage.createGraphics().drawImage(image, 0, 0, Color.WHITE, null);
-			compressed = new File(
-					String.format("src/lib/images/%s.jpg", filename.substring(0, filename.lastIndexOf('.'))));
+			compressed = new File(String.format(String.format("%s/required_files/%s", directory, "images/%s.jpg",
+					filename.substring(0, filename.lastIndexOf('.')))));
 			JPEGImageWriteParam jpegParams = new JPEGImageWriteParam(null);
 			jpegParams.setCompressionMode(ImageWriteParam.MODE_EXPLICIT);
 			jpegParams.setCompressionQuality(0.8f);
@@ -7855,7 +7874,7 @@ public class Main {
 			// create a SchemaFactory capable of understanding WXS schemas
 			SchemaFactory factory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
 
-			File schema_file = new File("src/lib/xml/JATS-journalpublishing1.xsd");
+			File schema_file = new File(String.format("%s/required_files/xml/JATS-journalpublishing1.xsd", directory));
 			// load a WXS schema, represented by a Schema instance
 			Source schemaFile = new StreamSource(schema_file);
 			Schema schema = factory.newSchema(schemaFile);
@@ -7865,12 +7884,13 @@ public class Main {
 			Validator validator = schema.newValidator();
 
 			String filename = f.getPath().toString().substring(f.getPath().toString().lastIndexOf("/") + 1);
-			System.out.print(String.format("src/lib/xml/%s", filename));
-			File dir = new File(String.format("src/lib/xml/"));
+			System.out.print(String.format("%s/required_files/xml/%s", directory, filename));
+			File dir = new File(String.format("%s/required_files/xml/", directory));
 			dir.mkdirs();
-			Files.copy(Paths.get(f.getPath().toString()), Paths.get(String.format("src/lib/xml/%s", filename)),
+			Files.copy(Paths.get(f.getPath().toString()),
+					Paths.get(String.format("%s/required_files/xml/%s", directory, filename)),
 					StandardCopyOption.REPLACE_EXISTING);
-			File temp = new File(String.format("src/lib/xml/%s", filename));
+			File temp = new File(String.format("%s/required_files/xml/%s", directory, filename));
 			Document document = parser.parse(temp);
 
 			try {
@@ -9201,7 +9221,7 @@ public class Main {
 							}
 							lblFile.setText(label_text);
 						}
-						File folder = new File(String.format("src/lib/images/"));
+						File folder = new File(String.format("%s/required_files/images/", directory));
 						folder.delete();
 						try {
 							FileUtils.deleteDirectory(folder);
@@ -9210,7 +9230,7 @@ public class Main {
 							e1.printStackTrace();
 						}
 						System.out.println("deleted images");
-						folder = new File(String.format("src/lib/pdf/"));
+						folder = new File(String.format("%s/required_files/pdf/", directory));
 						folder.delete();
 						try {
 							FileUtils.deleteDirectory(folder);
@@ -9366,13 +9386,13 @@ public class Main {
 								File f = new File(up_files.get((long) key).getPath());
 								f.delete();
 							}
-							File folder = new File(String.format("src/files/%d/", current_id));
+							File folder = new File(String.format("%s/files/%d/",directory, current_id));
 							folder.delete();
 
 							file_storage.remove(current_id);
 						}
 					}
-					File folder = new File(String.format("src/lib/images/"));
+					File folder = new File(String.format("%s/required_files/images/", directory));
 					folder.delete();
 					try {
 						FileUtils.deleteDirectory(folder);
@@ -10285,7 +10305,7 @@ public class Main {
 						}
 						lblFile.setText(label_text);
 					}
-					File folder = new File(String.format("src/lib/images/"));
+					File folder = new File(String.format("%s/required_files/images/", directory));
 					folder.delete();
 					try {
 						FileUtils.deleteDirectory(folder);
@@ -10294,7 +10314,7 @@ public class Main {
 						e1.printStackTrace();
 					}
 					System.out.println("deleted images");
-					folder = new File(String.format("src/lib/pdf/"));
+					folder = new File(String.format("%s/required_files/pdf/", directory));
 					folder.delete();
 					try {
 						FileUtils.deleteDirectory(folder);
@@ -10319,13 +10339,13 @@ public class Main {
 								File f = new File(up_files.get((long) key).getPath());
 								f.delete();
 							}
-							File folder = new File(String.format("src/files/%d/", current_id));
+							File folder = new File(String.format("%s/files/%d/", directory, current_id));
 							folder.delete();
 
 							file_storage.remove(current_id);
 						}
 					}
-					File folder = new File(String.format("src/lib/images/"));
+					File folder = new File(String.format("%s/required_files/images/", directory));
 					folder.delete();
 					try {
 						FileUtils.deleteDirectory(folder);
@@ -10360,14 +10380,14 @@ public class Main {
 								File f = new File(up_files.get((long) key).getPath());
 								f.delete();
 							}
-							File folder = new File(String.format("src/files/%d/", current_id));
+							File folder = new File(String.format("%s/files/%d/", directory, current_id));
 							folder.delete();
 
 							file_storage.remove(current_id);
 							metadata_storage.remove(current_id);
 						}
 					}
-					File folder = new File(String.format("src/lib/images/"));
+					File folder = new File(String.format("%s/required_files/images/", directory));
 					folder.delete();
 					try {
 						FileUtils.deleteDirectory(folder);
@@ -10392,13 +10412,13 @@ public class Main {
 							f.delete();
 						}
 						metadata_storage.remove(current_id);
-						File folder = new File(String.format("src/files/%d/", current_id));
+						File folder = new File(String.format("%s/files/%d/", directory, current_id));
 						folder.delete();
 
 						metadata_storage.remove(current_id);
 						file_storage.remove(current_id);
 					}
-					File folder = new File(String.format("src/lib/images/"));
+					File folder = new File(String.format(String.format("%s/required_files/%s", directory, "images/")));
 					folder.delete();
 					try {
 						FileUtils.deleteDirectory(folder);
@@ -14268,8 +14288,8 @@ public class Main {
 	public static void file_copy(long art_id, String source) {
 		try {
 			String filename = source.substring(source.lastIndexOf("/") + 1);
-			System.out.print(String.format("src/files/%d/%s", art_id, filename));
-			File dir = new File(String.format("src/files/%d/", art_id));
+			System.out.print(String.format("%s/files/%d/%s", directory, art_id, filename));
+			File dir = new File(String.format("%s/files/%d/", directory, art_id));
 			dir.mkdirs();
 			file_id++;
 			ConcurrentHashMap<Long, ArticleFile> article_files = null;
@@ -14279,10 +14299,10 @@ public class Main {
 				article_files = file_storage.get((long) art_id);
 			}
 			article_files.put(file_id,
-					new ArticleFile(file_id, art_id, String.format("src/files/%d/%s", art_id, filename)));
+					new ArticleFile(file_id, art_id, String.format("%s/files/%d/%s", directory, art_id, filename)));
 
 			file_storage.put((long) art_id, article_files);
-			Files.copy(Paths.get(source), Paths.get(String.format("src/files/%d/%s", art_id, filename)),
+			Files.copy(Paths.get(source), Paths.get(String.format("%s/files/%d/%s", directory, art_id, filename)),
 					StandardCopyOption.REPLACE_EXISTING);
 		} catch (IOException e) {
 
@@ -14587,7 +14607,7 @@ public class Main {
 		}
 		String filename = "";
 		HttpGet fileDetails = new HttpGet(String.format("%s/files/%s/", base_url, file_id));
-		File dir = new File(String.format("src/files/%d/", article_id));
+		File dir = new File(String.format("%s/files/%d/", directory, article_id));
 		dir.mkdirs();
 		fileDetails.addHeader("Authorization", "Basic " + encoding);
 		HttpResponse response = null;
@@ -14638,7 +14658,7 @@ public class Main {
 
 		if (exists_remotely) {
 			InputStream is = response.getEntity().getContent();
-			String filePath = String.format("src/files/%s/%s/", article_id, filename);
+			String filePath = String.format("%s/files/%s/%s/", directory, article_id, filename);
 			FileOutputStream fos = new FileOutputStream(new File(filePath));
 			int inByte;
 			while ((inByte = is.read()) != -1)
@@ -14655,7 +14675,7 @@ public class Main {
 				}
 			}
 			article_files.put(file_id,
-					new ArticleFile(file_id, article_id, String.format("src/files/%d/%s", article_id, filename)));
+					new ArticleFile(file_id, article_id, String.format("%s/files/%d/%s", directory, article_id, filename)));
 
 			file_storage.put((long) article_id, article_files);
 			System.out.println("Downloaded: " + article_files.size());
@@ -14666,13 +14686,16 @@ public class Main {
 	}
 
 	public static void main(String[] args) throws ParseException, java.text.ParseException, IOException {
+		directory = System.getProperty("user.dir");
 		database_setup();
 		populate_variables();
+		System.out.println("Working Directory = " + System.getProperty("user.dir"));
 		new Main();
 		// update_unpublished_articles_local_single_request(encoding);
 		// update_sections((long) 1, encoding,false);
 		// file_upload_intersect((long)125,"/home/ioannis/code/toru-app/java_ojs/miglayout-src.zip",25);
 		// file_download(125,16);
 		// System.out.println(file_storage.get((long)125).get((long)5));
+
 	}
 }
