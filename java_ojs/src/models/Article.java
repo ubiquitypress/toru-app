@@ -38,7 +38,6 @@ public class Article {
 		this.section_id = section_id;
 		this.pages = pages;
 		this.abstract_text = abstract_text;
-		this.date_accepted = date_accepted;
 		this.issue_fk = issue_fk;
 		this.authors = new ArrayList<Author>();
 		this.journal = journal;

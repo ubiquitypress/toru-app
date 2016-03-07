@@ -178,6 +178,7 @@ import models.Metadata;
 import models.Section;
 import sun.misc.BASE64Encoder;
 
+@SuppressWarnings({ "deprecation", "unused" })
 public class Main {
 	JFrame login, api, issues, settings, section_screen, unpublished_articles_screen;
 	private JTextField access_key, username;
@@ -243,7 +244,7 @@ public class Main {
 	private static long section_db_id = 0;
 	private static long metadata_id = 0;
 	private static final int SOCKET_OPERATION_TIMEOUT = 10 * 1000;
-	private static String base_url = "http://127.0.0.1:8000";
+	private static String base_url = "http://cortana.ubiquity.press:8000";
 	CookieStore cookieStore = new BasicCookieStore();
 	HttpContext httpContext = new BasicHttpContext();
 	static String encoding = "";
@@ -251,6 +252,8 @@ public class Main {
 	/*
 	 * Initial setup test
 	 */
+
+	@SuppressWarnings("unchecked")
 	public static void database_save() {
 		System.out.println("Saving database...");
 
@@ -584,7 +587,7 @@ public class Main {
 			String credentials = rs.getString("credentials");
 			app_settings.put("key", rs.getString("key"));
 			encoding = credentials;
-			app_settings.put("credentials",credentials);
+			app_settings.put("credentials", credentials);
 			has = true;
 		}
 		has_app_settings = has;
@@ -663,6 +666,7 @@ public class Main {
 				}
 				JSONObject array = (JSONObject) obj;
 
+				@SuppressWarnings({ "unchecked", "rawtypes" })
 				Set<Map> keys = array.keySet();
 				Object jsn_keys[] = keys.toArray();
 				System.out.println("Loading settings....");
@@ -877,7 +881,6 @@ public class Main {
 				file_storage.put((long) id, files);
 				String pages = art_s.getString(rsmd.getColumnName(4));
 				String abstract_text = art_s.getString(rsmd.getColumnName(5));
-
 				String date = art_s.getString(rsmd.getColumnName(6));
 				String date_accepted = art_s.getString("date_accepted");
 				String date_submitted = art_s.getString("date_submitted");
@@ -1113,7 +1116,7 @@ public class Main {
 			user_url = null;
 			try {
 				JSONObject latest_obj = (JSONObject) jsonParser.parse(IOUtils.toString(result));
-
+				System.out.println(latest_obj);
 				journal_url = String.format("%s/journals/%s", base_url, latest_obj.get("journal"));
 				user_url = String.format("%s/users/%s", base_url, latest_obj.get("user"));
 				exists = true;
@@ -1121,6 +1124,7 @@ public class Main {
 
 				e.printStackTrace();
 			}
+
 			System.out.println(user_url);
 			System.out.println(journal_url);
 			if (user_url == null || user_url.compareTo(String.format("%s/users/null", base_url)) == 0
@@ -1362,7 +1366,7 @@ public class Main {
 				JSONObject latest_obj = (JSONObject) jsonParser.parse(IOUtils.toString(result));
 				Long count = (Long) latest_obj.get("count");
 				System.out.println(latest_obj);
-				if (count == null || count ==0) {
+				if (count == null || count == 0) {
 					return latest;
 				} else {
 					JSONArray results = (JSONArray) latest_obj.get("results");
@@ -1437,8 +1441,8 @@ public class Main {
 			stmt = c.createStatement();
 
 			String sql = "CREATE TABLE IF NOT EXISTS API"
-					+ "(journal_id REAL, intersect_user_id REAL NOT NULL, user_id REAL PRIMARY KEY,"+"credentials CHAR(500),"
-					+ " key CHAR(256) NOT NULL)";
+					+ "(journal_id REAL, intersect_user_id REAL NOT NULL, user_id REAL PRIMARY KEY,"
+					+ "credentials CHAR(500)," + " key CHAR(256) NOT NULL)";
 			stmt.executeUpdate(sql);
 			sql = "CREATE TABLE IF NOT EXISTS JOURNAL" + "(id INTEGER PRIMARY KEY," + " path CHAR(32) UNIQUE,"
 					+ "seq REAL," + "primary_locale CHAR(5)," + " title CHAR(500)," + "enabled REAL)";
@@ -1597,7 +1601,7 @@ public class Main {
 							} else {
 								BASE64Encoder encoder = new BASE64Encoder();
 								encoding = encoder.encode(String.format("%s:%s", user, pass).getBytes());
-								app_settings.put("credentials",encoding);
+								app_settings.put("credentials", encoding);
 								long user_id = -1;
 								try {
 									user_id = get_intersect_id();
@@ -1660,7 +1664,7 @@ public class Main {
 							} else {
 								BASE64Encoder encoder = new BASE64Encoder();
 								encoding = encoder.encode(String.format("%s:%s", user, pass).getBytes());
-								app_settings.put("credentials",encoding);
+								app_settings.put("credentials", encoding);
 								long user_id = -1;
 								try {
 									user_id = get_intersect_id();
@@ -1681,20 +1685,21 @@ public class Main {
 										e1.printStackTrace();
 									}
 									if (app_settings.get("user_id").compareTo("") != 0) {
-									app_settings.put("intersect_user_id", Long.toString(user_id));
-									login.setVisible(false);
-									if (app_settings.get("key") == null || app_settings.get("key").compareTo("") == 0) {
-										api(false);
-									} else {
-										System.out.println(returning_view);
-										if (returning_view.compareTo("api") == 0) {
-											api(true);
-										} else if (returning_view.compareTo("settings") == 0) {
-											settings();
+										app_settings.put("intersect_user_id", Long.toString(user_id));
+										login.setVisible(false);
+										if (app_settings.get("key") == null
+												|| app_settings.get("key").compareTo("") == 0) {
+											api(false);
 										} else {
-											dashboard();
+											System.out.println(returning_view);
+											if (returning_view.compareTo("api") == 0) {
+												api(true);
+											} else if (returning_view.compareTo("settings") == 0) {
+												settings();
+											} else {
+												dashboard();
+											}
 										}
-									}
 									}
 								} else {
 									JOptionPane.showMessageDialog(null, "Wrong username or password");
@@ -2541,254 +2546,256 @@ public class Main {
 									});
 									futures.add(f);
 								}
-							}
-							for (long key : issue_keys) {
 
-								// progress_increment
-								Issue current_issue = issue_storage.get(key);
+								for (long key : issue_keys) {
 
-								long issue_id = current_issue.getId();
+									// progress_increment
+									Issue current_issue = issue_storage.get(key);
 
-								dialogResult = JOptionPane.showConfirmDialog(null,
-										String.format(
-												"Issue %s <%s>: Would You Like to replace local data (Yes) or update remote data (No)",
-												current_issue.getTitle(), Long.toString(issue_id)),
-										"Warning", 1);
-								if (dialogResult == JOptionPane.CANCEL_OPTION) {
-									issue_countdown_storage.put((long) current_issue.getId(), true);
-								}
-								if (dialogResult == JOptionPane.NO_OPTION) {
-									progress_executor.execute(new Runnable() {
-										public void run() {
-											int countdown = current_issue.getArticles_list().size() * 7 + 120
-													+ current_issue.getAuthors().size() * 5;
-											if (current_issue.getArticles_list().size() == 0) {
-												countdown = 100;
-												for (int i = 0; i < countdown; i++) {
-													final int percent = i;
-													if (issue_countdown_storage.get((long) key) == true) {
-														progressBar.setValue(100);
-														progressBar.repaint();
-														break;
-													}
-													SwingUtilities.invokeLater(new Runnable() {
-														public void run() {
-															if (issue_countdown_storage.get((long) key) == true) {
-																progressBar.setValue(100);
+									long issue_id = current_issue.getId();
 
-															} else {
-																progressBar.setValue(percent);
-															}
+									dialogResult = JOptionPane.showConfirmDialog(null,
+											String.format(
+													"Issue %s <%s>: Would You Like to replace local data (Yes) or update remote data (No)",
+													current_issue.getTitle(), Long.toString(issue_id)),
+											"Warning", 1);
+									if (dialogResult == JOptionPane.CANCEL_OPTION) {
+										issue_countdown_storage.put((long) current_issue.getId(), true);
+									}
+									if (dialogResult == JOptionPane.NO_OPTION) {
+										progress_executor.execute(new Runnable() {
+											public void run() {
+												int countdown = current_issue.getArticles_list().size() * 7 + 120
+														+ current_issue.getAuthors().size() * 5;
+												if (current_issue.getArticles_list().size() == 0) {
+													countdown = 100;
+													for (int i = 0; i < countdown; i++) {
+														final int percent = i;
+														if (issue_countdown_storage.get((long) key) == true) {
+															progressBar.setValue(100);
 															progressBar.repaint();
+															break;
 														}
-													});
+														SwingUtilities.invokeLater(new Runnable() {
+															public void run() {
+																if (issue_countdown_storage.get((long) key) == true) {
+																	progressBar.setValue(100);
 
-													try {
-														Thread.sleep(100);
-													} catch (InterruptedException e) {
+																} else {
+																	progressBar.setValue(percent);
+																}
+																progressBar.repaint();
+															}
+														});
+
+														try {
+															Thread.sleep(100);
+														} catch (InterruptedException e) {
+														}
+													}
+												} else {
+													System.out.println("countdown " + countdown);
+													double decimal = (current_issue.getArticles_list().size() * 7 + 120
+															+ current_issue.getAuthors().size() * 5) / 100;
+													System.out.println(decimal);
+													for (int i = 0; i < countdown; i++) {
+														final int percent = i;
+														if (issue_countdown_storage.get((long) key) == true) {
+															progressBar.setValue(100);
+															progressBar.repaint();
+															break;
+														}
+														SwingUtilities.invokeLater(new Runnable() {
+															public void run() {
+																if (issue_countdown_storage.get((long) key) == true) {
+																	progressBar.setValue(100);
+
+																} else {
+																	progressBar.setValue(percent == 0 ? 0
+																			: (int) Double.parseDouble(String
+																					.format("%s", percent / decimal)));
+																}
+																progressBar.repaint();
+															}
+														});
+
+														try {
+															Thread.sleep(100);
+														} catch (InterruptedException e) {
+														}
 													}
 												}
-											} else {
-												System.out.println("countdown " + countdown);
-												double decimal = (current_issue.getArticles_list().size() * 7 + 120
-														+ current_issue.getAuthors().size() * 5) / 100;
-												System.out.println(decimal);
-												for (int i = 0; i < countdown; i++) {
-													final int percent = i;
-													if (issue_countdown_storage.get((long) key) == true) {
-														progressBar.setValue(100);
-														progressBar.repaint();
-														break;
-													}
-													SwingUtilities.invokeLater(new Runnable() {
-														public void run() {
-															if (issue_countdown_storage.get((long) key) == true) {
-																progressBar.setValue(100);
+											}
+										});
+										issues.add(progress_msg);
+										issues.add(progressBar);
+										issues.repaint();
+										Future<?> f = exec.submit(new Runnable() {
+											public void run() {
+												try {
+													update_issue_intersect(current_issue, encoding);
 
-															} else {
+												} catch (IllegalStateException | IOException e1) {
+
+													e1.printStackTrace();
+												}
+											}
+										});
+										futures.add(f);
+
+									} else if (dialogResult == JOptionPane.YES_OPTION) {
+										progress_executor.execute(new Runnable() {
+											public void run() {
+												int countdown = current_issue.getArticles_list().size() * 7 + 120
+														+ current_issue.getAuthors().size() * 5;
+												if (current_issue.getArticles_list().size() == 0) {
+													countdown = 100;
+													for (int i = 0; i < countdown; i++) {
+														final int percent = i;
+														SwingUtilities.invokeLater(new Runnable() {
+															public void run() {
+																progressBar.setValue(percent);
+																progressBar.repaint();
+															}
+														});
+
+														try {
+															Thread.sleep(100);
+														} catch (InterruptedException e) {
+														}
+													}
+												} else {
+													System.out.println("countdown " + countdown);
+													double decimal = (current_issue.getArticles_list().size() * 7 + 120
+															+ current_issue.getAuthors().size() * 5) / 100;
+													System.out.println(decimal);
+													for (int i = 0; i < countdown; i++) {
+														final int percent = i;
+														SwingUtilities.invokeLater(new Runnable() {
+															public void run() {
 																progressBar
 																		.setValue(percent == 0 ? 0
 																				: (int) Double
 																						.parseDouble(String.format("%s",
 																								percent / decimal)));
+																progressBar.repaint();
 															}
-															progressBar.repaint();
+														});
+
+														try {
+															Thread.sleep(100);
+														} catch (InterruptedException e) {
 														}
-													});
-
-													try {
-														Thread.sleep(100);
-													} catch (InterruptedException e) {
 													}
-												}
-											}
-										}
-									});
-									issues.add(progress_msg);
-									issues.add(progressBar);
-									issues.repaint();
-									Future<?> f = exec.submit(new Runnable() {
-										public void run() {
-											try {
-												update_issue_intersect(current_issue, encoding);
-
-											} catch (IllegalStateException | IOException e1) {
-
-												e1.printStackTrace();
-											}
-										}
-									});
-									futures.add(f);
-
-								} else if (dialogResult == JOptionPane.YES_OPTION) {
-									progress_executor.execute(new Runnable() {
-										public void run() {
-											int countdown = current_issue.getArticles_list().size() * 7 + 120
-													+ current_issue.getAuthors().size() * 5;
-											if (current_issue.getArticles_list().size() == 0) {
-												countdown = 100;
-												for (int i = 0; i < countdown; i++) {
-													final int percent = i;
-													SwingUtilities.invokeLater(new Runnable() {
-														public void run() {
-															progressBar.setValue(percent);
-															progressBar.repaint();
-														}
-													});
-
-													try {
-														Thread.sleep(100);
-													} catch (InterruptedException e) {
-													}
-												}
-											} else {
-												System.out.println("countdown " + countdown);
-												double decimal = (current_issue.getArticles_list().size() * 7 + 120
-														+ current_issue.getAuthors().size() * 5) / 100;
-												System.out.println(decimal);
-												for (int i = 0; i < countdown; i++) {
-													final int percent = i;
-													SwingUtilities.invokeLater(new Runnable() {
-														public void run() {
-															progressBar.setValue(percent == 0 ? 0
-																	: (int) Double.parseDouble(
-																			String.format("%s", percent / decimal)));
-															progressBar.repaint();
-														}
-													});
-
-													try {
-														Thread.sleep(100);
-													} catch (InterruptedException e) {
-													}
-												}
-											}
-										}
-									});
-									issues.add(progress_msg);
-									issues.add(progressBar);
-									issues.repaint();
-									System.out.println("update local");
-
-									Future<?> f = exec.submit(new Runnable() {
-
-										public void run() {
-											try {
-												Issue updated_issue = update_issue_local(current_issue, encoding);
-
-												issue_storage.put(issue_id, updated_issue);
-												System.out.println(updated_issue);
-											} catch (IllegalStateException | IOException e1) {
-
-												e1.printStackTrace();
-
-											}
-										}
-									});
-
-									futures.add(f);
-
-								}
-								if (!current_issue.isDeleted()) {
-									if (dialogResult == JOptionPane.NO_OPTION) {
-
-										Future<?> f = exec.submit(new Runnable() {
-
-											public void run() {
-												try {
-													update_articles_intersect(current_issue, encoding);
-													// sync_authors_intersect(issue_id,
-													// encoding, false);
-
-												} catch (IllegalStateException | IOException e1) {
-
-													e1.printStackTrace();
 												}
 											}
 										});
-
-										futures.add(f);
-									} else if (dialogResult == JOptionPane.YES_OPTION) {
-										System.out.println("update local");
-										Future<?> f = exec.submit(new Runnable() {
-
-											public void run() {
-												try {
-													update_articles_local_single_request(current_issue, encoding);
-													get_authors_remote_single_request(issue_id, encoding, false);
-												} catch (IllegalStateException | IOException e1) {
-
-													e1.printStackTrace();
-												}
-											}
-										});
-										futures.add(f);
-									}
-
-								}
-								issues.repaint();
-							}
-							progress_executor.execute(new Runnable() {
-								public void run() {
-									synchronized (futures) {
-										for (Future<?> future : futures) {
-											try {
-												future.get();
-											} catch (InterruptedException e1) {
-
-												e1.printStackTrace();
-											} catch (ExecutionException e1) {
-
-												e1.printStackTrace();
-											}
-										}
-									}
-								}
-							});
-							progress_executor.execute(new Runnable() {
-								public void run() {
-									synchronized (futures) {
-										for (Future<?> future : futures) {
-											try {
-												future.get();
-											} catch (InterruptedException e1) {
-
-												e1.printStackTrace();
-											} catch (ExecutionException e1) {
-
-												e1.printStackTrace();
-											}
-										}
-										issues.remove(progressBar);
-
-										issues.remove(progress_msg);
+										issues.add(progress_msg);
+										issues.add(progressBar);
 										issues.repaint();
-										progressBar.setIndeterminate(true);
+										System.out.println("update local");
+
+										Future<?> f = exec.submit(new Runnable() {
+
+											public void run() {
+												try {
+													Issue updated_issue = update_issue_local(current_issue, encoding);
+
+													issue_storage.put(issue_id, updated_issue);
+													System.out.println(updated_issue);
+												} catch (IllegalStateException | IOException e1) {
+
+													e1.printStackTrace();
+
+												}
+											}
+										});
+
+										futures.add(f);
 
 									}
+									if (!current_issue.isDeleted()) {
+										if (dialogResult == JOptionPane.NO_OPTION) {
+
+											Future<?> f = exec.submit(new Runnable() {
+
+												public void run() {
+													try {
+														update_articles_intersect(current_issue, encoding);
+														// sync_authors_intersect(issue_id,
+														// encoding, false);
+
+													} catch (IllegalStateException | IOException e1) {
+
+														e1.printStackTrace();
+													}
+												}
+											});
+
+											futures.add(f);
+										} else if (dialogResult == JOptionPane.YES_OPTION) {
+											System.out.println("update local");
+											Future<?> f = exec.submit(new Runnable() {
+
+												public void run() {
+													try {
+														update_articles_local_single_request(current_issue, encoding);
+														get_authors_remote_single_request(issue_id, encoding, false);
+													} catch (IllegalStateException | IOException e1) {
+
+														e1.printStackTrace();
+													}
+												}
+											});
+											futures.add(f);
+										}
+
+									}
+									issues.repaint();
 								}
-							});
+								progress_executor.execute(new Runnable() {
+									public void run() {
+										synchronized (futures) {
+											for (Future<?> future : futures) {
+												try {
+													future.get();
+												} catch (InterruptedException e1) {
+
+													e1.printStackTrace();
+												} catch (ExecutionException e1) {
+
+													e1.printStackTrace();
+												}
+											}
+										}
+									}
+								});
+								progress_executor.execute(new Runnable() {
+									public void run() {
+										synchronized (futures) {
+											for (Future<?> future : futures) {
+												try {
+													future.get();
+												} catch (InterruptedException e1) {
+
+													e1.printStackTrace();
+												} catch (ExecutionException e1) {
+
+													e1.printStackTrace();
+												}
+											}
+											issues.remove(progressBar);
+
+											issues.remove(progress_msg);
+											issues.repaint();
+											progressBar.setIndeterminate(true);
+
+										}
+									}
+								});
+							}
 							try {
+								System.out.println(check_new_issues(encoding));
 								if (check_new_issues(encoding)) {
 									new_issues_process_done = false;
 									Future<?> f = exec.submit(new Runnable() {
@@ -3837,7 +3844,6 @@ public class Main {
 				lblShowYear.setBounds(340, 347, 250, 16);
 				edit_issue.getContentPane().add(lblShowYear);
 				JButton btnSubmit = new JButton("Save");
-
 				Action actionSubmit = new AbstractAction() {
 					/**
 					 * 
@@ -4315,7 +4321,6 @@ public class Main {
 		panelSection.setVisible(true);
 
 		JButton btnSubmit = new JButton("Save");
-
 		Action actionSubmit = new AbstractAction() {
 			/**
 			 * 
@@ -4342,21 +4347,22 @@ public class Main {
 				} catch (Exception es) {
 					validation = false;
 				}
-
-				section.setAbstract_word_count((Integer) txtAbstractCount.getValue());
-				section.setSeq((Double) txtSeq.getValue());
-				section.setHide_about(hide_about.isSelected() == true ? 1 : 0);
-				section.setHide_author(hide_author.isSelected() == true ? 1 : 0);
-				section.setHide_title(hide_title.isSelected() == true ? 1 : 0);
-				section.setEditor_restricted(editor_restricted.isSelected() == true ? 1 : 0);
-				section.setMeta_indexed(metadata_indexed.isSelected() == true ? 1 : 0);
-				section.setMeta_reviewed(metadata_reviewed.isSelected() == true ? 1 : 0);
-				section.setDisable_comments(disable_comments.isSelected() == true ? 1 : 0);
-				section.setAbstracts_not_required(abstracts_not_required.isSelected() == true ? 1 : 0);
-				section.setSync(true);
-				section_storage.put(section.getId(), section);
-				screen.dispose();
-				sections();
+				if (validation) {
+					section.setAbstract_word_count((Integer) txtAbstractCount.getValue());
+					section.setSeq((Double) txtSeq.getValue());
+					section.setHide_about(hide_about.isSelected() == true ? 1 : 0);
+					section.setHide_author(hide_author.isSelected() == true ? 1 : 0);
+					section.setHide_title(hide_title.isSelected() == true ? 1 : 0);
+					section.setEditor_restricted(editor_restricted.isSelected() == true ? 1 : 0);
+					section.setMeta_indexed(metadata_indexed.isSelected() == true ? 1 : 0);
+					section.setMeta_reviewed(metadata_reviewed.isSelected() == true ? 1 : 0);
+					section.setDisable_comments(disable_comments.isSelected() == true ? 1 : 0);
+					section.setAbstracts_not_required(abstracts_not_required.isSelected() == true ? 1 : 0);
+					section.setSync(true);
+					section_storage.put(section.getId(), section);
+					screen.dispose();
+					sections();
+				}
 
 			}
 
@@ -4388,22 +4394,23 @@ public class Main {
 				} catch (Exception es) {
 					validation = false;
 				}
-				section.setTitle(title);
-				section.setAbstract_word_count((int) (double) txtAbstractCount.getValue());
-				section.setSeq((Double) txtSeq.getValue());
-				section.setHide_about(hide_about.isSelected() == true ? 1 : 0);
-				section.setHide_author(hide_author.isSelected() == true ? 1 : 0);
-				section.setHide_title(hide_title.isSelected() == true ? 1 : 0);
-				section.setEditor_restricted(editor_restricted.isSelected() == true ? 1 : 0);
-				section.setMeta_indexed(metadata_indexed.isSelected() == true ? 1 : 0);
-				section.setMeta_reviewed(metadata_reviewed.isSelected() == true ? 1 : 0);
-				section.setDisable_comments(disable_comments.isSelected() == true ? 1 : 0);
-				section.setAbstracts_not_required(abstracts_not_required.isSelected() == true ? 1 : 0);
-				section.setSync(true);
-				section_storage.put(section.getId(), section);
-				screen.dispose();
-				sections();
-
+				if (validation) {
+					section.setTitle(title);
+					section.setAbstract_word_count((int) (double) txtAbstractCount.getValue());
+					section.setSeq((Double) txtSeq.getValue());
+					section.setHide_about(hide_about.isSelected() == true ? 1 : 0);
+					section.setHide_author(hide_author.isSelected() == true ? 1 : 0);
+					section.setHide_title(hide_title.isSelected() == true ? 1 : 0);
+					section.setEditor_restricted(editor_restricted.isSelected() == true ? 1 : 0);
+					section.setMeta_indexed(metadata_indexed.isSelected() == true ? 1 : 0);
+					section.setMeta_reviewed(metadata_reviewed.isSelected() == true ? 1 : 0);
+					section.setDisable_comments(disable_comments.isSelected() == true ? 1 : 0);
+					section.setAbstracts_not_required(abstracts_not_required.isSelected() == true ? 1 : 0);
+					section.setSync(true);
+					section_storage.put(section.getId(), section);
+					screen.dispose();
+					sections();
+				}
 			}
 
 		});
@@ -10417,6 +10424,7 @@ public class Main {
 		}
 	}
 
+	@SuppressWarnings({ "resource", "unchecked" })
 	public static void update_issue_intersect(Issue issue, String credentials)
 			throws IllegalStateException, IOException {
 
@@ -10472,7 +10480,6 @@ public class Main {
 				createIssue.setHeader("Accept", "application/json");
 				createIssue.addHeader("Content-type", "application/json");
 
-				response = null;
 				response = httpClient.execute(createIssue);
 
 				is = response.getEntity().getContent();
@@ -10586,6 +10593,7 @@ public class Main {
 		}
 	}
 
+	@SuppressWarnings("resource")
 	public static void update_article_intersect_less_requests(Article article, String credentials)
 			throws UnsupportedOperationException, IOException {
 
@@ -12100,6 +12108,7 @@ public class Main {
 		}
 	}
 
+	@SuppressWarnings("resource")
 	public static ArrayList<Issue> update_get_issues_from_remote(String credentials, boolean update_local)
 			throws IllegalStateException, IOException {
 		boolean status = status_online();
@@ -12557,6 +12566,7 @@ public class Main {
 
 	}
 
+	@SuppressWarnings({ "resource", "unchecked" })
 	public static void sync_authors_intersect(long issue_id, String credentials, boolean update_local)
 			throws IllegalStateException, IOException {
 		boolean status = status_online();
@@ -13225,6 +13235,7 @@ public class Main {
 
 	}
 
+	@SuppressWarnings("resource")
 	public static void sync_authors_intersect_article(Article article, String credentials, boolean update_local)
 			throws IllegalStateException, IOException {
 		boolean status = status_online();
@@ -13360,6 +13371,7 @@ public class Main {
 
 	}
 
+	@SuppressWarnings({ "resource", "unchecked" })
 	public static void update_sections(long journal_id, String credentials, boolean update_local)
 			throws IllegalStateException, IOException {
 		boolean status = status_online();
@@ -13778,6 +13790,7 @@ public class Main {
 		return issue;
 	}
 
+	@SuppressWarnings("unchecked")
 	public static JSONObject SettingToJSON(String model, long id, String name, String value, String type, String locale)
 			throws UnsupportedEncodingException {
 		JSONObject obj = new JSONObject();
@@ -13815,6 +13828,7 @@ public class Main {
 		return issue;
 	}
 
+	@SuppressWarnings("unchecked")
 	public static JSONObject IssueToJSON(Issue issue) {
 		JSONObject obj = new JSONObject();
 		obj.put("id", issue.getId());
@@ -13838,6 +13852,7 @@ public class Main {
 		return obj;
 	}
 
+	@SuppressWarnings("unchecked")
 	public static JSONObject ArticleToPublishedJSON(Article article) {
 		JSONObject obj = new JSONObject();
 		obj.put("id", article.getPublished_pk());
@@ -13852,16 +13867,17 @@ public class Main {
 		return obj;
 	}
 
+	@SuppressWarnings("unchecked")
 	public static JSONObject ArticleToUnPublishedJSON(Article article) {
 		JSONObject obj = new JSONObject();
 		obj.put("seq", 1.0);
 		obj.put("article", String.format("%s/articles/%s/", base_url, article.getId()));
-		SimpleDateFormat upload_sdf = new SimpleDateFormat("yyyy-MM-dd");
 		obj.put("issue", String.format("%s/issues/%s/", base_url, article.getIssue_fk().getId()));
 		obj.put("access_status", article.getIssue_fk().getAccess_status());
 		return obj;
 	}
 
+	@SuppressWarnings("unchecked")
 	public static JSONObject ArticleToJSON(Article article) {
 		JSONObject obj = new JSONObject();
 		obj.put("id", article.getId());
@@ -14007,6 +14023,7 @@ public class Main {
 		return new_section;
 	}
 
+	@SuppressWarnings("unchecked")
 	public static JSONObject SectionToJSON(Section section) {
 		JSONObject obj = new JSONObject();
 		obj.put("id", section.getId());
@@ -14047,6 +14064,7 @@ public class Main {
 		return author;
 	}
 
+	@SuppressWarnings("unchecked")
 	public static JSONObject AuthorToJSON(Author author) {
 		JSONObject obj = new JSONObject();
 		obj.put("id", author.getId());
@@ -14069,7 +14087,6 @@ public class Main {
 	 * @throws java.text.ParseException
 	 * @wbp.parser.entryPoint
 	 */
-	@SuppressWarnings("deprecation")
 	public Main() throws IOException, java.text.ParseException {
 		try {
 			for (LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
@@ -14297,7 +14314,6 @@ public class Main {
 		File f = new File(path);
 		System.out.println("File Length = " + f.length());
 
-		new FileInputStream(f);
 		HttpPost fileUpload = new HttpPost(String.format("%s/upload/file/%s/", base_url, article_id));
 
 		fileUpload.addHeader("Authorization", "Basic " + encoding);
@@ -14341,7 +14357,6 @@ public class Main {
 		File f = new File(path);
 		System.out.println("File Length = " + f.length());
 
-		new FileInputStream(f);
 		HttpPost fileUpload = new HttpPost(
 				String.format("%s/upload/specific/file/%d/%d/", base_url, article_id, specific_id));
 
@@ -14386,7 +14401,6 @@ public class Main {
 		File f = new File(file.getPath());
 		System.out.println("File Length = " + f.length());
 
-		new FileInputStream(f);
 		HttpPost fileUpload = new HttpPost(
 				String.format("%s/upload/specific/file/%d/%d/", base_url, article_id, file.getId()));
 
@@ -14652,22 +14666,8 @@ public class Main {
 	}
 
 	public static void main(String[] args) throws ParseException, java.text.ParseException, IOException {
-		BASE64Encoder encoder = new BASE64Encoder();
 		database_setup();
 		populate_variables();
-
-		// update_get_issues_from_remote(encoding, false);
-		// update_articles_intersect(issue_storage.get((long) 5),encoding);
-		// get_issue_from_remote(encoding, (long) 5, false);
-
-		// file copy to use for file upload
-		// file_copy(1,"src/lib/db_xxs.png");
-		// get_authors_remote_single_request(5, encoding, false);
-		// sync_authors_intersect(5, encoding, false);
-		// System.out.println("Latest author id: " + author_id);
-		// ();
-		//
-		// database_save();
 		new Main();
 		// update_unpublished_articles_local_single_request(encoding);
 		// update_sections((long) 1, encoding,false);

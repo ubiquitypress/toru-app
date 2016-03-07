@@ -46,7 +46,7 @@ public class Issue {
 		this.current = 0;
 	}
 	public Issue(long id) {
-
+		@SuppressWarnings("unused")
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
 		
 		Date today = new Date();
