@@ -7190,9 +7190,13 @@ public class Main {
 							btnPreview.setBounds(150, y_f, 40, 24);
 							article.getContentPane().add(btnPreview);
 							File f = new File(files.get((long) key).getPath());
-							String filename = f.getPath().toString()
-									.substring(f.getPath().toString().lastIndexOf("/") + 1);
-
+							final String filename_process = f.getPath().toString();
+							int last_index = -1;
+							last_index = filename_process.lastIndexOf("/");
+							if (last_index == -1) {
+								last_index = filename_process.lastIndexOf("\\");
+							}
+							final String filename = filename_process.substring(last_index + 1);
 							String type = filename.substring(filename.lastIndexOf(".") + 1);
 
 							btnPreview.setAction(new AbstractAction() {
@@ -7734,8 +7738,14 @@ public class Main {
 	public File insert_doi_pdf(File f, String doi) {
 		try {
 			File compressed = null;
-			String filename = f.getPath().toString().substring(f.getPath().toString().lastIndexOf("/") + 1);
-
+			String filename = f.getPath().toString();
+			int last_index = -1;
+			last_index = filename.lastIndexOf("/");
+			if (last_index == -1) {
+				last_index = filename.lastIndexOf("\\");
+			}
+			filename= filename.substring(last_index + 1);
+			
 			File file_directory = new File(String.format("%s/required_files/pdf/", directory));
 			file_directory.mkdirs();
 			PdfReader reader = new PdfReader(new FileInputStream(f));
@@ -7787,7 +7797,13 @@ public class Main {
 	public File optimize_pdf(File f) throws IOException, DocumentException {
 
 		File compressed = null;
-		String filename = f.getPath().toString().substring(f.getPath().toString().lastIndexOf("/") + 1);
+		String filename = f.getPath().toString();
+		int last_index = -1;
+		last_index = filename.lastIndexOf("/");
+		if (last_index == -1) {
+			last_index = filename.lastIndexOf("\\");
+		}
+		filename= filename.substring(last_index + 1);
 
 		File file_directory = new File(String.format("%s/required_files/pdf/", directory));
 		file_directory.mkdirs();
@@ -7810,7 +7826,13 @@ public class Main {
 	public File optimize_image(File f) throws IOException {
 		BufferedImage image = ImageIO.read(f);
 		File compressed = null;
-		String filename = f.getPath().toString().substring(f.getPath().toString().lastIndexOf("/") + 1);
+		String filename = f.getPath().toString();
+		int last_index = -1;
+		last_index = filename.lastIndexOf("/");
+		if (last_index == -1) {
+			last_index = filename.lastIndexOf("\\");
+		}
+		filename= filename.substring(last_index + 1);
 		String type = filename.substring(filename.lastIndexOf(".") + 1);
 
 		File file_directory = new File(String.format("%s/required_files/images/", directory));
@@ -7883,7 +7905,13 @@ public class Main {
 			// instance document
 			Validator validator = schema.newValidator();
 
-			String filename = f.getPath().toString().substring(f.getPath().toString().lastIndexOf("/") + 1);
+			String filename = f.getPath().toString();
+			int last_index = -1;
+			last_index = filename.lastIndexOf("/");
+			if (last_index == -1) {
+				last_index = filename.lastIndexOf("\\");
+			}
+			filename= filename.substring(last_index + 1);
 			System.out.print(String.format("%s/required_files/xml/%s", directory, filename));
 			File dir = new File(String.format("%s/required_files/xml/", directory));
 			dir.mkdirs();
@@ -7891,7 +7919,14 @@ public class Main {
 					Paths.get(String.format("%s/required_files/xml/%s", directory, filename)),
 					StandardCopyOption.REPLACE_EXISTING);
 			File temp = new File(String.format("%s/required_files/xml/%s", directory, filename));
-			Document document = parser.parse(temp);
+			try{
+				Document document = parser.parse(temp);
+			} catch (org.xml.sax.SAXException e) {
+				// instance document is invalid!
+				// e.printStackTrace();
+				JOptionPane.showMessageDialog(null, String.format("XML error: %s", e.getMessage()));
+				validation = false;
+			}
 
 			try {
 				validator.validate(new StreamSource(new File(temp.getPath())));
