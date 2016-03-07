@@ -9386,7 +9386,7 @@ public class Main {
 								File f = new File(up_files.get((long) key).getPath());
 								f.delete();
 							}
-							File folder = new File(String.format("%s/files/%d/",directory, current_id));
+							File folder = new File(String.format("%s/files/%d/", directory, current_id));
 							folder.delete();
 
 							file_storage.remove(current_id);
@@ -14287,7 +14287,12 @@ public class Main {
 
 	public static void file_copy(long art_id, String source) {
 		try {
-			String filename = source.substring(source.lastIndexOf("/") + 1);
+			int last_index = -1;
+			last_index = source.lastIndexOf("/");
+			if (last_index == -1) {
+				last_index = source.lastIndexOf("\\");
+			}
+			String filename = source.substring(last_index + 1);
 			System.out.print(String.format("%s/files/%d/%s", directory, art_id, filename));
 			File dir = new File(String.format("%s/files/%d/", directory, art_id));
 			dir.mkdirs();
@@ -14674,8 +14679,8 @@ public class Main {
 					article_files = new ConcurrentHashMap<Long, ArticleFile>();
 				}
 			}
-			article_files.put(file_id,
-					new ArticleFile(file_id, article_id, String.format("%s/files/%d/%s", directory, article_id, filename)));
+			article_files.put(file_id, new ArticleFile(file_id, article_id,
+					String.format("%s/files/%d/%s", directory, article_id, filename)));
 
 			file_storage.put((long) article_id, article_files);
 			System.out.println("Downloaded: " + article_files.size());
