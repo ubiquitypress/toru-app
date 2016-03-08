@@ -245,7 +245,7 @@ public class Main {
 	private static long section_db_id = 0;
 	private static long metadata_id = 0;
 	private static final int SOCKET_OPERATION_TIMEOUT = 10 * 1000;
-	private static String base_url = "http://intersect.ubiquity.press";
+	private static String base_url = "http://localhost:8000";
 	CookieStore cookieStore = new BasicCookieStore();
 	HttpContext httpContext = new BasicHttpContext();
 	static String encoding = "";
@@ -7784,7 +7784,7 @@ public class Main {
 				copy.setFullCompression();
 			}
 			copy.close();
-			compressed = new File(String.format(String.format("%s/required_files/%s", directory, "pdf/%s", filename)));
+			compressed = new File(String.format(String.format("%s/required_files/pdf/%s", directory, filename)));
 			return compressed;
 		} catch (IOException e) {
 			return f;
@@ -7863,8 +7863,7 @@ public class Main {
 
 			BufferedImage jpgImage = new BufferedImage(image.getWidth(), image.getHeight(), BufferedImage.TYPE_INT_RGB);
 			jpgImage.createGraphics().drawImage(image, 0, 0, Color.WHITE, null);
-			compressed = new File(String.format(String.format("%s/required_files/%s", directory, "images/%s.jpg",
-					filename.substring(0, filename.lastIndexOf('.')))));
+			compressed = new File(String.format(String.format("%s/required_files/images/%s.jpg", directory,filename.substring(0, filename.lastIndexOf('.')))));
 			JPEGImageWriteParam jpegParams = new JPEGImageWriteParam(null);
 			jpegParams.setCompressionMode(ImageWriteParam.MODE_EXPLICIT);
 			jpegParams.setCompressionQuality(0.8f);
