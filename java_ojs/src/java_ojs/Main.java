@@ -567,6 +567,17 @@ public class Main {
 		System.out.println("Done.");
 		JOptionPane.showMessageDialog(null, "Successfully updated local database", "Save to Database",
 				JOptionPane.INFORMATION_MESSAGE);
+		if (status_online()) {
+			try {
+				latest_ids();
+			} catch (IllegalStateException e) {
+
+				e.printStackTrace();
+			} catch (IOException e) {
+
+				e.printStackTrace();
+			}
+		}
 
 	}
 
@@ -1427,13 +1438,18 @@ public class Main {
 		if (remote_section_id > section_db_id) {
 			section_db_id = remote_section_id;
 		}
-		System.out.println(remote_issue_id);
-		System.out.println(remote_article_id);
-		System.out.println(remote_journal_id);
-		System.out.println(remote_file_id);
-		System.out.println(remote_section_id);
-		System.out.println(remote_published_article_id);
-		System.out.println(remote_author_id + "-" + author_id);
+
+		System.out.println("Latest IDS");
+		System.out.println("Latest IDS");
+		System.out.println("Issue " + remote_issue_id);
+		System.out.println("Article " + remote_article_id);
+		System.out.println("Journal " + remote_journal_id);
+		System.out.println("File " + remote_file_id);
+		System.out.println("Section " + remote_section_id);
+		System.out.println("Published Article " + remote_published_article_id);
+		System.out.println("Author " + remote_author_id + "-" + author_id);
+		System.out.println("Latest IDS");
+		System.out.println("Latest IDS");
 	}
 
 	public static void database_setup() {
@@ -3569,7 +3585,7 @@ public class Main {
 					}
 					if (validation) {
 						i_id++;
-
+						System.out.println("NEW ID " + i_id);
 						SimpleDateFormat year_sdf = new SimpleDateFormat("yyyy");
 						Issue issue = new Issue(i_id, title.getText(), entered_volume, entered_number,
 								Integer.parseInt(year_sdf.format(entered_year)), datePicker.getDate());
@@ -5594,16 +5610,16 @@ public class Main {
 				JLabel lblArticles = new JLabel("Articles");
 				lblArticles.setBackground(new Color(213, 213, 213));
 				lblArticles.setFont(new Font("Dialog", Font.TRUETYPE_FONT, 24));
-				lblArticles.setForeground(new Color(0,0,0));
+				lblArticles.setForeground(new Color(0, 0, 0));
 				lblArticles.setBounds(30, height / 16 * 7 - 132, 180, 30);
 				lblArticles.setOpaque(true);
 				unpublished_articles_screen.getContentPane().add(lblArticles);
 
 				JLabel lblIssue = new JLabel("Unpublished Articles");
 				lblIssue.setBackground(new Color(46, 46, 46));
-				lblIssue.setForeground(new Color(255,255,255));
+				lblIssue.setForeground(new Color(255, 255, 255));
 				lblIssue.setFont(new Font("Dialog", Font.TRUETYPE_FONT, 28));
-				lblIssue.setBounds(width-355, 22, 350, 40);
+				lblIssue.setBounds(width - 355, 22, 350, 40);
 				lblIssue.setOpaque(true);
 				unpublished_articles_screen.getContentPane().add(lblIssue);
 
@@ -5641,8 +5657,7 @@ public class Main {
 				lblUpdateDb.setHorizontalAlignment(SwingConstants.CENTER);
 				lblUpdateDb.setBounds(14, height - 132, 140, 15);
 				unpublished_articles_screen.getContentPane().add(lblUpdateDb);
-				
-				
+
 				Panel footer_border = new Panel();
 				footer_border.setBackground(new Color(238, 238, 238));
 				footer_border.setBounds(0, height - 74, width, 10);
@@ -5670,8 +5685,6 @@ public class Main {
 				panel_1.setBackground(new Color(25, 25, 25));
 				panel_1.setBounds(0, 70, width, 6);
 				unpublished_articles_screen.getContentPane().add(panel_1);
-
-				
 
 				unpublished_articles_screen.setVisible(true);
 				unpublished_articles_screen.repaint();
@@ -6686,8 +6699,9 @@ public class Main {
 				 * article.getContentPane().add(btnSync);
 				 * 
 				 * final Label internetCheck = new Label("  ONLINE");
-				 * internetCheck.setFont(new Font(Font.SANS_SERIF, Font.TRUETYPE_FONT |
-				 * Font.ITALIC, 12)); internetCheck.setBackground(Color.GREEN);
+				 * internetCheck.setFont(new Font(Font.SANS_SERIF,
+				 * Font.TRUETYPE_FONT | Font.ITALIC, 12));
+				 * internetCheck.setBackground(Color.GREEN);
 				 * internetCheck.setAlignment(1);
 				 * internetCheck.setForeground(new Color(255, 255, 255));
 				 * internetCheck.setBounds(width_small - 80, 22, 65, 22);
@@ -7760,8 +7774,8 @@ public class Main {
 			if (last_index == -1) {
 				last_index = filename.lastIndexOf("\\");
 			}
-			filename= filename.substring(last_index + 1);
-			
+			filename = filename.substring(last_index + 1);
+
 			File file_directory = new File(String.format("%s/required_files/pdf/", directory));
 			file_directory.mkdirs();
 			PdfReader reader = new PdfReader(new FileInputStream(f));
@@ -7819,7 +7833,7 @@ public class Main {
 		if (last_index == -1) {
 			last_index = filename.lastIndexOf("\\");
 		}
-		filename= filename.substring(last_index + 1);
+		filename = filename.substring(last_index + 1);
 
 		File file_directory = new File(String.format("%s/required_files/pdf/", directory));
 		file_directory.mkdirs();
@@ -7848,7 +7862,7 @@ public class Main {
 		if (last_index == -1) {
 			last_index = filename.lastIndexOf("\\");
 		}
-		filename= filename.substring(last_index + 1);
+		filename = filename.substring(last_index + 1);
 		String type = filename.substring(filename.lastIndexOf(".") + 1);
 
 		File file_directory = new File(String.format("%s/required_files/images/", directory));
@@ -7879,7 +7893,8 @@ public class Main {
 
 			BufferedImage jpgImage = new BufferedImage(image.getWidth(), image.getHeight(), BufferedImage.TYPE_INT_RGB);
 			jpgImage.createGraphics().drawImage(image, 0, 0, Color.WHITE, null);
-			compressed = new File(String.format(String.format("%s/required_files/images/%s.jpg", directory,filename.substring(0, filename.lastIndexOf('.')))));
+			compressed = new File(String.format(String.format("%s/required_files/images/%s.jpg", directory,
+					filename.substring(0, filename.lastIndexOf('.')))));
 			JPEGImageWriteParam jpegParams = new JPEGImageWriteParam(null);
 			jpegParams.setCompressionMode(ImageWriteParam.MODE_EXPLICIT);
 			jpegParams.setCompressionQuality(0.8f);
@@ -7926,7 +7941,7 @@ public class Main {
 			if (last_index == -1) {
 				last_index = filename.lastIndexOf("\\");
 			}
-			filename= filename.substring(last_index + 1);
+			filename = filename.substring(last_index + 1);
 			System.out.print(String.format("%s/required_files/xml/%s", directory, filename));
 			File dir = new File(String.format("%s/required_files/xml/", directory));
 			dir.mkdirs();
@@ -7934,7 +7949,7 @@ public class Main {
 					Paths.get(String.format("%s/required_files/xml/%s", directory, filename)),
 					StandardCopyOption.REPLACE_EXISTING);
 			File temp = new File(String.format("%s/required_files/xml/%s", directory, filename));
-			try{
+			try {
 				Document document = parser.parse(temp);
 			} catch (org.xml.sax.SAXException e) {
 				// instance document is invalid!
@@ -8016,8 +8031,9 @@ public class Main {
 				 * article.getContentPane().add(btnSync);
 				 * 
 				 * final Label internetCheck = new Label("  ONLINE");
-				 * internetCheck.setFont(new Font(Font.SANS_SERIF, Font.TRUETYPE_FONT |
-				 * Font.ITALIC, 12)); internetCheck.setBackground(Color.GREEN);
+				 * internetCheck.setFont(new Font(Font.SANS_SERIF,
+				 * Font.TRUETYPE_FONT | Font.ITALIC, 12));
+				 * internetCheck.setBackground(Color.GREEN);
 				 * internetCheck.setAlignment(1);
 				 * internetCheck.setForeground(new Color(255, 255, 255));
 				 * internetCheck.setBounds(width_small - 80, 22, 65, 22);
@@ -8750,8 +8766,8 @@ public class Main {
 				 * JLabel lblDate = new JLabel(sdf.format(current));
 				 * lblDate.setVerticalAlignment(SwingConstants.TOP);
 				 * lblDate.setForeground(Color.BLACK); lblDate.setFont(new
-				 * Font(Font.SANS_SERIF, Font.TRUETYPE_FONT, 14)); lblDate.setBounds(160, 203,
-				 * 125, 30); panel.add(lblDate);
+				 * Font(Font.SANS_SERIF, Font.TRUETYPE_FONT, 14));
+				 * lblDate.setBounds(160, 203, 125, 30); panel.add(lblDate);
 				 */
 
 				JLabel lblArticleId = new JLabel("1");
@@ -9389,8 +9405,9 @@ public class Main {
 			 * article.getContentPane().add(btnSync);
 			 * 
 			 * final Label internetCheck = new Label("  ONLINE");
-			 * internetCheck.setFont(new Font(Font.SANS_SERIF, Font.TRUETYPE_FONT | Font.ITALIC,
-			 * 12)); internetCheck.setBackground(Color.GREEN);
+			 * internetCheck.setFont(new Font(Font.SANS_SERIF,
+			 * Font.TRUETYPE_FONT | Font.ITALIC, 12));
+			 * internetCheck.setBackground(Color.GREEN);
 			 * internetCheck.setAlignment(1); internetCheck.setForeground(new
 			 * Color(255, 255, 255)); internetCheck.setBounds(width_small - 80,
 			 * 22, 65, 22); article.getContentPane().add(internetCheck);
@@ -9789,8 +9806,8 @@ public class Main {
 			/*
 			 * JLabel lblIssues = new JLabel("Article:");
 			 * lblIssues.setBounds(24, 18, 110, 30); panel.add(lblIssues);
-			 * lblIssues.setFont(new Font(Font.SANS_SERIF, Font.TRUETYPE_FONT, 14));
-			 * lblIssues.setForeground(Color.BLACK);
+			 * lblIssues.setFont(new Font(Font.SANS_SERIF, Font.TRUETYPE_FONT,
+			 * 14)); lblIssues.setForeground(Color.BLACK);
 			 */
 
 			JLabel lblIssue = new JLabel("Issue:");
@@ -9824,8 +9841,8 @@ public class Main {
 			 * JLabel lblDate = new JLabel(sdf.format(current));
 			 * lblDate.setVerticalAlignment(SwingConstants.TOP);
 			 * lblDate.setForeground(Color.BLACK); lblDate.setFont(new
-			 * Font(Font.SANS_SERIF, Font.TRUETYPE_FONT, 14)); lblDate.setBounds(160, 203, 125,
-			 * 30); panel.add(lblDate);
+			 * Font(Font.SANS_SERIF, Font.TRUETYPE_FONT, 14));
+			 * lblDate.setBounds(160, 203, 125, 30); panel.add(lblDate);
 			 * 
 			 * 
 			 * JLabel lblArticleId = new JLabel("1");
@@ -14166,22 +14183,16 @@ public class Main {
 			e1.printStackTrace();
 		}
 		nimbus_theme.getDefaults().put("defaultFont", new Font(Font.SANS_SERIF, Font.TRUETYPE_FONT, 12));
-	/*	try {
-			for (LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
-				if ("Nimbus".equals(info.getName())) {
-					UIManager.setLookAndFeel(info.getClassName());
-					break;
-				}
-			}
-		} catch (UnsupportedLookAndFeelException e) {
-			// handle exception
-		} catch (ClassNotFoundException e) {
-			// handle exception
-		} catch (InstantiationException e) {
-			// handle exception
-		} catch (IllegalAccessException e) {
-			// handle exception
-		}*/
+		/*
+		 * try { for (LookAndFeelInfo info :
+		 * UIManager.getInstalledLookAndFeels()) { if
+		 * ("Nimbus".equals(info.getName())) {
+		 * UIManager.setLookAndFeel(info.getClassName()); break; } } } catch
+		 * (UnsupportedLookAndFeelException e) { // handle exception } catch
+		 * (ClassNotFoundException e) { // handle exception } catch
+		 * (InstantiationException e) { // handle exception } catch
+		 * (IllegalAccessException e) { // handle exception }
+		 */
 		HttpParams params = new BasicHttpParams();
 
 		HttpProtocolParams.setVersion(params, HttpVersion.HTTP_1_1);
