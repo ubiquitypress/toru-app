@@ -5108,8 +5108,8 @@ public class Main {
 					unpublished_articles_screen.setSize(width, height);
 				} else {
 					width = 960;
-					height = 660;
-					unpublished_articles_screen.setSize(960, 660);
+					height = 640;
+					unpublished_articles_screen.setSize(960, 640);
 				}
 				ConcurrentHashMap<Long, JFrame> issue_articles = new ConcurrentHashMap<Long, JFrame>();
 				unpublished_articles_screen.getContentPane().setBackground(new Color(213, 213, 213));
@@ -5198,7 +5198,7 @@ public class Main {
 				article_table.setAutoResizeMode(JTable.AUTO_RESIZE_SUBSEQUENT_COLUMNS);
 
 				final JButton btnSync = new JButton("Sync");
-				btnSync.setBounds(width - 155, 21, 70, 24);
+				btnSync.setBounds(width - 155, 84, 70, 24);
 				btnSync.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
 						JProgressBar progressBar = new JProgressBar();
@@ -5491,7 +5491,7 @@ public class Main {
 				internetCheck.setBackground(Color.lightGray);
 				internetCheck.setAlignment(1);
 				internetCheck.setForeground(new Color(255, 255, 255));
-				internetCheck.setBounds(width - 85, 22, 65, 22);
+				internetCheck.setBounds(width - 85, 85, 65, 22);
 				unpublished_articles_screen.getContentPane().add(internetCheck);
 
 				ActionListener taskPerformer1 = new ActionListener() {
@@ -5593,17 +5593,17 @@ public class Main {
 
 				JLabel lblArticles = new JLabel("Articles");
 				lblArticles.setBackground(new Color(213, 213, 213));
-				lblArticles.setFont(new Font("Dialog", Font.TRUETYPE_FONT, 26));
+				lblArticles.setFont(new Font("Dialog", Font.TRUETYPE_FONT, 24));
 				lblArticles.setForeground(new Color(0,0,0));
-				lblArticles.setBounds(25, height / 16 * 7 - 132, 180, 30);
+				lblArticles.setBounds(30, height / 16 * 7 - 132, 180, 30);
 				lblArticles.setOpaque(true);
 				unpublished_articles_screen.getContentPane().add(lblArticles);
 
 				JLabel lblIssue = new JLabel("Unpublished Articles");
 				lblIssue.setBackground(new Color(46, 46, 46));
 				lblIssue.setForeground(new Color(255,255,255));
-				lblIssue.setFont(new Font("Dialog", Font.TRUETYPE_FONT, 31));
-				lblIssue.setBounds(46, 60, 400, 40);
+				lblIssue.setFont(new Font("Dialog", Font.TRUETYPE_FONT, 28));
+				lblIssue.setBounds(width-355, 22, 350, 40);
 				lblIssue.setOpaque(true);
 				unpublished_articles_screen.getContentPane().add(lblIssue);
 
@@ -5622,7 +5622,7 @@ public class Main {
 						}
 					}
 				});
-				btnClose.setBounds(15, 20, 100, 29);
+				btnClose.setBounds(15, 85, 100, 29);
 				unpublished_articles_screen.getContentPane().add(btnClose);
 				buttonColumn3.setMnemonic(KeyEvent.VK_D);
 				ImageIcon db_icon = new ImageIcon(String.format("%s/required_files/%s", directory, "db_xxs.png"));
@@ -5633,13 +5633,13 @@ public class Main {
 						database_save();
 					}
 				});
-				btnSaveData.setBounds(26, height - 117, 70, 40);
+				btnSaveData.setBounds(45, height - 117, 70, 40);
 				unpublished_articles_screen.getContentPane().add(btnSaveData);
-				JLabel lblUpdateDb = new JLabel("Update");
+				JLabel lblUpdateDb = new JLabel("Update Local Database");
 				lblUpdateDb.setForeground(Color.BLACK);
-				lblUpdateDb.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 12));
+				lblUpdateDb.setFont(new Font(Font.SANS_SERIF, Font.TRUETYPE_FONT, 11));
 				lblUpdateDb.setHorizontalAlignment(SwingConstants.CENTER);
-				lblUpdateDb.setBounds(26, height - 132, 70, 15);
+				lblUpdateDb.setBounds(14, height - 132, 140, 15);
 				unpublished_articles_screen.getContentPane().add(lblUpdateDb);
 				
 				
@@ -5656,10 +5656,10 @@ public class Main {
 				JPanel panel = new JPanel();
 				panel.setBackground(new Color(46, 46, 46));
 				panel.setLayout(null);
-				panel.setBounds(0, 55, width, 50);
+				panel.setBounds(0, 0, width, 70);
 				ImageIcon icon = new ImageIcon(String.format("%s/required_files/%s", directory, "toru-ui-logo.png"));
 				JLabel logo = new JLabel(icon);
-				logo.setBounds(width-180, 5, 140, 40);
+				logo.setBounds(10, 20, 140, 40);
 				logo.setBackground(new Color(46, 46, 46));
 				panel.add(logo);
 				panel.repaint();
@@ -5668,7 +5668,7 @@ public class Main {
 
 				Panel panel_1 = new Panel();
 				panel_1.setBackground(new Color(25, 25, 25));
-				panel_1.setBounds(0, 105, width, 6);
+				panel_1.setBounds(0, 70, width, 6);
 				unpublished_articles_screen.getContentPane().add(panel_1);
 
 				
