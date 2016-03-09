@@ -99,6 +99,7 @@ import javax.swing.event.ChangeListener;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.filechooser.FileNameExtensionFilter;
+import javax.swing.plaf.nimbus.NimbusLookAndFeel;
 import javax.swing.table.DefaultTableModel;
 import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;
@@ -1547,7 +1548,7 @@ public class Main {
 				});
 				login.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 				login.getContentPane().setForeground(Color.WHITE);
-				login.getContentPane().setBackground(new Color(128, 128, 128));
+				login.getContentPane().setBackground(new Color(170, 170, 170));
 				Dimension sreen = Toolkit.getDefaultToolkit().getScreenSize();
 
 				login.setSize(sreen.width / 2 - login.getSize().width / 2,
@@ -1570,7 +1571,7 @@ public class Main {
 				login.getContentPane().add(username);
 				username.setColumns(4);
 				JLabel lblUsername = new JLabel("Username");
-				lblUsername.setForeground(new Color(245, 255, 250));
+				lblUsername.setForeground(new Color(255, 255, 255));
 				lblUsername.setHorizontalAlignment(SwingConstants.CENTER);
 				lblUsername.setBounds(80, 200, width_small - 161, 16);
 				login.getContentPane().add(lblUsername);
@@ -1580,7 +1581,7 @@ public class Main {
 				login.getContentPane().add(title_background);
 				JLabel lblPassword = new JLabel("Password");
 				lblPassword.setHorizontalAlignment(SwingConstants.CENTER);
-				lblPassword.setForeground(new Color(245, 255, 250));
+				lblPassword.setForeground(new Color(255, 255, 255));
 				lblPassword.setBounds(80, 260, width_small - 161, 16);
 				login.getContentPane().add(lblPassword);
 				passwordField = new JPasswordField();
@@ -1722,14 +1723,14 @@ public class Main {
 				login.getContentPane().add(btnSync1);
 
 				JLabel lblLogIn = new JLabel("Log in");
-				lblLogIn.setForeground(new Color(224, 255, 255));
+				lblLogIn.setForeground(new Color(255, 255, 255));
 				lblLogIn.setFont(new Font("URW Gothic L", Font.BOLD, 24));
 				lblLogIn.setHorizontalAlignment(SwingConstants.CENTER);
 				lblLogIn.setBounds((width_small / 2) - 40, 150, 80, 30);
 				login.getContentPane().add(lblLogIn);
 
 				final Label internetCheck = new Label("   ONLINE");
-				internetCheck.setFont(new Font("Dialog", Font.BOLD | Font.ITALIC, 12));
+				internetCheck.setFont(new Font(Font.SANS_SERIF, Font.TRUETYPE_FONT | Font.ITALIC, 12));
 				internetCheck.setBackground(Color.GREEN);
 				internetCheck.setForeground(new Color(255, 255, 255));
 				internetCheck.setAlignment(1);
@@ -1782,7 +1783,7 @@ public class Main {
 				settings = new JFrame();
 				settings.setResizable(false);
 				settings.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-				settings.getContentPane().setBackground(new Color(128, 128, 128));
+				settings.getContentPane().setBackground(new Color(170, 170, 170));
 				settings.setTitle("Settings");
 
 				settings.addWindowListener(new WindowAdapter() {
@@ -2011,7 +2012,7 @@ public class Main {
 				btnSave.setBounds((width_small / 2) - 60, height_small - 100, 100, 25);
 				settings.getContentPane().add(btnSave);
 				final Label internetCheck = new Label("  ONLINE");
-				internetCheck.setFont(new Font("Dialog", Font.BOLD | Font.ITALIC, 12));
+				internetCheck.setFont(new Font(Font.SANS_SERIF, Font.TRUETYPE_FONT | Font.ITALIC, 12));
 				internetCheck.setBackground(Color.GREEN);
 				internetCheck.setAlignment(1);
 				internetCheck.setForeground(new Color(255, 255, 255));
@@ -2072,7 +2073,7 @@ public class Main {
 					api = new JFrame();
 					api.setResizable(false);
 					api.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-					api.getContentPane().setBackground(new Color(128, 128, 128));
+					api.getContentPane().setBackground(new Color(170, 170, 170));
 					api.setTitle("API Information");
 
 					api.addWindowListener(new WindowAdapter() {
@@ -2106,7 +2107,7 @@ public class Main {
 					api.getContentPane().add(access_key);
 					JLabel lblAccessKey = new JLabel("Enter access key:");
 					lblAccessKey.setHorizontalAlignment(SwingConstants.CENTER);
-					lblAccessKey.setForeground(new Color(245, 255, 250));
+					lblAccessKey.setForeground(new Color(255, 255, 255));
 					lblAccessKey.setBounds(80, 250, width_small - 161, 16);
 					api.getContentPane().add(lblAccessKey);
 
@@ -2181,12 +2182,12 @@ public class Main {
 					lblApiInformation.setBackground(new Color(51, 102, 204));
 					lblApiInformation.setHorizontalAlignment(SwingConstants.CENTER);
 					lblApiInformation.setForeground(new Color(255, 255, 255));
-					lblApiInformation.setFont(new Font("Dialog", Font.BOLD, 20));
+					lblApiInformation.setFont(new Font(Font.SANS_SERIF, Font.TRUETYPE_FONT, 20));
 					lblApiInformation.setBounds((width_small / 2) - 145, 108, 309, 40);
 					lblApiInformation.setOpaque(true);
 					api.getContentPane().add(lblApiInformation);
 					final Label internetCheck = new Label("  ONLINE");
-					internetCheck.setFont(new Font("Dialog", Font.BOLD | Font.ITALIC, 12));
+					internetCheck.setFont(new Font(Font.SANS_SERIF, Font.TRUETYPE_FONT | Font.ITALIC, 12));
 					internetCheck.setBackground(Color.GREEN);
 					internetCheck.setBounds(width_small - 80, 70, 65, 22);
 					internetCheck.setForeground(new Color(255, 255, 255));
@@ -2241,7 +2242,7 @@ public class Main {
 					api = new JFrame();
 					api.setResizable(false);
 					api.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-					api.getContentPane().setBackground(new Color(128, 128, 128));
+					api.getContentPane().setBackground(new Color(170, 170, 170));
 					api.setTitle("API Information");
 
 					api.addWindowListener(new WindowAdapter() {
@@ -2277,7 +2278,7 @@ public class Main {
 					api.getContentPane().add(access_key);
 					JLabel lblAccessKey = new JLabel("Enter access key for future offline and online access:");
 					lblAccessKey.setHorizontalAlignment(SwingConstants.CENTER);
-					lblAccessKey.setForeground(new Color(245, 255, 250));
+					lblAccessKey.setForeground(new Color(255, 255, 255));
 					lblAccessKey.setBounds(80, 250, width_small - 161, 16);
 					api.getContentPane().add(lblAccessKey);
 
@@ -2337,12 +2338,12 @@ public class Main {
 					lblApiInformation.setBackground(new Color(51, 102, 204));
 					lblApiInformation.setHorizontalAlignment(SwingConstants.CENTER);
 					lblApiInformation.setForeground(new Color(255, 255, 255));
-					lblApiInformation.setFont(new Font("Dialog", Font.BOLD, 20));
+					lblApiInformation.setFont(new Font(Font.SANS_SERIF, Font.TRUETYPE_FONT, 20));
 					lblApiInformation.setBounds((width_small / 2) - 145, 108, 309, 40);
 					lblApiInformation.setOpaque(true);
 					api.getContentPane().add(lblApiInformation);
 					final Label internetCheck = new Label("  ONLINE");
-					internetCheck.setFont(new Font("Dialog", Font.BOLD | Font.ITALIC, 12));
+					internetCheck.setFont(new Font(Font.SANS_SERIF, Font.TRUETYPE_FONT | Font.ITALIC, 12));
 					internetCheck.setBackground(Color.GREEN);
 					internetCheck.setBounds(width_small - 80, 70, 65, 22);
 					internetCheck.setForeground(new Color(255, 255, 255));
@@ -2408,7 +2409,7 @@ public class Main {
 					height = 640;
 					issues.setSize(900, 640);
 				}
-				issues.getContentPane().setBackground(new Color(105, 105, 105));
+				issues.getContentPane().setBackground(new Color(170, 170, 170));
 				issues.setVisible(true);
 				issues.setTitle("Dashboard");
 				issues.setLocationRelativeTo(null);
@@ -3095,7 +3096,7 @@ public class Main {
 				issues_table.setAutoCreateRowSorter(true);
 
 				final Label internetCheck = new Label("ONLINE");
-				internetCheck.setFont(new Font("Dialog", Font.BOLD | Font.ITALIC, 12));
+				internetCheck.setFont(new Font(Font.SANS_SERIF, Font.TRUETYPE_FONT | Font.ITALIC, 12));
 				internetCheck.setBackground(Color.GREEN);
 				internetCheck.setBounds(width - 85, 22, 65, 22);
 				internetCheck.setForeground(new Color(255, 255, 255));
@@ -3218,8 +3219,8 @@ public class Main {
 				JLabel lblIssues = new JLabel("Issues");
 				lblIssues.setBackground(new Color(220, 20, 60));
 				lblIssues.setOpaque(true);
-				lblIssues.setFont(new Font("Dialog", Font.BOLD, 28));
-				lblIssues.setForeground(new Color(240, 255, 255));
+				lblIssues.setFont(new Font(Font.SANS_SERIF, Font.TRUETYPE_FONT, 28));
+				lblIssues.setForeground(new Color(255, 255, 255));
 				lblIssues.setBounds(40, 60, 120, 30);
 				issues.getContentPane().add(lblIssues);
 
@@ -3241,7 +3242,7 @@ public class Main {
 				 */
 				ImageIcon db_icon = new ImageIcon(String.format("%s/required_files/%s", directory, "db_xxs.png"));
 				JButton btnSaveData = new JButton(db_icon);
-				btnSaveData.setFont(new Font("Dialog", Font.BOLD, 24));
+				btnSaveData.setFont(new Font(Font.SANS_SERIF, Font.TRUETYPE_FONT, 24));
 				btnSaveData.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
 						database_save();
@@ -3331,7 +3332,7 @@ public class Main {
 			edit_issue.setResizable(false);
 			issue_screens.put(i_id, edit_issue);
 			edit_issue.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-			edit_issue.getContentPane().setBackground(new Color(128, 128, 128));
+			edit_issue.getContentPane().setBackground(new Color(170, 170, 170));
 			edit_issue.setTitle("New Issue");
 			edit_issue.addWindowListener(new WindowAdapter() {
 				@Override
@@ -3359,7 +3360,7 @@ public class Main {
 			title.setColumns(4);
 
 			JLabel lblTitleText = new JLabel("Title");
-			lblTitleText.setForeground(new Color(245, 255, 250));
+			lblTitleText.setForeground(new Color(255, 255, 255));
 			lblTitleText.setHorizontalAlignment(SwingConstants.CENTER);
 			lblTitleText.setBounds(100, 200, 250, 16);
 			edit_issue.getContentPane().add(lblTitleText);
@@ -3376,7 +3377,7 @@ public class Main {
 			edit_issue.getContentPane().add(volume);
 			JLabel lblvolume = new JLabel("Volume");
 			lblvolume.setHorizontalAlignment(SwingConstants.CENTER);
-			lblvolume.setForeground(new Color(245, 255, 250));
+			lblvolume.setForeground(new Color(255, 255, 255));
 			lblvolume.setBounds(100, 250, 250, 16);
 			edit_issue.getContentPane().add(lblvolume);
 
@@ -3386,7 +3387,7 @@ public class Main {
 			edit_issue.getContentPane().add(number);
 			JLabel lblnumber = new JLabel("Number");
 			lblnumber.setHorizontalAlignment(SwingConstants.CENTER);
-			lblnumber.setForeground(new Color(245, 255, 250));
+			lblnumber.setForeground(new Color(255, 255, 255));
 			lblnumber.setBounds(100, 300, 250, 16);
 			edit_issue.getContentPane().add(lblnumber);
 
@@ -3399,13 +3400,13 @@ public class Main {
 
 			JLabel lblyear = new JLabel("Year");
 			lblyear.setHorizontalAlignment(SwingConstants.CENTER);
-			lblyear.setForeground(new Color(245, 255, 250));
+			lblyear.setForeground(new Color(255, 255, 255));
 			lblyear.setBounds(100, 347, 250, 16);
 			edit_issue.getContentPane().add(lblyear);
 
 			JLabel lblDateAccepted = new JLabel("Date Submitted");
 			lblDateAccepted.setHorizontalAlignment(SwingConstants.CENTER);
-			lblDateAccepted.setForeground(new Color(245, 255, 250));
+			lblDateAccepted.setForeground(new Color(255, 255, 255));
 			lblDateAccepted.setBounds(80, 394, width_small - 161, 16);
 			edit_issue.getContentPane().add(lblDateAccepted);
 
@@ -3423,7 +3424,7 @@ public class Main {
 			edit_issue.getContentPane().add(datePicker);
 			JLabel lblDatePublished = new JLabel("Date Published");
 			lblDatePublished.setHorizontalAlignment(SwingConstants.CENTER);
-			lblDatePublished.setForeground(new Color(245, 255, 250));
+			lblDatePublished.setForeground(new Color(255, 255, 255));
 			lblDatePublished.setBounds(80, 441, width_small - 161, 16);
 			edit_issue.getContentPane().add(lblDatePublished);
 
@@ -3440,7 +3441,7 @@ public class Main {
 			// panel.add(label);
 			edit_issue.getContentPane().add(datePickerPublished);
 			JLabel lblShowDisplay = new JLabel("---- Display Values ----");
-			lblShowDisplay.setForeground(new Color(245, 255, 250));
+			lblShowDisplay.setForeground(new Color(255, 255, 255));
 			lblShowDisplay.setHorizontalAlignment(SwingConstants.CENTER);
 			lblShowDisplay.setBounds(340, 170, 250, 16);
 			edit_issue.getContentPane().add(lblShowDisplay);
@@ -3450,7 +3451,7 @@ public class Main {
 			published_check.setBounds(425, height_small - 165, 100, 26);
 			edit_issue.getContentPane().add(published_check);
 			JLabel lblPublished = new JLabel("Published");
-			lblPublished.setForeground(new Color(245, 255, 250));
+			lblPublished.setForeground(new Color(255, 255, 255));
 			lblPublished.setHorizontalAlignment(SwingConstants.CENTER);
 			lblPublished.setBounds(340, height_small - 161, 100, 16);
 			edit_issue.getContentPane().add(lblPublished);
@@ -3459,7 +3460,7 @@ public class Main {
 			current_check.setBounds(425, height_small - 145, 100, 26);
 			edit_issue.getContentPane().add(current_check);
 			JLabel lblCurrent = new JLabel("Current");
-			lblCurrent.setForeground(new Color(245, 255, 250));
+			lblCurrent.setForeground(new Color(255, 255, 255));
 			lblCurrent.setHorizontalAlignment(SwingConstants.CENTER);
 			lblCurrent.setBounds(340, height_small - 141, 100, 16);
 			edit_issue.getContentPane().add(lblCurrent);
@@ -3468,7 +3469,7 @@ public class Main {
 			access_status_check.setBounds(425, height_small - 125, 100, 26);
 			edit_issue.getContentPane().add(access_status_check);
 			JLabel lblStatus = new JLabel("Access Status");
-			lblStatus.setForeground(new Color(245, 255, 250));
+			lblStatus.setForeground(new Color(255, 255, 255));
 			lblStatus.setHorizontalAlignment(SwingConstants.CENTER);
 			lblStatus.setBounds(305, height_small - 121, 150, 16);
 			edit_issue.getContentPane().add(lblStatus);
@@ -3478,7 +3479,7 @@ public class Main {
 			edit_issue.getContentPane().add(show_title);
 
 			JLabel lblShowTitleText = new JLabel("Show Title");
-			lblShowTitleText.setForeground(new Color(245, 255, 250));
+			lblShowTitleText.setForeground(new Color(255, 255, 255));
 			lblShowTitleText.setHorizontalAlignment(SwingConstants.CENTER);
 			lblShowTitleText.setBounds(340, 200, 250, 16);
 			edit_issue.getContentPane().add(lblShowTitleText);
@@ -3488,7 +3489,7 @@ public class Main {
 			edit_issue.getContentPane().add(show_volume);
 
 			JLabel lblShowVolume = new JLabel("Show Volume");
-			lblShowVolume.setForeground(new Color(245, 255, 250));
+			lblShowVolume.setForeground(new Color(255, 255, 255));
 			lblShowVolume.setHorizontalAlignment(SwingConstants.CENTER);
 			lblShowVolume.setBounds(340, 250, 250, 16);
 			edit_issue.getContentPane().add(lblShowVolume);
@@ -3498,7 +3499,7 @@ public class Main {
 			edit_issue.getContentPane().add(show_number);
 
 			JLabel lblShowNumber = new JLabel("Show Number");
-			lblShowNumber.setForeground(new Color(245, 255, 250));
+			lblShowNumber.setForeground(new Color(255, 255, 255));
 			lblShowNumber.setHorizontalAlignment(SwingConstants.CENTER);
 			lblShowNumber.setBounds(340, 300, 250, 16);
 			edit_issue.getContentPane().add(lblShowNumber);
@@ -3508,7 +3509,7 @@ public class Main {
 			edit_issue.getContentPane().add(show_year);
 
 			JLabel lblShowYear = new JLabel("Show Year");
-			lblShowYear.setForeground(new Color(245, 255, 250));
+			lblShowYear.setForeground(new Color(255, 255, 255));
 			lblShowYear.setHorizontalAlignment(SwingConstants.CENTER);
 			lblShowYear.setBounds(340, 347, 250, 16);
 			edit_issue.getContentPane().add(lblShowYear);
@@ -3623,7 +3624,7 @@ public class Main {
 			lblApiInformation.setBackground(new Color(218, 207, 2));
 			lblApiInformation.setHorizontalAlignment(SwingConstants.CENTER);
 			lblApiInformation.setForeground(new Color(255, 255, 255));
-			lblApiInformation.setFont(new Font("Dialog", Font.BOLD, 20));
+			lblApiInformation.setFont(new Font(Font.SANS_SERIF, Font.TRUETYPE_FONT, 20));
 			lblApiInformation.setBounds((width_small / 2) - 145, 108, 309, 40);
 			lblApiInformation.setOpaque(true);
 			edit_issue.getContentPane().add(lblApiInformation);
@@ -3665,7 +3666,7 @@ public class Main {
 				edit_issue.setResizable(false);
 				issue_screens.put(issue_id, edit_issue);
 				edit_issue.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-				edit_issue.getContentPane().setBackground(new Color(128, 128, 128));
+				edit_issue.getContentPane().setBackground(new Color(170, 170, 170));
 				edit_issue.setTitle("Issue Details - Editing");
 				edit_issue.addWindowListener(new WindowAdapter() {
 					@Override
@@ -3694,7 +3695,7 @@ public class Main {
 				title.setColumns(4);
 
 				JLabel lblTitleText = new JLabel("Title");
-				lblTitleText.setForeground(new Color(245, 255, 250));
+				lblTitleText.setForeground(new Color(255, 255, 255));
 				lblTitleText.setHorizontalAlignment(SwingConstants.CENTER);
 				lblTitleText.setBounds(100, 200, 250, 16);
 				edit_issue.getContentPane().add(lblTitleText);
@@ -3711,7 +3712,7 @@ public class Main {
 				edit_issue.getContentPane().add(volume);
 				JLabel lblvolume = new JLabel("Volume");
 				lblvolume.setHorizontalAlignment(SwingConstants.CENTER);
-				lblvolume.setForeground(new Color(245, 255, 250));
+				lblvolume.setForeground(new Color(255, 255, 255));
 				lblvolume.setBounds(100, 250, 250, 16);
 				edit_issue.getContentPane().add(lblvolume);
 
@@ -3720,7 +3721,7 @@ public class Main {
 				edit_issue.getContentPane().add(number);
 				JLabel lblnumber = new JLabel("Number");
 				lblnumber.setHorizontalAlignment(SwingConstants.CENTER);
-				lblnumber.setForeground(new Color(245, 255, 250));
+				lblnumber.setForeground(new Color(255, 255, 255));
 				lblnumber.setBounds(100, 300, 250, 16);
 				edit_issue.getContentPane().add(lblnumber);
 
@@ -3739,13 +3740,13 @@ public class Main {
 				edit_issue.getContentPane().add(year);
 				JLabel lblyear = new JLabel("Year");
 				lblyear.setHorizontalAlignment(SwingConstants.CENTER);
-				lblyear.setForeground(new Color(245, 255, 250));
+				lblyear.setForeground(new Color(255, 255, 255));
 				lblyear.setBounds(100, 347, 250, 16);
 				edit_issue.getContentPane().add(lblyear);
 
 				JLabel lblDateAccepted = new JLabel("Date Submitted");
 				lblDateAccepted.setHorizontalAlignment(SwingConstants.CENTER);
-				lblDateAccepted.setForeground(new Color(245, 255, 250));
+				lblDateAccepted.setForeground(new Color(255, 255, 255));
 				lblDateAccepted.setBounds(80, 394, width_small - 161, 16);
 				edit_issue.getContentPane().add(lblDateAccepted);
 
@@ -3765,7 +3766,7 @@ public class Main {
 				edit_issue.getContentPane().add(datePicker);
 				JLabel lblDatePublished = new JLabel("Date Published");
 				lblDatePublished.setHorizontalAlignment(SwingConstants.CENTER);
-				lblDatePublished.setForeground(new Color(245, 255, 250));
+				lblDatePublished.setForeground(new Color(255, 255, 255));
 				lblDatePublished.setBounds(80, 441, width_small - 161, 16);
 				edit_issue.getContentPane().add(lblDatePublished);
 
@@ -3784,7 +3785,7 @@ public class Main {
 				edit_issue.getContentPane().add(datePickerPublished);
 
 				JLabel lblShowDisplay = new JLabel("---- Display Values ----");
-				lblShowDisplay.setForeground(new Color(245, 255, 250));
+				lblShowDisplay.setForeground(new Color(255, 255, 255));
 				lblShowDisplay.setHorizontalAlignment(SwingConstants.CENTER);
 				lblShowDisplay.setBounds(340, 170, 250, 16);
 				edit_issue.getContentPane().add(lblShowDisplay);
@@ -3794,7 +3795,7 @@ public class Main {
 				published_check.setBounds(425, height_small - 165, 100, 26);
 				edit_issue.getContentPane().add(published_check);
 				JLabel lblPublished = new JLabel("Published");
-				lblPublished.setForeground(new Color(245, 255, 250));
+				lblPublished.setForeground(new Color(255, 255, 255));
 				lblPublished.setHorizontalAlignment(SwingConstants.CENTER);
 				lblPublished.setBounds(340, height_small - 161, 100, 16);
 				edit_issue.getContentPane().add(lblPublished);
@@ -3803,7 +3804,7 @@ public class Main {
 				current_check.setBounds(425, height_small - 145, 100, 26);
 				edit_issue.getContentPane().add(current_check);
 				JLabel lblCurrent = new JLabel("Current");
-				lblCurrent.setForeground(new Color(245, 255, 250));
+				lblCurrent.setForeground(new Color(255, 255, 255));
 				lblCurrent.setHorizontalAlignment(SwingConstants.CENTER);
 				lblCurrent.setBounds(340, height_small - 141, 100, 16);
 				edit_issue.getContentPane().add(lblCurrent);
@@ -3813,7 +3814,7 @@ public class Main {
 				access_status_check.setBounds(425, height_small - 125, 100, 26);
 				edit_issue.getContentPane().add(access_status_check);
 				JLabel lblStatus = new JLabel("Access Status");
-				lblStatus.setForeground(new Color(245, 255, 250));
+				lblStatus.setForeground(new Color(255, 255, 255));
 				lblStatus.setHorizontalAlignment(SwingConstants.CENTER);
 				lblStatus.setBounds(305, height_small - 121, 150, 16);
 				edit_issue.getContentPane().add(lblStatus);
@@ -3822,7 +3823,7 @@ public class Main {
 				edit_issue.getContentPane().add(show_title);
 
 				JLabel lblShowTitleText = new JLabel("Show Title");
-				lblShowTitleText.setForeground(new Color(245, 255, 250));
+				lblShowTitleText.setForeground(new Color(255, 255, 255));
 				lblShowTitleText.setHorizontalAlignment(SwingConstants.CENTER);
 				lblShowTitleText.setBounds(340, 200, 250, 16);
 				edit_issue.getContentPane().add(lblShowTitleText);
@@ -3832,7 +3833,7 @@ public class Main {
 				edit_issue.getContentPane().add(show_volume);
 
 				JLabel lblShowVolume = new JLabel("Show Volume");
-				lblShowVolume.setForeground(new Color(245, 255, 250));
+				lblShowVolume.setForeground(new Color(255, 255, 255));
 				lblShowVolume.setHorizontalAlignment(SwingConstants.CENTER);
 				lblShowVolume.setBounds(340, 250, 250, 16);
 				edit_issue.getContentPane().add(lblShowVolume);
@@ -3842,7 +3843,7 @@ public class Main {
 				edit_issue.getContentPane().add(show_number);
 
 				JLabel lblShowNumber = new JLabel("Show Number");
-				lblShowNumber.setForeground(new Color(245, 255, 250));
+				lblShowNumber.setForeground(new Color(255, 255, 255));
 				lblShowNumber.setHorizontalAlignment(SwingConstants.CENTER);
 				lblShowNumber.setBounds(340, 300, 250, 16);
 				edit_issue.getContentPane().add(lblShowNumber);
@@ -3852,7 +3853,7 @@ public class Main {
 				edit_issue.getContentPane().add(show_year);
 
 				JLabel lblShowYear = new JLabel("Show Year");
-				lblShowYear.setForeground(new Color(245, 255, 250));
+				lblShowYear.setForeground(new Color(255, 255, 255));
 				lblShowYear.setHorizontalAlignment(SwingConstants.CENTER);
 				lblShowYear.setBounds(340, 347, 250, 16);
 				edit_issue.getContentPane().add(lblShowYear);
@@ -4041,7 +4042,7 @@ public class Main {
 				lblApiInformation.setBackground(new Color(2, 216, 138));
 				lblApiInformation.setHorizontalAlignment(SwingConstants.CENTER);
 				lblApiInformation.setForeground(new Color(255, 255, 255));
-				lblApiInformation.setFont(new Font("Dialog", Font.BOLD, 20));
+				lblApiInformation.setFont(new Font(Font.SANS_SERIF, Font.TRUETYPE_FONT, 20));
 				lblApiInformation.setBounds((width_small / 2) - 145, 108, 309, 40);
 				lblApiInformation.setOpaque(true);
 				edit_issue.getContentPane().add(lblApiInformation);
@@ -4461,7 +4462,7 @@ public class Main {
 				height = 480;
 				section_screen.setSize(640, 480);
 				ConcurrentHashMap<Long, JFrame> issue_articles = new ConcurrentHashMap<Long, JFrame>();
-				section_screen.getContentPane().setBackground(new Color(128, 128, 128));
+				section_screen.getContentPane().setBackground(new Color(170, 170, 170));
 
 				section_screen.setLocationRelativeTo(null);
 				section_screen.setTitle("Sections");
@@ -4765,7 +4766,7 @@ public class Main {
 				section_table.setCellSelectionEnabled(true);
 				section_table.setRowHeight(23);
 				final Label internetCheck = new Label("  ONLINE");
-				internetCheck.setFont(new Font("Dialog", Font.BOLD | Font.ITALIC, 12));
+				internetCheck.setFont(new Font(Font.SANS_SERIF, Font.TRUETYPE_FONT | Font.ITALIC, 12));
 				internetCheck.setBackground(Color.GREEN);
 				internetCheck.setAlignment(1);
 				internetCheck.setForeground(new Color(255, 255, 255));
@@ -4872,8 +4873,8 @@ public class Main {
 
 				JLabel lblIssue = new JLabel("Sections");
 				lblIssue.setBackground(new Color(0, 141, 7));
-				lblIssue.setForeground(new Color(240, 255, 255));
-				lblIssue.setFont(new Font("Dialog", Font.BOLD, 28));
+				lblIssue.setForeground(new Color(255, 255, 255));
+				lblIssue.setFont(new Font(Font.SANS_SERIF, Font.TRUETYPE_FONT, 28));
 				lblIssue.setBounds(40, 60, 150, 30);
 				lblIssue.setOpaque(true);
 				section_screen.getContentPane().add(lblIssue);
@@ -4900,7 +4901,7 @@ public class Main {
 				buttonColumn3.setMnemonic(KeyEvent.VK_D);
 				ImageIcon db_icon = new ImageIcon(String.format("%s/required_files/%s", directory, "db_xxs.png"));
 				JButton btnSaveData = new JButton(db_icon);
-				btnSaveData.setFont(new Font("Dialog", Font.BOLD, 24));
+				btnSaveData.setFont(new Font(Font.SANS_SERIF, Font.TRUETYPE_FONT, 24));
 				btnSaveData.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
 						database_save();
@@ -5107,11 +5108,11 @@ public class Main {
 					unpublished_articles_screen.setSize(width, height);
 				} else {
 					width = 960;
-					height = 640;
-					unpublished_articles_screen.setSize(960, 640);
+					height = 660;
+					unpublished_articles_screen.setSize(960, 660);
 				}
 				ConcurrentHashMap<Long, JFrame> issue_articles = new ConcurrentHashMap<Long, JFrame>();
-				unpublished_articles_screen.getContentPane().setBackground(new Color(128, 128, 128));
+				unpublished_articles_screen.getContentPane().setBackground(new Color(213, 213, 213));
 
 				unpublished_articles_screen.setLocationRelativeTo(null);
 				unpublished_articles_screen.setTitle("Unpublished Articles");
@@ -5485,9 +5486,9 @@ public class Main {
 				article_table.setBorder(new BevelBorder(BevelBorder.RAISED, null, null, null, null));
 				article_table.setCellSelectionEnabled(true);
 				article_table.setRowHeight(23);
-				final Label internetCheck = new Label("  ONLINE");
-				internetCheck.setFont(new Font("Dialog", Font.BOLD | Font.ITALIC, 12));
-				internetCheck.setBackground(Color.GREEN);
+				final Label internetCheck = new Label("ONLINE");
+				internetCheck.setFont(new Font(Font.SANS_SERIF, Font.BOLD | Font.ITALIC, 12));
+				internetCheck.setBackground(Color.lightGray);
 				internetCheck.setAlignment(1);
 				internetCheck.setForeground(new Color(255, 255, 255));
 				internetCheck.setBounds(width - 85, 22, 65, 22);
@@ -5496,12 +5497,12 @@ public class Main {
 				ActionListener taskPerformer1 = new ActionListener() {
 					public void actionPerformed(ActionEvent evt) {
 						if (status_online()) {
-							internetCheck.setBackground(Color.GREEN);
+							internetCheck.setBackground(Color.lightGray);
 							internetCheck.setText("ONLINE");
 							btnSync.setEnabled(true);
 
 						} else {
-							internetCheck.setBackground(Color.RED);
+							internetCheck.setBackground(Color.DARK_GRAY);
 							internetCheck.setText("OFFLINE");
 							btnSync.setEnabled(false);
 						}
@@ -5527,7 +5528,7 @@ public class Main {
 				}
 
 				lblIssueId.setForeground(Color.BLACK);
-				lblIssueId.setFont(new Font("Dialog", Font.BOLD, 12));
+				lblIssueId.setFont(new Font(Font.SANS_SERIF, Font.TRUETYPE_FONT, 12));
 				lblIssueId.setBounds(0, 30, 280, 26);
 				panelIssue.add(title_move_to);
 				panelIssue.add(lblIssueId);
@@ -5591,18 +5592,18 @@ public class Main {
 				ButtonColumn buttonColumn3 = new ButtonColumn(article_table, move_to, 6);
 
 				JLabel lblArticles = new JLabel("Articles");
-				lblArticles.setBackground(new Color(128, 128, 128));
-				lblArticles.setFont(new Font("Dialog", Font.BOLD, 26));
-				lblArticles.setForeground(new Color(255, 255, 255));
+				lblArticles.setBackground(new Color(213, 213, 213));
+				lblArticles.setFont(new Font("Dialog", Font.TRUETYPE_FONT, 26));
+				lblArticles.setForeground(new Color(0,0,0));
 				lblArticles.setBounds(25, height / 16 * 7 - 132, 180, 30);
 				lblArticles.setOpaque(true);
 				unpublished_articles_screen.getContentPane().add(lblArticles);
 
 				JLabel lblIssue = new JLabel("Unpublished Articles");
-				lblIssue.setBackground(new Color(155, 155, 155));
-				lblIssue.setForeground(new Color(255, 255, 255));
-				lblIssue.setFont(new Font("Dialog", Font.BOLD, 28));
-				lblIssue.setBounds(40, 60, 400, 30);
+				lblIssue.setBackground(new Color(46, 46, 46));
+				lblIssue.setForeground(new Color(255,255,255));
+				lblIssue.setFont(new Font("Dialog", Font.TRUETYPE_FONT, 31));
+				lblIssue.setBounds(46, 60, 400, 40);
 				lblIssue.setOpaque(true);
 				unpublished_articles_screen.getContentPane().add(lblIssue);
 
@@ -5626,7 +5627,7 @@ public class Main {
 				buttonColumn3.setMnemonic(KeyEvent.VK_D);
 				ImageIcon db_icon = new ImageIcon(String.format("%s/required_files/%s", directory, "db_xxs.png"));
 				JButton btnSaveData = new JButton(db_icon);
-				btnSaveData.setFont(new Font("Dialog", Font.BOLD, 24));
+				btnSaveData.setFont(new Font(Font.SANS_SERIF, Font.TRUETYPE_FONT, 24));
 				btnSaveData.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
 						database_save();
@@ -5635,32 +5636,47 @@ public class Main {
 				btnSaveData.setBounds(26, height - 117, 70, 40);
 				unpublished_articles_screen.getContentPane().add(btnSaveData);
 				JLabel lblUpdateDb = new JLabel("Update");
-				lblUpdateDb.setForeground(Color.WHITE);
+				lblUpdateDb.setForeground(Color.BLACK);
+				lblUpdateDb.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 12));
 				lblUpdateDb.setHorizontalAlignment(SwingConstants.CENTER);
 				lblUpdateDb.setBounds(26, height - 132, 70, 15);
 				unpublished_articles_screen.getContentPane().add(lblUpdateDb);
+				
+				
 				Panel footer_border = new Panel();
-				footer_border.setBackground(new Color(205, 205, 205));
+				footer_border.setBackground(new Color(238, 238, 238));
 				footer_border.setBounds(0, height - 74, width, 10);
 				unpublished_articles_screen.getContentPane().add(footer_border);
 
 				Panel footer = new Panel();
-				footer.setBackground(new Color(180, 180, 180));
+				footer.setBackground(new Color(230, 230, 230));
 				footer.setBounds(0, height - 74, width, 120);
 				unpublished_articles_screen.getContentPane().add(footer);
 
-				Panel panel = new Panel();
-				panel.setBackground(new Color(155, 155, 155));
-				panel.setBounds(0, 55, width, 40);
+				JPanel panel = new JPanel();
+				panel.setBackground(new Color(46, 46, 46));
+				panel.setLayout(null);
+				panel.setBounds(0, 55, width, 50);
+				ImageIcon icon = new ImageIcon(String.format("%s/required_files/%s", directory, "toru-ui-logo.png"));
+				JLabel logo = new JLabel(icon);
+				logo.setBounds(width-180, 5, 140, 40);
+				logo.setBackground(new Color(46, 46, 46));
+				panel.add(logo);
+				panel.repaint();
+				logo.repaint();
 				unpublished_articles_screen.getContentPane().add(panel);
 
 				Panel panel_1 = new Panel();
-				panel_1.setBackground(new Color(197, 197, 197));
-				panel_1.setBounds(0, 95, width, 5);
+				panel_1.setBackground(new Color(25, 25, 25));
+				panel_1.setBounds(0, 105, width, 6);
 				unpublished_articles_screen.getContentPane().add(panel_1);
+
+				
 
 				unpublished_articles_screen.setVisible(true);
 				unpublished_articles_screen.repaint();
+				unpublished_articles_screen.getContentPane().repaint();
+
 			}
 
 		} else {
@@ -5683,7 +5699,7 @@ public class Main {
 					articles.setSize(960, 640);
 				}
 				ConcurrentHashMap<Long, JFrame> issue_articles = new ConcurrentHashMap<Long, JFrame>();
-				articles.getContentPane().setBackground(new Color(128, 128, 128));
+				articles.getContentPane().setBackground(new Color(170, 170, 170));
 
 				articles.setLocationRelativeTo(null);
 				articles.setTitle("Issue <" + Long.toString(issue_id) + ">");
@@ -6341,7 +6357,7 @@ public class Main {
 				article_table.setCellSelectionEnabled(true);
 				article_table.setRowHeight(23);
 				final Label internetCheck = new Label("  ONLINE");
-				internetCheck.setFont(new Font("Dialog", Font.BOLD | Font.ITALIC, 12));
+				internetCheck.setFont(new Font(Font.SANS_SERIF, Font.TRUETYPE_FONT | Font.ITALIC, 12));
 				internetCheck.setBackground(Color.GREEN);
 				internetCheck.setAlignment(1);
 				internetCheck.setForeground(new Color(255, 255, 255));
@@ -6449,25 +6465,25 @@ public class Main {
 				ButtonColumn buttonColumn3 = new ButtonColumn(article_table, delete, 10);
 
 				JLabel lblArticles = new JLabel("Articles");
-				lblArticles.setBackground(new Color(128, 128, 128));
-				lblArticles.setFont(new Font("Dialog", Font.BOLD, 26));
-				lblArticles.setForeground(new Color(240, 255, 255));
+				lblArticles.setBackground(new Color(213, 213, 213));
+				lblArticles.setFont(new Font(Font.SANS_SERIF, Font.TRUETYPE_FONT, 26));
+				lblArticles.setForeground(new Color(255, 255, 255));
 				lblArticles.setBounds(25, height / 16 * 7 - 32, 180, 30);
 				lblArticles.setOpaque(true);
 				articles.getContentPane().add(lblArticles);
 
 				JLabel lblIssue = new JLabel("Issue:");
 				lblIssue.setBackground(new Color(0, 139, 139));
-				lblIssue.setForeground(new Color(240, 255, 255));
-				lblIssue.setFont(new Font("Dialog", Font.BOLD, 28));
+				lblIssue.setForeground(new Color(255, 255, 255));
+				lblIssue.setFont(new Font(Font.SANS_SERIF, Font.TRUETYPE_FONT, 28));
 				lblIssue.setBounds(40, 60, 94, 30);
 				lblIssue.setOpaque(true);
 				articles.getContentPane().add(lblIssue);
 
 				final JLabel lblIssueId = new JLabel("");
 				lblIssueId.setBackground(new Color(0, 139, 139));
-				lblIssueId.setForeground(new Color(240, 255, 255));
-				lblIssueId.setFont(new Font("Dialog", Font.BOLD, 28));
+				lblIssueId.setForeground(new Color(255, 255, 255));
+				lblIssueId.setFont(new Font(Font.SANS_SERIF, Font.TRUETYPE_FONT, 28));
 				lblIssueId.setBounds(136, 60, 300, 30);
 				lblIssueId.setText(Long.toString(issue_id));
 				lblIssueId.setOpaque(true);
@@ -6495,7 +6511,7 @@ public class Main {
 				buttonColumn3.setMnemonic(KeyEvent.VK_D);
 				ImageIcon db_icon = new ImageIcon(String.format("%s/required_files/%s", directory, "db_xxs.png"));
 				JButton btnSaveData = new JButton(db_icon);
-				btnSaveData.setFont(new Font("Dialog", Font.BOLD, 24));
+				btnSaveData.setFont(new Font(Font.SANS_SERIF, Font.TRUETYPE_FONT, 24));
 				btnSaveData.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
 						database_save();
@@ -6602,9 +6618,9 @@ public class Main {
 				articles.getContentPane().add(abstractSection);
 
 				JLabel lblIssueDetails = new JLabel("Details");
-				lblIssueDetails.setBackground(new Color(128, 128, 128));
-				lblIssueDetails.setFont(new Font("Dialog", Font.BOLD, 26));
-				lblIssueDetails.setForeground(new Color(240, 255, 255));
+				lblIssueDetails.setBackground(new Color(213, 213, 213));
+				lblIssueDetails.setFont(new Font(Font.SANS_SERIF, Font.TRUETYPE_FONT, 26));
+				lblIssueDetails.setForeground(new Color(255, 255, 255));
 				lblIssueDetails.setBounds((width - 95) / 2, 118, 125, 30);
 				lblIssueDetails.setOpaque(true);
 				articles.getContentPane().add(lblIssueDetails);
@@ -6641,7 +6657,7 @@ public class Main {
 				article.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 				// article.setSize(width_small, height_small);
 				article.setSize(width_small, height_small);
-				article.getContentPane().setBackground(new Color(128, 128, 128));
+				article.getContentPane().setBackground(new Color(170, 170, 170));
 
 				article.setLocationRelativeTo(null);
 				article.setTitle("Article <" + article_id + "> Details");
@@ -6657,7 +6673,7 @@ public class Main {
 
 				JLabel lblArticleDetails = new JLabel("Article Details");
 				lblArticleDetails.setHorizontalAlignment(SwingConstants.CENTER);
-				lblArticleDetails.setFont(new Font("Dialog", Font.BOLD, 20));
+				lblArticleDetails.setFont(new Font(Font.SANS_SERIF, Font.TRUETYPE_FONT, 20));
 				lblArticleDetails.setForeground(new Color(255, 255, 255));
 				lblArticleDetails.setBackground(new Color(204, 153, 102));
 				lblArticleDetails.setBounds(width_small / 4, 65, width_small / 2, 40);
@@ -6670,7 +6686,7 @@ public class Main {
 				 * article.getContentPane().add(btnSync);
 				 * 
 				 * final Label internetCheck = new Label("  ONLINE");
-				 * internetCheck.setFont(new Font("Dialog", Font.BOLD |
+				 * internetCheck.setFont(new Font(Font.SANS_SERIF, Font.TRUETYPE_FONT |
 				 * Font.ITALIC, 12)); internetCheck.setBackground(Color.GREEN);
 				 * internetCheck.setAlignment(1);
 				 * internetCheck.setForeground(new Color(255, 255, 255));
@@ -7030,30 +7046,30 @@ public class Main {
 				JLabel lblIssues = new JLabel("Article:");
 				lblIssues.setBounds(24, 18, 110, 30);
 				panel.add(lblIssues);
-				lblIssues.setFont(new Font("Dialog", Font.BOLD, 14));
+				lblIssues.setFont(new Font(Font.SANS_SERIF, Font.TRUETYPE_FONT, 14));
 				lblIssues.setForeground(Color.BLACK);
 
 				JLabel lblIssue = new JLabel("Issue:");
 				lblIssue.setBounds(24, 48, 94, 30);
 				panel.add(lblIssue);
 				lblIssue.setForeground(Color.BLACK);
-				lblIssue.setFont(new Font("Dialog", Font.BOLD, 14));
+				lblIssue.setFont(new Font(Font.SANS_SERIF, Font.TRUETYPE_FONT, 14));
 
 				JLabel lblIssueId = new JLabel(Long.toString(issue_id));
 				lblIssueId.setBounds(160, 48, 94, 30);
 				panel.add(lblIssueId);
 				lblIssueId.setForeground(Color.BLACK);
-				lblIssueId.setFont(new Font("Dialog", Font.BOLD, 14));
+				lblIssueId.setFont(new Font(Font.SANS_SERIF, Font.TRUETYPE_FONT, 14));
 				lblIssueId.setText(Long.toString(issue_id));
 
 				final JLabel lblDateAccepted = new JLabel("Date Submitted:");
 				lblDateAccepted.setForeground(Color.BLACK);
-				lblDateAccepted.setFont(new Font("Dialog", Font.BOLD, 14));
+				lblDateAccepted.setFont(new Font(Font.SANS_SERIF, Font.TRUETYPE_FONT, 14));
 				lblDateAccepted.setBounds(24, 199, 150, 30);
 				panel.add(lblDateAccepted);
 				final JLabel lblDatePublished = new JLabel("Date Published:");
 				lblDatePublished.setForeground(Color.BLACK);
-				lblDatePublished.setFont(new Font("Dialog", Font.BOLD, 14));
+				lblDatePublished.setFont(new Font(Font.SANS_SERIF, Font.TRUETYPE_FONT, 14));
 				lblDatePublished.setBounds(24, 231, 150, 30);
 				panel.add(lblDatePublished);
 				new Date();
@@ -7062,49 +7078,49 @@ public class Main {
 						: sdf.format(current_article.getDate_published()));
 				lblDate.setVerticalAlignment(SwingConstants.TOP);
 				lblDate.setForeground(Color.BLACK);
-				lblDate.setFont(new Font("Dialog", Font.BOLD, 14));
+				lblDate.setFont(new Font(Font.SANS_SERIF, Font.TRUETYPE_FONT, 14));
 				lblDate.setBounds(160, 240, 125, 30);
 				panel.add(lblDate);
 				JLabel lblDateAccept = new JLabel(current_article.getDate_submitted() == null ? "/"
 						: sdf.format(current_article.getDate_submitted()));
 				lblDateAccept.setVerticalAlignment(SwingConstants.TOP);
 				lblDateAccept.setForeground(Color.BLACK);
-				lblDateAccept.setFont(new Font("Dialog", Font.BOLD, 14));
+				lblDateAccept.setFont(new Font(Font.SANS_SERIF, Font.TRUETYPE_FONT, 14));
 				lblDateAccept.setBounds(160, 207, 125, 30);
 				panel.add(lblDateAccept);
 				JLabel lblArticleId = new JLabel(Long.toString(current_article.getId()));
 				lblArticleId.setBounds(160, 19, 94, 30);
 				panel.add(lblArticleId);
 				lblArticleId.setForeground(Color.BLACK);
-				lblArticleId.setFont(new Font("Dialog", Font.BOLD, 14));
+				lblArticleId.setFont(new Font(Font.SANS_SERIF, Font.TRUETYPE_FONT, 14));
 				lblArticleId.setText(Long.toString(article_id));
 
 				JLabel lblPages = new JLabel("Pages:");
 				lblPages.setForeground(Color.BLACK);
-				lblPages.setFont(new Font("Dialog", Font.BOLD, 14));
+				lblPages.setFont(new Font(Font.SANS_SERIF, Font.TRUETYPE_FONT, 14));
 				lblPages.setBounds(24, 165, 94, 30);
 				panel.add(lblPages);
 
 				JLabel lblPageNum = new JLabel(current_article.getPages());
 				lblPageNum.setVerticalAlignment(SwingConstants.TOP);
 				lblPageNum.setForeground(Color.BLACK);
-				lblPageNum.setFont(new Font("Dialog", Font.BOLD, 14));
+				lblPageNum.setFont(new Font(Font.SANS_SERIF, Font.TRUETYPE_FONT, 14));
 				lblPageNum.setBounds(160, 171, 125, 30);
 				panel.add(lblPageNum);
 				JLabel lblDoi = new JLabel("DOI:");
 				lblDoi.setForeground(Color.BLACK);
-				lblDoi.setFont(new Font("Dialog", Font.BOLD, 14));
+				lblDoi.setFont(new Font(Font.SANS_SERIF, Font.TRUETYPE_FONT, 14));
 				lblDoi.setBounds(24, 268, 94, 30);
 				panel.add(lblDoi);
 
 				final JLabel doi = new JLabel(current_article.getDoi());
 				doi.setForeground(Color.BLACK);
-				doi.setFont(new Font("Dialog", Font.BOLD, 14));
+				doi.setFont(new Font(Font.SANS_SERIF, Font.TRUETYPE_FONT, 14));
 				doi.setBounds(85, 269, 180, 30);
 				panel.add(doi);
 				JLabel lblTitle = new JLabel("Title:");
 				lblTitle.setForeground(Color.BLACK);
-				lblTitle.setFont(new Font("Dialog", Font.BOLD, 14));
+				lblTitle.setFont(new Font(Font.SANS_SERIF, Font.TRUETYPE_FONT, 14));
 				lblTitle.setBounds(24, 115, 94, 30);
 				panel.add(lblTitle);
 
@@ -7116,7 +7132,7 @@ public class Main {
 				lblTitleText.setOpaque(true);
 				lblTitleText.setBackground(SystemColor.window);
 				lblTitleText.setForeground(Color.BLACK);
-				lblTitleText.setFont(new Font("Dialog", Font.BOLD, 14));
+				lblTitleText.setFont(new Font(Font.SANS_SERIF, Font.TRUETYPE_FONT, 14));
 
 				panel9.add(lblTitleText);
 				JScrollPane titleSection = new JScrollPane(lblTitleText);
@@ -7137,13 +7153,13 @@ public class Main {
 					lblSectionId = new JLabel("None.");
 				}
 				lblSectionId.setForeground(Color.BLACK);
-				lblSectionId.setFont(new Font("Dialog", Font.BOLD, 14));
+				lblSectionId.setFont(new Font(Font.SANS_SERIF, Font.TRUETYPE_FONT, 14));
 				lblSectionId.setBounds(110, 81, 149, 30);
 				panel.add(lblSectionId);
 
 				JLabel lblSection = new JLabel("Section:");
 				lblSection.setForeground(Color.BLACK);
-				lblSection.setFont(new Font("Dialog", Font.BOLD, 14));
+				lblSection.setFont(new Font(Font.SANS_SERIF, Font.TRUETYPE_FONT, 14));
 				lblSection.setBounds(24, 80, 94, 30);
 				panel.add(lblSection);
 				Panel panel10 = new Panel();
@@ -7177,7 +7193,7 @@ public class Main {
 
 							btnDeleteFile.setMargin(new Insets(0, 0, 0, 0));
 							btnDeleteFile.setBorder(null);
-							btnDeleteFile.setFont(new Font("Dialog", Font.BOLD, 12));
+							btnDeleteFile.setFont(new Font(Font.SANS_SERIF, Font.TRUETYPE_FONT, 12));
 
 							btnDeleteFile.setBounds(240, y_f, 40, 24);
 							article.getContentPane().add(btnDeleteFile);
@@ -7185,7 +7201,7 @@ public class Main {
 
 							btnPreview.setMargin(new Insets(0, 0, 0, 0));
 							btnPreview.setBorder(null);
-							btnPreview.setFont(new Font("Dialog", Font.BOLD, 12));
+							btnPreview.setFont(new Font(Font.SANS_SERIF, Font.TRUETYPE_FONT, 12));
 
 							btnPreview.setBounds(150, y_f, 40, 24);
 							article.getContentPane().add(btnPreview);
@@ -7462,7 +7478,7 @@ public class Main {
 							JButton btnSaveFile = new JButton(saveicon);
 							btnSaveFile.setMargin(new Insets(0, 0, 0, 0));
 							btnSaveFile.setBorder(null);
-							btnSaveFile.setFont(new Font("Dialog", Font.BOLD, 12));
+							btnSaveFile.setFont(new Font(Font.SANS_SERIF, Font.TRUETYPE_FONT, 12));
 
 							btnSaveFile.setBounds(195, y_f, 40, 24);
 							article.getContentPane().add(btnSaveFile);
@@ -7970,7 +7986,7 @@ public class Main {
 				// article.setSize(width_small, height_small);
 				article.setSize(width_small, height_small);
 				article.setTitle("Editing - Article <" + article_id + ">");
-				article.getContentPane().setBackground(new Color(128, 128, 128));
+				article.getContentPane().setBackground(new Color(170, 170, 170));
 				article.setVisible(true);
 
 				String setting_meta = list_settings.get("Metadata");
@@ -7987,7 +8003,7 @@ public class Main {
 
 				JLabel lblArticleDetails = new JLabel("Article Details");
 				lblArticleDetails.setHorizontalAlignment(SwingConstants.CENTER);
-				lblArticleDetails.setFont(new Font("Dialog", Font.BOLD, 20));
+				lblArticleDetails.setFont(new Font(Font.SANS_SERIF, Font.TRUETYPE_FONT, 20));
 				lblArticleDetails.setForeground(new Color(255, 255, 255));
 				lblArticleDetails.setBackground(new Color(2, 216, 138));
 				lblArticleDetails.setBounds(width_small / 4, 65, width_small / 2, 40);
@@ -8000,7 +8016,7 @@ public class Main {
 				 * article.getContentPane().add(btnSync);
 				 * 
 				 * final Label internetCheck = new Label("  ONLINE");
-				 * internetCheck.setFont(new Font("Dialog", Font.BOLD |
+				 * internetCheck.setFont(new Font(Font.SANS_SERIF, Font.TRUETYPE_FONT |
 				 * Font.ITALIC, 12)); internetCheck.setBackground(Color.GREEN);
 				 * internetCheck.setAlignment(1);
 				 * internetCheck.setForeground(new Color(255, 255, 255));
@@ -8700,30 +8716,30 @@ public class Main {
 				JLabel lblIssues = new JLabel("Article:");
 				lblIssues.setBounds(24, 18, 110, 30);
 				panel.add(lblIssues);
-				lblIssues.setFont(new Font("Dialog", Font.BOLD, 14));
+				lblIssues.setFont(new Font(Font.SANS_SERIF, Font.TRUETYPE_FONT, 14));
 				lblIssues.setForeground(Color.BLACK);
 
 				JLabel lblIssue = new JLabel("Issue:");
 				lblIssue.setBounds(24, 48, 94, 30);
 				panel.add(lblIssue);
 				lblIssue.setForeground(Color.BLACK);
-				lblIssue.setFont(new Font("Dialog", Font.BOLD, 14));
+				lblIssue.setFont(new Font(Font.SANS_SERIF, Font.TRUETYPE_FONT, 14));
 
 				JLabel lblIssueId = new JLabel(Long.toString(issue_id));
 				lblIssueId.setBounds(160, 48, 94, 30);
 				panel.add(lblIssueId);
 				lblIssueId.setForeground(Color.BLACK);
-				lblIssueId.setFont(new Font("Dialog", Font.BOLD, 14));
+				lblIssueId.setFont(new Font(Font.SANS_SERIF, Font.TRUETYPE_FONT, 14));
 				lblIssueId.setText(Long.toString(issue_id));
 
 				final JLabel lblDateAccepted = new JLabel("Date Submitted:");
 				lblDateAccepted.setForeground(Color.BLACK);
-				lblDateAccepted.setFont(new Font("Dialog", Font.BOLD, 14));
+				lblDateAccepted.setFont(new Font(Font.SANS_SERIF, Font.TRUETYPE_FONT, 14));
 				lblDateAccepted.setBounds(24, 199, 150, 30);
 				panel.add(lblDateAccepted);
 				final JLabel lblDatePublished = new JLabel("Date Published:");
 				lblDatePublished.setForeground(Color.BLACK);
-				lblDatePublished.setFont(new Font("Dialog", Font.BOLD, 14));
+				lblDatePublished.setFont(new Font(Font.SANS_SERIF, Font.TRUETYPE_FONT, 14));
 				lblDatePublished.setBounds(24, 231, 150, 30);
 				panel.add(lblDatePublished);
 				new Date();
@@ -8734,7 +8750,7 @@ public class Main {
 				 * JLabel lblDate = new JLabel(sdf.format(current));
 				 * lblDate.setVerticalAlignment(SwingConstants.TOP);
 				 * lblDate.setForeground(Color.BLACK); lblDate.setFont(new
-				 * Font("Dialog", Font.BOLD, 14)); lblDate.setBounds(160, 203,
+				 * Font(Font.SANS_SERIF, Font.TRUETYPE_FONT, 14)); lblDate.setBounds(160, 203,
 				 * 125, 30); panel.add(lblDate);
 				 */
 
@@ -8742,24 +8758,24 @@ public class Main {
 				lblArticleId.setBounds(160, 19, 94, 30);
 				panel.add(lblArticleId);
 				lblArticleId.setForeground(Color.BLACK);
-				lblArticleId.setFont(new Font("Dialog", Font.BOLD, 14));
+				lblArticleId.setFont(new Font(Font.SANS_SERIF, Font.TRUETYPE_FONT, 14));
 				lblArticleId.setText(Long.toString(article_id));
 
 				JLabel lblPages = new JLabel("Pages:");
 				lblPages.setForeground(Color.BLACK);
-				lblPages.setFont(new Font("Dialog", Font.BOLD, 14));
+				lblPages.setFont(new Font(Font.SANS_SERIF, Font.TRUETYPE_FONT, 14));
 				lblPages.setBounds(24, 165, 94, 30);
 				panel.add(lblPages);
 
 				final JTextField lblPageNum = new JTextField(current_article.getPages());
 				lblPageNum.setForeground(Color.BLACK);
-				lblPageNum.setFont(new Font("Dialog", Font.BOLD, 14));
+				lblPageNum.setFont(new Font(Font.SANS_SERIF, Font.TRUETYPE_FONT, 14));
 				lblPageNum.setBounds(156, 171, 125, 30);
 				panel.add(lblPageNum);
 
 				JLabel lblTitle = new JLabel("Title:");
 				lblTitle.setForeground(Color.BLACK);
-				lblTitle.setFont(new Font("Dialog", Font.BOLD, 14));
+				lblTitle.setFont(new Font(Font.SANS_SERIF, Font.TRUETYPE_FONT, 14));
 				lblTitle.setBounds(24, 115, 94, 30);
 				panel.add(lblTitle);
 
@@ -8770,7 +8786,7 @@ public class Main {
 				lblTitleText.setEditable(true);
 				lblTitleText.setOpaque(true);
 				lblTitleText.setForeground(Color.BLACK);
-				lblTitleText.setFont(new Font("Dialog", Font.BOLD, 14));
+				lblTitleText.setFont(new Font(Font.SANS_SERIF, Font.TRUETYPE_FONT, 14));
 
 				panel9.add(lblTitleText);
 				JScrollPane titleSection = new JScrollPane(lblTitleText);
@@ -8804,7 +8820,7 @@ public class Main {
 				// final JTextField lblSectionId = new
 				// JTextField(Integer.toString(current_article.getSection_id()));
 				lblSectionId.setForeground(Color.BLACK);
-				lblSectionId.setFont(new Font("Dialog", Font.BOLD, 12));
+				lblSectionId.setFont(new Font(Font.SANS_SERIF, Font.TRUETYPE_FONT, 12));
 				lblSectionId.setBounds(95, 83, 185, 26);
 				panel.add(lblSectionId);
 				JButton btnAddSections = new JButton("+");
@@ -8963,18 +8979,18 @@ public class Main {
 				panel.add(datePicker);
 				JLabel lblDoi = new JLabel("DOI:");
 				lblDoi.setForeground(Color.BLACK);
-				lblDoi.setFont(new Font("Dialog", Font.BOLD, 14));
+				lblDoi.setFont(new Font(Font.SANS_SERIF, Font.TRUETYPE_FONT, 14));
 				lblDoi.setBounds(24, 268, 94, 30);
 				panel.add(lblDoi);
 
 				final JTextField doi = new JTextField(current_article.getDoi());
 				doi.setForeground(Color.BLACK);
-				doi.setFont(new Font("Dialog", Font.BOLD, 14));
+				doi.setFont(new Font(Font.SANS_SERIF, Font.TRUETYPE_FONT, 14));
 				doi.setBounds(85, 269, 180, 30);
 				panel.add(doi);
 				JLabel lblSection = new JLabel("Section:");
 				lblSection.setForeground(Color.BLACK);
-				lblSection.setFont(new Font("Dialog", Font.BOLD, 14));
+				lblSection.setFont(new Font(Font.SANS_SERIF, Font.TRUETYPE_FONT, 14));
 				lblSection.setBounds(24, 80, 94, 30);
 				panel.add(lblSection);
 
@@ -9353,14 +9369,14 @@ public class Main {
 			// article.setSize(width_small, height_small);
 			article.setSize(width_small, height_small);
 			article.setTitle("New Article");
-			article.getContentPane().setBackground(new Color(128, 128, 128));
+			article.getContentPane().setBackground(new Color(170, 170, 170));
 			article.setVisible(true);
 			article.setLocationRelativeTo(null);
 			article.getContentPane().setLayout(null);
 
 			JLabel lblArticleDetails = new JLabel("Article Details");
 			lblArticleDetails.setHorizontalAlignment(SwingConstants.CENTER);
-			lblArticleDetails.setFont(new Font("Dialog", Font.BOLD, 20));
+			lblArticleDetails.setFont(new Font(Font.SANS_SERIF, Font.TRUETYPE_FONT, 20));
 			lblArticleDetails.setForeground(new Color(255, 255, 255));
 			lblArticleDetails.setBackground(new Color(218, 207, 2));
 			lblArticleDetails.setBounds(width_small / 4, 65, width_small / 2, 40);
@@ -9373,7 +9389,7 @@ public class Main {
 			 * article.getContentPane().add(btnSync);
 			 * 
 			 * final Label internetCheck = new Label("  ONLINE");
-			 * internetCheck.setFont(new Font("Dialog", Font.BOLD | Font.ITALIC,
+			 * internetCheck.setFont(new Font(Font.SANS_SERIF, Font.TRUETYPE_FONT | Font.ITALIC,
 			 * 12)); internetCheck.setBackground(Color.GREEN);
 			 * internetCheck.setAlignment(1); internetCheck.setForeground(new
 			 * Color(255, 255, 255)); internetCheck.setBounds(width_small - 80,
@@ -9773,7 +9789,7 @@ public class Main {
 			/*
 			 * JLabel lblIssues = new JLabel("Article:");
 			 * lblIssues.setBounds(24, 18, 110, 30); panel.add(lblIssues);
-			 * lblIssues.setFont(new Font("Dialog", Font.BOLD, 14));
+			 * lblIssues.setFont(new Font(Font.SANS_SERIF, Font.TRUETYPE_FONT, 14));
 			 * lblIssues.setForeground(Color.BLACK);
 			 */
 
@@ -9781,23 +9797,23 @@ public class Main {
 			lblIssue.setBounds(24, 48, 94, 30);
 			panel.add(lblIssue);
 			lblIssue.setForeground(Color.BLACK);
-			lblIssue.setFont(new Font("Dialog", Font.BOLD, 14));
+			lblIssue.setFont(new Font(Font.SANS_SERIF, Font.TRUETYPE_FONT, 14));
 
 			JLabel lblIssueId = new JLabel(Long.toString(issue_id));
 			lblIssueId.setBounds(160, 48, 94, 30);
 			panel.add(lblIssueId);
 			lblIssueId.setForeground(Color.BLACK);
-			lblIssueId.setFont(new Font("Dialog", Font.BOLD, 14));
+			lblIssueId.setFont(new Font(Font.SANS_SERIF, Font.TRUETYPE_FONT, 14));
 			lblIssueId.setText(Long.toString(issue_id));
 
 			final JLabel lblDateAccepted = new JLabel("Date Submitted:");
 			lblDateAccepted.setForeground(Color.BLACK);
-			lblDateAccepted.setFont(new Font("Dialog", Font.BOLD, 14));
+			lblDateAccepted.setFont(new Font(Font.SANS_SERIF, Font.TRUETYPE_FONT, 14));
 			lblDateAccepted.setBounds(24, 199, 150, 30);
 			panel.add(lblDateAccepted);
 			final JLabel lblDatePublished = new JLabel("Date Published:");
 			lblDatePublished.setForeground(Color.BLACK);
-			lblDatePublished.setFont(new Font("Dialog", Font.BOLD, 14));
+			lblDatePublished.setFont(new Font(Font.SANS_SERIF, Font.TRUETYPE_FONT, 14));
 			lblDatePublished.setBounds(24, 231, 150, 30);
 			panel.add(lblDatePublished);
 			Date current = new Date();
@@ -9808,32 +9824,32 @@ public class Main {
 			 * JLabel lblDate = new JLabel(sdf.format(current));
 			 * lblDate.setVerticalAlignment(SwingConstants.TOP);
 			 * lblDate.setForeground(Color.BLACK); lblDate.setFont(new
-			 * Font("Dialog", Font.BOLD, 14)); lblDate.setBounds(160, 203, 125,
+			 * Font(Font.SANS_SERIF, Font.TRUETYPE_FONT, 14)); lblDate.setBounds(160, 203, 125,
 			 * 30); panel.add(lblDate);
 			 * 
 			 * 
 			 * JLabel lblArticleId = new JLabel("1");
 			 * lblArticleId.setBounds(160, 19, 94, 30); panel.add(lblArticleId);
 			 * lblArticleId.setForeground(Color.BLACK); lblArticleId.setFont(new
-			 * Font("Dialog", Font.BOLD, 14));
+			 * Font(Font.SANS_SERIF, Font.TRUETYPE_FONT, 14));
 			 * lblArticleId.setText(Integer.toString(article_id));
 			 */
 
 			JLabel lblPages = new JLabel("Pages:");
 			lblPages.setForeground(Color.BLACK);
-			lblPages.setFont(new Font("Dialog", Font.BOLD, 14));
+			lblPages.setFont(new Font(Font.SANS_SERIF, Font.TRUETYPE_FONT, 14));
 			lblPages.setBounds(24, 165, 94, 30);
 			panel.add(lblPages);
 
 			final JTextField lblPageNum = new JTextField();
 			lblPageNum.setForeground(Color.BLACK);
-			lblPageNum.setFont(new Font("Dialog", Font.BOLD, 14));
+			lblPageNum.setFont(new Font(Font.SANS_SERIF, Font.TRUETYPE_FONT, 14));
 			lblPageNum.setBounds(156, 171, 125, 30);
 			panel.add(lblPageNum);
 
 			JLabel lblTitle = new JLabel("Title:");
 			lblTitle.setForeground(Color.BLACK);
-			lblTitle.setFont(new Font("Dialog", Font.BOLD, 14));
+			lblTitle.setFont(new Font(Font.SANS_SERIF, Font.TRUETYPE_FONT, 14));
 			lblTitle.setBounds(24, 115, 94, 30);
 			panel.add(lblTitle);
 
@@ -9844,7 +9860,7 @@ public class Main {
 			lblTitleText.setEditable(true);
 			lblTitleText.setOpaque(true);
 			lblTitleText.setForeground(Color.BLACK);
-			lblTitleText.setFont(new Font("Dialog", Font.BOLD, 14));
+			lblTitleText.setFont(new Font(Font.SANS_SERIF, Font.TRUETYPE_FONT, 14));
 
 			panel9.add(lblTitleText);
 			JScrollPane titleSection = new JScrollPane(lblTitleText);
@@ -9863,7 +9879,7 @@ public class Main {
 			}
 
 			lblSectionId.setForeground(Color.BLACK);
-			lblSectionId.setFont(new Font("Dialog", Font.BOLD, 12));
+			lblSectionId.setFont(new Font(Font.SANS_SERIF, Font.TRUETYPE_FONT, 12));
 			lblSectionId.setBounds(95, 83, 185, 26);
 			panel.add(lblSectionId);
 			JButton btnAddSections = new JButton("+");
@@ -10020,18 +10036,18 @@ public class Main {
 			panel.add(datePicker);
 			JLabel lblDoi = new JLabel("DOI:");
 			lblDoi.setForeground(Color.BLACK);
-			lblDoi.setFont(new Font("Dialog", Font.BOLD, 14));
+			lblDoi.setFont(new Font(Font.SANS_SERIF, Font.TRUETYPE_FONT, 14));
 			lblDoi.setBounds(24, 268, 94, 30);
 			panel.add(lblDoi);
 
 			final JTextField doi = new JTextField();
 			doi.setForeground(Color.BLACK);
-			doi.setFont(new Font("Dialog", Font.BOLD, 14));
+			doi.setFont(new Font(Font.SANS_SERIF, Font.TRUETYPE_FONT, 14));
 			doi.setBounds(85, 269, 180, 30);
 			panel.add(doi);
 			JLabel lblSection = new JLabel("Section:");
 			lblSection.setForeground(Color.BLACK);
-			lblSection.setFont(new Font("Dialog", Font.BOLD, 14));
+			lblSection.setFont(new Font(Font.SANS_SERIF, Font.TRUETYPE_FONT, 14));
 			lblSection.setBounds(24, 80, 94, 30);
 			panel.add(lblSection);
 			JTextArea lblFile = new JTextArea("");
@@ -14142,7 +14158,15 @@ public class Main {
 	 * @wbp.parser.entryPoint
 	 */
 	public Main() throws IOException, java.text.ParseException {
+		NimbusLookAndFeel nimbus_theme = new NimbusLookAndFeel();
 		try {
+			UIManager.setLookAndFeel(nimbus_theme);
+		} catch (UnsupportedLookAndFeelException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		nimbus_theme.getDefaults().put("defaultFont", new Font(Font.SANS_SERIF, Font.TRUETYPE_FONT, 12));
+	/*	try {
 			for (LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
 				if ("Nimbus".equals(info.getName())) {
 					UIManager.setLookAndFeel(info.getClassName());
@@ -14157,7 +14181,7 @@ public class Main {
 			// handle exception
 		} catch (IllegalAccessException e) {
 			// handle exception
-		}
+		}*/
 		HttpParams params = new BasicHttpParams();
 
 		HttpProtocolParams.setVersion(params, HttpVersion.HTTP_1_1);
@@ -14197,7 +14221,7 @@ public class Main {
 		api = new JFrame();
 		api.setResizable(false);
 		api.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-		api.getContentPane().setBackground(new Color(128, 128, 128));
+		api.getContentPane().setBackground(new Color(170, 170, 170));
 		api.setTitle("API Information");
 		api.addWindowListener(new WindowAdapter() {
 			@Override
