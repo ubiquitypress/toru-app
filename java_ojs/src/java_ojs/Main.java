@@ -6631,7 +6631,7 @@ public class Main {
 				article.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 				// article.setSize(width_small, height_small);
 				article.setSize(width_small, height_small);
-				article.getContentPane().setBackground(new Color(170, 170, 170));
+				article.getContentPane().setBackground(new Color(213, 213, 213));
 
 				article.setLocationRelativeTo(null);
 				article.setTitle("Article <" + article_id + "> Details");
@@ -6644,15 +6644,6 @@ public class Main {
 					}
 				});
 				article.getContentPane().setLayout(null);
-
-				JLabel lblArticleDetails = new JLabel("Article Details");
-				lblArticleDetails.setHorizontalAlignment(SwingConstants.CENTER);
-				lblArticleDetails.setFont(new Font(Font.SANS_SERIF, Font.TRUETYPE_FONT, 20));
-				lblArticleDetails.setForeground(new Color(255, 255, 255));
-				lblArticleDetails.setBackground(new Color(204, 153, 102));
-				lblArticleDetails.setBounds(width_small / 4, 65, width_small / 2, 40);
-				lblArticleDetails.setOpaque(true);
-				article.getContentPane().add(lblArticleDetails);
 
 				/*
 				 * final JButton btnSync = new JButton("Sync");
@@ -6713,7 +6704,7 @@ public class Main {
 						}
 					}
 				});
-				btnGoBack.setBounds(width_small - 150, 17, 117, 30);
+				btnGoBack.setBounds(width_small - 150, 86, 117, 30);
 				article.getContentPane().add(btnGoBack);
 				JButton btnEdit = new JButton("Edit");
 				btnEdit.addActionListener(new ActionListener() {
@@ -6722,7 +6713,7 @@ public class Main {
 						edit_article(issue_id, article_id);
 					}
 				});
-				btnEdit.setBounds(25, 17, 117, 30);
+				btnEdit.setBounds(25, 86, 117, 30);
 				article.getContentPane().add(btnEdit);
 				JScrollPane scrollSettings = new JScrollPane();
 				scrollSettings.setBounds(40, 180, 320, 200);
@@ -6735,15 +6726,30 @@ public class Main {
 				panel.setAutoscrolls(true);
 				int fields = 5;
 				int settings_height = 210 + 30 * (fields - 8);
+				JLabel lblIssueT = new JLabel("Article: "+article_id);
+				lblIssueT.setBackground(new Color(46, 46, 46));
+				lblIssueT.setForeground(new Color(255, 255, 255));
+				lblIssueT.setFont(new Font(Font.SANS_SERIF, Font.TRUETYPE_FONT, 26));
+				lblIssueT.setBounds(width_small - 242, 26, 280, 40);
+				lblIssueT.setOpaque(true);
+				article.getContentPane().add(lblIssueT);
 
-				Panel panel_1 = new Panel();
-				panel_1.setBackground(new Color(204, 153, 102));
-				panel_1.setBounds(0, 65, width_small, 45);
+				JPanel panel_1 = new JPanel();
+				panel_1.setBackground(new Color(46, 46, 46));
+				panel_1.setLayout(null);
+				panel_1.setBounds(0, 0, width, 70);
+				ImageIcon icon = new ImageIcon(String.format("%s/required_files/%s", directory, "toru-ui-logo.png"));
+				JLabel logo = new JLabel(icon);
+				logo.setBounds(10, 20, 140, 40);
+				logo.setBackground(new Color(46, 46, 46));
+				panel_1.add(logo);
+				panel_1.repaint();
+				logo.repaint();
 				article.getContentPane().add(panel_1);
 
 				Panel panel_2 = new Panel();
-				panel_2.setBackground(new Color(153, 102, 51));
-				panel_2.setBounds(0, 110, width_small, 5);
+				panel_2.setBackground(new Color(25, 25, 25));
+				panel_2.setBounds(0, 70, width, 6);
 				article.getContentPane().add(panel_2);
 				panel.setPreferredSize(new Dimension(320, settings_height));
 				JScrollPane articleSection = new JScrollPane(panel);
@@ -7962,7 +7968,7 @@ public class Main {
 				// article.setSize(width_small, height_small);
 				article.setSize(width_small, height_small);
 				article.setTitle("Editing - Article <" + article_id + ">");
-				article.getContentPane().setBackground(new Color(170, 170, 170));
+				article.getContentPane().setBackground(new Color(213, 213, 213));
 				article.setVisible(true);
 
 				String setting_meta = list_settings.get("Metadata");
@@ -7977,14 +7983,6 @@ public class Main {
 				});
 				article.getContentPane().setLayout(null);
 
-				JLabel lblArticleDetails = new JLabel("Article Details");
-				lblArticleDetails.setHorizontalAlignment(SwingConstants.CENTER);
-				lblArticleDetails.setFont(new Font(Font.SANS_SERIF, Font.TRUETYPE_FONT, 20));
-				lblArticleDetails.setForeground(new Color(255, 255, 255));
-				lblArticleDetails.setBackground(new Color(2, 216, 138));
-				lblArticleDetails.setBounds(width_small / 4, 65, width_small / 2, 40);
-				lblArticleDetails.setOpaque(true);
-				article.getContentPane().add(lblArticleDetails);
 
 				/*
 				 * final JButton btnSync = new JButton("Sync");
@@ -8045,7 +8043,7 @@ public class Main {
 						}
 					}
 				});
-				btnGoBack.setBounds(width_small - 150, 17, 117, 30);
+				btnGoBack.setBounds(width_small - 150, 86, 117, 30);
 				article.getContentPane().add(btnGoBack);
 				JScrollPane scrollSettings = new JScrollPane();
 				scrollSettings.setBounds(40, 180, 320, 200);
@@ -8059,14 +8057,30 @@ public class Main {
 				int fields = 5;
 				int settings_height = 210 + 30 * (fields - 8);
 
-				Panel panel_1 = new Panel();
-				panel_1.setBackground(new Color(2, 216, 138));
-				panel_1.setBounds(0, 65, width_small, 45);
+				JLabel lblIssueT = new JLabel("Edit Article: "+article_id);
+				lblIssueT.setBackground(new Color(46, 46, 46));
+				lblIssueT.setForeground(new Color(255, 255, 255));
+				lblIssueT.setFont(new Font(Font.SANS_SERIF, Font.TRUETYPE_FONT, 26));
+				lblIssueT.setBounds(width_small - 272, 26, 280, 40);
+				lblIssueT.setOpaque(true);
+				article.getContentPane().add(lblIssueT);
+
+				JPanel panel_1 = new JPanel();
+				panel_1.setBackground(new Color(46, 46, 46));
+				panel_1.setLayout(null);
+				panel_1.setBounds(0, 0, width, 70);
+				ImageIcon icon = new ImageIcon(String.format("%s/required_files/%s", directory, "toru-ui-logo.png"));
+				JLabel logo = new JLabel(icon);
+				logo.setBounds(10, 20, 140, 40);
+				logo.setBackground(new Color(46, 46, 46));
+				panel_1.add(logo);
+				panel_1.repaint();
+				logo.repaint();
 				article.getContentPane().add(panel_1);
 
 				Panel panel_2 = new Panel();
-				panel_2.setBackground(new Color(6, 141, 91));
-				panel_2.setBounds(0, 110, width_small, 5);
+				panel_2.setBackground(new Color(25, 25, 25));
+				panel_2.setBounds(0, 70, width, 6);
 				article.getContentPane().add(panel_2);
 				panel.setPreferredSize(new Dimension(320, settings_height));
 				JScrollPane articleSection = new JScrollPane(panel);
@@ -9433,7 +9447,7 @@ public class Main {
 					}
 				}
 			});
-			btnGoBack.setBounds(25, 86, 117, 30);
+			btnGoBack.setBounds(width_small - 150, 86, 117, 30);
 			article.getContentPane().add(btnGoBack);
 			JScrollPane scrollSettings = new JScrollPane();
 			scrollSettings.setBounds(40, 180, 320, 200);
