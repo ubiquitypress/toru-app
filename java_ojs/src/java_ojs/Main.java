@@ -1568,13 +1568,13 @@ public class Main {
 				login.getContentPane().add(username);
 				username.setColumns(4);
 				JLabel lblUsername = new JLabel("Username");
-				lblUsername.setForeground(new Color(0,0,0));
+				lblUsername.setForeground(new Color(0, 0, 0));
 				lblUsername.setHorizontalAlignment(SwingConstants.CENTER);
 				lblUsername.setBounds(80, 140, width_small - 161, 16);
 				login.getContentPane().add(lblUsername);
 				JLabel lblPassword = new JLabel("Password");
 				lblPassword.setHorizontalAlignment(SwingConstants.CENTER);
-				lblPassword.setForeground(new Color(0,0,0));
+				lblPassword.setForeground(new Color(0, 0, 0));
 				lblPassword.setBounds(80, 200, width_small - 161, 16);
 				login.getContentPane().add(lblPassword);
 				passwordField = new JPasswordField();
@@ -1716,7 +1716,7 @@ public class Main {
 				btnSync1.setFont(new Font(Font.SANS_SERIF, Font.TRUETYPE_FONT, 14));
 				btnSync1.setForeground(Color.black);
 				login.getContentPane().add(btnSync1);
-				
+
 				final Label internetCheck = new Label("ONLINE");
 				internetCheck.setFont(new Font(Font.SANS_SERIF, Font.TRUETYPE_FONT | Font.ITALIC, 12));
 				internetCheck.setBackground(Color.lightGray);
@@ -1751,13 +1751,11 @@ public class Main {
 				panel_1.setBounds(0, 70, width, 6);
 				login.getContentPane().add(panel_1);
 
-
 				ActionListener taskPerformer1 = new ActionListener() {
 					public void actionPerformed(ActionEvent evt) {
 						if (status_online()) {
 							internetCheck.setBackground(Color.lightGray);
 							internetCheck.setText("ONLINE");
-							
 
 						} else {
 							internetCheck.setBackground(Color.RED);
@@ -1788,11 +1786,11 @@ public class Main {
 		if (logged_in) {
 			if (settings == null || !settings.isVisible()) {
 				int width_small = (int) (width - (width * (37.5 / 100)));
-				int height_small = (int) ((height-20) - ((height-20) * (5 / 100)));
+				int height_small = (int) ((height - 20) - ((height - 20) * (5 / 100)));
 				settings = new JFrame();
 				settings.setResizable(false);
 				settings.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-				settings.getContentPane().setBackground(new Color(213,213,213));
+				settings.getContentPane().setBackground(new Color(213, 213, 213));
 				settings.setTitle("Settings");
 
 				settings.addWindowListener(new WindowAdapter() {
@@ -1801,11 +1799,11 @@ public class Main {
 						// database_save();
 					}
 				});
-				settings.setSize(width_small, height_small-80);// 400 width and 500
-															// height
+				settings.setSize(width_small, height_small - 80);// 400 width
+																	// and 500
+																	// height
 				settings.getContentPane().setLayout(null);
-			
-				
+
 				final JButton btnBasic = new JButton("Basic");
 				btnBasic.setBounds(35, 115, 100, 25);
 				settings.getContentPane().add(btnBasic);
@@ -1819,7 +1817,7 @@ public class Main {
 
 				panelSettings.setLayout(null);
 				panelSettings.setAutoscrolls(true);
-				panelSettings.setBackground(new Color(185,185,185));
+				panelSettings.setBackground(new Color(185, 185, 185));
 				int y = 30;
 				int settings_height = 210 + 30 * (setting_keys.size() - 8);
 				panelSettings.setPreferredSize(new Dimension(width_small - 80, settings_height));
@@ -1827,8 +1825,8 @@ public class Main {
 				panelSettings.setAutoscrolls(true);
 				scrollFrame.setPreferredSize(new Dimension(320, 200));
 				scrollFrame.setBounds(40, 150, width_small - 80, height_small - 350);
-				scrollFrame.setBackground(new Color(185,185,185));
-				
+				scrollFrame.setBackground(new Color(185, 185, 185));
+
 				// scrollSettings.setViewportView(scrollFrame);
 				settings.getContentPane().add(scrollFrame);
 				ArrayList<JCheckBox> checkboxes = new ArrayList<JCheckBox>();
@@ -2006,7 +2004,7 @@ public class Main {
 				btnSync1.setFont(new Font(Font.SANS_SERIF, Font.TRUETYPE_FONT, 14));
 				btnSync1.setForeground(Color.black);
 				settings.getContentPane().add(btnSync1);
-				
+
 				final Label internetCheck = new Label("ONLINE");
 				internetCheck.setFont(new Font(Font.SANS_SERIF, Font.TRUETYPE_FONT | Font.ITALIC, 12));
 				internetCheck.setBackground(Color.lightGray);
@@ -2015,7 +2013,6 @@ public class Main {
 				internetCheck.setBounds(width_small - 85, 90, 65, 22);
 				settings.getContentPane().add(internetCheck);
 
-		
 				JLabel lblIssue = new JLabel("Settings");
 				lblIssue.setBackground(new Color(46, 46, 46));
 				lblIssue.setForeground(new Color(255, 255, 255));
@@ -2099,7 +2096,7 @@ public class Main {
 					api.getContentPane().add(access_key);
 					JLabel lblAccessKey = new JLabel("Enter access key:");
 					lblAccessKey.setHorizontalAlignment(SwingConstants.CENTER);
-					lblAccessKey.setForeground(new Color(0,0,0));
+					lblAccessKey.setForeground(new Color(0, 0, 0));
 					lblAccessKey.setBounds(80, 150, width_small - 161, 16);
 					api.getContentPane().add(lblAccessKey);
 
@@ -2171,7 +2168,7 @@ public class Main {
 					btnSync1.setFont(new Font(Font.SANS_SERIF, Font.TRUETYPE_FONT, 14));
 					btnSync1.setForeground(Color.black);
 					api.getContentPane().add(btnSync1);
-					
+
 					final Label internetCheck = new Label("ONLINE");
 					internetCheck.setFont(new Font(Font.SANS_SERIF, Font.TRUETYPE_FONT | Font.ITALIC, 12));
 					internetCheck.setBackground(Color.lightGray);
@@ -2192,7 +2189,8 @@ public class Main {
 					panel.setBackground(new Color(46, 46, 46));
 					panel.setLayout(null);
 					panel.setBounds(0, 0, width, 70);
-					ImageIcon icon = new ImageIcon(String.format("%s/required_files/%s", directory, "toru-ui-logo.png"));
+					ImageIcon icon = new ImageIcon(
+							String.format("%s/required_files/%s", directory, "toru-ui-logo.png"));
 					JLabel logo = new JLabel(icon);
 					logo.setBounds(10, 20, 140, 40);
 					logo.setBackground(new Color(46, 46, 46));
@@ -2211,7 +2209,7 @@ public class Main {
 							if (status_online()) {
 								internetCheck.setBackground(Color.lightGray);
 								internetCheck.setText("ONLINE");
-						
+
 							} else {
 								internetCheck.setBackground(Color.RED);
 								internetCheck.setText("OFFLINE");
@@ -2239,7 +2237,7 @@ public class Main {
 					api = new JFrame();
 					api.setResizable(false);
 					api.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-					api.getContentPane().setBackground(new Color(213,213,213));
+					api.getContentPane().setBackground(new Color(213, 213, 213));
 					api.setTitle("API Information");
 
 					api.addWindowListener(new WindowAdapter() {
@@ -2261,7 +2259,7 @@ public class Main {
 					api.getContentPane().add(access_key);
 					JLabel lblAccessKey = new JLabel("Enter access key for future offline and online access:");
 					lblAccessKey.setHorizontalAlignment(SwingConstants.CENTER);
-					lblAccessKey.setForeground(new Color(0,0,0));
+					lblAccessKey.setForeground(new Color(0, 0, 0));
 					lblAccessKey.setBounds(80, 150, width_small - 161, 16);
 					api.getContentPane().add(lblAccessKey);
 
@@ -2318,7 +2316,7 @@ public class Main {
 					btnSync1.setFont(new Font(Font.SANS_SERIF, Font.TRUETYPE_FONT, 14));
 					btnSync1.setForeground(Color.black);
 					api.getContentPane().add(btnSync1);
-					
+
 					final Label internetCheck = new Label("ONLINE");
 					internetCheck.setFont(new Font(Font.SANS_SERIF, Font.TRUETYPE_FONT | Font.ITALIC, 12));
 					internetCheck.setBackground(Color.lightGray);
@@ -2326,7 +2324,6 @@ public class Main {
 					internetCheck.setAlignment(1);
 					internetCheck.setBounds(width_small - 85, 90, 65, 22);
 					api.getContentPane().add(internetCheck);
-
 
 					JLabel lblIssue = new JLabel("API");
 					lblIssue.setBackground(new Color(46, 46, 46));
@@ -2340,7 +2337,8 @@ public class Main {
 					panel.setBackground(new Color(46, 46, 46));
 					panel.setLayout(null);
 					panel.setBounds(0, 0, width, 70);
-					ImageIcon icon = new ImageIcon(String.format("%s/required_files/%s", directory, "toru-ui-logo.png"));
+					ImageIcon icon = new ImageIcon(
+							String.format("%s/required_files/%s", directory, "toru-ui-logo.png"));
 					JLabel logo = new JLabel(icon);
 					logo.setBounds(10, 20, 140, 40);
 					logo.setBackground(new Color(46, 46, 46));
@@ -2353,7 +2351,6 @@ public class Main {
 					panel_1.setBackground(new Color(25, 25, 25));
 					panel_1.setBounds(0, 70, width, 6);
 					api.getContentPane().add(panel_1);
-
 
 					ActionListener taskPerformer1 = new ActionListener() {
 						public void actionPerformed(ActionEvent evt) {
@@ -2372,7 +2369,6 @@ public class Main {
 											// the
 											// frame
 											// visible
-
 
 				}
 			}
@@ -2564,14 +2560,17 @@ public class Main {
 													countdown = 100;
 													for (int i = 0; i < countdown; i++) {
 														final int percent = i;
-														if (issue_countdown_storage.containsKey((long) key) && issue_countdown_storage.get((long) key) == true) {
+														if (issue_countdown_storage.containsKey((long) key)
+																&& issue_countdown_storage.get((long) key) == true) {
 															progressBar.setValue(100);
 															progressBar.repaint();
 															break;
 														}
 														SwingUtilities.invokeLater(new Runnable() {
 															public void run() {
-																if (issue_countdown_storage.containsKey((long) key) && issue_countdown_storage.get((long) key) == true) {
+																if (issue_countdown_storage.containsKey((long) key)
+																		&& issue_countdown_storage
+																				.get((long) key) == true) {
 																	progressBar.setValue(100);
 
 																} else {
@@ -2593,14 +2592,17 @@ public class Main {
 													System.out.println(decimal);
 													for (int i = 0; i < countdown; i++) {
 														final int percent = i;
-														if (issue_countdown_storage.containsKey((long) key) && issue_countdown_storage.get((long) key) == true) {
+														if (issue_countdown_storage.containsKey((long) key)
+																&& issue_countdown_storage.get((long) key) == true) {
 															progressBar.setValue(100);
 															progressBar.repaint();
 															break;
 														}
 														SwingUtilities.invokeLater(new Runnable() {
 															public void run() {
-																if (issue_countdown_storage.containsKey((long) key) && issue_countdown_storage.get((long) key) == true) {
+																if (issue_countdown_storage.containsKey((long) key)
+																		&& issue_countdown_storage
+																				.get((long) key) == true) {
 																	progressBar.setValue(100);
 
 																} else {
@@ -3216,10 +3218,9 @@ public class Main {
 				issues.getContentPane().add(btnSettings);
 
 				/*
-				 * JButton pi = new JButton("API");
-				 * pi.addActionListener(new ActionListener() { public void
-				 * actionPerformed(ActionEvent e) { api(true); } });
-				 * btnApi.setBounds(103, 20, 90, 29);
+				 * JButton pi = new JButton("API"); pi.addActionListener(new
+				 * ActionListener() { public void actionPerformed(ActionEvent e)
+				 * { api(true); } }); btnApi.setBounds(103, 20, 90, 29);
 				 * issues.getContentPane().add(btnApi);
 				 */
 				ImageIcon db_icon = new ImageIcon(String.format("%s/required_files/%s", directory, "db_xxs.png"));
@@ -3251,7 +3252,7 @@ public class Main {
 				lblArticles.setBackground(new Color(213, 213, 213));
 				lblArticles.setFont(new Font(Font.SANS_SERIF, Font.TRUETYPE_FONT, 24));
 				lblArticles.setForeground(new Color(0, 0, 0));
-				lblArticles.setBounds(30,133, 125, 30);
+				lblArticles.setBounds(30, 133, 125, 30);
 				lblArticles.setOpaque(true);
 				issues.getContentPane().add(lblArticles);
 				JPanel panel = new JPanel();
@@ -4250,8 +4251,10 @@ public class Main {
 		screen.setVisible(true);
 		screen.setSize(540, 420);
 		Section section = section_storage.get(section_id);
-		SpinnerModel count_model = new SpinnerNumberModel(section.getAbstract_word_count(), 0, 5000, 1);
-		SpinnerNumberModel seq_model = new SpinnerNumberModel(section.getSeq(), -1000.0, 1000.0, 0.1);
+		System.out.println(section.getAbstract_word_count());
+		SpinnerModel count_model = new SpinnerNumberModel(
+				section.getAbstract_word_count() < 0 ? 0 : section.getAbstract_word_count(), 0, 5000, 1);
+		SpinnerNumberModel seq_model = new SpinnerNumberModel(section.getSeq()< 0 ? 0 : section.getSeq(), -1000.0, 1000.0, 0.1);
 
 		screen.setTitle(String.format("Edit Section <%s>", section.getId()));
 		JPanel panelSection = new JPanel();
@@ -4534,7 +4537,7 @@ public class Main {
 				section_table.setAutoResizeMode(JTable.AUTO_RESIZE_SUBSEQUENT_COLUMNS);
 
 				final JButton btnSync = new JButton("Sync");
-				btnSync.setBounds(width - 155, 21, 70, 24);
+				btnSync.setBounds(width - 155, 85, 70, 24);
 				btnSync.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
 						JProgressBar progressBar = new JProgressBar();
@@ -4701,13 +4704,13 @@ public class Main {
 				// reference:
 				// https://svn.java.net/svn/swinglabs-demos~svn/trunk/src/java/org/jdesktop/demo/sample/
 				final JTextField filter = new JTextField("");
-				filter.setBounds(150, height / 16 * 7 - 84, 117, 25);
+				filter.setBounds(150, height / 16 * 7 - 80, 117, 25);
 
 				final JButton search = new JButton("Search");
 				final JButton clear = new JButton("Clear");
-				search.setBounds(268, height / 16 * 7 - 84, 90, 25);
+				search.setBounds(268, height / 16 * 7 - 80, 90, 25);
 
-				clear.setBounds(355, height / 16 * 7 - 84, 90, 25);
+				clear.setBounds(355, height / 16 * 7 - 80, 90, 25);
 				;
 				section_screen.getContentPane().add(filter);
 				section_screen.getContentPane().add(search);
@@ -4766,7 +4769,7 @@ public class Main {
 				internetCheck.setBackground(Color.lightGray);
 				internetCheck.setAlignment(1);
 				internetCheck.setForeground(new Color(255, 255, 255));
-				internetCheck.setBounds(width - 85, 22, 65, 22);
+				internetCheck.setBounds(width - 85, 86, 65, 22);
 				section_screen.getContentPane().add(internetCheck);
 
 				ActionListener taskPerformer1 = new ActionListener() {
@@ -4867,14 +4870,6 @@ public class Main {
 				ButtonColumn buttonColumn2 = new ButtonColumn(section_table, edit, 3);
 				ButtonColumn buttonColumn3 = new ButtonColumn(section_table, delete, 4);
 
-				JLabel lblIssue = new JLabel("Sections");
-				lblIssue.setBackground(new Color(0, 141, 7));
-				lblIssue.setForeground(new Color(255, 255, 255));
-				lblIssue.setFont(new Font(Font.SANS_SERIF, Font.TRUETYPE_FONT, 28));
-				lblIssue.setBounds(40, 60, 150, 30);
-				lblIssue.setOpaque(true);
-				section_screen.getContentPane().add(lblIssue);
-
 				JButton btnClose = new JButton("Close");
 				btnClose.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent arg0) {
@@ -4890,7 +4885,7 @@ public class Main {
 						}
 					}
 				});
-				btnClose.setBounds(15, 20, 100, 29);
+				btnClose.setBounds(15, 85, 100, 29);
 				section_screen.getContentPane().add(btnClose);
 				buttonColumn.setMnemonic(KeyEvent.VK_D);
 				buttonColumn2.setMnemonic(KeyEvent.VK_D);
@@ -4910,25 +4905,32 @@ public class Main {
 				lblUpdateDb.setHorizontalAlignment(SwingConstants.CENTER);
 				lblUpdateDb.setBounds(26, height - 132, 70, 15);
 				section_screen.getContentPane().add(lblUpdateDb);
-				Panel footer_border = new Panel();
-				footer_border.setBackground(new Color(0, 141, 7));
-				footer_border.setBounds(0, height - 74, width, 10);
-				section_screen.getContentPane().add(footer_border);
+				JLabel lblIssue = new JLabel("Sections");
+				lblIssue.setBackground(new Color(46, 46, 46));
+				lblIssue.setForeground(new Color(255, 255, 255));
+				lblIssue.setFont(new Font(Font.SANS_SERIF, Font.TRUETYPE_FONT, 28));
+				lblIssue.setBounds(width - 220, 22, 350, 40);
+				lblIssue.setOpaque(true);
+				section_screen.getContentPane().add(lblIssue);
 
-				Panel footer = new Panel();
-				footer.setBackground(new Color(0, 128, 4));
-				footer.setBounds(0, height - 74, width, 120);
-				section_screen.getContentPane().add(footer);
-
-				Panel panel = new Panel();
-				panel.setBackground(new Color(0, 141, 7));
-				panel.setBounds(0, 55, width, 40);
+				JPanel panel = new JPanel();
+				panel.setBackground(new Color(46, 46, 46));
+				panel.setLayout(null);
+				panel.setBounds(0, 0, width, 70);
+				ImageIcon icon = new ImageIcon(String.format("%s/required_files/%s", directory, "toru-ui-logo.png"));
+				JLabel logo = new JLabel(icon);
+				logo.setBounds(10, 20, 140, 40);
+				logo.setBackground(new Color(46, 46, 46));
+				panel.add(logo);
+				panel.repaint();
+				logo.repaint();
 				section_screen.getContentPane().add(panel);
 
 				Panel panel_1 = new Panel();
-				panel_1.setBackground(new Color(47, 80, 50));
-				panel_1.setBounds(0, 95, width, 5);
+				panel_1.setBackground(new Color(25, 25, 25));
+				panel_1.setBounds(0, 70, width, 6);
 				section_screen.getContentPane().add(panel_1);
+
 				JButton btnAdd = new JButton("Add");
 
 				JPanel panelSection = new JPanel();
@@ -5073,7 +5075,7 @@ public class Main {
 
 					}
 				});
-				btnAdd.setBounds(width - 150, height / 16 * 7 - 84, 117, 25);
+				btnAdd.setBounds(width - 150, height / 16 * 7 - 80, 117, 25);
 				section_screen.getContentPane().add(btnAdd);
 
 				JPanel panel3 = new JPanel();
@@ -5231,7 +5233,8 @@ public class Main {
 									// System.out.println("countdown:
 									// "+issue_countdown_storage.get((long)
 									// current_issue.getId()));
-									if (issue_countdown_storage.containsKey((long) -1) && issue_countdown_storage.get((long) -1) == true) {
+									if (issue_countdown_storage.containsKey((long) -1)
+											&& issue_countdown_storage.get((long) -1) == true) {
 										progressBar.setValue(100);
 										progressBar.repaint();
 										break;
@@ -5242,7 +5245,8 @@ public class Main {
 											// "+issue_countdown_storage.get((long)
 											// current_issue.getId()));
 
-											if (issue_countdown_storage.containsKey((long) -1) && issue_countdown_storage.get((long) -1) == true) {
+											if (issue_countdown_storage.containsKey((long) -1)
+													&& issue_countdown_storage.get((long) -1) == true) {
 												progressBar.setValue(100);
 												progressBar.repaint();
 											} else {
@@ -5638,16 +5642,6 @@ public class Main {
 				lblUpdateDb.setBounds(14, height - 132, 140, 15);
 				unpublished_articles_screen.getContentPane().add(lblUpdateDb);
 
-				Panel footer_border = new Panel();
-				footer_border.setBackground(new Color(238, 238, 238));
-				footer_border.setBounds(0, height - 74, width, 10);
-				unpublished_articles_screen.getContentPane().add(footer_border);
-
-				Panel footer = new Panel();
-				footer.setBackground(new Color(230, 230, 230));
-				footer.setBounds(0, height - 74, width, 120);
-				unpublished_articles_screen.getContentPane().add(footer);
-
 				JPanel panel = new JPanel();
 				panel.setBackground(new Color(46, 46, 46));
 				panel.setLayout(null);
@@ -5881,7 +5875,8 @@ public class Main {
 											// "+issue_countdown_storage.get((long)
 											// current_issue.getId()));
 
-											if (issue_countdown_storage.containsKey((long) current_issue.getId()) && issue_countdown_storage.get((long) current_issue.getId())) {
+											if (issue_countdown_storage.containsKey((long) current_issue.getId())
+													&& issue_countdown_storage.get((long) current_issue.getId())) {
 												progressBar.setValue(100);
 												progressBar.repaint();
 												break;
@@ -5891,7 +5886,10 @@ public class Main {
 													// System.out.println("countdown:
 													// "+issue_countdown_storage.get((long)
 													// current_issue.getId()));
-													if (issue_countdown_storage.containsKey((long) current_issue.getId()) && issue_countdown_storage.get((long) current_issue.getId())) {
+													if (issue_countdown_storage
+															.containsKey((long) current_issue.getId())
+															&& issue_countdown_storage
+																	.get((long) current_issue.getId())) {
 														progressBar.setValue(100);
 													} else {
 														progressBar.setValue(percent == 0 ? 0
@@ -5957,7 +5955,9 @@ public class Main {
 											// "+issue_countdown_storage.get((long)
 											// current_issue.getId()));
 
-											if (issue_countdown_storage.containsKey((long) current_issue.getId()) && issue_countdown_storage.get((long) current_issue.getId()) == true) {
+											if (issue_countdown_storage.containsKey((long) current_issue.getId())
+													&& issue_countdown_storage
+															.get((long) current_issue.getId()) == true) {
 												progressBar.setValue(100);
 												progressBar.repaint();
 												break;
@@ -5968,8 +5968,10 @@ public class Main {
 													// "+issue_countdown_storage.get((long)
 													// current_issue.getId()));
 
-													if (issue_countdown_storage.containsKey((long) current_issue.getId()) && issue_countdown_storage
-															.get((long) current_issue.getId()) == true) {
+													if (issue_countdown_storage
+															.containsKey((long) current_issue.getId())
+															&& issue_countdown_storage
+																	.get((long) current_issue.getId()) == true) {
 														progressBar.setValue(100);
 														progressBar.repaint();
 													} else {
@@ -6035,7 +6037,8 @@ public class Main {
 										// "+issue_countdown_storage.get((long)
 										// current_issue.getId()));
 
-										if (issue_countdown_storage.containsKey((long) current_issue.getId()) && issue_countdown_storage.get((long) current_issue.getId()) == true) {
+										if (issue_countdown_storage.containsKey((long) current_issue.getId())
+												&& issue_countdown_storage.get((long) current_issue.getId()) == true) {
 											progressBar.setValue(100);
 											progressBar.repaint();
 											break;
@@ -6046,7 +6049,9 @@ public class Main {
 												// "+issue_countdown_storage.get((long)
 												// current_issue.getId()));
 
-												if (issue_countdown_storage.containsKey((long) current_issue.getId()) &&issue_countdown_storage.get((long) current_issue.getId()) == true) {
+												if (issue_countdown_storage.containsKey((long) current_issue.getId())
+														&& issue_countdown_storage
+																.get((long) current_issue.getId()) == true) {
 													progressBar.setValue(100);
 													progressBar.repaint();
 												} else {
@@ -6559,12 +6564,10 @@ public class Main {
 				panel3.setAutoscrolls(true);
 				new Date();
 				Issue row_issue = issue_storage.get(issue_id);
-				Object issue_rowData[][] = {
-						{ row_issue.getId(), row_issue.getTitle(), row_issue.getVolume(), row_issue.getNumber(),
-								row_issue.getYear(), row_issue.getDate_accepted() == null ? "/"
-										: sdf.format(row_issue.getDate_accepted()),
-								row_issue.getDate_published() == null ? "/"
-										: sdf.format(row_issue.getDate_published()) } };
+				Object issue_rowData[][] = { { row_issue.getId(), row_issue.getTitle(), row_issue.getVolume(),
+						row_issue.getNumber(), row_issue.getYear(),
+						row_issue.getDate_accepted() == null ? "/" : sdf.format(row_issue.getDate_accepted()),
+						row_issue.getDate_published() == null ? "/" : sdf.format(row_issue.getDate_published()) } };
 				Object issue_columnNames[] = { "ID", "Title", "Volume", "Number", "Year", "Date Accepted",
 						"Date Published" };
 
@@ -11643,7 +11646,7 @@ public class Main {
 
 							Article new_article = JSONToArticle_single_request((JSONObject) setting.get("article"),
 									issue);
-							
+
 							if (((long) articles_id) < ((long) new_article.getId())) {
 								articles_id = new_article.getId();
 							}
@@ -12239,11 +12242,11 @@ public class Main {
 					Issue new_issue = new Issue(issue_id);
 
 					new_issue = JSONToIssue(issue_json, new_issue);
-					
+
 					if (((long) i_id) < ((long) new_issue.getId())) {
 						i_id = new_issue.getId();
 					}
-					
+
 					String journal_link = (String) issue_json.get("journal");
 					journal_link = journal_link.substring(0, journal_link.lastIndexOf("/"));
 					System.out.println(journal_link);
