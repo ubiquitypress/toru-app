@@ -10668,7 +10668,6 @@ public class Main {
 		}
 	}
 
-	@SuppressWarnings("resource")
 	public static void update_article_intersect_less_requests(Article article, String credentials)
 			throws UnsupportedOperationException, IOException {
 
@@ -12196,7 +12195,6 @@ public class Main {
 		}
 	}
 
-	@SuppressWarnings("resource")
 	public static ArrayList<Issue> update_get_issues_from_remote(String credentials, boolean update_local)
 			throws IllegalStateException, IOException {
 		boolean status = status_online();
@@ -12662,7 +12660,7 @@ public class Main {
 
 	}
 
-	@SuppressWarnings({ "resource", "unchecked" })
+	@SuppressWarnings({ "unchecked" })
 	public static void sync_authors_intersect(long issue_id, String credentials, boolean update_local)
 			throws IllegalStateException, IOException {
 		boolean status = status_online();
@@ -13331,7 +13329,6 @@ public class Main {
 
 	}
 
-	@SuppressWarnings("resource")
 	public static void sync_authors_intersect_article(Article article, String credentials, boolean update_local)
 			throws IllegalStateException, IOException {
 		boolean status = status_online();
@@ -13467,7 +13464,7 @@ public class Main {
 
 	}
 
-	@SuppressWarnings({ "resource", "unchecked" })
+	@SuppressWarnings({ "unchecked" })
 	public static void update_sections(long journal_id, String credentials, boolean update_local)
 			throws IllegalStateException, IOException {
 		boolean status = status_online();
