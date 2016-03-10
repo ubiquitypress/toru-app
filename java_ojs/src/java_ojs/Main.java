@@ -2399,7 +2399,7 @@ public class Main {
 					height = 640;
 					issues.setSize(900, 640);
 				}
-				issues.getContentPane().setBackground(new Color(170, 170, 170));
+				issues.getContentPane().setBackground(new Color(213, 213, 213));
 				issues.setVisible(true);
 				issues.setTitle("Dashboard");
 				issues.setLocationRelativeTo(null);
@@ -2453,10 +2453,10 @@ public class Main {
 
 				final JButton btnSync = new JButton("Sync");
 
-				btnSync.setBounds(width - 155, 21, 70, 24);
+				btnSync.setBounds(width - 155, 83, 70, 24);
 
 				final JButton btnSection = new JButton("Sections");
-				btnSection.setBounds(112, 20, 120, 29);
+				btnSection.setBounds(112, 82, 120, 29);
 
 				btnSection.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
@@ -2464,7 +2464,7 @@ public class Main {
 					}
 				});
 				final JButton btnUnpublished = new JButton("Unpublished Articles");
-				btnUnpublished.setBounds(238, 20, 200, 29);
+				btnUnpublished.setBounds(238, 82, 200, 29);
 
 				btnUnpublished.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
@@ -2564,14 +2564,14 @@ public class Main {
 													countdown = 100;
 													for (int i = 0; i < countdown; i++) {
 														final int percent = i;
-														if (issue_countdown_storage.get((long) key) == true) {
+														if (issue_countdown_storage.containsKey((long) key) && issue_countdown_storage.get((long) key) == true) {
 															progressBar.setValue(100);
 															progressBar.repaint();
 															break;
 														}
 														SwingUtilities.invokeLater(new Runnable() {
 															public void run() {
-																if (issue_countdown_storage.get((long) key) == true) {
+																if (issue_countdown_storage.containsKey((long) key) && issue_countdown_storage.get((long) key) == true) {
 																	progressBar.setValue(100);
 
 																} else {
@@ -2593,14 +2593,14 @@ public class Main {
 													System.out.println(decimal);
 													for (int i = 0; i < countdown; i++) {
 														final int percent = i;
-														if (issue_countdown_storage.get((long) key) == true) {
+														if (issue_countdown_storage.containsKey((long) key) && issue_countdown_storage.get((long) key) == true) {
 															progressBar.setValue(100);
 															progressBar.repaint();
 															break;
 														}
 														SwingUtilities.invokeLater(new Runnable() {
 															public void run() {
-																if (issue_countdown_storage.get((long) key) == true) {
+																if (issue_countdown_storage.containsKey((long) key) && issue_countdown_storage.get((long) key) == true) {
 																	progressBar.setValue(100);
 
 																} else {
@@ -2626,7 +2626,7 @@ public class Main {
 										Future<?> f = exec.submit(new Runnable() {
 											public void run() {
 												try {
-													update_issue_intersect(current_issue, encoding);
+													update_issue_intersect(current_issue, encoding, false);
 
 												} catch (IllegalStateException | IOException e1) {
 
@@ -2990,7 +2990,7 @@ public class Main {
 				JScrollPane scrollPane = new JScrollPane();
 
 				scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
-				scrollPane.setBounds(20, 140, width - 40, height - 285);
+				scrollPane.setBounds(20, 167, width - 40, height - 305);
 				issues.getContentPane().add(scrollPane);
 
 				DefaultTableModel dtm = new DefaultTableModel(rows, columnNames);
@@ -3024,12 +3024,12 @@ public class Main {
 				// reference:
 				// https://svn.java.net/svn/swinglabs-demos~svn/trunk/src/java/org/jdesktop/demo/sample/
 				final JTextField filter = new JTextField("");
-				filter.setBounds(50, 110, 120, 25);
+				filter.setBounds(148, 139, 120, 25);
 
 				final JButton search = new JButton("Search");
 				final JButton clear = new JButton("Clear");
-				search.setBounds(170, 110, 90, 25);
-				clear.setBounds(258, 110, 65, 25);
+				search.setBounds(268, 139, 90, 25);
+				clear.setBounds(361, 139, 65, 25);
 				issues.getContentPane().add(filter);
 				issues.getContentPane().add(search);
 				issues.getContentPane().add(clear);
@@ -3088,7 +3088,7 @@ public class Main {
 				final Label internetCheck = new Label("ONLINE");
 				internetCheck.setFont(new Font(Font.SANS_SERIF, Font.TRUETYPE_FONT | Font.ITALIC, 12));
 				internetCheck.setBackground(Color.lightGray);
-				internetCheck.setBounds(width - 85, 22, 65, 22);
+				internetCheck.setBounds(width - 85, 85, 65, 22);
 				internetCheck.setForeground(new Color(255, 255, 255));
 				internetCheck.setAlignment(1);
 				issues.getContentPane().add(internetCheck);
@@ -3206,26 +3206,18 @@ public class Main {
 				ButtonColumn buttonColumn2 = new ButtonColumn(issues_table, edit, 8);
 				ButtonColumn buttonColumn3 = new ButtonColumn(issues_table, delete, 9);
 
-				JLabel lblIssues = new JLabel("Issues");
-				lblIssues.setBackground(new Color(220, 20, 60));
-				lblIssues.setOpaque(true);
-				lblIssues.setFont(new Font(Font.SANS_SERIF, Font.TRUETYPE_FONT, 28));
-				lblIssues.setForeground(new Color(255, 255, 255));
-				lblIssues.setBounds(40, 60, 120, 30);
-				issues.getContentPane().add(lblIssues);
-
 				JButton btnSettings = new JButton("Settings");
 				btnSettings.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent arg0) {
 						settings();
 					}
 				});
-				btnSettings.setBounds(15, 20, 90, 29);
+				btnSettings.setBounds(15, 82, 90, 29);
 				issues.getContentPane().add(btnSettings);
 
 				/*
-				 * JButton btnApi = new JButton("API");
-				 * btnApi.addActionListener(new ActionListener() { public void
+				 * JButton pi = new JButton("API");
+				 * pi.addActionListener(new ActionListener() { public void
 				 * actionPerformed(ActionEvent e) { api(true); } });
 				 * btnApi.setBounds(103, 20, 90, 29);
 				 * issues.getContentPane().add(btnApi);
@@ -3238,35 +3230,49 @@ public class Main {
 						database_save();
 					}
 				});
-				btnSaveData.setBounds(26, height - 117, 70, 40);
+				btnSaveData.setBounds(45, height - 105, 70, 40);
 				issues.getContentPane().add(btnSaveData);
 
-				JLabel lblUpdateDb = new JLabel("Update");
-				lblUpdateDb.setForeground(Color.WHITE);
+				JLabel lblUpdateDb = new JLabel("Update Local Database");
+				lblUpdateDb.setForeground(Color.BLACK);
+				lblUpdateDb.setFont(new Font(Font.SANS_SERIF, Font.TRUETYPE_FONT, 11));
 				lblUpdateDb.setHorizontalAlignment(SwingConstants.CENTER);
-				lblUpdateDb.setBounds(26, height - 132, 70, 15);
+				lblUpdateDb.setBounds(14, height - 120, 140, 15);
 				issues.getContentPane().add(lblUpdateDb);
 
-				Panel footer_border = new Panel();
-				footer_border.setBackground(new Color(220, 20, 60));
-				footer_border.setBounds(0, height - 74, width, 10);
-				issues.getContentPane().add(footer_border);
-
-				Panel panel_1 = new Panel();
-				panel_1.setBackground(new Color(128, 0, 0));
-				panel_1.setBounds(0, 95, width, 5);
-				issues.getContentPane().add(panel_1);
-
-				Panel footer = new Panel();
-				footer.setBackground(new Color(178, 34, 34));
-				footer.setBounds(0, height - 74, width, 120);
-				issues.getContentPane().add(footer);
-
-				Panel panel = new Panel();
-				panel.setBackground(new Color(220, 20, 60));
-				panel.setBounds(0, 55, width, 40);
+				JLabel lblIssue = new JLabel("Dashboard");
+				lblIssue.setBackground(new Color(46, 46, 46));
+				lblIssue.setForeground(new Color(255, 255, 255));
+				lblIssue.setFont(new Font(Font.SANS_SERIF, Font.TRUETYPE_FONT, 26));
+				lblIssue.setBounds(width - 180, 26, 280, 40);
+				lblIssue.setOpaque(true);
+				issues.getContentPane().add(lblIssue);
+				JLabel lblArticles = new JLabel("Issues");
+				lblArticles.setBackground(new Color(213, 213, 213));
+				lblArticles.setFont(new Font(Font.SANS_SERIF, Font.TRUETYPE_FONT, 24));
+				lblArticles.setForeground(new Color(0, 0, 0));
+				lblArticles.setBounds(30,133, 125, 30);
+				lblArticles.setOpaque(true);
+				issues.getContentPane().add(lblArticles);
+				JPanel panel = new JPanel();
+				panel.setBackground(new Color(46, 46, 46));
+				panel.setLayout(null);
+				panel.setBounds(-5, 0, width, 78);
+				ImageIcon icon = new ImageIcon(String.format("%s/required_files/%s", directory, "toru-ui-logo.png"));
+				JLabel logo = new JLabel(icon);
+				logo.setBounds(10, 20, 140, 40);
+				logo.setBackground(new Color(46, 46, 46));
+				panel.add(logo);
+				panel.repaint();
+				logo.repaint();
 				issues.getContentPane().add(panel);
 
+				Panel panel_1 = new Panel();
+				panel_1.setBackground(new Color(25, 25, 25));
+				panel_1.setBounds(0, 70, width, 6);
+				issues.getContentPane().add(panel_1);
+
+				issues.getContentPane().repaint();
 				JButton btnAdd = new JButton("Add");
 				btnAdd.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
@@ -3293,7 +3299,7 @@ public class Main {
 						 */
 					}
 				});
-				btnAdd.setBounds(width - 150, 112, 117, 25);
+				btnAdd.setBounds(width - 150, 139, 117, 25);
 				issues.getContentPane().add(btnAdd);
 				buttonColumn.setMnemonic(KeyEvent.VK_D);
 				buttonColumn2.setMnemonic(KeyEvent.VK_D);
@@ -5225,7 +5231,7 @@ public class Main {
 									// System.out.println("countdown:
 									// "+issue_countdown_storage.get((long)
 									// current_issue.getId()));
-									if (issue_countdown_storage.get((long) -1) == true) {
+									if (issue_countdown_storage.containsKey((long) -1) && issue_countdown_storage.get((long) -1) == true) {
 										progressBar.setValue(100);
 										progressBar.repaint();
 										break;
@@ -5236,7 +5242,7 @@ public class Main {
 											// "+issue_countdown_storage.get((long)
 											// current_issue.getId()));
 
-											if (issue_countdown_storage.get((long) -1) == true) {
+											if (issue_countdown_storage.containsKey((long) -1) && issue_countdown_storage.get((long) -1) == true) {
 												progressBar.setValue(100);
 												progressBar.repaint();
 											} else {
@@ -5875,7 +5881,7 @@ public class Main {
 											// "+issue_countdown_storage.get((long)
 											// current_issue.getId()));
 
-											if (issue_countdown_storage.get((long) current_issue.getId())) {
+											if (issue_countdown_storage.containsKey((long) current_issue.getId()) && issue_countdown_storage.get((long) current_issue.getId())) {
 												progressBar.setValue(100);
 												progressBar.repaint();
 												break;
@@ -5885,7 +5891,7 @@ public class Main {
 													// System.out.println("countdown:
 													// "+issue_countdown_storage.get((long)
 													// current_issue.getId()));
-													if (issue_countdown_storage.get((long) current_issue.getId())) {
+													if (issue_countdown_storage.containsKey((long) current_issue.getId()) && issue_countdown_storage.get((long) current_issue.getId())) {
 														progressBar.setValue(100);
 													} else {
 														progressBar.setValue(percent == 0 ? 0
@@ -5909,7 +5915,7 @@ public class Main {
 								Future<?> f = exec.submit(new Runnable() {
 									public void run() {
 										try {
-											update_issue_intersect(current_issue, encoding);
+											update_issue_intersect(current_issue, encoding, false);
 
 										} catch (IllegalStateException | IOException e1) {
 
@@ -5951,7 +5957,7 @@ public class Main {
 											// "+issue_countdown_storage.get((long)
 											// current_issue.getId()));
 
-											if (issue_countdown_storage.get((long) current_issue.getId()) == true) {
+											if (issue_countdown_storage.containsKey((long) current_issue.getId()) && issue_countdown_storage.get((long) current_issue.getId()) == true) {
 												progressBar.setValue(100);
 												progressBar.repaint();
 												break;
@@ -5962,7 +5968,7 @@ public class Main {
 													// "+issue_countdown_storage.get((long)
 													// current_issue.getId()));
 
-													if (issue_countdown_storage
+													if (issue_countdown_storage.containsKey((long) current_issue.getId()) && issue_countdown_storage
 															.get((long) current_issue.getId()) == true) {
 														progressBar.setValue(100);
 														progressBar.repaint();
@@ -6029,7 +6035,7 @@ public class Main {
 										// "+issue_countdown_storage.get((long)
 										// current_issue.getId()));
 
-										if (issue_countdown_storage.get((long) current_issue.getId()) == true) {
+										if (issue_countdown_storage.containsKey((long) current_issue.getId()) && issue_countdown_storage.get((long) current_issue.getId()) == true) {
 											progressBar.setValue(100);
 											progressBar.repaint();
 											break;
@@ -6040,7 +6046,7 @@ public class Main {
 												// "+issue_countdown_storage.get((long)
 												// current_issue.getId()));
 
-												if (issue_countdown_storage.get((long) current_issue.getId()) == true) {
+												if (issue_countdown_storage.containsKey((long) current_issue.getId()) &&issue_countdown_storage.get((long) current_issue.getId()) == true) {
 													progressBar.setValue(100);
 													progressBar.repaint();
 												} else {
@@ -10486,18 +10492,20 @@ public class Main {
 	}
 
 	@SuppressWarnings({ "resource", "unchecked" })
-	public static void update_issue_intersect(Issue issue, String credentials)
+	public static void update_issue_intersect(Issue issue, String credentials, boolean not_created)
 			throws IllegalStateException, IOException {
 
+		System.out.println("update instersect");
 		boolean status = status_online();
+		System.out.println(status);
 		if (!status) {
 			return;
 		}
-		if (!issue.shouldBeSynced()) {
+		if (!not_created && !issue.shouldBeSynced()) {
 			issue_countdown_storage.put((long) issue.getId(), true);
 			return;
 		}
-		if (issue.shouldBeSynced() && issue.isDeleted()) {
+		if (!not_created && issue.shouldBeSynced() && issue.isDeleted()) {
 			delete_issue((long) issue.getId());
 			issue_countdown_storage.put((long) issue.getId(), true);
 			return;
@@ -10521,6 +10529,7 @@ public class Main {
 			InputStream is = response.getEntity().getContent();
 			is.close();
 
+			System.out.println(issue_created);
 			if (issue_created) {
 				HttpPut httpPut = new HttpPut(String.format("%s/issues/%s/", base_url, issue.getId()));
 				httpPut.setEntity(new StringEntity(obj.toJSONString()));
@@ -10535,6 +10544,7 @@ public class Main {
 				is.close();
 
 			} else {
+				System.out.println("Creating issue");
 				HttpPost createIssue = new HttpPost(String.format("%s/issues/", base_url));
 				createIssue.setEntity(new StringEntity(obj.toJSONString()));
 				createIssue.addHeader("Authorization", "Basic " + credentials);
@@ -10542,7 +10552,10 @@ public class Main {
 				createIssue.addHeader("Content-type", "application/json");
 
 				response = httpClient.execute(createIssue);
-
+				int resp_status = response.getStatusLine().getStatusCode();
+				System.out.println(resp_status);
+				System.out.println(obj.toJSONString());
+				System.out.println(response.getEntity().getContent());
 				is = response.getEntity().getContent();
 				is.close();
 
@@ -11119,7 +11132,7 @@ public class Main {
 			exc.printStackTrace();
 		}
 		if (!issue_created) {
-			update_issue_intersect(issue, credentials);
+			update_issue_intersect(issue, credentials, true);
 		}
 		if (issue.isDeleted()) {
 			delete_issue((long) issue.getId());
@@ -11534,7 +11547,9 @@ public class Main {
 				exc.printStackTrace();
 			}
 			if (!issue_created) {
-				update_issue_intersect(issue, credentials);
+				System.out.println("Issue not created");
+				update_issue_intersect(issue, credentials, true);
+				return;
 			}
 
 			System.out.println(response.toString());
