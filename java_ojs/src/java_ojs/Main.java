@@ -1788,7 +1788,7 @@ public class Main {
 		if (logged_in) {
 			if (settings == null || !settings.isVisible()) {
 				int width_small = (int) (width - (width * (37.5 / 100)));
-				int height_small = (int) (height - (height * (5 / 100)));
+				int height_small = (int) ((height-20) - ((height-20) * (5 / 100)));
 				settings = new JFrame();
 				settings.setResizable(false);
 				settings.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -1801,41 +1801,19 @@ public class Main {
 						// database_save();
 					}
 				});
-				settings.setSize(width_small, height_small);// 400 width and 500
+				settings.setSize(width_small, height_small-80);// 400 width and 500
 															// height
 				settings.getContentPane().setLayout(null);
-				JLabel lblNewLabel = new JLabel("TORU");
-				lblNewLabel.setForeground(new Color(255, 250, 250));
-				lblNewLabel.setBackground(new Color(230, 230, 250));
-				lblNewLabel.setFont(new Font("Trattatello", Font.BOLD, 24));
-				lblNewLabel.setToolTipText("Welcome\n");
-
-				lblNewLabel.setBounds((width_small / 2) - 34, 15, 95, 25);
-				settings.getContentPane().add(lblNewLabel);
-				JPanel title_background = new JPanel();
-				title_background.setBackground(new Color(0, 0, 0));
-				title_background.setBounds(-17, 0, width_small + 33, 54);
-				settings.getContentPane().add(title_background);
-				final JButton btnSync1 = new JButton("Sync");
-				btnSync1.setBounds(width_small - 155, 68, 70, 25);
-				settings.getContentPane().add(btnSync1);
+			
+				
 				final JButton btnBasic = new JButton("Basic");
-				btnBasic.setBounds(width_small / 2 + 20, 185, 100, 25);
+				btnBasic.setBounds(35, 115, 100, 25);
 				settings.getContentPane().add(btnBasic);
 				final JButton btnAdvanced = new JButton("Advanced");
 
 				settings.getContentPane().add(btnAdvanced);
-
-				JLabel lblSettings = new JLabel("Settings");
-				lblSettings.setBackground(new Color(128, 0, 128));
-				lblSettings.setOpaque(true);
-				lblSettings.setForeground(new Color(255, 255, 255));
-				lblSettings.setFont(new Font("URW Gothic L", Font.BOLD, 24));
-				lblSettings.setHorizontalAlignment(SwingConstants.CENTER);
-				lblSettings.setBounds((width_small / 2) - 83, 128, 160, 30);
-				settings.getContentPane().add(lblSettings);
 				JScrollPane scrollSettings = new JScrollPane();
-				scrollSettings.setBounds(40, 180, width_small - 80, height_small - 300);
+				scrollSettings.setBounds(40, 155, width_small - 80, height_small - 280);
 
 				JPanel panelSettings = new JPanel();
 
@@ -1847,11 +1825,11 @@ public class Main {
 				JScrollPane scrollFrame = new JScrollPane(panelSettings);
 				panelSettings.setAutoscrolls(true);
 				scrollFrame.setPreferredSize(new Dimension(320, 200));
-				scrollFrame.setBounds(40, 220, width_small - 80, height_small - 350);
+				scrollFrame.setBounds(40, 150, width_small - 80, height_small - 350);
 				// scrollSettings.setViewportView(scrollFrame);
 				settings.getContentPane().add(scrollFrame);
 				ArrayList<JCheckBox> checkboxes = new ArrayList<JCheckBox>();
-				btnAdvanced.setBounds(width_small / 2 + 120, 185, 100, 25);
+				btnAdvanced.setBounds(135, 115, 100, 25);
 				btnAdvanced.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent arg0) {
 
@@ -2018,42 +1996,58 @@ public class Main {
 					}
 				});
 				y = y + 10;
-				btnSave.setBounds((width_small / 2) - 60, height_small - 100, 100, 25);
+				btnSave.setBounds((width_small / 2) - 85, height_small - 165, 180, 30);
 				settings.getContentPane().add(btnSave);
-				final Label internetCheck = new Label("  ONLINE");
+				final Label btnSync1 = new Label("Status");
+				btnSync1.setBounds(width_small - 135, 89, 45, 25);
+				btnSync1.setFont(new Font("Dialog", Font.TRUETYPE_FONT, 14));
+				btnSync1.setForeground(Color.white);
+				settings.getContentPane().add(btnSync1);
+				
+				final Label internetCheck = new Label("ONLINE");
 				internetCheck.setFont(new Font(Font.SANS_SERIF, Font.TRUETYPE_FONT | Font.ITALIC, 12));
 				internetCheck.setBackground(Color.GREEN);
-				internetCheck.setAlignment(1);
 				internetCheck.setForeground(new Color(255, 255, 255));
-				internetCheck.setBounds(width_small - 85, 70, 65, 22);
+				internetCheck.setAlignment(1);
+				internetCheck.setBounds(width_small - 85, 90, 65, 22);
 				settings.getContentPane().add(internetCheck);
 
-				Panel panel = new Panel();
-				panel.setBackground(new Color(128, 0, 128));
-				panel.setBounds(0, 120, width_small, 40);
+		
+				JLabel lblIssue = new JLabel("Settings");
+				lblIssue.setBackground(new Color(46, 46, 46));
+				lblIssue.setForeground(new Color(255, 255, 255));
+				lblIssue.setFont(new Font("Dialog", Font.TRUETYPE_FONT, 26));
+				lblIssue.setBounds(width_small - 120, 26, 280, 40);
+				lblIssue.setOpaque(true);
+				settings.getContentPane().add(lblIssue);
+
+				JPanel panel = new JPanel();
+				panel.setBackground(new Color(46, 46, 46));
+				panel.setLayout(null);
+				panel.setBounds(0, 0, width, 70);
+				ImageIcon icon = new ImageIcon(String.format("%s/required_files/%s", directory, "toru-ui-logo.png"));
+				JLabel logo = new JLabel(icon);
+				logo.setBounds(10, 20, 140, 40);
+				logo.setBackground(new Color(46, 46, 46));
+				panel.add(logo);
+				panel.repaint();
+				logo.repaint();
 				settings.getContentPane().add(panel);
 
 				Panel panel_1 = new Panel();
-				panel_1.setBackground(new Color(102, 0, 102));
-				panel_1.setBounds(0, 160, width_small, 5);
+				panel_1.setBackground(new Color(25, 25, 25));
+				panel_1.setBounds(0, 70, width, 6);
 				settings.getContentPane().add(panel_1);
-
-				Panel panel_2 = new Panel();
-				panel_2.setBackground(new Color(204, 51, 51));
-				panel_2.setBounds(0, 54, width_small, 5);
-				settings.getContentPane().add(panel_2);
 
 				ActionListener taskPerformer1 = new ActionListener() {
 					public void actionPerformed(ActionEvent evt) {
 						if (status_online()) {
 							internetCheck.setBackground(Color.GREEN);
 							internetCheck.setText("ONLINE");
-							btnSync1.setEnabled(true);
 
 						} else {
 							internetCheck.setBackground(Color.RED);
 							internetCheck.setText("OFFLINE");
-							btnSync1.setEnabled(false);
 						}
 					}
 				};
