@@ -1540,7 +1540,7 @@ public class Main {
 				} else {
 					width_small = (int) (640 - (640 * (37.5 / 100)));
 				}
-				height_small = (int) (480 - (480 * (5 / 100)));
+				height_small = (int) (380 - (380 * (5 / 100)));
 
 				login = new JFrame();
 				login.setResizable(false);
@@ -1563,34 +1563,22 @@ public class Main {
 															// height
 				login.getContentPane().setLayout(null);// using no layout
 														// managers
-				JLabel lblNewLabel = new JLabel("TORU");
-
-				lblNewLabel.setForeground(new Color(255, 250, 250));
-				lblNewLabel.setBackground(new Color(230, 230, 250));
-				lblNewLabel.setFont(new Font("Trattatello", Font.BOLD, 24));
-				lblNewLabel.setToolTipText("Welcome\n");
-				lblNewLabel.setBounds((width_small / 2) - 34, 15, 95, 25);
-				login.getContentPane().add(lblNewLabel);
 				username = new JTextField();
-				username.setBounds(80, 220, width_small - 161, 26);
+				username.setBounds(80, 160, width_small - 161, 26);
 				login.getContentPane().add(username);
 				username.setColumns(4);
 				JLabel lblUsername = new JLabel("Username");
 				lblUsername.setForeground(new Color(255, 255, 255));
 				lblUsername.setHorizontalAlignment(SwingConstants.CENTER);
-				lblUsername.setBounds(80, 200, width_small - 161, 16);
+				lblUsername.setBounds(80, 140, width_small - 161, 16);
 				login.getContentPane().add(lblUsername);
-				JPanel title_background = new JPanel();
-				title_background.setBackground(new Color(0, 0, 0));
-				title_background.setBounds(-17, 0, width - 67, 54);
-				login.getContentPane().add(title_background);
 				JLabel lblPassword = new JLabel("Password");
 				lblPassword.setHorizontalAlignment(SwingConstants.CENTER);
 				lblPassword.setForeground(new Color(255, 255, 255));
-				lblPassword.setBounds(80, 260, width_small - 161, 16);
+				lblPassword.setBounds(80, 200, width_small - 161, 16);
 				login.getContentPane().add(lblPassword);
 				passwordField = new JPasswordField();
-				passwordField.setBounds(80, 280, width_small - 161, 26);
+				passwordField.setBounds(80, 220, width_small - 161, 26);
 				login.getContentPane().add(passwordField);
 				JButton btnLogin = new JButton("Login");
 				Action actionSubmit = new AbstractAction() {
@@ -1720,44 +1708,60 @@ public class Main {
 					}
 				});
 
-				btnLogin.setBounds(width_small / 3, 340, width_small / 3, 29);
+				btnLogin.setBounds(width_small / 3, 280, width_small / 3, 29);
 				login.getContentPane().add(btnLogin);
 
-				final JButton btnSync1 = new JButton("Sync");
-				btnSync1.setBounds(width_small - 155, 68, 70, 25);
+				final Label btnSync1 = new Label("Status");
+				btnSync1.setBounds(width_small - 135, 89, 45, 25);
+				btnSync1.setFont(new Font("Dialog", Font.TRUETYPE_FONT, 14));
+				btnSync1.setForeground(Color.white);
 				login.getContentPane().add(btnSync1);
-
-				JLabel lblLogIn = new JLabel("Log in");
-				lblLogIn.setForeground(new Color(255, 255, 255));
-				lblLogIn.setFont(new Font("URW Gothic L", Font.BOLD, 24));
-				lblLogIn.setHorizontalAlignment(SwingConstants.CENTER);
-				lblLogIn.setBounds((width_small / 2) - 40, 150, 80, 30);
-				login.getContentPane().add(lblLogIn);
-
-				final Label internetCheck = new Label("   ONLINE");
+				
+				final Label internetCheck = new Label("ONLINE");
 				internetCheck.setFont(new Font(Font.SANS_SERIF, Font.TRUETYPE_FONT | Font.ITALIC, 12));
 				internetCheck.setBackground(Color.GREEN);
 				internetCheck.setForeground(new Color(255, 255, 255));
 				internetCheck.setAlignment(1);
-				internetCheck.setBounds(width_small - 85, 70, 65, 22);
+				internetCheck.setBounds(width_small - 85, 90, 65, 22);
 				login.getContentPane().add(internetCheck);
 
-				Panel panel = new Panel();
-				panel.setBackground(new Color(204, 51, 51));
-				panel.setBounds(0, 54, width_small, 5);
+				JLabel lblIssue = new JLabel("Login");
+				lblIssue.setBackground(new Color(46, 46, 46));
+				lblIssue.setForeground(new Color(255, 255, 255));
+				lblIssue.setFont(new Font("Dialog", Font.TRUETYPE_FONT, 26));
+				lblIssue.setBounds(width_small - 120, 26, 280, 40);
+				lblIssue.setOpaque(true);
+				login.getContentPane().add(lblIssue);
+
+				JPanel panel = new JPanel();
+				panel.setBackground(new Color(46, 46, 46));
+				panel.setLayout(null);
+				panel.setBounds(0, 0, width, 70);
+				ImageIcon icon = new ImageIcon(String.format("%s/required_files/%s", directory, "toru-ui-logo.png"));
+				JLabel logo = new JLabel(icon);
+				logo.setBounds(10, 20, 140, 40);
+				logo.setBackground(new Color(46, 46, 46));
+				panel.add(logo);
+				panel.repaint();
+				logo.repaint();
 				login.getContentPane().add(panel);
+
+				Panel panel_1 = new Panel();
+				panel_1.setBackground(new Color(25, 25, 25));
+				panel_1.setBounds(0, 70, width, 6);
+				login.getContentPane().add(panel_1);
+
 
 				ActionListener taskPerformer1 = new ActionListener() {
 					public void actionPerformed(ActionEvent evt) {
 						if (status_online()) {
 							internetCheck.setBackground(Color.GREEN);
 							internetCheck.setText("ONLINE");
-							btnSync1.setEnabled(true);
+							
 
 						} else {
 							internetCheck.setBackground(Color.RED);
 							internetCheck.setText("OFFLINE");
-							btnSync1.setEnabled(false);
 						}
 					}
 				};
@@ -2074,7 +2078,7 @@ public class Main {
 						width_small = (int) (640 - (640 * (37.5 / 100)));
 					}
 
-					height_small = (int) (480 - (480 * (5 / 100)));
+					height_small = (int) (360 - (360 * (5 / 100)));
 					api = new JFrame();
 					api.setResizable(false);
 					api.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -2091,29 +2095,15 @@ public class Main {
 															// height
 					api.getContentPane().setLayout(null);// using no layout
 															// managers
-					JLabel lblNewLabel = new JLabel("TORU");
-					lblNewLabel.setForeground(new Color(255, 250, 250));
-					lblNewLabel.setBackground(new Color(230, 230, 250));
-					lblNewLabel.setFont(new Font("Trattatello", Font.BOLD, 24));
-					lblNewLabel.setToolTipText("Welcome\n");
-
-					lblNewLabel.setBounds((width_small / 2) - 34, 15, 95, 25);
-					api.getContentPane().add(lblNewLabel);
-
-					JPanel title_background = new JPanel();
-					title_background.setBackground(new Color(0, 0, 0));
-					title_background.setBounds(-17, 0, width_small + 33, 54);
-					api.getContentPane().add(title_background);
-
 					JPasswordField access_key = new JPasswordField();
 					access_key.setColumns(4);
 					access_key.setText("");
-					access_key.setBounds(100, 270, width_small - 200, 26);
+					access_key.setBounds(100, 170, width_small - 200, 26);
 					api.getContentPane().add(access_key);
 					JLabel lblAccessKey = new JLabel("Enter access key:");
 					lblAccessKey.setHorizontalAlignment(SwingConstants.CENTER);
 					lblAccessKey.setForeground(new Color(255, 255, 255));
-					lblAccessKey.setBounds(80, 250, width_small - 161, 16);
+					lblAccessKey.setBounds(80, 150, width_small - 161, 16);
 					api.getContentPane().add(lblAccessKey);
 
 					JButton btnSubmit = new JButton("Enter");
@@ -2167,68 +2157,73 @@ public class Main {
 						}
 					});
 					if (height_small - 150 > 300) {
-						btnSubmit.setBounds(((width_small / 3) * 2) / 2, height_small - 165, width_small / 3, 29);
+						btnSubmit.setBounds(((width_small / 3) * 2) / 2, height_small - 235, width_small / 3, 29);
 						btnReset.setBounds(((width_small / 3) * 2) / 2 + (width_small / 3 - width_small / 5) / 2,
-								height_small - 121, width_small / 5, 29);
+								height_small - 206, width_small / 5, 29);
 					} else {
-						btnSubmit.setBounds(((width_small / 3) * 2) / 2, 280, width_small / 3, 29);
-						btnReset.setBounds(((width_small / 3) * 2) / 2 + (width_small / 3 - width_small / 5) / 2, 340,
+						btnSubmit.setBounds(((width_small / 3) * 2) / 2, 210, width_small / 3, 29);
+						btnReset.setBounds(((width_small / 3) * 2) / 2 + (width_small / 3 - width_small / 5) / 2, 255,
 								width_small / 5, 29);
 					}
 
 					api.getContentPane().add(btnSubmit);
 					api.getContentPane().add(btnReset);
 
-					final JButton btnSync1 = new JButton("Sync");
-					btnSync1.setBounds(width_small - 150, 68, 70, 24);
+					final Label btnSync1 = new Label("Status");
+					btnSync1.setBounds(width_small - 135, 89, 45, 25);
+					btnSync1.setFont(new Font("Dialog", Font.TRUETYPE_FONT, 14));
+					btnSync1.setForeground(Color.white);
 					api.getContentPane().add(btnSync1);
-
-					JLabel lblApiInformation = new JLabel("API Information");
-					lblApiInformation.setBackground(new Color(51, 102, 204));
-					lblApiInformation.setHorizontalAlignment(SwingConstants.CENTER);
-					lblApiInformation.setForeground(new Color(255, 255, 255));
-					lblApiInformation.setFont(new Font(Font.SANS_SERIF, Font.TRUETYPE_FONT, 20));
-					lblApiInformation.setBounds((width_small / 2) - 145, 108, 309, 40);
-					lblApiInformation.setOpaque(true);
-					api.getContentPane().add(lblApiInformation);
-					final Label internetCheck = new Label("  ONLINE");
+					
+					final Label internetCheck = new Label("ONLINE");
 					internetCheck.setFont(new Font(Font.SANS_SERIF, Font.TRUETYPE_FONT | Font.ITALIC, 12));
 					internetCheck.setBackground(Color.GREEN);
-					internetCheck.setBounds(width_small - 80, 70, 65, 22);
 					internetCheck.setForeground(new Color(255, 255, 255));
 					internetCheck.setAlignment(1);
+					internetCheck.setBounds(width_small - 85, 90, 65, 22);
 					api.getContentPane().add(internetCheck);
 
-					Panel panel = new Panel();
-					panel.setBackground(new Color(204, 51, 51));
-					panel.setBounds(0, 54, width_small, 5);
+					JLabel lblIssue = new JLabel("API Information");
+					lblIssue.setBackground(new Color(46, 46, 46));
+					lblIssue.setForeground(new Color(255, 255, 255));
+					lblIssue.setFont(new Font("Dialog", Font.TRUETYPE_FONT, 26));
+					lblIssue.setBounds(width_small - 260, 26, 280, 40);
+					lblIssue.setOpaque(true);
+					api.getContentPane().add(lblIssue);
+
+					JPanel panel = new JPanel();
+					panel.setBackground(new Color(46, 46, 46));
+					panel.setLayout(null);
+					panel.setBounds(0, 0, width, 70);
+					ImageIcon icon = new ImageIcon(String.format("%s/required_files/%s", directory, "toru-ui-logo.png"));
+					JLabel logo = new JLabel(icon);
+					logo.setBounds(10, 20, 140, 40);
+					logo.setBackground(new Color(46, 46, 46));
+					panel.add(logo);
+					panel.repaint();
+					logo.repaint();
 					api.getContentPane().add(panel);
+
+					Panel panel_1 = new Panel();
+					panel_1.setBackground(new Color(25, 25, 25));
+					panel_1.setBounds(0, 70, width, 6);
+					api.getContentPane().add(panel_1);
 
 					ActionListener taskPerformer1 = new ActionListener() {
 						public void actionPerformed(ActionEvent evt) {
 							if (status_online()) {
 								internetCheck.setBackground(Color.GREEN);
 								internetCheck.setText("ONLINE");
-								btnSync1.setEnabled(true);
-
+						
 							} else {
 								internetCheck.setBackground(Color.RED);
 								internetCheck.setText("OFFLINE");
-								btnSync1.setEnabled(false);
 							}
 						}
 					};
 					new Timer(delay, taskPerformer1).start();
 					api.setVisible(true);// making the frame visible
 
-					Panel panel_2 = new Panel();
-					panel_2.setBackground(new Color(51, 51, 204));
-					panel_2.setBounds(0, 150, width_small, 5);
-					api.getContentPane().add(panel_2);
-					Panel panel_1 = new Panel();
-					panel_1.setBackground(new Color(51, 102, 204));
-					panel_1.setBounds(0, 105, width_small, 45);
-					api.getContentPane().add(panel_1);
 				}
 
 			}
@@ -2243,7 +2238,7 @@ public class Main {
 						width_small = (int) (640 - (640 * (37.5 / 100)));
 					}
 
-					height_small = (int) (480 - (480 * (5 / 100)));
+					height_small = (int) (360 - (360 * (5 / 100)));
 					api = new JFrame();
 					api.setResizable(false);
 					api.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -2262,29 +2257,15 @@ public class Main {
 					api.getContentPane().setLayout(null);// using no layout
 															// managers
 
-					JLabel lblNewLabel = new JLabel("TORU");
-					lblNewLabel.setForeground(new Color(255, 250, 250));
-					lblNewLabel.setBackground(new Color(230, 230, 250));
-					lblNewLabel.setFont(new Font("Trattatello", Font.BOLD, 24));
-					lblNewLabel.setToolTipText("Welcome\n");
-
-					lblNewLabel.setBounds((width_small / 2) - 34, 15, 95, 25);
-					api.getContentPane().add(lblNewLabel);
-
-					JPanel title_background = new JPanel();
-					title_background.setBackground(new Color(0, 0, 0));
-					title_background.setBounds(-17, 0, width_small + 33, 54);
-					api.getContentPane().add(title_background);
-
 					access_key = new JTextField();
 					access_key.setColumns(4);
 					access_key.setText("");
-					access_key.setBounds(100, 270, width_small - 200, 26);
+					access_key.setBounds(100, 170, width_small - 200, 26);
 					api.getContentPane().add(access_key);
 					JLabel lblAccessKey = new JLabel("Enter access key for future offline and online access:");
 					lblAccessKey.setHorizontalAlignment(SwingConstants.CENTER);
 					lblAccessKey.setForeground(new Color(255, 255, 255));
-					lblAccessKey.setBounds(80, 250, width_small - 161, 16);
+					lblAccessKey.setBounds(80, 150, width_small - 161, 16);
 					api.getContentPane().add(lblAccessKey);
 
 					JButton btnSubmit = new JButton("Submit");
@@ -2328,49 +2309,64 @@ public class Main {
 						}
 					});
 					if (height_small - 150 > 300) {
-						btnSubmit.setBounds(((width_small / 3) * 2) / 2, height_small - 150, width_small / 3, 29);
+						btnSubmit.setBounds(((width_small / 3) * 2) / 2, height_small - 235, width_small / 3, 29);
 					} else {
-						btnSubmit.setBounds(((width_small / 3) * 2) / 2, 310, width_small / 3, 29);
+						btnSubmit.setBounds(((width_small / 3) * 2) / 2, 220, width_small / 3, 29);
 					}
 
 					api.getContentPane().add(btnSubmit);
 
-					final JButton btnSync1 = new JButton("Sync");
-					btnSync1.setBounds(width_small - 150, 68, 70, 24);
+					final Label btnSync1 = new Label("Status");
+					btnSync1.setBounds(width_small - 135, 89, 45, 25);
+					btnSync1.setFont(new Font("Dialog", Font.TRUETYPE_FONT, 14));
+					btnSync1.setForeground(Color.white);
 					api.getContentPane().add(btnSync1);
-
-					JLabel lblApiInformation = new JLabel("API Information");
-					lblApiInformation.setBackground(new Color(51, 102, 204));
-					lblApiInformation.setHorizontalAlignment(SwingConstants.CENTER);
-					lblApiInformation.setForeground(new Color(255, 255, 255));
-					lblApiInformation.setFont(new Font(Font.SANS_SERIF, Font.TRUETYPE_FONT, 20));
-					lblApiInformation.setBounds((width_small / 2) - 145, 108, 309, 40);
-					lblApiInformation.setOpaque(true);
-					api.getContentPane().add(lblApiInformation);
-					final Label internetCheck = new Label("  ONLINE");
+					
+					final Label internetCheck = new Label("ONLINE");
 					internetCheck.setFont(new Font(Font.SANS_SERIF, Font.TRUETYPE_FONT | Font.ITALIC, 12));
 					internetCheck.setBackground(Color.GREEN);
-					internetCheck.setBounds(width_small - 80, 70, 65, 22);
 					internetCheck.setForeground(new Color(255, 255, 255));
 					internetCheck.setAlignment(1);
+					internetCheck.setBounds(width_small - 85, 90, 65, 22);
 					api.getContentPane().add(internetCheck);
 
-					Panel panel = new Panel();
-					panel.setBackground(new Color(204, 51, 51));
-					panel.setBounds(0, 54, width_small, 5);
+
+					JLabel lblIssue = new JLabel("API");
+					lblIssue.setBackground(new Color(46, 46, 46));
+					lblIssue.setForeground(new Color(255, 255, 255));
+					lblIssue.setFont(new Font("Dialog", Font.TRUETYPE_FONT, 26));
+					lblIssue.setBounds(width_small - 120, 26, 280, 40);
+					lblIssue.setOpaque(true);
+					api.getContentPane().add(lblIssue);
+
+					JPanel panel = new JPanel();
+					panel.setBackground(new Color(46, 46, 46));
+					panel.setLayout(null);
+					panel.setBounds(0, 0, width, 70);
+					ImageIcon icon = new ImageIcon(String.format("%s/required_files/%s", directory, "toru-ui-logo.png"));
+					JLabel logo = new JLabel(icon);
+					logo.setBounds(10, 20, 140, 40);
+					logo.setBackground(new Color(46, 46, 46));
+					panel.add(logo);
+					panel.repaint();
+					logo.repaint();
 					api.getContentPane().add(panel);
+
+					Panel panel_1 = new Panel();
+					panel_1.setBackground(new Color(25, 25, 25));
+					panel_1.setBounds(0, 70, width, 6);
+					api.getContentPane().add(panel_1);
+
 
 					ActionListener taskPerformer1 = new ActionListener() {
 						public void actionPerformed(ActionEvent evt) {
 							if (status_online()) {
 								internetCheck.setBackground(Color.GREEN);
 								internetCheck.setText("ONLINE");
-								btnSync1.setEnabled(true);
 
 							} else {
 								internetCheck.setBackground(Color.RED);
 								internetCheck.setText("OFFLINE");
-								btnSync1.setEnabled(false);
 							}
 						}
 					};
@@ -2380,14 +2376,6 @@ public class Main {
 											// frame
 											// visible
 
-					Panel panel_2 = new Panel();
-					panel_2.setBackground(new Color(51, 51, 204));
-					panel_2.setBounds(0, 150, width_small, 5);
-					api.getContentPane().add(panel_2);
-					Panel panel_1 = new Panel();
-					panel_1.setBackground(new Color(51, 102, 204));
-					panel_1.setBounds(0, 105, width_small, 45);
-					api.getContentPane().add(panel_1);
 
 				}
 			}
