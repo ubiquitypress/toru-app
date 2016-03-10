@@ -567,17 +567,6 @@ public class Main {
 		System.out.println("Done.");
 		JOptionPane.showMessageDialog(null, "Successfully updated local database", "Save to Database",
 				JOptionPane.INFORMATION_MESSAGE);
-		if (status_online()) {
-			try {
-				latest_ids();
-			} catch (IllegalStateException e) {
-
-				e.printStackTrace();
-			} catch (IOException e) {
-
-				e.printStackTrace();
-			}
-		}
 
 	}
 
@@ -11369,6 +11358,9 @@ public class Main {
 								JSONArray all_settings = (JSONArray) setting.get("settings");
 
 								Article new_article = JSONToArticle_single_request((JSONObject) setting.get("article"));
+								if (((long) articles_id) < ((long) new_article.getId())) {
+									articles_id = new_article.getId();
+								}
 								System.out.println(all_settings.toJSONString());
 								String funding = null;
 								String ci = null;
@@ -11651,6 +11643,11 @@ public class Main {
 
 							Article new_article = JSONToArticle_single_request((JSONObject) setting.get("article"),
 									issue);
+							
+							if (((long) articles_id) < ((long) new_article.getId())) {
+								articles_id = new_article.getId();
+							}
+
 							System.out.println(all_settings.toJSONString());
 							String funding = null;
 							String ci = null;
@@ -11758,6 +11755,9 @@ public class Main {
 
 							Article new_article = JSONToArticle_single_request((JSONObject) setting.get("article"),
 									issue);
+							if (((long) articles_id) < ((long) new_article.getId())) {
+								articles_id = new_article.getId();
+							}
 							System.out.println(all_settings.toJSONString());
 							String funding = null;
 							String ci = null;
@@ -12239,6 +12239,11 @@ public class Main {
 					Issue new_issue = new Issue(issue_id);
 
 					new_issue = JSONToIssue(issue_json, new_issue);
+					
+					if (((long) i_id) < ((long) new_issue.getId())) {
+						i_id = new_issue.getId();
+					}
+					
 					String journal_link = (String) issue_json.get("journal");
 					journal_link = journal_link.substring(0, journal_link.lastIndexOf("/"));
 					System.out.println(journal_link);
@@ -12388,14 +12393,16 @@ public class Main {
 					jsonParser = new JSONParser();
 					author_json = (JSONObject) jsonParser.parse(IOUtils.toString(result));
 
-					System.out.println(author_storage.containsKey(author_id));
-					System.out.println("---" + author_storage.containsKey((long) author_id));
-					long author_id = (long) author_json.get("id");
-					System.out.println("---" + author_id);
+					System.out.println(author_storage.containsKey(author_current_id));
+					System.out.println("---" + author_storage.containsKey((long) author_current_id));
+					long author_new_id = (long) author_json.get("id");
+					System.out.println("---" + author_new_id);
 
 					System.out.println("ELSE");
-					Author new_author = new Author(author_id);
-
+					Author new_author = new Author(author_new_id);
+					if (((long) author_id) < ((long) author_new_id)) {
+						author_id = author_new_id;
+					}
 					new_author = JSONToAuthor_single_request(author_json, new_author);
 
 					JSONArray all_settings = (JSONArray) author_json.get("settings");
@@ -12554,13 +12561,14 @@ public class Main {
 					jsonParser = new JSONParser();
 					author_json = (JSONObject) jsonParser.parse(IOUtils.toString(result));
 
-					System.out.println(author_storage.containsKey(author_id));
-					System.out.println("---" + author_storage.containsKey((long) author_id));
-					long author_id = (long) author_json.get("id");
-					System.out.println("---" + author_id);
+					long author_new_id = (long) author_json.get("id");
+					if (((long) author_id) < ((long) author_new_id)) {
+						author_id = author_new_id;
+					}
+					System.out.println("---" + author_new_id);
 
 					System.out.println("ELSE");
-					Author new_author = new Author(author_id);
+					Author new_author = new Author(author_new_id);
 
 					new_author = JSONToAuthor_single_request(author_json, new_author);
 
@@ -13754,6 +13762,9 @@ public class Main {
 				for (int i = 0; i < results.size(); i++) {
 					JSONObject section = (JSONObject) results.get(i);
 					Section new_section = JSONToSection(section);
+					if (((long) section_db_id) < ((long) new_section.getId())) {
+						section_db_id = new_section.getId();
+					}
 					System.out.println(new_section);
 					section_storage.put((long) new_section.getId(), new_section);
 				}
