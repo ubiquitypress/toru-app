@@ -5672,7 +5672,7 @@ public class Main {
 					articles.setSize(960, 640);
 				}
 				ConcurrentHashMap<Long, JFrame> issue_articles = new ConcurrentHashMap<Long, JFrame>();
-				articles.getContentPane().setBackground(new Color(170, 170, 170));
+				articles.getContentPane().setBackground(new Color(213, 213, 213));
 
 				articles.setLocationRelativeTo(null);
 				articles.setTitle("Issue <" + Long.toString(issue_id) + ">");
@@ -5767,7 +5767,7 @@ public class Main {
 				article_table.setAutoResizeMode(JTable.AUTO_RESIZE_SUBSEQUENT_COLUMNS);
 
 				final JButton btnSync = new JButton("Sync");
-				btnSync.setBounds(width - 155, 21, 70, 24);
+				btnSync.setBounds(width - 155, 89, 70, 24);
 				btnSync.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
 						System.out.println(current_issue.getArticles_list().isEmpty());
@@ -6340,12 +6340,12 @@ public class Main {
 				article_table.setBorder(new BevelBorder(BevelBorder.RAISED, null, null, null, null));
 				article_table.setCellSelectionEnabled(true);
 				article_table.setRowHeight(23);
-				final Label internetCheck = new Label("  ONLINE");
+				final Label internetCheck = new Label("ONLINE");
 				internetCheck.setFont(new Font(Font.SANS_SERIF, Font.TRUETYPE_FONT | Font.ITALIC, 12));
 				internetCheck.setBackground(Color.lightGray);
 				internetCheck.setAlignment(1);
 				internetCheck.setForeground(new Color(255, 255, 255));
-				internetCheck.setBounds(width - 85, 22, 65, 22);
+				internetCheck.setBounds(width - 85, 91, 65, 22);
 				articles.getContentPane().add(internetCheck);
 
 				ActionListener taskPerformer1 = new ActionListener() {
@@ -6451,27 +6451,11 @@ public class Main {
 				JLabel lblArticles = new JLabel("Articles");
 				lblArticles.setBackground(new Color(213, 213, 213));
 				lblArticles.setFont(new Font(Font.SANS_SERIF, Font.TRUETYPE_FONT, 26));
-				lblArticles.setForeground(new Color(255, 255, 255));
-				lblArticles.setBounds(25, height / 16 * 7 - 32, 180, 30);
+				lblArticles.setForeground(new Color(0,0,0));
+				lblArticles.setBounds(25, height / 16 * 7 - 36, 180, 30);
 				lblArticles.setOpaque(true);
 				articles.getContentPane().add(lblArticles);
 
-				JLabel lblIssue = new JLabel("Issue:");
-				lblIssue.setBackground(new Color(0, 139, 139));
-				lblIssue.setForeground(new Color(255, 255, 255));
-				lblIssue.setFont(new Font(Font.SANS_SERIF, Font.TRUETYPE_FONT, 28));
-				lblIssue.setBounds(40, 60, 94, 30);
-				lblIssue.setOpaque(true);
-				articles.getContentPane().add(lblIssue);
-
-				final JLabel lblIssueId = new JLabel("");
-				lblIssueId.setBackground(new Color(0, 139, 139));
-				lblIssueId.setForeground(new Color(255, 255, 255));
-				lblIssueId.setFont(new Font(Font.SANS_SERIF, Font.TRUETYPE_FONT, 28));
-				lblIssueId.setBounds(136, 60, 300, 30);
-				lblIssueId.setText(Long.toString(issue_id));
-				lblIssueId.setOpaque(true);
-				articles.getContentPane().add(lblIssueId);
 
 				JButton btnClose = new JButton("Close");
 				btnClose.addActionListener(new ActionListener() {
@@ -6488,7 +6472,7 @@ public class Main {
 						}
 					}
 				});
-				btnClose.setBounds(15, 20, 100, 29);
+				btnClose.setBounds(15, 90, 100, 29);
 				articles.getContentPane().add(btnClose);
 				buttonColumn.setMnemonic(KeyEvent.VK_D);
 				buttonColumn2.setMnemonic(KeyEvent.VK_D);
@@ -6501,31 +6485,39 @@ public class Main {
 						database_save();
 					}
 				});
-				btnSaveData.setBounds(26, height - 117, 70, 40);
+				btnSaveData.setBounds(46, height - 110, 70, 40);
 				articles.getContentPane().add(btnSaveData);
-				JLabel lblUpdateDb = new JLabel("Update");
-				lblUpdateDb.setForeground(Color.WHITE);
+				JLabel lblUpdateDb = new JLabel("Update Local Database");
+				lblUpdateDb.setForeground(Color.black);
 				lblUpdateDb.setHorizontalAlignment(SwingConstants.CENTER);
-				lblUpdateDb.setBounds(26, height - 132, 70, 15);
+				lblUpdateDb.setBounds(14, height - 125, 140, 15);
 				articles.getContentPane().add(lblUpdateDb);
-				Panel footer_border = new Panel();
-				footer_border.setBackground(new Color(0, 139, 139));
-				footer_border.setBounds(0, height - 74, width, 10);
-				articles.getContentPane().add(footer_border);
 
-				Panel footer = new Panel();
-				footer.setBackground(new Color(0, 128, 128));
-				footer.setBounds(0, height - 74, width, 120);
-				articles.getContentPane().add(footer);
 
-				Panel panel = new Panel();
-				panel.setBackground(new Color(0, 139, 139));
-				panel.setBounds(0, 55, width, 40);
+				JLabel lblIssue = new JLabel("Issue: "+issue_id);
+				lblIssue.setBackground(new Color(46, 46, 46));
+				lblIssue.setForeground(new Color(255, 255, 255));
+				lblIssue.setFont(new Font(Font.SANS_SERIF, Font.TRUETYPE_FONT, 26));
+				lblIssue.setBounds(width - 150, 26, 280, 40);
+				lblIssue.setOpaque(true);
+				articles.getContentPane().add(lblIssue);
+
+				JPanel panel = new JPanel();
+				panel.setBackground(new Color(46, 46, 46));
+				panel.setLayout(null);
+				panel.setBounds(0, 0, width, 70);
+				ImageIcon icon = new ImageIcon(String.format("%s/required_files/%s", directory, "toru-ui-logo.png"));
+				JLabel logo = new JLabel(icon);
+				logo.setBounds(10, 20, 140, 40);
+				logo.setBackground(new Color(46, 46, 46));
+				panel.add(logo);
+				panel.repaint();
+				logo.repaint();
 				articles.getContentPane().add(panel);
 
 				Panel panel_1 = new Panel();
-				panel_1.setBackground(new Color(47, 79, 79));
-				panel_1.setBounds(0, 95, width, 5);
+				panel_1.setBackground(new Color(25, 25, 25));
+				panel_1.setBounds(0, 70, width, 6);
 				articles.getContentPane().add(panel_1);
 				JButton btnAdd = new JButton("Add");
 				btnAdd.addActionListener(new ActionListener() {
@@ -6602,8 +6594,8 @@ public class Main {
 				JLabel lblIssueDetails = new JLabel("Details");
 				lblIssueDetails.setBackground(new Color(213, 213, 213));
 				lblIssueDetails.setFont(new Font(Font.SANS_SERIF, Font.TRUETYPE_FONT, 26));
-				lblIssueDetails.setForeground(new Color(255, 255, 255));
-				lblIssueDetails.setBounds((width - 95) / 2, 118, 125, 30);
+				lblIssueDetails.setForeground(new Color(0,0,0));
+				lblIssueDetails.setBounds((width - 70) / 2, 135, 125, 30);
 				lblIssueDetails.setOpaque(true);
 				articles.getContentPane().add(lblIssueDetails);
 				articles.setVisible(true);
