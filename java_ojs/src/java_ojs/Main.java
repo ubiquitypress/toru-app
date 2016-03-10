@@ -3324,6 +3324,7 @@ public class Main {
 			} else {
 				width_small = (int) (960 - (960 * (37.5 / 100)));
 			}
+			int move = 52;
 			height_small = (int) (680 - (680 * (5 / 100)));
 			final JFrame edit_issue = new JFrame();
 			edit_issue.setResizable(false);
@@ -3343,68 +3344,55 @@ public class Main {
 			edit_issue.getContentPane().setLayout(null);// using no layout
 														// managers
 
-			JLabel lblNewLabel = new JLabel("TORU");
-			lblNewLabel.setForeground(new Color(255, 250, 250));
-			lblNewLabel.setBackground(new Color(230, 230, 250));
-			lblNewLabel.setFont(new Font("Trattatello", Font.BOLD, 24));
-			lblNewLabel.setToolTipText("Welcome\n");
-
-			lblNewLabel.setBounds((width_small / 2) - 34, 15, 95, 25);
-			edit_issue.getContentPane().add(lblNewLabel);
 			final JTextField title = new JTextField();
-			title.setBounds(100, 218, 250, 26);
+			title.setBounds(100, 218 - move, 250, 26);
 			edit_issue.getContentPane().add(title);
 			title.setColumns(4);
 
 			JLabel lblTitleText = new JLabel("Title");
 			lblTitleText.setForeground(new Color(255, 255, 255));
 			lblTitleText.setHorizontalAlignment(SwingConstants.CENTER);
-			lblTitleText.setBounds(100, 200, 250, 16);
+			lblTitleText.setBounds(100, 200 - move, 250, 16);
 			edit_issue.getContentPane().add(lblTitleText);
-			JPanel title_background = new JPanel();
-			title_background.setBackground(new Color(0, 0, 0));
-			title_background.setBounds(-17, 0, width_small + 33, 54);
-			edit_issue.getContentPane().add(title_background);
-
 			SpinnerModel number_model = new SpinnerNumberModel(0, 0, 1000, 1);
 
 			SpinnerModel volume_model = new SpinnerNumberModel(0, 0, 1000, 1);
 			final JSpinner volume = new JSpinner(volume_model);
-			volume.setBounds(100, 270, 250, 26);
+			volume.setBounds(100, 270 - move, 250, 26);
 			edit_issue.getContentPane().add(volume);
 			JLabel lblvolume = new JLabel("Volume");
 			lblvolume.setHorizontalAlignment(SwingConstants.CENTER);
 			lblvolume.setForeground(new Color(255, 255, 255));
-			lblvolume.setBounds(100, 250, 250, 16);
+			lblvolume.setBounds(100, 250 - move, 250, 16);
 			edit_issue.getContentPane().add(lblvolume);
 
 			final JSpinner number = new JSpinner(number_model);
 			number.setAlignmentX(JSpinner.LEFT_ALIGNMENT);
-			number.setBounds(100, 317, 250, 26);
+			number.setBounds(100, 317 - move, 250, 26);
 			edit_issue.getContentPane().add(number);
 			JLabel lblnumber = new JLabel("Number");
 			lblnumber.setHorizontalAlignment(SwingConstants.CENTER);
 			lblnumber.setForeground(new Color(255, 255, 255));
-			lblnumber.setBounds(100, 300, 250, 16);
+			lblnumber.setBounds(100, 300 - move, 250, 16);
 			edit_issue.getContentPane().add(lblnumber);
 
 			Date currentYear = Calendar.getInstance().getTime();
 			SpinnerDateModel year_model = new SpinnerDateModel(currentYear, null, null, Calendar.YEAR);
 			final JSpinner year = new JSpinner(year_model);
 			year.setEditor(new JSpinner.DateEditor(year, "YYYY"));
-			year.setBounds(100, 364, 250, 26);
+			year.setBounds(100, 364 - move, 250, 26);
 			edit_issue.getContentPane().add(year);
 
 			JLabel lblyear = new JLabel("Year");
 			lblyear.setHorizontalAlignment(SwingConstants.CENTER);
 			lblyear.setForeground(new Color(255, 255, 255));
-			lblyear.setBounds(100, 347, 250, 16);
+			lblyear.setBounds(100, 347 - move, 250, 16);
 			edit_issue.getContentPane().add(lblyear);
 
 			JLabel lblDateAccepted = new JLabel("Date Submitted");
 			lblDateAccepted.setHorizontalAlignment(SwingConstants.CENTER);
 			lblDateAccepted.setForeground(new Color(255, 255, 255));
-			lblDateAccepted.setBounds(80, 394, width_small - 161, 16);
+			lblDateAccepted.setBounds(80, 394 - move, width_small - 161, 16);
 			edit_issue.getContentPane().add(lblDateAccepted);
 
 			final JXDatePicker datePicker = new JXDatePicker();
@@ -3416,13 +3404,13 @@ public class Main {
 				}
 			});
 			;
-			datePicker.setBounds(100, 410, width_small - 200, 30);
+			datePicker.setBounds(100, 410 - move, width_small - 200, 30);
 			// panel.add(label);
 			edit_issue.getContentPane().add(datePicker);
 			JLabel lblDatePublished = new JLabel("Date Published");
 			lblDatePublished.setHorizontalAlignment(SwingConstants.CENTER);
 			lblDatePublished.setForeground(new Color(255, 255, 255));
-			lblDatePublished.setBounds(80, 441, width_small - 161, 16);
+			lblDatePublished.setBounds(80, 441 - move, width_small - 161, 16);
 			edit_issue.getContentPane().add(lblDatePublished);
 
 			final JXDatePicker datePickerPublished = new JXDatePicker();
@@ -3434,81 +3422,81 @@ public class Main {
 				}
 			});
 			;
-			datePickerPublished.setBounds(100, 460, width_small - 200, 30);
+			datePickerPublished.setBounds(100, 460 - move, width_small - 200, 30);
 			// panel.add(label);
 			edit_issue.getContentPane().add(datePickerPublished);
 			JLabel lblShowDisplay = new JLabel("---- Display Values ----");
 			lblShowDisplay.setForeground(new Color(255, 255, 255));
 			lblShowDisplay.setHorizontalAlignment(SwingConstants.CENTER);
-			lblShowDisplay.setBounds(340, 170, 250, 16);
+			lblShowDisplay.setBounds(340, 170 - move, 250, 16);
 			edit_issue.getContentPane().add(lblShowDisplay);
 
 			final JCheckBox published_check = new JCheckBox("", true);
 
-			published_check.setBounds(425, height_small - 165, 100, 26);
+			published_check.setBounds(425, height_small - 165 - move, 100, 26);
 			edit_issue.getContentPane().add(published_check);
 			JLabel lblPublished = new JLabel("Published");
 			lblPublished.setForeground(new Color(255, 255, 255));
 			lblPublished.setHorizontalAlignment(SwingConstants.CENTER);
-			lblPublished.setBounds(340, height_small - 161, 100, 16);
+			lblPublished.setBounds(340, height_small - 161 - move, 100, 16);
 			edit_issue.getContentPane().add(lblPublished);
 
 			final JCheckBox current_check = new JCheckBox();
-			current_check.setBounds(425, height_small - 145, 100, 26);
+			current_check.setBounds(425, height_small - 145 - move, 100, 26);
 			edit_issue.getContentPane().add(current_check);
 			JLabel lblCurrent = new JLabel("Current");
 			lblCurrent.setForeground(new Color(255, 255, 255));
 			lblCurrent.setHorizontalAlignment(SwingConstants.CENTER);
-			lblCurrent.setBounds(340, height_small - 141, 100, 16);
+			lblCurrent.setBounds(340, height_small - 141 - move, 100, 16);
 			edit_issue.getContentPane().add(lblCurrent);
 
 			final JCheckBox access_status_check = new JCheckBox();
-			access_status_check.setBounds(425, height_small - 125, 100, 26);
+			access_status_check.setBounds(425, height_small - 125 - move, 100, 26);
 			edit_issue.getContentPane().add(access_status_check);
 			JLabel lblStatus = new JLabel("Access Status");
 			lblStatus.setForeground(new Color(255, 255, 255));
 			lblStatus.setHorizontalAlignment(SwingConstants.CENTER);
-			lblStatus.setBounds(305, height_small - 121, 150, 16);
+			lblStatus.setBounds(305, height_small - 121 - move, 150, 16);
 			edit_issue.getContentPane().add(lblStatus);
 
 			final JCheckBox show_title = new JCheckBox("", true);
-			show_title.setBounds(459, 218, 250, 26);
+			show_title.setBounds(459, 218 - move, 250, 26);
 			edit_issue.getContentPane().add(show_title);
 
 			JLabel lblShowTitleText = new JLabel("Show Title");
 			lblShowTitleText.setForeground(new Color(255, 255, 255));
 			lblShowTitleText.setHorizontalAlignment(SwingConstants.CENTER);
-			lblShowTitleText.setBounds(340, 200, 250, 16);
+			lblShowTitleText.setBounds(340, 200 - move, 250, 16);
 			edit_issue.getContentPane().add(lblShowTitleText);
 
 			final JCheckBox show_volume = new JCheckBox("", true);
-			show_volume.setBounds(459, 270, 250, 26);
+			show_volume.setBounds(459, 270 - move, 250, 26);
 			edit_issue.getContentPane().add(show_volume);
 
 			JLabel lblShowVolume = new JLabel("Show Volume");
 			lblShowVolume.setForeground(new Color(255, 255, 255));
 			lblShowVolume.setHorizontalAlignment(SwingConstants.CENTER);
-			lblShowVolume.setBounds(340, 250, 250, 16);
+			lblShowVolume.setBounds(340, 250 - move, 250, 16);
 			edit_issue.getContentPane().add(lblShowVolume);
 
 			final JCheckBox show_number = new JCheckBox("", true);
-			show_number.setBounds(459, 317, 250, 26);
+			show_number.setBounds(459, 317 - move, 250, 26);
 			edit_issue.getContentPane().add(show_number);
 
 			JLabel lblShowNumber = new JLabel("Show Number");
 			lblShowNumber.setForeground(new Color(255, 255, 255));
 			lblShowNumber.setHorizontalAlignment(SwingConstants.CENTER);
-			lblShowNumber.setBounds(340, 300, 250, 16);
+			lblShowNumber.setBounds(340, 300 - move, 250, 16);
 			edit_issue.getContentPane().add(lblShowNumber);
 
 			final JCheckBox show_year = new JCheckBox("", true);
-			show_year.setBounds(459, 364, 250, 26);
+			show_year.setBounds(459, 364 - move, 250, 26);
 			edit_issue.getContentPane().add(show_year);
 
 			JLabel lblShowYear = new JLabel("Show Year");
 			lblShowYear.setForeground(new Color(255, 255, 255));
 			lblShowYear.setHorizontalAlignment(SwingConstants.CENTER);
-			lblShowYear.setBounds(340, 347, 250, 16);
+			lblShowYear.setBounds(340, 347 - move, 250, 16);
 			edit_issue.getContentPane().add(lblShowYear);
 
 			JButton btnSubmit = new JButton("Create");
@@ -3610,38 +3598,41 @@ public class Main {
 				}
 			});
 			if (height_small - 150 > 300) {
-				btnSubmit.setBounds(((width_small / 3) * 2) / 2, height_small - 69, width_small / 3, 29);
+				btnSubmit.setBounds(((width_small / 3) * 2) / 2, height_small - 69 - move, width_small / 3, 29);
 			} else {
-				btnSubmit.setBounds(((width_small / 3) * 2) / 2, 339, width_small / 3, 29);
+				btnSubmit.setBounds(((width_small / 3) * 2) / 2, 339 - move, width_small / 3, 29);
 			}
 
 			edit_issue.getContentPane().add(btnSubmit);
 
-			JLabel lblApiInformation = new JLabel("Issue Details");
-			lblApiInformation.setBackground(new Color(218, 207, 2));
-			lblApiInformation.setHorizontalAlignment(SwingConstants.CENTER);
-			lblApiInformation.setForeground(new Color(255, 255, 255));
-			lblApiInformation.setFont(new Font(Font.SANS_SERIF, Font.TRUETYPE_FONT, 20));
-			lblApiInformation.setBounds((width_small / 2) - 145, 108, 309, 40);
-			lblApiInformation.setOpaque(true);
-			edit_issue.getContentPane().add(lblApiInformation);
+			JLabel lblIssue = new JLabel("Add Issue");
+			lblIssue.setBackground(new Color(46, 46, 46));
+			lblIssue.setForeground(new Color(255, 255, 255));
+			lblIssue.setFont(new Font(Font.SANS_SERIF, Font.TRUETYPE_FONT, 26));
+			lblIssue.setBounds(width_small - 150, 26, 280, 40);
+			lblIssue.setOpaque(true);
+			edit_issue.getContentPane().add(lblIssue);
 
-			Panel panel = new Panel();
-			panel.setBackground(new Color(204, 51, 51));
-			panel.setBounds(0, 54, width_small, 5);
+			JPanel panel = new JPanel();
+			panel.setBackground(new Color(46, 46, 46));
+			panel.setLayout(null);
+			panel.setBounds(0, 0, width, 70);
+			ImageIcon icon = new ImageIcon(String.format("%s/required_files/%s", directory, "toru-ui-logo.png"));
+			JLabel logo = new JLabel(icon);
+			logo.setBounds(10, 20, 140, 40);
+			logo.setBackground(new Color(46, 46, 46));
+			panel.add(logo);
+			panel.repaint();
+			logo.repaint();
 			edit_issue.getContentPane().add(panel);
 
+			Panel panel_1 = new Panel();
+			panel_1.setBackground(new Color(25, 25, 25));
+			panel_1.setBounds(0, 70, width, 6);
+			edit_issue.getContentPane().add(panel_1);
 			edit_issue.setVisible(true);// making the frame visible
 			edit_issue.repaint();
 			issue_screens.put(i_id, edit_issue);
-			Panel panel_2 = new Panel();
-			panel_2.setBackground(new Color(192, 183, 3));
-			panel_2.setBounds(0, 150, width_small, 5);
-			edit_issue.getContentPane().add(panel_2);
-			Panel panel_1 = new Panel();
-			panel_1.setBackground(new Color(218, 207, 2));
-			panel_1.setBounds(0, 105, width_small, 45);
-			edit_issue.getContentPane().add(panel_1);
 
 		} else {
 			login("dashboard");
@@ -3659,6 +3650,8 @@ public class Main {
 					width_small = (int) (960 - (960 * (37.5 / 100)));
 				}
 				height_small = (int) (680 - (680 * (5 / 100)));
+
+				int move = 52;
 				final JFrame edit_issue = new JFrame();
 				edit_issue.setResizable(false);
 				issue_screens.put(issue_id, edit_issue);
@@ -3677,16 +3670,9 @@ public class Main {
 				edit_issue.getContentPane().setLayout(null);// using no layout
 															// managers
 				final Issue current_issue = issue_storage.get(issue_id);
-				JLabel lblNewLabel = new JLabel("TORU");
-				lblNewLabel.setForeground(new Color(255, 250, 250));
-				lblNewLabel.setBackground(new Color(230, 230, 250));
-				lblNewLabel.setFont(new Font("Trattatello", Font.BOLD, 24));
-				lblNewLabel.setToolTipText("Welcome\n");
-
-				lblNewLabel.setBounds((width_small / 2) - 34, 15, 95, 25);
-				edit_issue.getContentPane().add(lblNewLabel);
+			
 				final JTextField title = new JTextField();
-				title.setBounds(100, 218, 250, 26);
+				title.setBounds(100, 218-move, 250, 26);
 				title.setText(current_issue.getTitle());
 				edit_issue.getContentPane().add(title);
 				title.setColumns(4);
@@ -3694,32 +3680,27 @@ public class Main {
 				JLabel lblTitleText = new JLabel("Title");
 				lblTitleText.setForeground(new Color(255, 255, 255));
 				lblTitleText.setHorizontalAlignment(SwingConstants.CENTER);
-				lblTitleText.setBounds(100, 200, 250, 16);
+				lblTitleText.setBounds(100, 200-move, 250, 16);
 				edit_issue.getContentPane().add(lblTitleText);
-				JPanel title_background = new JPanel();
-				title_background.setBackground(new Color(0, 0, 0));
-				title_background.setBounds(-17, 0, width_small + 33, 54);
-				edit_issue.getContentPane().add(title_background);
-
 				SpinnerModel number_model = new SpinnerNumberModel(current_issue.getNumber(), 0, 1000, 1);
 
 				SpinnerModel volume_model = new SpinnerNumberModel(current_issue.getVolume(), 0, 1000, 1);
 				final JSpinner volume = new JSpinner(volume_model);
-				volume.setBounds(100, 270, 250, 26);
+				volume.setBounds(100, 270-move, 250, 26);
 				edit_issue.getContentPane().add(volume);
 				JLabel lblvolume = new JLabel("Volume");
 				lblvolume.setHorizontalAlignment(SwingConstants.CENTER);
 				lblvolume.setForeground(new Color(255, 255, 255));
-				lblvolume.setBounds(100, 250, 250, 16);
+				lblvolume.setBounds(100, 250-move, 250, 16);
 				edit_issue.getContentPane().add(lblvolume);
 
 				final JSpinner number = new JSpinner(number_model);
-				number.setBounds(100, 317, 250, 26);
+				number.setBounds(100, 317-move, 250, 26);
 				edit_issue.getContentPane().add(number);
 				JLabel lblnumber = new JLabel("Number");
 				lblnumber.setHorizontalAlignment(SwingConstants.CENTER);
 				lblnumber.setForeground(new Color(255, 255, 255));
-				lblnumber.setBounds(100, 300, 250, 16);
+				lblnumber.setBounds(100, 300-move, 250, 16);
 				edit_issue.getContentPane().add(lblnumber);
 
 				SimpleDateFormat year_sdf = new SimpleDateFormat("yyyy");
@@ -3733,18 +3714,18 @@ public class Main {
 				SpinnerDateModel year_model = new SpinnerDateModel(currentYear, null, null, Calendar.YEAR);
 				final JSpinner year = new JSpinner(year_model);
 				year.setEditor(new JSpinner.DateEditor(year, "YYYY"));
-				year.setBounds(100, 364, 250, 26);
+				year.setBounds(100, 364-move, 250, 26);
 				edit_issue.getContentPane().add(year);
 				JLabel lblyear = new JLabel("Year");
 				lblyear.setHorizontalAlignment(SwingConstants.CENTER);
 				lblyear.setForeground(new Color(255, 255, 255));
-				lblyear.setBounds(100, 347, 250, 16);
+				lblyear.setBounds(100, 347-move, 250, 16);
 				edit_issue.getContentPane().add(lblyear);
 
 				JLabel lblDateAccepted = new JLabel("Date Submitted");
 				lblDateAccepted.setHorizontalAlignment(SwingConstants.CENTER);
 				lblDateAccepted.setForeground(new Color(255, 255, 255));
-				lblDateAccepted.setBounds(80, 394, width_small - 161, 16);
+				lblDateAccepted.setBounds(80, 394-move, width_small - 161, 16);
 				edit_issue.getContentPane().add(lblDateAccepted);
 
 				final JXDatePicker datePicker = new JXDatePicker();
@@ -3756,7 +3737,7 @@ public class Main {
 					}
 				});
 				;
-				datePicker.setBounds(100, 410, width_small - 200, 30);
+				datePicker.setBounds(100, 410-move, width_small - 200, 30);
 
 				datePicker.setDate(current_issue.getDate_accepted());
 				// panel.add(label);
@@ -3764,7 +3745,7 @@ public class Main {
 				JLabel lblDatePublished = new JLabel("Date Published");
 				lblDatePublished.setHorizontalAlignment(SwingConstants.CENTER);
 				lblDatePublished.setForeground(new Color(255, 255, 255));
-				lblDatePublished.setBounds(80, 441, width_small - 161, 16);
+				lblDatePublished.setBounds(80, 441-move, width_small - 161, 16);
 				edit_issue.getContentPane().add(lblDatePublished);
 
 				final JXDatePicker datePickerPublished = new JXDatePicker();
@@ -3777,82 +3758,82 @@ public class Main {
 				});
 				;
 				datePickerPublished.setDate(current_issue.getDate_published());
-				datePickerPublished.setBounds(100, 460, width_small - 200, 30);
+				datePickerPublished.setBounds(100, 460-move, width_small - 200, 30);
 				// panel.add(label);
 				edit_issue.getContentPane().add(datePickerPublished);
 
 				JLabel lblShowDisplay = new JLabel("---- Display Values ----");
 				lblShowDisplay.setForeground(new Color(255, 255, 255));
 				lblShowDisplay.setHorizontalAlignment(SwingConstants.CENTER);
-				lblShowDisplay.setBounds(340, 170, 250, 16);
+				lblShowDisplay.setBounds(340, 170-move, 250, 16);
 				edit_issue.getContentPane().add(lblShowDisplay);
 
 				final JCheckBox published_check = new JCheckBox("", current_issue.getPublished() == 1 ? true : false);
 
-				published_check.setBounds(425, height_small - 165, 100, 26);
+				published_check.setBounds(425, height_small - 165-move, 100, 26);
 				edit_issue.getContentPane().add(published_check);
 				JLabel lblPublished = new JLabel("Published");
 				lblPublished.setForeground(new Color(255, 255, 255));
 				lblPublished.setHorizontalAlignment(SwingConstants.CENTER);
-				lblPublished.setBounds(340, height_small - 161, 100, 16);
+				lblPublished.setBounds(340, height_small - 161-move, 100, 16);
 				edit_issue.getContentPane().add(lblPublished);
 
 				final JCheckBox current_check = new JCheckBox("", current_issue.getCurrent() == 1 ? true : false);
-				current_check.setBounds(425, height_small - 145, 100, 26);
+				current_check.setBounds(425, height_small - 145-move, 100, 26);
 				edit_issue.getContentPane().add(current_check);
 				JLabel lblCurrent = new JLabel("Current");
 				lblCurrent.setForeground(new Color(255, 255, 255));
 				lblCurrent.setHorizontalAlignment(SwingConstants.CENTER);
-				lblCurrent.setBounds(340, height_small - 141, 100, 16);
+				lblCurrent.setBounds(340, height_small - 141-move, 100, 16);
 				edit_issue.getContentPane().add(lblCurrent);
 
 				final JCheckBox access_status_check = new JCheckBox("",
 						current_issue.getAccess_status() == 1 ? true : false);
-				access_status_check.setBounds(425, height_small - 125, 100, 26);
+				access_status_check.setBounds(425, height_small - 125-move, 100, 26);
 				edit_issue.getContentPane().add(access_status_check);
 				JLabel lblStatus = new JLabel("Access Status");
 				lblStatus.setForeground(new Color(255, 255, 255));
 				lblStatus.setHorizontalAlignment(SwingConstants.CENTER);
-				lblStatus.setBounds(305, height_small - 121, 150, 16);
+				lblStatus.setBounds(305, height_small - 121-move, 150, 16);
 				edit_issue.getContentPane().add(lblStatus);
 				final JCheckBox show_title = new JCheckBox("", current_issue.getShow_title() >= 1 ? true : false);
-				show_title.setBounds(459, 218, 250, 26);
+				show_title.setBounds(459, 218-move, 250, 26);
 				edit_issue.getContentPane().add(show_title);
 
 				JLabel lblShowTitleText = new JLabel("Show Title");
 				lblShowTitleText.setForeground(new Color(255, 255, 255));
 				lblShowTitleText.setHorizontalAlignment(SwingConstants.CENTER);
-				lblShowTitleText.setBounds(340, 200, 250, 16);
+				lblShowTitleText.setBounds(340, 200-move, 250, 16);
 				edit_issue.getContentPane().add(lblShowTitleText);
 
 				final JCheckBox show_volume = new JCheckBox("", current_issue.getShow_volume() >= 1 ? true : false);
-				show_volume.setBounds(459, 270, 250, 26);
+				show_volume.setBounds(459, 270-move, 250, 26);
 				edit_issue.getContentPane().add(show_volume);
 
 				JLabel lblShowVolume = new JLabel("Show Volume");
 				lblShowVolume.setForeground(new Color(255, 255, 255));
 				lblShowVolume.setHorizontalAlignment(SwingConstants.CENTER);
-				lblShowVolume.setBounds(340, 250, 250, 16);
+				lblShowVolume.setBounds(340, 250-move, 250, 16);
 				edit_issue.getContentPane().add(lblShowVolume);
 
 				final JCheckBox show_number = new JCheckBox("", current_issue.getShow_number() >= 1 ? true : false);
-				show_number.setBounds(459, 317, 250, 26);
+				show_number.setBounds(459, 317-move, 250, 26);
 				edit_issue.getContentPane().add(show_number);
 
 				JLabel lblShowNumber = new JLabel("Show Number");
 				lblShowNumber.setForeground(new Color(255, 255, 255));
 				lblShowNumber.setHorizontalAlignment(SwingConstants.CENTER);
-				lblShowNumber.setBounds(340, 300, 250, 16);
+				lblShowNumber.setBounds(340, 300-move, 250, 16);
 				edit_issue.getContentPane().add(lblShowNumber);
 
 				final JCheckBox show_year = new JCheckBox("", current_issue.getShow_year() >= 1 ? true : false);
-				show_year.setBounds(459, 364, 250, 26);
+				show_year.setBounds(459, 364-move, 250, 26);
 				edit_issue.getContentPane().add(show_year);
 
 				JLabel lblShowYear = new JLabel("Show Year");
 				lblShowYear.setForeground(new Color(255, 255, 255));
 				lblShowYear.setHorizontalAlignment(SwingConstants.CENTER);
-				lblShowYear.setBounds(340, 347, 250, 16);
+				lblShowYear.setBounds(340, 347-move, 250, 16);
 				edit_issue.getContentPane().add(lblShowYear);
 				JButton btnSubmit = new JButton("Save");
 				Action actionSubmit = new AbstractAction() {
@@ -4028,38 +4009,42 @@ public class Main {
 					}
 				});
 				if (height_small - 150 > 300) {
-					btnSubmit.setBounds(((width_small / 3) * 2) / 2, height_small - 69, width_small / 3, 29);
+					btnSubmit.setBounds(((width_small / 3) * 2) / 2, height_small - 69-move, width_small / 3, 29);
 				} else {
-					btnSubmit.setBounds(((width_small / 3) * 2) / 2, 339, width_small / 3, 29);
+					btnSubmit.setBounds(((width_small / 3) * 2) / 2, 339-move, width_small / 3, 29);
 				}
 
 				edit_issue.getContentPane().add(btnSubmit);
 
-				JLabel lblApiInformation = new JLabel("Issue Details");
-				lblApiInformation.setBackground(new Color(2, 216, 138));
-				lblApiInformation.setHorizontalAlignment(SwingConstants.CENTER);
-				lblApiInformation.setForeground(new Color(255, 255, 255));
-				lblApiInformation.setFont(new Font(Font.SANS_SERIF, Font.TRUETYPE_FONT, 20));
-				lblApiInformation.setBounds((width_small / 2) - 145, 108, 309, 40);
-				lblApiInformation.setOpaque(true);
-				edit_issue.getContentPane().add(lblApiInformation);
+				JLabel lblIssue = new JLabel("Edit Issue");
+				lblIssue.setBackground(new Color(46, 46, 46));
+				lblIssue.setForeground(new Color(255, 255, 255));
+				lblIssue.setFont(new Font(Font.SANS_SERIF, Font.TRUETYPE_FONT, 26));
+				lblIssue.setBounds(width_small - 150, 26, 280, 40);
+				lblIssue.setOpaque(true);
+				edit_issue.getContentPane().add(lblIssue);
 
-				Panel panel = new Panel();
-				panel.setBackground(new Color(204, 51, 51));
-				panel.setBounds(0, 54, width_small, 5);
+				JPanel panel = new JPanel();
+				panel.setBackground(new Color(46, 46, 46));
+				panel.setLayout(null);
+				panel.setBounds(0, 0, width, 70);
+				ImageIcon icon = new ImageIcon(String.format("%s/required_files/%s", directory, "toru-ui-logo.png"));
+				JLabel logo = new JLabel(icon);
+				logo.setBounds(10, 20, 140, 40);
+				logo.setBackground(new Color(46, 46, 46));
+				panel.add(logo);
+				panel.repaint();
+				logo.repaint();
 				edit_issue.getContentPane().add(panel);
 
+				Panel panel_1 = new Panel();
+				panel_1.setBackground(new Color(25, 25, 25));
+				panel_1.setBounds(0, 70, width, 6);
+				edit_issue.getContentPane().add(panel_1);
 				edit_issue.setVisible(true);// making the frame visible
 				edit_issue.repaint();
 				issue_screens.put(issue_id, edit_issue);
-				Panel panel_2 = new Panel();
-				panel_2.setBackground(new Color(6, 141, 91));
-				panel_2.setBounds(0, 150, width_small, 5);
-				edit_issue.getContentPane().add(panel_2);
-				Panel panel_1 = new Panel();
-				panel_1.setBackground(new Color(2, 216, 138));
-				panel_1.setBounds(0, 105, width_small, 45);
-				edit_issue.getContentPane().add(panel_1);
+
 			}
 		} else {
 			login("dashboard");
@@ -4254,7 +4239,8 @@ public class Main {
 		System.out.println(section.getAbstract_word_count());
 		SpinnerModel count_model = new SpinnerNumberModel(
 				section.getAbstract_word_count() < 0 ? 0 : section.getAbstract_word_count(), 0, 5000, 1);
-		SpinnerNumberModel seq_model = new SpinnerNumberModel(section.getSeq()< 0 ? 0 : section.getSeq(), -1000.0, 1000.0, 0.1);
+		SpinnerNumberModel seq_model = new SpinnerNumberModel(section.getSeq() < 0 ? 0 : section.getSeq(), -1000.0,
+				1000.0, 0.1);
 
 		screen.setTitle(String.format("Edit Section <%s>", section.getId()));
 		JPanel panelSection = new JPanel();
