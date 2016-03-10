@@ -1553,7 +1553,7 @@ public class Main {
 				});
 				login.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 				login.getContentPane().setForeground(Color.WHITE);
-				login.getContentPane().setBackground(new Color(170, 170, 170));
+				login.getContentPane().setBackground(new Color(213, 213, 213));
 				Dimension sreen = Toolkit.getDefaultToolkit().getScreenSize();
 
 				login.setSize(sreen.width / 2 - login.getSize().width / 2,
@@ -1568,13 +1568,13 @@ public class Main {
 				login.getContentPane().add(username);
 				username.setColumns(4);
 				JLabel lblUsername = new JLabel("Username");
-				lblUsername.setForeground(new Color(255, 255, 255));
+				lblUsername.setForeground(new Color(0,0,0));
 				lblUsername.setHorizontalAlignment(SwingConstants.CENTER);
 				lblUsername.setBounds(80, 140, width_small - 161, 16);
 				login.getContentPane().add(lblUsername);
 				JLabel lblPassword = new JLabel("Password");
 				lblPassword.setHorizontalAlignment(SwingConstants.CENTER);
-				lblPassword.setForeground(new Color(255, 255, 255));
+				lblPassword.setForeground(new Color(0,0,0));
 				lblPassword.setBounds(80, 200, width_small - 161, 16);
 				login.getContentPane().add(lblPassword);
 				passwordField = new JPasswordField();
@@ -1708,18 +1708,18 @@ public class Main {
 					}
 				});
 
-				btnLogin.setBounds(width_small / 3, 280, width_small / 3, 29);
+				btnLogin.setBounds(width_small / 3, 265, width_small / 3, 29);
 				login.getContentPane().add(btnLogin);
 
 				final Label btnSync1 = new Label("Status");
 				btnSync1.setBounds(width_small - 135, 89, 45, 25);
-				btnSync1.setFont(new Font("Dialog", Font.TRUETYPE_FONT, 14));
-				btnSync1.setForeground(Color.white);
+				btnSync1.setFont(new Font(Font.SANS_SERIF, Font.TRUETYPE_FONT, 14));
+				btnSync1.setForeground(Color.black);
 				login.getContentPane().add(btnSync1);
 				
 				final Label internetCheck = new Label("ONLINE");
 				internetCheck.setFont(new Font(Font.SANS_SERIF, Font.TRUETYPE_FONT | Font.ITALIC, 12));
-				internetCheck.setBackground(Color.GREEN);
+				internetCheck.setBackground(Color.lightGray);
 				internetCheck.setForeground(new Color(255, 255, 255));
 				internetCheck.setAlignment(1);
 				internetCheck.setBounds(width_small - 85, 90, 65, 22);
@@ -1728,7 +1728,7 @@ public class Main {
 				JLabel lblIssue = new JLabel("Login");
 				lblIssue.setBackground(new Color(46, 46, 46));
 				lblIssue.setForeground(new Color(255, 255, 255));
-				lblIssue.setFont(new Font("Dialog", Font.TRUETYPE_FONT, 26));
+				lblIssue.setFont(new Font(Font.SANS_SERIF, Font.TRUETYPE_FONT, 26));
 				lblIssue.setBounds(width_small - 120, 26, 280, 40);
 				lblIssue.setOpaque(true);
 				login.getContentPane().add(lblIssue);
@@ -1755,7 +1755,7 @@ public class Main {
 				ActionListener taskPerformer1 = new ActionListener() {
 					public void actionPerformed(ActionEvent evt) {
 						if (status_online()) {
-							internetCheck.setBackground(Color.GREEN);
+							internetCheck.setBackground(Color.lightGray);
 							internetCheck.setText("ONLINE");
 							
 
@@ -1792,7 +1792,7 @@ public class Main {
 				settings = new JFrame();
 				settings.setResizable(false);
 				settings.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-				settings.getContentPane().setBackground(new Color(170, 170, 170));
+				settings.getContentPane().setBackground(new Color(213,213,213));
 				settings.setTitle("Settings");
 
 				settings.addWindowListener(new WindowAdapter() {
@@ -1819,6 +1819,7 @@ public class Main {
 
 				panelSettings.setLayout(null);
 				panelSettings.setAutoscrolls(true);
+				panelSettings.setBackground(new Color(185,185,185));
 				int y = 30;
 				int settings_height = 210 + 30 * (setting_keys.size() - 8);
 				panelSettings.setPreferredSize(new Dimension(width_small - 80, settings_height));
@@ -1826,6 +1827,8 @@ public class Main {
 				panelSettings.setAutoscrolls(true);
 				scrollFrame.setPreferredSize(new Dimension(320, 200));
 				scrollFrame.setBounds(40, 150, width_small - 80, height_small - 350);
+				scrollFrame.setBackground(new Color(185,185,185));
+				
 				// scrollSettings.setViewportView(scrollFrame);
 				settings.getContentPane().add(scrollFrame);
 				ArrayList<JCheckBox> checkboxes = new ArrayList<JCheckBox>();
@@ -2000,13 +2003,13 @@ public class Main {
 				settings.getContentPane().add(btnSave);
 				final Label btnSync1 = new Label("Status");
 				btnSync1.setBounds(width_small - 135, 89, 45, 25);
-				btnSync1.setFont(new Font("Dialog", Font.TRUETYPE_FONT, 14));
-				btnSync1.setForeground(Color.white);
+				btnSync1.setFont(new Font(Font.SANS_SERIF, Font.TRUETYPE_FONT, 14));
+				btnSync1.setForeground(Color.black);
 				settings.getContentPane().add(btnSync1);
 				
 				final Label internetCheck = new Label("ONLINE");
 				internetCheck.setFont(new Font(Font.SANS_SERIF, Font.TRUETYPE_FONT | Font.ITALIC, 12));
-				internetCheck.setBackground(Color.GREEN);
+				internetCheck.setBackground(Color.lightGray);
 				internetCheck.setForeground(new Color(255, 255, 255));
 				internetCheck.setAlignment(1);
 				internetCheck.setBounds(width_small - 85, 90, 65, 22);
@@ -2016,7 +2019,7 @@ public class Main {
 				JLabel lblIssue = new JLabel("Settings");
 				lblIssue.setBackground(new Color(46, 46, 46));
 				lblIssue.setForeground(new Color(255, 255, 255));
-				lblIssue.setFont(new Font("Dialog", Font.TRUETYPE_FONT, 26));
+				lblIssue.setFont(new Font(Font.SANS_SERIF, Font.TRUETYPE_FONT, 26));
 				lblIssue.setBounds(width_small - 120, 26, 280, 40);
 				lblIssue.setOpaque(true);
 				settings.getContentPane().add(lblIssue);
@@ -2042,7 +2045,7 @@ public class Main {
 				ActionListener taskPerformer1 = new ActionListener() {
 					public void actionPerformed(ActionEvent evt) {
 						if (status_online()) {
-							internetCheck.setBackground(Color.GREEN);
+							internetCheck.setBackground(Color.lightGray);
 							internetCheck.setText("ONLINE");
 
 						} else {
@@ -2076,7 +2079,7 @@ public class Main {
 					api = new JFrame();
 					api.setResizable(false);
 					api.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-					api.getContentPane().setBackground(new Color(170, 170, 170));
+					api.getContentPane().setBackground(new Color(213, 213, 213));
 					api.setTitle("API Information");
 
 					api.addWindowListener(new WindowAdapter() {
@@ -2096,7 +2099,7 @@ public class Main {
 					api.getContentPane().add(access_key);
 					JLabel lblAccessKey = new JLabel("Enter access key:");
 					lblAccessKey.setHorizontalAlignment(SwingConstants.CENTER);
-					lblAccessKey.setForeground(new Color(255, 255, 255));
+					lblAccessKey.setForeground(new Color(0,0,0));
 					lblAccessKey.setBounds(80, 150, width_small - 161, 16);
 					api.getContentPane().add(lblAccessKey);
 
@@ -2165,13 +2168,13 @@ public class Main {
 
 					final Label btnSync1 = new Label("Status");
 					btnSync1.setBounds(width_small - 135, 89, 45, 25);
-					btnSync1.setFont(new Font("Dialog", Font.TRUETYPE_FONT, 14));
-					btnSync1.setForeground(Color.white);
+					btnSync1.setFont(new Font(Font.SANS_SERIF, Font.TRUETYPE_FONT, 14));
+					btnSync1.setForeground(Color.black);
 					api.getContentPane().add(btnSync1);
 					
 					final Label internetCheck = new Label("ONLINE");
 					internetCheck.setFont(new Font(Font.SANS_SERIF, Font.TRUETYPE_FONT | Font.ITALIC, 12));
-					internetCheck.setBackground(Color.GREEN);
+					internetCheck.setBackground(Color.lightGray);
 					internetCheck.setForeground(new Color(255, 255, 255));
 					internetCheck.setAlignment(1);
 					internetCheck.setBounds(width_small - 85, 90, 65, 22);
@@ -2180,7 +2183,7 @@ public class Main {
 					JLabel lblIssue = new JLabel("API Information");
 					lblIssue.setBackground(new Color(46, 46, 46));
 					lblIssue.setForeground(new Color(255, 255, 255));
-					lblIssue.setFont(new Font("Dialog", Font.TRUETYPE_FONT, 26));
+					lblIssue.setFont(new Font(Font.SANS_SERIF, Font.TRUETYPE_FONT, 26));
 					lblIssue.setBounds(width_small - 260, 26, 280, 40);
 					lblIssue.setOpaque(true);
 					api.getContentPane().add(lblIssue);
@@ -2206,7 +2209,7 @@ public class Main {
 					ActionListener taskPerformer1 = new ActionListener() {
 						public void actionPerformed(ActionEvent evt) {
 							if (status_online()) {
-								internetCheck.setBackground(Color.GREEN);
+								internetCheck.setBackground(Color.lightGray);
 								internetCheck.setText("ONLINE");
 						
 							} else {
@@ -2236,7 +2239,7 @@ public class Main {
 					api = new JFrame();
 					api.setResizable(false);
 					api.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-					api.getContentPane().setBackground(new Color(170, 170, 170));
+					api.getContentPane().setBackground(new Color(213,213,213));
 					api.setTitle("API Information");
 
 					api.addWindowListener(new WindowAdapter() {
@@ -2258,7 +2261,7 @@ public class Main {
 					api.getContentPane().add(access_key);
 					JLabel lblAccessKey = new JLabel("Enter access key for future offline and online access:");
 					lblAccessKey.setHorizontalAlignment(SwingConstants.CENTER);
-					lblAccessKey.setForeground(new Color(255, 255, 255));
+					lblAccessKey.setForeground(new Color(0,0,0));
 					lblAccessKey.setBounds(80, 150, width_small - 161, 16);
 					api.getContentPane().add(lblAccessKey);
 
@@ -2312,13 +2315,13 @@ public class Main {
 
 					final Label btnSync1 = new Label("Status");
 					btnSync1.setBounds(width_small - 135, 89, 45, 25);
-					btnSync1.setFont(new Font("Dialog", Font.TRUETYPE_FONT, 14));
-					btnSync1.setForeground(Color.white);
+					btnSync1.setFont(new Font(Font.SANS_SERIF, Font.TRUETYPE_FONT, 14));
+					btnSync1.setForeground(Color.black);
 					api.getContentPane().add(btnSync1);
 					
 					final Label internetCheck = new Label("ONLINE");
 					internetCheck.setFont(new Font(Font.SANS_SERIF, Font.TRUETYPE_FONT | Font.ITALIC, 12));
-					internetCheck.setBackground(Color.GREEN);
+					internetCheck.setBackground(Color.lightGray);
 					internetCheck.setForeground(new Color(255, 255, 255));
 					internetCheck.setAlignment(1);
 					internetCheck.setBounds(width_small - 85, 90, 65, 22);
@@ -2328,7 +2331,7 @@ public class Main {
 					JLabel lblIssue = new JLabel("API");
 					lblIssue.setBackground(new Color(46, 46, 46));
 					lblIssue.setForeground(new Color(255, 255, 255));
-					lblIssue.setFont(new Font("Dialog", Font.TRUETYPE_FONT, 26));
+					lblIssue.setFont(new Font(Font.SANS_SERIF, Font.TRUETYPE_FONT, 26));
 					lblIssue.setBounds(width_small - 120, 26, 280, 40);
 					lblIssue.setOpaque(true);
 					api.getContentPane().add(lblIssue);
@@ -2355,7 +2358,7 @@ public class Main {
 					ActionListener taskPerformer1 = new ActionListener() {
 						public void actionPerformed(ActionEvent evt) {
 							if (status_online()) {
-								internetCheck.setBackground(Color.GREEN);
+								internetCheck.setBackground(Color.lightGray);
 								internetCheck.setText("ONLINE");
 
 							} else {
@@ -3084,7 +3087,7 @@ public class Main {
 
 				final Label internetCheck = new Label("ONLINE");
 				internetCheck.setFont(new Font(Font.SANS_SERIF, Font.TRUETYPE_FONT | Font.ITALIC, 12));
-				internetCheck.setBackground(Color.GREEN);
+				internetCheck.setBackground(Color.lightGray);
 				internetCheck.setBounds(width - 85, 22, 65, 22);
 				internetCheck.setForeground(new Color(255, 255, 255));
 				internetCheck.setAlignment(1);
@@ -3093,7 +3096,7 @@ public class Main {
 				ActionListener taskPerformer1 = new ActionListener() {
 					public void actionPerformed(ActionEvent evt) {
 						if (status_online()) {
-							internetCheck.setBackground(Color.GREEN);
+							internetCheck.setBackground(Color.lightGray);
 							internetCheck.setText("ONLINE");
 							btnSync.setEnabled(true);
 
@@ -4754,7 +4757,7 @@ public class Main {
 				section_table.setRowHeight(23);
 				final Label internetCheck = new Label("  ONLINE");
 				internetCheck.setFont(new Font(Font.SANS_SERIF, Font.TRUETYPE_FONT | Font.ITALIC, 12));
-				internetCheck.setBackground(Color.GREEN);
+				internetCheck.setBackground(Color.lightGray);
 				internetCheck.setAlignment(1);
 				internetCheck.setForeground(new Color(255, 255, 255));
 				internetCheck.setBounds(width - 85, 22, 65, 22);
@@ -4763,7 +4766,7 @@ public class Main {
 				ActionListener taskPerformer1 = new ActionListener() {
 					public void actionPerformed(ActionEvent evt) {
 						if (status_online()) {
-							internetCheck.setBackground(Color.GREEN);
+							internetCheck.setBackground(Color.lightGray);
 							internetCheck.setText("ONLINE");
 							btnSync.setEnabled(true);
 
@@ -5580,7 +5583,7 @@ public class Main {
 
 				JLabel lblArticles = new JLabel("Articles");
 				lblArticles.setBackground(new Color(213, 213, 213));
-				lblArticles.setFont(new Font("Dialog", Font.TRUETYPE_FONT, 24));
+				lblArticles.setFont(new Font(Font.SANS_SERIF, Font.TRUETYPE_FONT, 24));
 				lblArticles.setForeground(new Color(0, 0, 0));
 				lblArticles.setBounds(30, height / 16 * 7 - 132, 180, 30);
 				lblArticles.setOpaque(true);
@@ -5589,7 +5592,7 @@ public class Main {
 				JLabel lblIssue = new JLabel("Unpublished Articles");
 				lblIssue.setBackground(new Color(46, 46, 46));
 				lblIssue.setForeground(new Color(255, 255, 255));
-				lblIssue.setFont(new Font("Dialog", Font.TRUETYPE_FONT, 28));
+				lblIssue.setFont(new Font(Font.SANS_SERIF, Font.TRUETYPE_FONT, 28));
 				lblIssue.setBounds(width - 355, 22, 350, 40);
 				lblIssue.setOpaque(true);
 				unpublished_articles_screen.getContentPane().add(lblIssue);
@@ -6342,7 +6345,7 @@ public class Main {
 				article_table.setRowHeight(23);
 				final Label internetCheck = new Label("  ONLINE");
 				internetCheck.setFont(new Font(Font.SANS_SERIF, Font.TRUETYPE_FONT | Font.ITALIC, 12));
-				internetCheck.setBackground(Color.GREEN);
+				internetCheck.setBackground(Color.lightGray);
 				internetCheck.setAlignment(1);
 				internetCheck.setForeground(new Color(255, 255, 255));
 				internetCheck.setBounds(width - 85, 22, 65, 22);
@@ -6351,7 +6354,7 @@ public class Main {
 				ActionListener taskPerformer1 = new ActionListener() {
 					public void actionPerformed(ActionEvent evt) {
 						if (status_online()) {
-							internetCheck.setBackground(Color.GREEN);
+							internetCheck.setBackground(Color.lightGray);
 							internetCheck.setText("ONLINE");
 							btnSync.setEnabled(true);
 
@@ -6672,7 +6675,7 @@ public class Main {
 				 * final Label internetCheck = new Label("  ONLINE");
 				 * internetCheck.setFont(new Font(Font.SANS_SERIF,
 				 * Font.TRUETYPE_FONT | Font.ITALIC, 12));
-				 * internetCheck.setBackground(Color.GREEN);
+				 * internetCheck.setBackground(Color.lightGray);
 				 * internetCheck.setAlignment(1);
 				 * internetCheck.setForeground(new Color(255, 255, 255));
 				 * internetCheck.setBounds(width_small - 80, 22, 65, 22);
@@ -6684,7 +6687,7 @@ public class Main {
 				 * InetSocketAddress("www.google.com", 80);
 				 * sock.setSoTimeout(500); sock.connect(addr, 3000);
 				 * 
-				 * internetCheck.setBackground(Color.GREEN);
+				 * internetCheck.setBackground(Color.lightGray);
 				 * internetCheck.setText("ONLINE"); btnSync.setEnabled(true);
 				 * sock.close();
 				 * 
@@ -8004,7 +8007,7 @@ public class Main {
 				 * final Label internetCheck = new Label("  ONLINE");
 				 * internetCheck.setFont(new Font(Font.SANS_SERIF,
 				 * Font.TRUETYPE_FONT | Font.ITALIC, 12));
-				 * internetCheck.setBackground(Color.GREEN);
+				 * internetCheck.setBackground(Color.lightGray);
 				 * internetCheck.setAlignment(1);
 				 * internetCheck.setForeground(new Color(255, 255, 255));
 				 * internetCheck.setBounds(width_small - 80, 22, 65, 22);
@@ -8016,7 +8019,7 @@ public class Main {
 				 * InetSocketAddress("www.google.com", 80);
 				 * sock.setSoTimeout(500); sock.connect(addr, 3000);
 				 * 
-				 * internetCheck.setBackground(Color.GREEN);
+				 * internetCheck.setBackground(Color.lightGray);
 				 * internetCheck.setText("ONLINE"); btnSync.setEnabled(true);
 				 * sock.close();
 				 * 
@@ -9378,7 +9381,7 @@ public class Main {
 			 * final Label internetCheck = new Label("  ONLINE");
 			 * internetCheck.setFont(new Font(Font.SANS_SERIF,
 			 * Font.TRUETYPE_FONT | Font.ITALIC, 12));
-			 * internetCheck.setBackground(Color.GREEN);
+			 * internetCheck.setBackground(Color.lightGray);
 			 * internetCheck.setAlignment(1); internetCheck.setForeground(new
 			 * Color(255, 255, 255)); internetCheck.setBounds(width_small - 80,
 			 * 22, 65, 22); article.getContentPane().add(internetCheck);
@@ -9389,7 +9392,7 @@ public class Main {
 			 * InetSocketAddress("www.google.com", 80); sock.setSoTimeout(500);
 			 * sock.connect(addr, 3000);
 			 * 
-			 * internetCheck.setBackground(Color.GREEN);
+			 * internetCheck.setBackground(Color.lightGray);
 			 * internetCheck.setText("ONLINE"); btnSync.setEnabled(true);
 			 * sock.close();
 			 * 
