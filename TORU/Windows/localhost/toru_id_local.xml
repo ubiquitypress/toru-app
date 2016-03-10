@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<launch4jConfig>
+  <dontWrapJar>false</dontWrapJar>
+  <headerType>gui</headerType>
+  <jar>/home/ioannis/Desktop/toru_ids_fix_local.jar</jar>
+  <outfile>/home/ioannis/Desktop/toru_local_fix.exe</outfile>
+  <errTitle></errTitle>
+  <cmdLine></cmdLine>
+  <chdir>.</chdir>
+  <priority>normal</priority>
+  <downloadUrl>http://java.com/download</downloadUrl>
+  <supportUrl></supportUrl>
+  <stayAlive>false</stayAlive>
+  <restartOnCrash>false</restartOnCrash>
+  <manifest></manifest>
+  <icon>/home/ioannis/Downloads/toruds.ico</icon>
+  <jre>
+    <path></path>
+    <bundledJre64Bit>false</bundledJre64Bit>
+    <bundledJreAsFallback>false</bundledJreAsFallback>
+    <minVersion>1.8.0</minVersion>
+    <maxVersion></maxVersion>
+    <jdkPreference>preferJre</jdkPreference>
+    <runtimeBits>64/32</runtimeBits>
+  </jre>
+  <versionInfo>
+    <fileVersion>0.2.0.0</fileVersion>
+    <txtFileVersion>0.2</txtFileVersion>
+    <fileDescription>TORU - offline tool</fileDescription>
+    <copyright>Ubiquity Press</copyright>
+    <productVersion>0.2.0.0</productVersion>
+    <txtProductVersion>0.2</txtProductVersion>
+    <productName>TORU - Offline Tool</productName>
+    <companyName>Ubiquity Press</companyName>
+    <internalName>TORU</internalName>
+    <originalFilename>TORU.exe</originalFilename>
+  </versionInfo>
+</launch4jConfig>
