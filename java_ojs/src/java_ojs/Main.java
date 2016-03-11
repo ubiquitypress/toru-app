@@ -246,7 +246,7 @@ public class Main {
 	private static long section_db_id = 0;
 	private static long metadata_id = 0;
 	private static final int SOCKET_OPERATION_TIMEOUT = 10 * 1000;
-	private static String base_url = "http://intersect.ubiquity.press";
+	private static String base_url = "http://127.0.0.1:8000";
 	CookieStore cookieStore = new BasicCookieStore();
 	HttpContext httpContext = new BasicHttpContext();
 	static String encoding = "";
