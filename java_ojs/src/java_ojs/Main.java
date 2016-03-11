@@ -246,7 +246,7 @@ public class Main {
 	private static long section_db_id = 0;
 	private static long metadata_id = 0;
 	private static final int SOCKET_OPERATION_TIMEOUT = 10 * 1000;
-	private static String base_url = "http://127.0.0.1:8000";
+	private static String base_url = "http://intersect.ubiquity.press";
 	CookieStore cookieStore = new BasicCookieStore();
 	HttpContext httpContext = new BasicHttpContext();
 	static String encoding = "";
@@ -3341,6 +3341,18 @@ public class Main {
 					buttonColumn.setMnemonic(KeyEvent.VK_D);
 					buttonColumn2.setMnemonic(KeyEvent.VK_D);
 					buttonColumn3.setMnemonic(KeyEvent.VK_D);
+					
+					final JButton btnDashboard = new JButton("Dashboard");
+					btnDashboard.setBounds(width-135, height-80, 120, 29);
+					btnDashboard.setEnabled(false);
+					btnDashboard.addActionListener(new ActionListener() {
+						public void actionPerformed(ActionEvent e) {
+							dashboard();
+						}
+					});
+					issues.getContentPane().add(btnDashboard);
+					
+					
 					issues.repaint();
 					issues.getContentPane().repaint();
 					issues.setVisible(true);
@@ -4576,10 +4588,10 @@ public class Main {
 						progressBar.setStringPainted(true);
 
 						progressBar.setIndeterminate(true);
-						progressBar.setBounds(width / 2 - 170, height - 100, 375, 32);
+						progressBar.setBounds(width / 2 - 170, height - 115, 375, 32);
 						JLabel progress_msg = new JLabel("Estimated progress per Section:");
 
-						progress_msg.setBounds(width / 2 - 75, height - 132, 200, 40);
+						progress_msg.setBounds(width / 2 - 75, height - 147, 200, 40);
 
 						section_screen.add(progress_msg);
 						section_screen.add(progressBar);
@@ -5115,6 +5127,27 @@ public class Main {
 				panel3.setPreferredSize(new Dimension(width, height / 8));
 				JScrollPane abstractSection = new JScrollPane(panel3);
 				panel3.setAutoscrolls(true);
+				final JButton btnDashboard = new JButton("Dashboard");
+				btnDashboard.setBounds(width-245, height-80, 120, 29);
+				btnDashboard.setEnabled(true);
+				btnDashboard.addActionListener(new ActionListener() {
+					public void actionPerformed(ActionEvent e) {
+						section_screen.dispose();
+						dashboard();
+					}
+				});
+				section_screen.getContentPane().add(btnDashboard);
+				final JButton btnIssue = new JButton("Sections");
+				btnIssue.setBounds(width-125, height-80, 120, 29);
+				btnIssue.setEnabled(false);
+				btnIssue.addActionListener(new ActionListener() {
+					public void actionPerformed(ActionEvent e) {
+						sections();
+					}
+				});
+				section_screen.getContentPane().add(btnIssue);
+				
+				
 				section_screen.setVisible(true);
 
 			}
@@ -5236,10 +5269,10 @@ public class Main {
 						progressBar.setStringPainted(true);
 
 						progressBar.setIndeterminate(true);
-						progressBar.setBounds(width / 2 - 170, height - 100, 375, 32);
+						progressBar.setBounds(width / 2 - 170, height - 115, 375, 32);
 						JLabel progress_msg = new JLabel("Estimated progress per Issue:");
 
-						progress_msg.setBounds(width / 2 - 75, height - 132, 200, 40);
+						progress_msg.setBounds(width / 2 - 75, height - 147, 200, 40);
 
 						unpublished_articles_screen.add(progress_msg);
 						unpublished_articles_screen.add(progressBar);
@@ -5688,7 +5721,25 @@ public class Main {
 				panel_1.setBackground(new Color(25, 25, 25));
 				panel_1.setBounds(0, 70, width, 6);
 				unpublished_articles_screen.getContentPane().add(panel_1);
-
+				final JButton btnDashboard = new JButton("Dashboard");
+				btnDashboard.setBounds(width-325, height-80, 120, 29);
+				btnDashboard.setEnabled(true);
+				btnDashboard.addActionListener(new ActionListener() {
+					public void actionPerformed(ActionEvent e) {
+						unpublished_articles_screen.dispose();
+						dashboard();
+					}
+				});
+				unpublished_articles_screen.getContentPane().add(btnDashboard);
+				final JButton btnIssue = new JButton("Unpublished Articles");
+				btnIssue.setBounds(width-205, height-80, 195, 29);
+				btnIssue.setEnabled(false);
+				btnIssue.addActionListener(new ActionListener() {
+					public void actionPerformed(ActionEvent e) {
+						unpublished_articles();
+					}
+				});
+				unpublished_articles_screen.getContentPane().add(btnIssue);
 				unpublished_articles_screen.repaint();
 				unpublished_articles_screen.getContentPane().repaint();
 
@@ -6640,7 +6691,28 @@ public class Main {
 				lblIssueDetails.setBounds((width - 70) / 2, 135, 125, 30);
 				lblIssueDetails.setOpaque(true);
 				articles.getContentPane().add(lblIssueDetails);
+				
+				final JButton btnDashboard = new JButton("Dashboard");
+				btnDashboard.setBounds(width-255, height-80, 120, 29);
+				btnDashboard.setEnabled(true);
+				btnDashboard.addActionListener(new ActionListener() {
+					public void actionPerformed(ActionEvent e) {
+						articles.dispose();
+						dashboard();
+					}
+				});
+				articles.getContentPane().add(btnDashboard);
+				final JButton btnIssue = new JButton("Issue");
+				btnIssue.setBounds(width-135, height-80, 120, 29);
+				btnIssue.setEnabled(false);
+				btnIssue.addActionListener(new ActionListener() {
+					public void actionPerformed(ActionEvent e) {
+						issue(issue_id);
+					}
+				});
+				articles.getContentPane().add(btnIssue);
 				articles.repaint();
+				articles.getContentPane().repaint();
 				articles.setVisible(true);
 			}
 
@@ -7758,7 +7830,38 @@ public class Main {
 				upload.setBounds(150, 310, 90, 30);
 
 				panel.add(upload);
-
+				final JButton btnDashboard = new JButton("Dashboard");
+				btnDashboard.setBounds(width_small-375, height_small-80, 120, 29);
+				btnDashboard.setEnabled(true);
+				btnDashboard.addActionListener(new ActionListener() {
+					public void actionPerformed(ActionEvent e) {
+						article.dispose();
+						dashboard();
+					}
+				});
+				article.getContentPane().add(btnDashboard);
+				final JButton btnIssue = new JButton("Issue");
+				btnIssue.setBounds(width_small-255, height_small-80, 120, 29);
+				btnIssue.setEnabled(true);
+				btnIssue.addActionListener(new ActionListener() {
+					public void actionPerformed(ActionEvent e) {
+						article.dispose();
+						issue(issue_id);
+					}
+				});
+				article.getContentPane().add(btnIssue);
+				final JButton btnArticle = new JButton("Article");
+				btnArticle.setBounds(width_small-135, height_small-80, 120, 29);
+				btnArticle.setEnabled(false);
+				btnArticle.addActionListener(new ActionListener() {
+					public void actionPerformed(ActionEvent e) {
+						article.dispose();
+						article(issue_id,article_id);
+					}
+				});
+				article.getContentPane().add(btnArticle);
+				article.repaint();
+				article.getContentPane().repaint();
 				article.setVisible(true);
 				if (article_screens.containsKey(issue_id)) {
 					ConcurrentHashMap<Long, JFrame> issue_articles = article_screens.get(issue_id);
