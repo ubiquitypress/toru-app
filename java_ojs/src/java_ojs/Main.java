@@ -181,7 +181,7 @@ import sun.misc.BASE64Encoder;
 
 @SuppressWarnings({ "deprecation", "unused" })
 public class Main {
-	JFrame login, api, issues, settings, section_screen, unpublished_articles_screen;
+	static JFrame login, api, issues, settings, section_screen, unpublished_articles_screen;
 	private JTextField access_key, username;
 	private JXTable issues_table;
 	private static int delay = 5000; // milliseconds
@@ -1086,6 +1086,29 @@ public class Main {
 
 			delay = 2500;
 			return false;
+		}
+		if(response.getStatusLine().getStatusCode()==401){
+			logged_in=false;
+			if( login !=null && login.isVisible() == true){
+				login.dispose();
+			}
+			if( api !=null && api.isVisible() == true){
+				api.dispose();
+			}
+			if( issues !=null && issues.isVisible() == true){
+				issues.dispose();
+			}
+			if( settings !=null && settings.isVisible() == true){
+				settings.dispose();
+			}
+			if( section_screen !=null && section_screen.isVisible() == true){
+				section_screen.dispose();
+			}
+			if( unpublished_articles_screen !=null && unpublished_articles_screen.isVisible() == true){
+				unpublished_articles_screen.dispose();
+			}
+			logged_in = false;
+			
 		}
 		try {
 			InputStream is = response.getEntity().getContent();
