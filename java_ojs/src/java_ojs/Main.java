@@ -2507,10 +2507,10 @@ public class Main {
 								final JProgressBar progressBar = new JProgressBar();
 								progressBar.setValue(0);
 								progressBar.setStringPainted(true);
-								progressBar.setBounds(width / 2 - 50, height - 117, 150, 40);
+								progressBar.setBounds(width / 2 - 170, height - 100, 375, 32);
 								JLabel progress_msg = new JLabel("Estimated progress per Issue:");
 
-								progress_msg.setBounds(width / 2 - 75, height - 150, 200, 40);
+								progress_msg.setBounds(width / 2 - 75, height - 132, 200, 40);
 
 								for (long key : issue_keys) {
 									issue_countdown_storage.put((long) key, false);
@@ -2890,17 +2890,6 @@ public class Main {
 														}
 													}
 												});
-												try {
-													f.get();
-												} catch (InterruptedException e) {
-													// TODO Auto-generated catch
-													// block
-													e.printStackTrace();
-												} catch (ExecutionException e) {
-													// TODO Auto-generated catch
-													// block
-													e.printStackTrace();
-												}
 												futures.add(f);
 
 											}
@@ -2916,7 +2905,9 @@ public class Main {
 										synchronized (futures) {
 											for (Future<?> future : futures) {
 												try {
-													future.get();
+													if (future != null) {
+														future.get();
+													}
 												} catch (InterruptedException e1) {
 
 													e1.printStackTrace();
@@ -3301,7 +3292,7 @@ public class Main {
 					JPanel panel = new JPanel();
 					panel.setBackground(new Color(46, 46, 46));
 					panel.setLayout(null);
-					panel.setBounds(-5, 0, width + 100, 78);
+					panel.setBounds(-5, 0, width + 100, 70);
 					ImageIcon icon = new ImageIcon(
 							String.format("%s/required_files/%s", directory, "toru-ui-logo.png"));
 					JLabel logo = new JLabel(icon);
@@ -4585,10 +4576,10 @@ public class Main {
 						progressBar.setStringPainted(true);
 
 						progressBar.setIndeterminate(true);
-						progressBar.setBounds(width / 2 - 50, height - 117, 150, 40);
+						progressBar.setBounds(width / 2 - 170, height - 100, 375, 32);
 						JLabel progress_msg = new JLabel("Estimated progress per Section:");
 
-						progress_msg.setBounds(width / 2 - 75, height - 150, 200, 40);
+						progress_msg.setBounds(width / 2 - 75, height - 132, 200, 40);
 
 						section_screen.add(progress_msg);
 						section_screen.add(progressBar);
@@ -5245,10 +5236,10 @@ public class Main {
 						progressBar.setStringPainted(true);
 
 						progressBar.setIndeterminate(true);
-						progressBar.setBounds(width / 2 - 50, height - 117, 150, 40);
+						progressBar.setBounds(width / 2 - 170, height - 100, 375, 32);
 						JLabel progress_msg = new JLabel("Estimated progress per Issue:");
 
-						progress_msg.setBounds(width / 2 - 75, height - 150, 200, 40);
+						progress_msg.setBounds(width / 2 - 75, height - 132, 200, 40);
 
 						unpublished_articles_screen.add(progress_msg);
 						unpublished_articles_screen.add(progressBar);
@@ -5832,10 +5823,10 @@ public class Main {
 						progressBar.setStringPainted(true);
 
 						progressBar.setIndeterminate(true);
-						progressBar.setBounds(width / 2 - 50, height - 117, 150, 40);
+						progressBar.setBounds(width / 2 - 170, height - 100, 375, 32);
 						JLabel progress_msg = new JLabel("Estimated progress per Issue:");
 
-						progress_msg.setBounds(width / 2 - 75, height - 150, 200, 40);
+						progress_msg.setBounds(width / 2 - 75, height - 132, 200, 40);
 
 						articles.add(progress_msg);
 						articles.add(progressBar);
