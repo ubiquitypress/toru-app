@@ -246,7 +246,8 @@ public class Main {
 	private static long section_db_id = 0;
 	private static long metadata_id = 0;
 	private static final int SOCKET_OPERATION_TIMEOUT = 10 * 1000;
-	private static String base_url = "http://intersect.ubiquity.press";
+	private static String base_url = "http://127.0.0.1:8000";
+	
 	CookieStore cookieStore = new BasicCookieStore();
 	HttpContext httpContext = new BasicHttpContext();
 	static String encoding = "";
@@ -1088,16 +1089,8 @@ public class Main {
 			return false;
 		}
 		if(response.getStatusLine().getStatusCode()==401){
-			logged_in=false;
-			if( login !=null && login.isVisible() == true){
-				login.dispose();
-			}
-			if( api !=null && api.isVisible() == true){
-				api.dispose();
-			}
-			if( issues !=null && issues.isVisible() == true){
-				issues.dispose();
-			}
+			
+			
 			if( settings !=null && settings.isVisible() == true){
 				settings.dispose();
 			}
@@ -1108,6 +1101,8 @@ public class Main {
 				unpublished_articles_screen.dispose();
 			}
 			logged_in = false;
+			has_app_settings=false;
+			app_settings = new ConcurrentHashMap<String, String>();
 			
 		}
 		try {
