@@ -246,7 +246,7 @@ public class Main {
 	private static long section_db_id = 0;
 	private static long metadata_id = 0;
 	private static final int SOCKET_OPERATION_TIMEOUT = 10 * 1000;
-	private static String base_url = "http://intersect.ubiquity.press";
+	private static String base_url = "http://127.0.0.1:8000";
 	CookieStore cookieStore = new BasicCookieStore();
 	HttpContext httpContext = new BasicHttpContext();
 	static String encoding = "";
@@ -8343,6 +8343,7 @@ public class Main {
 									txtLastName.getText(), txtEmail.getText(), txtAffiliation.getText(),
 									txtBio.getText(), txtOrcID.getText(), txtDepartment.getText(),
 									txtCountry.getText());
+							new_author.setArticle_id(article_id);
 							author_storage.put(author_id, new_author);
 							System.out.println("Author id :" + author_id);
 							System.out.println(new_author);
@@ -9812,6 +9813,7 @@ public class Main {
 						Author new_author = new Author(author_id, txtFirstName.getText(), txtMiddleName.getText(),
 								txtLastName.getText(), txtEmail.getText(), txtAffiliation.getText(), txtBio.getText(),
 								txtOrcID.getText(), txtDepartment.getText(), txtCountry.getText());
+						new_author.setArticle_id(current_id);
 						author_storage.put(author_id, new_author);
 						System.out.println("Author id :" + author_id);
 						System.out.println(new_author);
@@ -14625,7 +14627,7 @@ public class Main {
 
 	public static void delete_article(long article_id) throws IOException {
 		boolean status = status_online();
-
+		System.out.println("DELETING ARTICLE");
 		if (!status) {
 			return;
 		}
