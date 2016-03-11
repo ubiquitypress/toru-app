@@ -14230,7 +14230,6 @@ public class Main {
 		obj.put("seq", author.getSeq());
 		obj.put("url", author.getUrl());
 		obj.put("primary_contact", author.getPrimary_contact());
-		obj.put("user_group", String.format("%s/groups/%s/", base_url, author.getUser_group()));
 
 		return obj;
 	}
