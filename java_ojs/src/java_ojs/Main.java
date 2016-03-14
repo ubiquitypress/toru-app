@@ -246,7 +246,7 @@ public class Main {
 	private static long section_db_id = 0;
 	private static long metadata_id = 0;
 	private static final int SOCKET_OPERATION_TIMEOUT = 10 * 1000;
-	private static String base_url = "http://127.0.0.1:8000";
+	private static String base_url = "http://intersect.ubiquity.press";
 
 	CookieStore cookieStore = new BasicCookieStore();
 	HttpContext httpContext = new BasicHttpContext();
@@ -2425,13 +2425,14 @@ public class Main {
 					issues = new JFrame();
 					issues.setResizable(false);
 					issues.setVisible(true);
+					
 					issues.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 					if (height >= 640 && width >= 900) {
 						issues.setSize(width, height);
 					} else {
-						width = 900;
-						height = 640;
-						issues.setSize(900, 640);
+						width = 1024;
+						height = 768;
+						issues.setSize(1024, 768);
 					}
 					issues.getContentPane().setBackground(new Color(213, 213, 213));
 
@@ -2911,6 +2912,12 @@ public class Main {
 														}
 													}
 												});
+												try {
+													f.get();
+												} catch (InterruptedException | ExecutionException e) {
+													// TODO Auto-generated catch block
+													e.printStackTrace();
+												}
 												futures.add(f);
 
 											}
