@@ -247,7 +247,7 @@ public class Main {
 	private static long metadata_id = 0;
 	private static final int SOCKET_OPERATION_TIMEOUT = 10 * 1000;
 	private static String base_url = "http://127.0.0.1:8000";
-	
+
 	CookieStore cookieStore = new BasicCookieStore();
 	HttpContext httpContext = new BasicHttpContext();
 	static String encoding = "";
@@ -1088,22 +1088,21 @@ public class Main {
 			delay = 2500;
 			return false;
 		}
-		if(response.getStatusLine().getStatusCode()==401){
-			
-			
-			if( settings !=null && settings.isVisible() == true){
+		if (response.getStatusLine().getStatusCode() == 401) {
+
+			if (settings != null && settings.isVisible() == true) {
 				settings.dispose();
 			}
-			if( section_screen !=null && section_screen.isVisible() == true){
+			if (section_screen != null && section_screen.isVisible() == true) {
 				section_screen.dispose();
 			}
-			if( unpublished_articles_screen !=null && unpublished_articles_screen.isVisible() == true){
+			if (unpublished_articles_screen != null && unpublished_articles_screen.isVisible() == true) {
 				unpublished_articles_screen.dispose();
 			}
 			logged_in = false;
-			has_app_settings=false;
+			has_app_settings = false;
 			app_settings = new ConcurrentHashMap<String, String>();
-			
+
 		}
 		try {
 			InputStream is = response.getEntity().getContent();
@@ -2425,6 +2424,7 @@ public class Main {
 					}
 					issues = new JFrame();
 					issues.setResizable(false);
+					issues.setVisible(true);
 					issues.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 					if (height >= 640 && width >= 900) {
 						issues.setSize(width, height);
@@ -2534,10 +2534,13 @@ public class Main {
 									issue_countdown_storage.put((long) key, false);
 								}
 								if (!issue_keys.isEmpty()) {
-									int dialogResult2 = JOptionPane.showConfirmDialog(null,
+									Object[] options = {"Yes", "No","Yes To All", "No To All", "Cancel" };
+									int dialogResult2 = JOptionPane.showOptionDialog(null,
 											"Would You Like to replace local Section data (Yes) or update remote Secton data (No)",
-											"Warning", 1);
-
+											"Warning", JOptionPane.DEFAULT_OPTION, JOptionPane.QUESTION_MESSAGE, null,
+											options, options[3]);
+									System.out.println(
+											JOptionPane.YES_OPTION + " selection: " + options[JOptionPane.YES_OPTION]);
 									if (dialogResult2 == JOptionPane.YES_OPTION) {
 										Future<?> f = exec.submit(new Runnable() {
 											public void run() {
@@ -3147,6 +3150,9 @@ public class Main {
 
 					ActionListener taskPerformer1 = new ActionListener() {
 						public void actionPerformed(ActionEvent evt) {
+							issues.repaint();
+							issues.getContentPane().repaint();
+							
 							if (status_online()) {
 								internetCheck.setBackground(Color.lightGray);
 								internetCheck.setText("ONLINE");
@@ -3359,9 +3365,9 @@ public class Main {
 					buttonColumn.setMnemonic(KeyEvent.VK_D);
 					buttonColumn2.setMnemonic(KeyEvent.VK_D);
 					buttonColumn3.setMnemonic(KeyEvent.VK_D);
-					
+
 					final JButton btnDashboard = new JButton("Dashboard");
-					btnDashboard.setBounds(width-135, height-80, 120, 29);
+					btnDashboard.setBounds(width - 135, height - 80, 120, 29);
 					btnDashboard.setEnabled(false);
 					btnDashboard.addActionListener(new ActionListener() {
 						public void actionPerformed(ActionEvent e) {
@@ -3369,8 +3375,7 @@ public class Main {
 						}
 					});
 					issues.getContentPane().add(btnDashboard);
-					
-					
+
 					issues.repaint();
 					issues.getContentPane().repaint();
 					issues.setVisible(true);
@@ -3399,6 +3404,7 @@ public class Main {
 			height_small = (int) (680 - (680 * (5 / 100)));
 			final JFrame edit_issue = new JFrame();
 			edit_issue.setResizable(false);
+			edit_issue.setVisible(true);
 			issue_screens.put(i_id, edit_issue);
 			edit_issue.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 			edit_issue.getContentPane().setBackground(new Color(170, 170, 170));
@@ -3724,6 +3730,7 @@ public class Main {
 
 				int move = 52;
 				final JFrame edit_issue = new JFrame();
+				edit_issue.setVisible(true);
 				edit_issue.setResizable(false);
 				issue_screens.put(issue_id, edit_issue);
 				edit_issue.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -5146,7 +5153,7 @@ public class Main {
 				JScrollPane abstractSection = new JScrollPane(panel3);
 				panel3.setAutoscrolls(true);
 				final JButton btnDashboard = new JButton("Dashboard");
-				btnDashboard.setBounds(width-245, height-80, 120, 29);
+				btnDashboard.setBounds(width - 245, height - 80, 120, 29);
 				btnDashboard.setEnabled(true);
 				btnDashboard.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
@@ -5156,7 +5163,7 @@ public class Main {
 				});
 				section_screen.getContentPane().add(btnDashboard);
 				final JButton btnIssue = new JButton("Sections");
-				btnIssue.setBounds(width-125, height-80, 120, 29);
+				btnIssue.setBounds(width - 125, height - 80, 120, 29);
 				btnIssue.setEnabled(false);
 				btnIssue.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
@@ -5164,8 +5171,7 @@ public class Main {
 					}
 				});
 				section_screen.getContentPane().add(btnIssue);
-				
-				
+
 				section_screen.setVisible(true);
 
 			}
@@ -5740,7 +5746,7 @@ public class Main {
 				panel_1.setBounds(0, 70, width, 6);
 				unpublished_articles_screen.getContentPane().add(panel_1);
 				final JButton btnDashboard = new JButton("Dashboard");
-				btnDashboard.setBounds(width-325, height-80, 120, 29);
+				btnDashboard.setBounds(width - 325, height - 80, 120, 29);
 				btnDashboard.setEnabled(true);
 				btnDashboard.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
@@ -5750,7 +5756,7 @@ public class Main {
 				});
 				unpublished_articles_screen.getContentPane().add(btnDashboard);
 				final JButton btnIssue = new JButton("Unpublished Articles");
-				btnIssue.setBounds(width-205, height-80, 195, 29);
+				btnIssue.setBounds(width - 205, height - 80, 195, 29);
 				btnIssue.setEnabled(false);
 				btnIssue.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
@@ -6709,9 +6715,9 @@ public class Main {
 				lblIssueDetails.setBounds((width - 70) / 2, 135, 125, 30);
 				lblIssueDetails.setOpaque(true);
 				articles.getContentPane().add(lblIssueDetails);
-				
+
 				final JButton btnDashboard = new JButton("Dashboard");
-				btnDashboard.setBounds(width-255, height-80, 120, 29);
+				btnDashboard.setBounds(width - 255, height - 80, 120, 29);
 				btnDashboard.setEnabled(true);
 				btnDashboard.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
@@ -6721,7 +6727,7 @@ public class Main {
 				});
 				articles.getContentPane().add(btnDashboard);
 				final JButton btnIssue = new JButton("Issue");
-				btnIssue.setBounds(width-135, height-80, 120, 29);
+				btnIssue.setBounds(width - 135, height - 80, 120, 29);
 				btnIssue.setEnabled(false);
 				btnIssue.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
@@ -7849,7 +7855,7 @@ public class Main {
 
 				panel.add(upload);
 				final JButton btnDashboard = new JButton("Dashboard");
-				btnDashboard.setBounds(width_small-375, height_small-80, 120, 29);
+				btnDashboard.setBounds(width_small - 375, height_small - 80, 120, 29);
 				btnDashboard.setEnabled(true);
 				btnDashboard.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
@@ -7859,7 +7865,7 @@ public class Main {
 				});
 				article.getContentPane().add(btnDashboard);
 				final JButton btnIssue = new JButton("Issue");
-				btnIssue.setBounds(width_small-255, height_small-80, 120, 29);
+				btnIssue.setBounds(width_small - 255, height_small - 80, 120, 29);
 				btnIssue.setEnabled(true);
 				btnIssue.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
@@ -7869,12 +7875,12 @@ public class Main {
 				});
 				article.getContentPane().add(btnIssue);
 				final JButton btnArticle = new JButton("Article");
-				btnArticle.setBounds(width_small-135, height_small-80, 120, 29);
+				btnArticle.setBounds(width_small - 135, height_small - 80, 120, 29);
 				btnArticle.setEnabled(false);
 				btnArticle.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
 						article.dispose();
-						article(issue_id,article_id);
+						article(issue_id, article_id);
 					}
 				});
 				article.getContentPane().add(btnArticle);
