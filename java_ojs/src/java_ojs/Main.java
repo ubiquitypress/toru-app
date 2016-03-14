@@ -2538,7 +2538,7 @@ public class Main {
 									Object[] options = { "All Remote Data", "All Local Data", "Remote Data",
 											"Local Data", "Cancel" };
 									int dialogResult2 = JOptionPane.showOptionDialog(null,
-											"Would You Like to replace local Section data update remote Secton data",
+											"Would You Like to replace local Section data or update remote Secton data",
 											"Warning", JOptionPane.DEFAULT_OPTION, JOptionPane.QUESTION_MESSAGE, null,
 											options, options[3]);
 									if (dialogResult2 == 3 || dialogResult2 == 1) {
@@ -2603,7 +2603,7 @@ public class Main {
 												all = true;
 											}
 										}
-										
+
 										if (dialogResult == 4) {
 											issue_countdown_storage.put((long) current_issue.getId(), true);
 										}
@@ -4640,12 +4640,14 @@ public class Main {
 						List<Future<?>> futures = new ArrayList<Future<?>>();
 
 						boolean update_table = false;
-						;
-						int dialogResult2 = JOptionPane.showConfirmDialog(null,
-								"Would You Like to replace local Section data (Yes) or update remote Secton data (No)",
-								"Warning", 1);
+						Object[] options_2 = { "Remote Data", "Local Data", "Cancel" };
+						int dialogResult2 = JOptionPane.showOptionDialog(null,
+								"Would You Like to replace local Section data or update remote Secton data", "Warning",
+								JOptionPane.DEFAULT_OPTION, JOptionPane.QUESTION_MESSAGE, null, options_2,
+								options_2[0]);
 
-						if (dialogResult2 == JOptionPane.YES_OPTION) {
+
+						if (dialogResult2 == 1) {
 							Future<?> f = exec.submit(new Runnable() {
 								public void run() {
 
@@ -4665,7 +4667,7 @@ public class Main {
 								}
 							});
 							futures.add(f);
-						} else if (dialogResult2 == JOptionPane.NO_OPTION) {
+						} else if (dialogResult2 == 0) {
 							Future<?> f = exec.submit(new Runnable() {
 								public void run() {
 									try {
@@ -4769,6 +4771,8 @@ public class Main {
 								section_screen.remove(progress_msg);
 								section_screen.remove(progressBar);
 								section_screen.repaint();
+								section_screen.dispose();
+								sections();
 
 							}
 						});
@@ -5929,11 +5933,13 @@ public class Main {
 						if (!current_issue.getArticles_list().isEmpty()) {
 
 							issue_countdown_storage.put((long) current_issue.getId(), false);
-							int dialogResult2 = JOptionPane.showConfirmDialog(null,
-									"Would You Like to replace local Section data (Yes) or update remote Secton data (No)",
-									"Warning", 1);
+							Object[] options_2 = { "Remote Data", "Local Data", "Cancel" };
+							int dialogResult2 = JOptionPane.showOptionDialog(null,
+									"Would You Like to replace local Section data or update remote Secton data", "Warning",
+									JOptionPane.DEFAULT_OPTION, JOptionPane.QUESTION_MESSAGE, null, options_2,
+									options_2[0]);
 
-							if (dialogResult2 == JOptionPane.YES_OPTION) {
+							if (dialogResult2 == 1) {
 								Future<?> f = exec.submit(new Runnable() {
 									public void run() {
 
@@ -5954,7 +5960,7 @@ public class Main {
 									}
 								});
 								futures.add(f);
-							} else if (dialogResult2 == JOptionPane.NO_OPTION) {
+							} else if (dialogResult2 == 0) {
 								Future<?> f = exec.submit(new Runnable() {
 									public void run() {
 										try {
@@ -5974,13 +5980,15 @@ public class Main {
 								});
 								futures.add(f);
 							}
-							int dialogResult = JOptionPane.showConfirmDialog(null,
-									"Would You Like to replace local data (Yes) or update remote data (No)", "Warning",
-									1);
-							if (dialogResult == JOptionPane.CANCEL_OPTION) {
+							int dialogResult = JOptionPane.showOptionDialog(null,
+									"Would You Like to replace local data or update remote data", "Warning",
+									JOptionPane.DEFAULT_OPTION, JOptionPane.QUESTION_MESSAGE, null, options_2,
+									options_2[0]);
+
+							if (dialogResult == 2) {
 								issue_countdown_storage.put((long) current_issue.getId(), true);
 							}
-							if (dialogResult == JOptionPane.NO_OPTION) {
+							if (dialogResult == 0) {
 								article_progress_executor.execute(new Runnable() {
 									public void run() {
 										int countdown = current_issue.getArticles_list().size() * 6 + 40
@@ -6059,7 +6067,7 @@ public class Main {
 								});
 
 								futures.add(f);
-							} else if (dialogResult == JOptionPane.YES_OPTION) {
+							} else if (dialogResult == 1) {
 								System.out.println("update local");
 								article_progress_executor.execute(new Runnable() {
 									public void run() {
@@ -6234,11 +6242,15 @@ public class Main {
 						System.out.println("ARTICLES: "
 								+ issue_storage.get((long) current_issue.getId()).getArticles_list().size());
 						if (status_online()) {
-							dialogResult = JOptionPane.showConfirmDialog(null,
-									"Would You Like to replace local Author data (Yes) or update remote Author data (No)",
-									"Warning", 1);
+							Object[] options_2 = { "Remote Data", "Local Data", "Cancel" };
+							
+							dialogResult = JOptionPane.showOptionDialog(null,
+									"Would You Like to replace local Author data or update remote Author data", "Warning",
+									JOptionPane.DEFAULT_OPTION, JOptionPane.QUESTION_MESSAGE, null, options_2,
+									options_2[0]);
+						
 
-							if (dialogResult == JOptionPane.NO_OPTION) {
+							if (dialogResult == 0) {
 								/*
 								 * Future<?> f = exec.submit(new Runnable() {
 								 * 
@@ -6255,7 +6267,7 @@ public class Main {
 								 * 
 								 * futures.add(f);
 								 */
-							} else if (dialogResult == JOptionPane.YES_OPTION) {
+							} else if (dialogResult == 1) {
 								Future<?> f = exec.submit(new Runnable() {
 
 									public void run() {
@@ -6768,13 +6780,10 @@ public class Main {
 				Article current_article = issue_storage.get(issue_id).getArticles_list().get(article_id);
 				int width_small = 0;
 				int height_small = 0;
-				if (height >= 768 && width >= 640) {
-					width_small = (int) (width - (width * (37.5 / 100)));
-					height_small = (int) (height - (height * (5 / 100)));
-				} else {
-					width_small = (int) (640 + (640 * (37.5 / 100)));
-					height_small = (int) (768 - (768 * (5 / 100)));
-				}
+
+				width_small = 920;
+				height_small = 768;
+
 				final JFrame article = new JFrame();
 				article.setResizable(false);
 				String setting_meta = list_settings.get("Metadata");
@@ -8136,13 +8145,8 @@ public class Main {
 				Article current_article = issue_storage.get(issue_id).getArticles_list().get(article_id);
 				int width_small = 0;
 				int height_small = 0;
-				if (height >= 768 && width >= 640) {
-					width_small = (int) (width - (width * (37.5 / 100)));
-					height_small = (int) (height - (height * (5 / 100)));
-				} else {
-					width_small = (int) (640 + (640 * (37.5 / 100)));
-					height_small = (int) (768 - (768 * (5 / 100)));
-				}
+				width_small = 920;
+				height_small = 768;
 				final JFrame article = new JFrame();
 				article.setResizable(false);
 				Metadata meta = null;
@@ -9527,13 +9531,8 @@ public class Main {
 			issue_screens.get(issue_id).dispose();
 			int width_small = 0;
 			int height_small = 0;
-			if (height >= 768 && width >= 640) {
-				width_small = (int) (width - (width * (37.5 / 100)));
-				height_small = (int) (height - (height * (5 / 100)));
-			} else {
-				width_small = (int) (640 + (640 * (37.5 / 100)));
-				height_small = (int) (768 - (768 * (5 / 100)));
-			}
+			width_small = 920;
+			height_small = 768;
 			ConcurrentHashMap<Long, Boolean> author_primary = new ConcurrentHashMap<Long, Boolean>();
 			String setting_meta = list_settings.get("Metadata");
 			long current_id = articles_id + 1;
