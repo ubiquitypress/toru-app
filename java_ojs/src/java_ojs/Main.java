@@ -2425,7 +2425,7 @@ public class Main {
 					issues = new JFrame();
 					issues.setResizable(false);
 					issues.setVisible(true);
-					
+
 					issues.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 					if (height >= 640 && width >= 900) {
 						issues.setSize(width, height);
@@ -2535,14 +2535,13 @@ public class Main {
 									issue_countdown_storage.put((long) key, false);
 								}
 								if (!issue_keys.isEmpty()) {
-									Object[] options = {"Yes", "No","Yes To All", "No To All", "Cancel" };
+									Object[] options = { "All Remote Data", "All Local Data", "Remote Data",
+											"Local Data", "Cancel" };
 									int dialogResult2 = JOptionPane.showOptionDialog(null,
-											"Would You Like to replace local Section data (Yes) or update remote Secton data (No)",
+											"Would You Like to replace local Section data update remote Secton data",
 											"Warning", JOptionPane.DEFAULT_OPTION, JOptionPane.QUESTION_MESSAGE, null,
 											options, options[3]);
-									System.out.println(
-											JOptionPane.YES_OPTION + " selection: " + options[JOptionPane.YES_OPTION]);
-									if (dialogResult2 == JOptionPane.YES_OPTION) {
+									if (dialogResult2 == 3 || dialogResult2 == 1) {
 										Future<?> f = exec.submit(new Runnable() {
 											public void run() {
 
@@ -2563,7 +2562,7 @@ public class Main {
 											}
 										});
 										futures.add(f);
-									} else {
+									} else if (dialogResult2 == 2 || dialogResult2 == 0) {
 										Future<?> f = exec.submit(new Runnable() {
 											public void run() {
 												try {
@@ -2583,23 +2582,32 @@ public class Main {
 										});
 										futures.add(f);
 									}
-
+									boolean all = false;
+									if (dialogResult2 == 0 || dialogResult2 == 1) {
+										all = true;
+									}
 									for (long key : issue_keys) {
 
 										// progress_increment
 										Issue current_issue = issue_storage.get(key);
 
 										long issue_id = current_issue.getId();
-
-										dialogResult = JOptionPane.showConfirmDialog(null,
-												String.format(
-														"Issue %s <%s>: Would You Like to replace local data (Yes) or update remote data (No)",
-														current_issue.getTitle(), Long.toString(issue_id)),
-												"Warning", 1);
-										if (dialogResult == JOptionPane.CANCEL_OPTION) {
+										if (!all) {
+											dialogResult = JOptionPane.showOptionDialog(null,
+													String.format(
+															"Issue %s <%s>: Would You Like to replace local data or update remote data",
+															current_issue.getTitle(), Long.toString(issue_id)),
+													"Warning", JOptionPane.DEFAULT_OPTION, JOptionPane.QUESTION_MESSAGE,
+													null, options, options[3]);
+											if (dialogResult == 0 || dialogResult == 1) {
+												all = true;
+											}
+										}
+										
+										if (dialogResult == 4) {
 											issue_countdown_storage.put((long) current_issue.getId(), true);
 										}
-										if (dialogResult == JOptionPane.NO_OPTION) {
+										if (dialogResult == 2 || dialogResult == 0) {
 											progress_executor.execute(new Runnable() {
 												public void run() {
 													int countdown = current_issue.getArticles_list().size() * 7 + 120
@@ -2691,7 +2699,7 @@ public class Main {
 											});
 											futures.add(f);
 
-										} else if (dialogResult == JOptionPane.YES_OPTION) {
+										} else if (dialogResult == 1 || dialogResult == 3) {
 											progress_executor.execute(new Runnable() {
 												public void run() {
 													int countdown = current_issue.getArticles_list().size() * 7 + 120
@@ -2764,7 +2772,7 @@ public class Main {
 
 										}
 										if (!current_issue.isDeleted()) {
-											if (dialogResult == JOptionPane.NO_OPTION) {
+											if (dialogResult == 0 || dialogResult == 2) {
 
 												Future<?> f = exec.submit(new Runnable() {
 
@@ -2782,7 +2790,7 @@ public class Main {
 												});
 
 												futures.add(f);
-											} else if (dialogResult == JOptionPane.YES_OPTION) {
+											} else if (dialogResult == 1 || dialogResult == 3) {
 												System.out.println("update local");
 												Future<?> f = exec.submit(new Runnable() {
 
@@ -2915,7 +2923,8 @@ public class Main {
 												try {
 													f.get();
 												} catch (InterruptedException | ExecutionException e) {
-													// TODO Auto-generated catch block
+													// TODO Auto-generated catch
+													// block
 													e.printStackTrace();
 												}
 												futures.add(f);
@@ -2952,7 +2961,7 @@ public class Main {
 											int dialogResult = JOptionPane.showConfirmDialog(null,
 													"Save changes to local database?", "Warning", 1);
 
-											if (dialogResult == JOptionPane.YES_OPTION) {
+											if (dialogResult == 1 || dialogResult == 3) {
 												database_save();
 											}
 											if (num_rows == 0) {
@@ -3159,7 +3168,7 @@ public class Main {
 						public void actionPerformed(ActionEvent evt) {
 							issues.repaint();
 							issues.getContentPane().repaint();
-							
+
 							if (status_online()) {
 								internetCheck.setBackground(Color.lightGray);
 								internetCheck.setText("ONLINE");
